@@ -5,8 +5,8 @@ import com.github.arhor.dgs.topics.generated.graphql.types.Post
 
 interface PostService {
     fun createNewPost(request: CreatePostRequest): Post
-    fun getPostsByUserIds(userIds: Set<Long>): Map<Long, List<Post>>
-    fun getPostsByTopicIds(topicIds: Set<Long>): Map<Long, List<Post>>
-    fun getPostsUserId(userId: Long): List<Post>
-    fun getPostsByTopicId(topicId: Long): List<Post>
+    fun getPostsByUserIds(userIds: Set<String>): Map<String, List<Post>>
+    fun getPostsByTopicIds(topicIds: Set<String>): Map<String, List<Post>>
+    fun getPostsUserId(userId: String): List<Post>
+    fun getPostsByTopicId(topicId: String): List<Post>
 }

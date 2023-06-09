@@ -15,3 +15,5 @@ pluginManagement {
 }
 
 rootProject.name = "dgs-extradata"
+
+includeBuild("../shared-bom")

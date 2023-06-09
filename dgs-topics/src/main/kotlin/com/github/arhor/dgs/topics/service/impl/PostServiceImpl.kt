@@ -22,7 +22,7 @@ class PostServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getPostsByUserIds(userIds: Set<Long>): Map<Long, List<Post>> {
+    override fun getPostsByUserIds(userIds: Set<String>): Map<String, List<Post>> {
         return if (userIds.isEmpty()) {
             emptyMap()
         } else {
@@ -33,7 +33,7 @@ class PostServiceImpl(
         }
     }
 
-    override fun getPostsByTopicIds(topicIds: Set<Long>): Map<Long, List<Post>> {
+    override fun getPostsByTopicIds(topicIds: Set<String>): Map<String, List<Post>> {
         return if (topicIds.isEmpty()) {
             emptyMap()
         } else {
@@ -44,11 +44,11 @@ class PostServiceImpl(
         }
     }
 
-    override fun getPostsUserId(userId: Long): List<Post> {
+    override fun getPostsUserId(userId: String): List<Post> {
         return postRepository.findAllByUserId(userId).map { postMapper.mapToDTO(it) }
     }
 
-    override fun getPostsByTopicId(topicId: Long): List<Post> {
+    override fun getPostsByTopicId(topicId: String): List<Post> {
         return postRepository.findAllByTopicId(topicId).map { postMapper.mapToDTO(it) }
     }
 }

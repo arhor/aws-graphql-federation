@@ -15,3 +15,5 @@ pluginManagement {
 }
 
 rootProject.name = "dgs-topics"
+
+includeBuild("../shared-bom")

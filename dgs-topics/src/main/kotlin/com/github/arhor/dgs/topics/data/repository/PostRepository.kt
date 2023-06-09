@@ -6,11 +6,11 @@ import org.springframework.data.repository.CrudRepository
 interface PostRepository :
     CrudRepository<PostEntity, Long> {
 
-    fun findAllByUserIdIn(userIds: Collection<Long>): List<PostEntity>
+    fun findAllByUserIdIn(userIds: Collection<String>): List<PostEntity>
 
-    fun findAllByTopicIdIn(topicIds: Collection<Long>): List<PostEntity>
+    fun findAllByTopicIdIn(topicIds: Collection<String>): List<PostEntity>
 
-    fun findAllByUserId(userId: Long): List<PostEntity>
+    fun findAllByUserId(userId: String): List<PostEntity>
 
-    fun findAllByTopicId(topicId: Long): List<PostEntity>
+    fun findAllByTopicId(topicId: String): List<PostEntity>
 }
