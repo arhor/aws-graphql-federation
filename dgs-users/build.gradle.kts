@@ -39,15 +39,17 @@ configurations {
 }
 
 dependencies {
-    kapt("org.mapstruct:mapstruct-processor:${property("app.version.mapstruct")}")
+    kapt(platform(":shared-bom"))
+    kapt("org.mapstruct:mapstruct-processor")
     kapt("org.springframework:spring-context-indexer")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
-    compileOnly("com.google.code.findbugs:jsr305:${property("app.version.findbugs-jsr305")}")
-    compileOnly("org.mapstruct:mapstruct:${property("app.version.mapstruct")}")
+    compileOnly("com.google.code.findbugs:jsr305")
+    compileOnly("org.mapstruct:mapstruct")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+    implementation(platform(":shared-bom"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
@@ -55,14 +57,14 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${property("app.version.kotlin-coroutines")}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    testImplementation("com.ninja-squad:springmockk:${property("app.version.spring-mockk")}")
+    testImplementation("com.ninja-squad:springmockk")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")

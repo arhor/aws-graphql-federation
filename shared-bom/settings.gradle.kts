@@ -14,6 +14,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "dgs-users"
-
-includeBuild("../shared-bom")
+rootProject.name = "shared-bom"
