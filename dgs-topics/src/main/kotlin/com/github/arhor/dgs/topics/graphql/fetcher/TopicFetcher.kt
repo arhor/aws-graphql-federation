@@ -1,7 +1,5 @@
 package com.github.arhor.dgs.topics.graphql.fetcher
 
-import com.github.arhor.dgs.topics.common.Limit
-import com.github.arhor.dgs.topics.common.Offset
 import com.github.arhor.dgs.topics.generated.graphql.types.CreateTopicRequest
 import com.github.arhor.dgs.topics.generated.graphql.types.Topic
 import com.github.arhor.dgs.topics.service.TopicService
@@ -19,7 +17,7 @@ class TopicFetcher(private val topicService: TopicService) {
     }
 
     @DgsQuery
-    fun topics(@InputArgument offset: Int, @InputArgument limit: Int): List<Topic> {
-        return topicService.getAllTopics(Offset(offset), Limit(limit))
+    fun topics(@InputArgument limit: Int, @InputArgument offset: Int): List<Topic> {
+        return topicService.getAllTopics(limit, offset)
     }
 }

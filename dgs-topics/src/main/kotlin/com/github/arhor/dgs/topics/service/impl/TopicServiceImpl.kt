@@ -1,7 +1,5 @@
 package com.github.arhor.dgs.topics.service.impl
 
-import com.github.arhor.dgs.topics.common.Limit
-import com.github.arhor.dgs.topics.common.Offset
 import com.github.arhor.dgs.topics.common.OffsetBasedPageRequest
 import com.github.arhor.dgs.topics.data.repository.TopicRepository
 import com.github.arhor.dgs.topics.generated.graphql.types.CreateTopicRequest
@@ -25,7 +23,7 @@ class TopicServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getAllTopics(offset: Offset, limit: Limit): List<Topic> {
+    override fun getAllTopics(limit: Int, offset: Int): List<Topic> {
         return topicRepository
             .findAll(OffsetBasedPageRequest(offset, limit))
             .map(topicMapper::mapToDTO)

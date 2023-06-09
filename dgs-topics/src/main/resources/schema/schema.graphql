@@ -1,8 +1,6 @@
-scalar Long
-scalar Object
 
 type Query {
-    topics(offset: Int!, limit: Int!): [Topic!]!
+    topics(limit: Int!, offset: Int!): [Topic!]!
 }
 
 type Mutation {
@@ -29,8 +27,8 @@ input CreatePostRequest {
 
 type Post implements Indentifiable {
     id: ID!
-    userId: Long
-    topicId: Long!
+    userId: ID
+    topicId: ID!
     content: String!
 }
 
