@@ -1,0 +1,25 @@
+scalar Long
+scalar Object
+scalar Settings
+
+type Query {
+    user(username: String): User
+    users(offset: Int!, limit: Int!): [User!]!
+    availableUserSettings: Settings!
+}
+
+type Mutation {
+    createUser(request: CreateUserRequest!): User!
+}
+
+input CreateUserRequest {
+    username: String!
+    password: String!
+    settings: Settings
+}
+
+type User @key(fields: "id") {
+    id: ID!
+    username: String!
+    settings: Settings
+}

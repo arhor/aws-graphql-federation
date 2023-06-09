@@ -1,0 +1,43 @@
+scalar Object
+
+type Mutation {
+    createExtraData(request: CreateExtraDataRequest!): ExtraData
+}
+
+input CreateExtraDataRequest {
+    entityId: ID!
+    entityType: ExtendedEntityType!
+    data: Object!
+}
+
+type ExtraData {
+    id: ID!
+    entityId: ID!
+    entityType: String!
+    data: Object!
+}
+
+enum ExtendedEntityType {
+    User
+    Post
+}
+
+interface Indentifiable {
+    id: ID!
+}
+
+type User implements Indentifiable @key(fields: "id") @extends {
+    id: ID! @external
+    """
+    Additional data associated with User entity. Represented as an object with undetermined structure.
+    """
+    extraData: ExtraData
+}
+
+type Post implements Indentifiable @key(fields: "id") @extends {
+    id: ID! @external
+    """
+    Additional data associated with User entity. Represented as an object with undetermined structure.
+    """
+    extraData: ExtraData
+}

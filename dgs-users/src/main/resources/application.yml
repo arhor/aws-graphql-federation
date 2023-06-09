@@ -1,0 +1,88 @@
+server:
+  port: ${PORT:5000}
+  error:
+    whitelabel:
+      enabled: false
+  compression:
+    enabled: true
+    min-response-size: 10240
+
+spring:
+  application:
+    name: dgs-users
+  aop:
+    proxy-target-class: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+  profiles:
+    active: ${SPRING_ACTIVE_PROFILES:dev}
+  jmx:
+    enabled: false
+  mvc:
+    throw-exception-if-no-handler-found: true
+    format:
+      date-time: iso
+      date: iso
+      time: iso
+  sql:
+    init:
+      platform: postgres
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${USERS_DB_JDBC_URL}
+    username: ${USERS_DB_JDBC_USERNAME}
+    password: ${USERS_DB_JDBC_PASSWORD}
+    hikari:
+      auto-commit: false
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0.0
+  output:
+    ansi:
+      enabled: always
+  cache:
+    caffeine:
+      spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s'
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+  devtools:
+    livereload:
+      enabled: false
+
+dgs:
+  graphql:
+    graphiql:
+      enabled: false
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import:
+      - optional:file:../../.env.dev[.properties]
+      - optional:file:../.env.dev[.properties]
+      - optional:file:./.env.dev[.properties]
+  cache:
+    caffeine:
+      spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s,recordStats'
+  devtools:
+    livereload:
+      enabled: true
+      port: 35729
+
+dgs:
+  reload: true
+  graphql:
+    graphiql:
+      enabled: true
+
+log-method-execution: true

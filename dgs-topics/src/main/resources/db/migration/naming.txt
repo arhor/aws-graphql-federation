@@ -1,0 +1,8 @@
+Versioned migration:
+-   V{major_version}[_{minor_version}]__{description}.sql
+
+Undo migration:
+-   UV{major_version}[_{minor_version}]__{description}.sql
+
+Repeatable migration:
+-   R__{description}.sql
