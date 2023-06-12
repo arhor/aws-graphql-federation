@@ -2,8 +2,6 @@ package com.github.arhor.dgs.users.service
 
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
 import com.github.arhor.dgs.users.generated.graphql.types.User
-import com.github.arhor.dgs.users.common.Limit
-import com.github.arhor.dgs.users.common.Offset
 
 interface UserService {
 
@@ -11,5 +9,5 @@ interface UserService {
 
     fun getUserByUsername(username: String): User
 
-    fun getAllUsers(offset: Offset, limit: Limit): List<User>
+    fun getAllUsers(limit: Int, offset: Int): List<User>
 }

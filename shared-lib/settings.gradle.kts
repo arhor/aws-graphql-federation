@@ -14,7 +14,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = "dgs-extradata"
+rootProject.name = "shared-lib"
 
 includeBuild("../shared-bom")
-includeBuild("../shared-lib")

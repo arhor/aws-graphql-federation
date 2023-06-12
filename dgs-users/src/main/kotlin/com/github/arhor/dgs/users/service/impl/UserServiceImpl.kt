@@ -1,8 +1,6 @@
 package com.github.arhor.dgs.users.service.impl
 
-import com.github.arhor.dgs.users.common.Limit
-import com.github.arhor.dgs.users.common.Offset
-import com.github.arhor.dgs.users.common.OffsetBasedPageRequest
+import com.github.arhor.dgs.lib.OffsetBasedPageRequest
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
 import com.github.arhor.dgs.users.generated.graphql.types.User
@@ -32,9 +30,9 @@ class UserServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getAllUsers(offset: Offset, limit: Limit): List<User> {
+    override fun getAllUsers(limit: Int, offset: Int): List<User> {
         return userRepository
-            .findAll(OffsetBasedPageRequest(offset, limit))
+            .findAll(OffsetBasedPageRequest(limit, offset))
             .map(userMapper::mapToDTO)
             .toList()
     }

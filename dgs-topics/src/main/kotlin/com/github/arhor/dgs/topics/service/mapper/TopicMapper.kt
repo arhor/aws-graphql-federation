@@ -1,6 +1,6 @@
 package com.github.arhor.dgs.topics.service.mapper
 
-import com.github.arhor.dgs.topics.common.MapstructCommonConfig
+import com.github.arhor.dgs.lib.mapstruct.MapstructCommonConfig
 import com.github.arhor.dgs.topics.data.entity.TopicEntity
 import com.github.arhor.dgs.topics.generated.graphql.types.CreateTopicRequest
 import com.github.arhor.dgs.topics.generated.graphql.types.Topic

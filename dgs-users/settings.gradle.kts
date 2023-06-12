@@ -17,3 +17,4 @@ pluginManagement {
 rootProject.name = "dgs-users"
 
 includeBuild("../shared-bom")
+includeBuild("../shared-lib")

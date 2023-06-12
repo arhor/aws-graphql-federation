@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.adarshr.test-logger")
-    id("com.netflix.dgs.codegen")
     id("org.jetbrains.kotlin.jvm")
     id("org.jetbrains.kotlin.kapt")
     id("org.jetbrains.kotlin.plugin.spring")
@@ -50,7 +49,6 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     implementation(platform(":shared-bom"))
-    implementation(":shared-lib")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
@@ -100,20 +98,19 @@ tasks {
         )
     }
 
-    generateJava {
-        language = "kotlin"
-        packageName = "com.github.arhor.dgs.users.generated.graphql"
-        typeMapping = mutableMapOf(
-            "Object" to "Map<String, Any>",
-            "Settings" to "com.github.arhor.dgs.users.data.entity.Settings",
-        )
-    }
-
     test {
         useJUnitPlatform()
     }
 
     wrapper {
         gradleVersion = project.property("app.version.gradle").toString()
+    }
+
+    bootJar {
+        enabled = false
+    }
+
+    jar {
+        enabled = true
     }
 }

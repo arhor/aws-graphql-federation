@@ -1,8 +1,8 @@
 package com.github.arhor.dgs.users.service.mapper
 
-import com.github.arhor.dgs.users.common.IgnoreAuditMappings
-import com.github.arhor.dgs.users.common.MapstructCommonConfig
-import com.github.arhor.dgs.users.common.OptionalMapper
+import com.github.arhor.dgs.lib.mapstruct.IgnoreAuditMappings
+import com.github.arhor.dgs.lib.mapstruct.MapstructCommonConfig
+import com.github.arhor.dgs.lib.mapstruct.OptionalMapper
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
 import com.github.arhor.dgs.users.generated.graphql.types.User

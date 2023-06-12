@@ -1,6 +1,6 @@
 package com.github.arhor.dgs.topics.service.impl
 
-import com.github.arhor.dgs.topics.common.OffsetBasedPageRequest
+import com.github.arhor.dgs.lib.OffsetBasedPageRequest
 import com.github.arhor.dgs.topics.data.repository.TopicRepository
 import com.github.arhor.dgs.topics.generated.graphql.types.CreateTopicRequest
 import com.github.arhor.dgs.topics.generated.graphql.types.Topic
