@@ -1,16 +1,14 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    id("com.adarshr.test-logger")
-    id("com.netflix.dgs.codegen")
-    id("org.jetbrains.kotlin.jvm")
-    id("org.jetbrains.kotlin.kapt")
-    id("org.jetbrains.kotlin.plugin.spring")
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
+    alias(libs.plugins.test.logger)
+    alias(libs.plugins.dgs.codegen)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.plugin.spring)
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.deps)
 }
 
-val javaVersion = project.property("app.version.java")!!.toString()
+val javaVersion: String = libs.versions.java.get()
 
 java {
     javaVersion.let(JavaVersion::toVersion).let {
@@ -60,6 +58,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.postgresql:postgresql")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
@@ -73,13 +72,13 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom("org.testcontainers:testcontainers-bom:${property("app.version.testcontainers")}")
-        mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${property("app.version.graphql-dgs-bom")}")
+        mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${libs.versions.graphql.dgs.bom.get()}")
+        mavenBom("org.testcontainers:testcontainers-bom:${libs.versions.testcontainers.get()}")
     }
 }
 
 tasks {
-    withType<KotlinCompile> {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = javaVersion
             javaParameters = true
@@ -113,6 +112,6 @@ tasks {
     }
 
     wrapper {
-        gradleVersion = project.property("app.version.gradle").toString()
+        gradleVersion = libs.versions.gradle.asProvider().get()
     }
 }

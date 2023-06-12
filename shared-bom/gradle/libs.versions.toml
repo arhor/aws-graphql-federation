@@ -1,0 +1,23 @@
+[versions]
+java = "17"
+kotlin = "1.8.21"
+kotlin-coroutines = "1.7.1"
+gradle = "8.1.1"
+spring-boot = "3.0.7"
+spring-dependency-management = "1.1.0"
+spring-mockk = "4.0.2"
+mapstruct = "1.5.3.Final"
+findbugs-jsr305 = "3.0.2"
+graphql-dgs-bom = "7.0.0"
+graphql-dgs-codegen = "5.8.1"
+testcontainers = "1.18.0"
+gradle-test-logger = "3.2.0"
+
+[plugins]
+test-logger = { id = "com.adarshr.test-logger", version.ref = "gradle-test-logger" }
+dgs-codegen = { id = "com.netflix.dgs.codegen", version.ref = "graphql-dgs-codegen" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-deps = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }

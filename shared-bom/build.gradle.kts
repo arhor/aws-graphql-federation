@@ -1,19 +1,19 @@
 plugins {
-    id("java-platform")
+    `java-platform`
 }
 
 dependencies {
     constraints {
-        api("org.mapstruct:mapstruct-processor:${property("app.version.mapstruct")}")
-        api("com.google.code.findbugs:jsr305:${property("app.version.findbugs-jsr305")}")
-        api("org.mapstruct:mapstruct:${property("app.version.mapstruct")}")
-        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${property("app.version.kotlin-coroutines")}")
-        api("com.ninja-squad:springmockk:${property("app.version.spring-mockk")}")
+        api("com.google.code.findbugs:jsr305:${libs.versions.findbugs.jsr305.get()}")
+        api("com.ninja-squad:springmockk:${libs.versions.spring.mockk.get()}")
+        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.versions.kotlin.coroutines.get()}")
+        api("org.mapstruct:mapstruct:${libs.versions.mapstruct.get()}")
+        api("org.mapstruct:mapstruct-processor:${libs.versions.mapstruct.get()}")
     }
 }
 
 tasks {
     wrapper {
-        gradleVersion = project.property("app.version.gradle").toString()
+        gradleVersion = libs.versions.gradle.asProvider().get()
     }
 }
