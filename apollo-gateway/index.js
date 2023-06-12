@@ -9,15 +9,15 @@ const { url } = await startStandaloneServer(
                 subgraphs: [
                     {
                         name: 'users',
-                        url: 'http://localhost:5000/graphql',
-                    },
-                    {
-                        name: 'topics',
                         url: 'http://localhost:5001/graphql',
                     },
                     {
-                        name: 'extraData',
+                        name: 'topics',
                         url: 'http://localhost:5002/graphql',
+                    },
+                    {
+                        name: 'extraData',
+                        url: 'http://localhost:5003/graphql',
                     },
                 ],
             }),

@@ -8,7 +8,7 @@
         "email": "arhor18@gmail.com"
     },
     "scripts": {
-        "start":" node index.js"
+        "start":"node index.js"
     },
     "dependencies": {
         "@apollo/gateway": "^2.4.7",
