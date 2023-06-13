@@ -2,6 +2,15 @@ version: "3.8"
 
 services:
 
+  localstack:
+    image: localstack/localstack:1.4.0
+    ports:
+      - "4566:4566"
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./scripts/localstack:/etc/localstack/init/ready.d/"
+
   dgs-users-db:
     image: postgres:12-alpine
     ports:
@@ -17,6 +26,7 @@ services:
       context: dgs-users
     depends_on:
       - dgs-users-db
+      - localstack
     env_file:
       - ".env.dev"
     network_mode: host
@@ -42,6 +52,7 @@ services:
       context: dgs-topics
     depends_on:
       - dgs-topics-db
+      - localstack
     env_file:
       - ".env.dev"
     network_mode: host
@@ -67,6 +78,7 @@ services:
       context: dgs-extradata
     depends_on:
       - dgs-extradata-db
+      - localstack
     env_file:
       - ".env.dev"
     network_mode: host
@@ -88,210 +100,3 @@ services:
     env_file:
       - ".env.dev"
     network_mode: host
-
-  localstack:
-    container_name: localstack
-    image: localstack/localstack:1.4.0
-    ports:
-      - "4566:4566"
-    volumes:
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./scripts/localstack:/etc/localstack/init/ready.d/"
-
-#---
-#
-#services:
-#  ########## infrastructure services ##########
-#
-#  discovery-service:
-#    container_name: discovery-service
-#    hostname: discovery-service
-#    build:
-#      context: app-discovery-service
-#    image: discovery-service:latest
-#    networks:
-#      - docker-network
-#
-#  gateway-service:
-#    container_name: gateway-service
-#    hostname: gateway-service
-#    ports:
-#      - "5000:8080"
-#    build:
-#      context: app-gateway-service
-#    image: gateway-service:latest
-#    networks:
-#      - docker-network
-#    depends_on:
-#      - discovery-service
-#    env_file:
-#      - app-gateway-service/.env.local
-#
-#  ########## application services ##########
-#
-#  resource-processor:
-#    container_name: resource-processor
-#    hostname: resource-processor
-#    build:
-#      context: app-resource-processor
-#    image: resource-processor:latest
-#    networks:
-#      - docker-network
-#    depends_on:
-#      - localstack
-#      - discovery-service
-#      - resource-service
-#      - song-service
-#    env_file:
-#      - app-resource-processor/.env.local
-#
-#  resource-service:
-#    container_name: resource-service
-#    hostname: resource-service
-#    build:
-#      context: app-resource-service
-#    image: resource-service:latest
-#    networks:
-#      - docker-network
-#    depends_on:
-#      - localstack
-#      - resource-service-db
-#      - discovery-service
-#      - storage-service
-#    env_file:
-#      - app-resource-service/.env.local
-#
-#  song-service:
-#    container_name: song-service
-#    hostname: song-service
-#    build:
-#      context: app-song-service
-#    image: song-service:latest
-#    networks:
-#      - docker-network
-#    depends_on:
-#      - song-service-db
-#      - discovery-service
-#    env_file:
-#      - app-song-service/.env.local
-#
-#  storage-service:
-#    container_name: storage-service
-#    hostname: storage-service
-#    build:
-#      context: app-storage-service
-#    image: storage-service:latest
-#    networks:
-#      - docker-network
-#    depends_on:
-#      - storage-service-db
-#      - discovery-service
-#    env_file:
-#      - app-storage-service/.env.local
-#
-#  ########## databases required by services ##########
-#
-#  resource-service-db:
-#    image: postgres:12
-#    container_name: resource-service-db
-#    networks:
-#      - docker-network
-#    tmpfs:
-#      - "/var/lib/postgresql/data"
-#    env_file:
-#      - app-resource-service/.env.local
-#    command: -p 5433
-#
-#  song-service-db:
-#    image: postgres:12
-#    container_name: song-service-db
-#    networks:
-#      - "docker-network"
-#    tmpfs:
-#      - "/var/lib/postgresql/data"
-#    env_file:
-#      - "app-song-service/.env.local"
-#    command: -p 5434
-#
-#  storage-service-db:
-#    image: postgres:12
-#    container_name: storage-service-db
-#    networks:
-#      - "docker-network"
-#    tmpfs:
-#      - "/var/lib/postgresql/data"
-#    env_file:
-#      - "app-storage-service/.env.local"
-#    command: -p 5435
-#
-#  ########## AWS services emulation ##########
-#
-#  localstack:
-#    image: localstack/localstack:latest
-#    container_name: localstack
-#    hostname: localstack
-#    networks:
-#      - docker-network
-#    volumes:
-#      - ${TEMPDIR:-/tmp/localstack}:/tmp/localstack
-#      - /var/run/docker.sock:/var/run/docker.sock
-#      - ./scripts/localstack:/docker-entrypoint-initaws.d/
-#    env_file:
-#      - app-resource-service/.env.local
-#    environment:
-#      SERVICES: s3,sqs
-#
-#  ########## Monitoring ##########
-#
-#  elasticsearch:
-#    container_name: elasticsearch
-#    depends_on:
-#      - gateway-service
-#    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
-#    environment:
-#      - bootstrap.system_call_filter=false
-#      - xpack.security.enabled=false
-#      - discovery.type=single-node
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#      nofile:
-#        soft: 65536
-#        hard: 65536
-#    cap_add:
-#      - IPC_LOCK
-#    tmpfs:
-#      - "/usr/share/elasticsearch/data"
-#    networks:
-#      - "docker-network"
-#
-#  kibana:
-#    container_name: kibana
-#    image: docker.elastic.co/kibana/kibana:7.11.0
-#    environment:
-#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-#      - SERVER_BASEPATH=/kibana
-#      - SERVER_REWRITEBASEPATH=true
-#    networks:
-#      - "docker-network"
-#    depends_on:
-#      - "elasticsearch"
-#
-#  ########## Redis for distributed session ##########
-#
-#  redis:
-#    container_name: redis
-#    image: docker.io/bitnami/redis:7.0
-#    environment:
-#      - ALLOW_EMPTY_PASSWORD=yes
-#    networks:
-#      - "docker-network"
-#    ports:
-#      - "6379:6379"
-#
-#networks:
-#  docker-network:
-#    external:
-#      name: docker-network
