@@ -89,6 +89,16 @@ services:
       - ".env.dev"
     network_mode: host
 
+  localstack:
+    container_name: localstack
+    image: localstack/localstack:1.4.0
+    ports:
+      - "4566:4566"
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./scripts/localstack:/etc/localstack/init/ready.d/"
+
 #---
 #
 #services:

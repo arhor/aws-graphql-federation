@@ -48,18 +48,28 @@ spring:
   cache:
     caffeine:
       spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s'
-  session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
   devtools:
     livereload:
       enabled: false
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ${AWS_REGION}
 
 dgs:
   graphql:
     graphiql:
       enabled: false
+
+application-props:
+  retry-attempts: 5
+  api-path-prefix: /api
+  aws:
+    user-updated-topic: ${AWS_SNS_USER_UPDATED_TOPIC}
+    user-deleted-topic: ${AWS_SNS_USER_DELETED_TOPIC}
 
 ---
 
@@ -84,5 +94,10 @@ dgs:
   graphql:
     graphiql:
       enabled: true
+
+cloud:
+  aws:
+    sns:
+      endpoint: ${AWS_ENDPOINT}
 
 log-method-execution: true
