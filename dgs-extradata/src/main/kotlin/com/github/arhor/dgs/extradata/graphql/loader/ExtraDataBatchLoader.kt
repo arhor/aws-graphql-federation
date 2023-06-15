@@ -31,4 +31,9 @@ sealed class ExtraDataBatchLoader(
     class ForPost(executor: Executor, service: ExtraDataService) : ExtraDataBatchLoader(executor, service) {
         override val entityType = ExtendedEntityType.Post
     }
+
+    @DgsDataLoader(name = "topicExtraData", maxBatchSize = 250)
+    class ForTopic(executor: Executor, service: ExtraDataService) : ExtraDataBatchLoader(executor, service) {
+        override val entityType = ExtendedEntityType.Topic
+    }
 }

@@ -65,11 +65,10 @@ dgs:
       enabled: false
 
 application-props:
-  retry-attempts: 5
-  api-path-prefix: /api
   aws:
-    user-updated-topic: ${AWS_SNS_USER_UPDATED_TOPIC}
-    user-deleted-topic: ${AWS_SNS_USER_DELETED_TOPIC}
+    sns:
+      user-updated-events: ${AWS_SNS_USER_UPDATED_EVENTS}
+      user-deleted-events: ${AWS_SNS_USER_DELETED_EVENTS}
 
 ---
 
@@ -88,16 +87,15 @@ spring:
     livereload:
       enabled: true
       port: 35729
+  cloud:
+    aws:
+      sns:
+        endpoint: ${AWS_ENDPOINT}
 
 dgs:
   reload: true
   graphql:
     graphiql:
       enabled: true
-
-cloud:
-  aws:
-    sns:
-      endpoint: ${AWS_ENDPOINT}
 
 log-method-execution: true

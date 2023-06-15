@@ -1,5 +1,5 @@
-scalar Long
-scalar Object
+# noinspection GraphQLTypeRedefinition
+
 scalar Settings
 
 type Query {
@@ -10,11 +10,18 @@ type Query {
 
 type Mutation {
     createUser(request: CreateUserRequest!): User!
+    deleteUser(userId: ID!): Boolean!
 }
 
 input CreateUserRequest {
     username: String!
     password: String!
+    settings: Settings
+}
+
+input UpdateUserRequest {
+    id: ID!
+    password: String
     settings: Settings
 }
 

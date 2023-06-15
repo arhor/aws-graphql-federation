@@ -2,31 +2,37 @@ package com.github.arhor.dgs.users.data.entity.listener;
 
 import com.github.arhor.dgs.users.data.entity.UserEntity;
 
+/**
+ * Interface represents User entity state change.
+ */
 public sealed interface UserStateChange {
 
+    /**
+     * Concrete type of change.
+     */
     String type();
 
-    record Updated(String userId) implements UserStateChange {
+    record Updated(Long id) implements UserStateChange {
 
         public Updated(final UserEntity user) {
-            this(user.getId().toString());
+            this(user.getId());
         }
 
         @Override
         public String type() {
-            return "UserStateChangedEvent.Updated";
+            return "UserStateChange.Updated";
         }
     }
 
-    record Deleted(String userId) implements UserStateChange {
+    record Deleted(Long id) implements UserStateChange {
 
         public Deleted(final UserEntity user) {
-            this(user.getId().toString());
+            this(user.getId());
         }
 
         @Override
         public String type() {
-            return "UserStateChangedEvent.Deleted";
+            return "UserStateChange.Deleted";
         }
     }
 }

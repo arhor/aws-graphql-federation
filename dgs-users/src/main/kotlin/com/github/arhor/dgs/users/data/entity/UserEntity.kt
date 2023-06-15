@@ -9,8 +9,8 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 
-@Table("users")
 @Immutable
+@Table(UserEntity.TABLE_NAME)
 data class UserEntity(
     @Id
     @Column("id")
@@ -36,4 +36,8 @@ data class UserEntity(
     @LastModifiedDate
     @Column("updated_date_time")
     val updatedDateTime: LocalDateTime? = null,
-)
+) {
+    companion object {
+        const val TABLE_NAME = "users"
+    }
+}

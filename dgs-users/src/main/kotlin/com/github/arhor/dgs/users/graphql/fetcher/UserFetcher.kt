@@ -13,7 +13,12 @@ class UserFetcher(private val userService: UserService) {
 
     @DgsMutation
     fun createUser(@InputArgument request: CreateUserRequest): User {
-        return userService.createNewUser(request)
+        return userService.createUser(request)
+    }
+
+    @DgsMutation
+    fun deleteUser(@InputArgument userId: Long): Boolean {
+        return userService.deleteUser(userId)
     }
 
     @DgsQuery

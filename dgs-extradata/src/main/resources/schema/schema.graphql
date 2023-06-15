@@ -1,3 +1,5 @@
+# noinspection GraphQLTypeRedefinition
+
 scalar Object
 
 type Mutation {
@@ -20,6 +22,7 @@ type ExtraData {
 enum ExtendedEntityType {
     User
     Post
+    Topic
 }
 
 interface Indentifiable {
@@ -37,7 +40,15 @@ type User implements Indentifiable @key(fields: "id") @extends {
 type Post implements Indentifiable @key(fields: "id") @extends {
     id: ID! @external
     """
-    Additional data associated with User entity. Represented as an object with undetermined structure.
+    Additional data associated with Post entity. Represented as an object with undetermined structure.
+    """
+    extraData: ExtraData
+}
+
+type Topic implements Indentifiable @key(fields: "id") @extends {
+    id: ID! @external
+    """
+    Additional data associated with Topic entity. Represented as an object with undetermined structure.
     """
     extraData: ExtraData
 }

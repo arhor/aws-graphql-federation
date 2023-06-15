@@ -4,7 +4,9 @@ import com.github.arhor.dgs.users.data.entity.UserEntity;
 import io.awspring.cloud.sns.core.SnsNotification;
 import io.awspring.cloud.sns.core.SnsOperations;
 import jakarta.annotation.Nonnull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.MissingRequiredPropertiesException;
 import org.springframework.data.relational.core.mapping.event.AbstractRelationalEventListener;
 import org.springframework.data.relational.core.mapping.event.AfterDeleteEvent;
 import org.springframework.data.relational.core.mapping.event.AfterSaveEvent;
@@ -17,33 +19,52 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-@Retryable(retryFor = MessagingException.class, maxAttemptsExpression = "${application-props.retry-attempts:3}")
+@Retryable(retryFor = MessagingException.class)
 public class UserStateChangedEventListener extends AbstractRelationalEventListener<UserEntity> {
+
+    public static final String USER_UPDATED_EVENTS = "application-props.aws.sns.user-updated-events";
+    public static final String USER_DELETED_EVENTS = "application-props.aws.sns.user-deleted-events";
 
     private static final String HEADER_PAYLOAD_TYPE = "xPayloadType";
 
-    private final SnsOperations messenger;
-    private final String userUpdatedTopicName;
-    private final String userDeletedTopicName;
+    private final SnsOperations snsOperations;
+    private final String userUpdatedEventsDestination;
+    private final String userDeletedEventsDestination;
 
+    @Autowired
     public UserStateChangedEventListener(
-        final SnsOperations messenger,
-        @Value("application-props.aws.user-updated-topic") final String userUpdatedTopicName,
-        @Value("application-props.aws.user-deleted-topic") final String userDeletedTopicName
+        final SnsOperations snsOperations,
+        @Value("${" + USER_UPDATED_EVENTS + ":#{null}}") final String userUpdatedEventsDestination,
+        @Value("${" + USER_DELETED_EVENTS + ":#{null}}") final String userDeletedEventsDestination
     ) {
-        this.messenger = messenger;
-        this.userUpdatedTopicName = userUpdatedTopicName;
-        this.userDeletedTopicName = userDeletedTopicName;
+        final var updatedDestMissing = userUpdatedEventsDestination == null;
+        final var deletedDestMissing = userDeletedEventsDestination == null;
+
+        if (updatedDestMissing || deletedDestMissing) {
+            final var error = new MissingRequiredPropertiesException();
+            final var props = error.getMissingRequiredProperties();
+
+            if (updatedDestMissing) {
+                props.add(USER_UPDATED_EVENTS);
+            }
+            if (deletedDestMissing) {
+                props.add(USER_DELETED_EVENTS);
+            }
+            throw error;
+        }
+        this.snsOperations = snsOperations;
+        this.userUpdatedEventsDestination = userUpdatedEventsDestination;
+        this.userDeletedEventsDestination = userDeletedEventsDestination;
     }
 
     @Override
     public void onAfterSave(@Nonnull final AfterSaveEvent<UserEntity> event) {
-        sendNotification(event, UserStateChange.Updated::new, userUpdatedTopicName);
+        sendNotification(event, UserStateChange.Updated::new, userUpdatedEventsDestination);
     }
 
     @Override
     public void onAfterDelete(@Nonnull final AfterDeleteEvent<UserEntity> event) {
-        sendNotification(event, UserStateChange.Deleted::new, userDeletedTopicName);
+        sendNotification(event, UserStateChange.Deleted::new, userDeletedEventsDestination);
     }
 
     private void sendNotification(
@@ -51,9 +72,9 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
         final Function<UserEntity, UserStateChange> stateChangeExtractor,
         final String destination
     ) {
-        final var stateChanged = stateChangeExtractor.apply(event.getEntity());
-        final var notification = new SnsNotification<>(stateChanged, Map.of(HEADER_PAYLOAD_TYPE, stateChanged.type()));
+        final var changedState = stateChangeExtractor.apply(event.getEntity());
+        final var notification = new SnsNotification<>(changedState, Map.of(HEADER_PAYLOAD_TYPE, changedState.type()));
 
-        messenger.sendNotification(destination, notification);
+        snsOperations.sendNotification(destination, notification);
     }
 }

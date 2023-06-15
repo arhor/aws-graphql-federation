@@ -31,6 +31,11 @@ class ExtraDataFetcher(private val extraDataService: ExtraDataService) {
         return dfe.loadExtraDataUsing<ExtraDataBatchLoader.ForPost>()
     }
 
+    @DgsData(parentType = DgsConstants.TOPIC.TYPE_NAME, field = DgsConstants.TOPIC.ExtraData)
+    fun topicExtraData(dfe: DgsDataFetchingEnvironment): CompletableFuture<ExtraData> {
+        return dfe.loadExtraDataUsing<ExtraDataBatchLoader.ForTopic>()
+    }
+
     private inline fun <reified T> DgsDataFetchingEnvironment.loadExtraDataUsing(): CompletableFuture<ExtraData>
         where T : ExtraDataBatchLoader {
 

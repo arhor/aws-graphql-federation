@@ -17,6 +17,10 @@ java {
     }
 }
 
+testlogger {
+    theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
+}
+
 repositories {
     mavenCentral()
 }
@@ -56,7 +60,6 @@ dependencies {
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
     implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
-    implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
     implementation("org.flywaydb:flyway-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
@@ -108,7 +111,6 @@ tasks {
         language = "kotlin"
         packageName = "com.github.arhor.dgs.users.generated.graphql"
         typeMapping = mutableMapOf(
-            "Object" to "Map<String, Any>",
             "Settings" to "com.github.arhor.dgs.users.data.entity.Settings",
         )
     }

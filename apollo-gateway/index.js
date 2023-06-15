@@ -12,12 +12,16 @@ const { url } = await startStandaloneServer(
                         url: 'http://localhost:5001/graphql',
                     },
                     {
-                        name: 'topics',
+                        name: 'articles',
                         url: 'http://localhost:5002/graphql',
                     },
                     {
-                        name: 'extraData',
+                        name: 'comments',
                         url: 'http://localhost:5003/graphql',
+                    },
+                    {
+                        name: 'extraData',
+                        url: 'http://localhost:5004/graphql',
                     },
                 ],
             }),
