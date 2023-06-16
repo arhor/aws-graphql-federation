@@ -1,4 +1,4 @@
-name: DGS Users Service CI
+name: DGS Users CI
 
 on:
   push:
@@ -38,5 +38,5 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Build DGS Users Service
+      - name: Build DGS Users
         run: './gradlew :build'
