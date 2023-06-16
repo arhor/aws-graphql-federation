@@ -15,6 +15,7 @@ on:
       - 'gds-users/**'
       - 'shared-bom/**'
       - 'shared-lib/**'
+  workflow_dispatch:
 
 jobs:
   build:
