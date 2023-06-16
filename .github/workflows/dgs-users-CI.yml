@@ -17,6 +17,10 @@ on:
       - 'shared-lib/**'
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: './dgs-users'
+
 jobs:
   build:
     name: Build
@@ -35,4 +39,4 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Build DGS Users Service
-        run: 'cd ./dgs-users && ./gradlew :build'
+        run: './gradlew :build'
