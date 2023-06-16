@@ -1,0 +1,37 @@
+name: DGS Users Service CI
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - 'gds-users/**'
+      - 'shared-bom/**'
+      - 'shared-lib/**'
+  pull_request:
+    branches:
+      - 'master'
+    paths:
+      - 'gds-users/**'
+      - 'shared-bom/**'
+      - 'shared-lib/**'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Build DGS Users Service
+        run: './dgs-users/gradlew :build'
