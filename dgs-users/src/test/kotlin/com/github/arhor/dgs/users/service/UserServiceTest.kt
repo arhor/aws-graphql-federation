@@ -1,11 +1,11 @@
 package com.github.arhor.dgs.users.service
 
+import com.github.arhor.dgs.users.data.entity.Setting
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.impl.UserServiceImpl
-import com.github.arhor.dgs.users.service.mapper.UserMapper
 import io.mockk.Call
 import io.mockk.MockKAnswerScope
 import io.mockk.every
@@ -37,6 +37,7 @@ internal class UserServiceTest {
             val expectedId = 1L
             val expectedUsername = "test@email.com"
             val expectedPassword = "TestPassword123"
+            val expectedSettings = Setting.emptySet()
 
             val userCreateRequest = CreateUserRequest(
                 username = expectedUsername,
@@ -56,7 +57,7 @@ internal class UserServiceTest {
             assertThat(result)
                 .returns(expectedId, from { it.id.toLong() })
                 .returns(expectedUsername, from { it.username })
-                .returns(null, from { it.settings })
+                .returns(expectedSettings, from { it.settings })
 
             verify(exactly = 1) { userRepository.existsByUsername(any()) }
             verify(exactly = 1) { userMapper.mapToEntity(any()) }
@@ -125,7 +126,7 @@ internal class UserServiceTest {
             UserEntity(
                 username = it.username,
                 password = it.password,
-                settings = it.settings,
+                settings = it.settings ?: Setting.emptySet(),
             )
         }
     }

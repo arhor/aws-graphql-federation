@@ -12,22 +12,18 @@ import com.netflix.graphql.dgs.InputArgument
 class UserFetcher(private val userService: UserService) {
 
     @DgsMutation
-    fun createUser(@InputArgument request: CreateUserRequest): User {
-        return userService.createUser(request)
-    }
+    fun createUser(@InputArgument request: CreateUserRequest): User =
+        userService.createUser(request)
 
     @DgsMutation
-    fun deleteUser(@InputArgument userId: Long): Boolean {
-        return userService.deleteUser(userId)
-    }
+    fun deleteUser(@InputArgument userId: Long): Boolean =
+        userService.deleteUser(userId)
 
     @DgsQuery
-    fun users(@InputArgument offset: Int, @InputArgument limit: Int): List<User> {
-        return userService.getAllUsers(limit = limit, offset = offset)
-    }
+    fun users(@InputArgument limit: Int, @InputArgument offset: Int): List<User> =
+        userService.getAllUsers(limit = limit, offset = offset)
 
     @DgsQuery
-    fun user(@InputArgument username: String): User {
-        return userService.getUserByUsername(username)
-    }
+    fun user(@InputArgument username: String): User =
+        userService.getUserByUsername(username)
 }

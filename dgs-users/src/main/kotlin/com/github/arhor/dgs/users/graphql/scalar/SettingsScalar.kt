@@ -68,5 +68,5 @@ class SettingsScalar : Coercing<EnumSet<Setting>, Iterable<String>> {
     private fun Iterable<String>.asSettings(): EnumSet<Setting> = this
         .map(String::trim)
         .map(Setting::valueOf)
-        .let { settings -> EnumSet.noneOf(Setting::class.java).also { it.addAll(settings) } }
+        .let { settings -> Setting.emptySet().apply { addAll(settings) } }
 }

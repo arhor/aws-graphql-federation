@@ -22,8 +22,8 @@ import java.util.function.Function;
 @Retryable(retryFor = MessagingException.class)
 public class UserStateChangedEventListener extends AbstractRelationalEventListener<UserEntity> {
 
-    public static final String USER_UPDATED_EVENTS = "application-props.aws.sns.user-updated-events";
-    public static final String USER_DELETED_EVENTS = "application-props.aws.sns.user-deleted-events";
+    public static final String USER_UPDATED_EVENTS_PROP = "application-props.aws.sns.user-updated-events";
+    public static final String USER_DELETED_EVENTS_PROP = "application-props.aws.sns.user-deleted-events";
 
     private static final String HEADER_PAYLOAD_TYPE = "xPayloadType";
 
@@ -34,8 +34,8 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
     @Autowired
     public UserStateChangedEventListener(
         final SnsOperations snsOperations,
-        @Value("${" + USER_UPDATED_EVENTS + ":#{null}}") final String userUpdatedEventsDestination,
-        @Value("${" + USER_DELETED_EVENTS + ":#{null}}") final String userDeletedEventsDestination
+        @Value("${" + USER_UPDATED_EVENTS_PROP + ":#{null}}") final String userUpdatedEventsDestination,
+        @Value("${" + USER_DELETED_EVENTS_PROP + ":#{null}}") final String userDeletedEventsDestination
     ) {
         final var updatedDestMissing = userUpdatedEventsDestination == null;
         final var deletedDestMissing = userDeletedEventsDestination == null;
@@ -45,10 +45,10 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
             final var props = error.getMissingRequiredProperties();
 
             if (updatedDestMissing) {
-                props.add(USER_UPDATED_EVENTS);
+                props.add(USER_UPDATED_EVENTS_PROP);
             }
             if (deletedDestMissing) {
-                props.add(USER_DELETED_EVENTS);
+                props.add(USER_DELETED_EVENTS_PROP);
             }
             throw error;
         }

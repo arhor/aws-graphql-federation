@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.service.mapper
+package com.github.arhor.dgs.users.service
 
 import com.github.arhor.dgs.lib.mapstruct.IgnoreAuditMappings
 import com.github.arhor.dgs.lib.mapstruct.MapstructCommonConfig
@@ -11,10 +11,7 @@ import org.mapstruct.Mapping
 
 @Mapper(
     config = MapstructCommonConfig::class,
-    uses = [
-        OptionalMapper::class,
-        SettingsMapper::class,
-    ]
+    uses = [OptionalMapper::class],
 )
 interface UserMapper {
 

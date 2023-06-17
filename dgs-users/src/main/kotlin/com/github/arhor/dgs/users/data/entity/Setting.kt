@@ -1,5 +1,7 @@
 package com.github.arhor.dgs.users.data.entity
 
+import java.util.EnumSet
+
 const val MIN_SETTING_INDEX = 0
 const val MAX_SETTING_INDEX = Long.SIZE_BITS - 1
 
@@ -17,5 +19,9 @@ enum class Setting(val index: Int) {
         require(index in INDEX_RANGE) {
             "'index' value must be in range $INDEX_RANGE, but $index is used for $name"
         }
+    }
+
+    companion object {
+        fun emptySet(): EnumSet<Setting> = EnumSet.noneOf(Setting::class.java)
     }
 }

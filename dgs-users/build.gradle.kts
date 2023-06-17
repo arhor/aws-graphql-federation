@@ -111,7 +111,7 @@ tasks {
         language = "kotlin"
         packageName = "com.github.arhor.dgs.users.generated.graphql"
         typeMapping = mutableMapOf(
-            "Settings" to "com.github.arhor.dgs.users.data.entity.Settings",
+            "Settings" to "java.util.EnumSet<com.github.arhor.dgs.users.data.entity.Setting>",
         )
     }
 

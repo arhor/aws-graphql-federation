@@ -17,20 +17,15 @@ sealed class CommentBatchLoader(
         return CompletableFuture.supplyAsync({ loadingFunction.apply(keys) }, executor)
     }
 
-    @DgsDataLoader(name = USER_COMMENTS, maxBatchSize = 50)
+    @DgsDataLoader(maxBatchSize = 50)
     class ForUser(asyncExecutor: Executor, commentService: CommentService) : CommentBatchLoader(
         executor = asyncExecutor,
         loadingFunction = commentService::getCommentsByUserIds
     )
 
-    @DgsDataLoader(name = ARTICLE_COMMENTS, maxBatchSize = 50)
+    @DgsDataLoader(maxBatchSize = 50)
     class ForArticle(asyncExecutor: Executor, commentService: CommentService) : CommentBatchLoader(
         executor = asyncExecutor,
         loadingFunction = commentService::getCommentsByTopicIds
     )
-
-    companion object {
-        const val USER_COMMENTS = "userComments"
-        const val ARTICLE_COMMENTS = "articleComments"
-    }
 }

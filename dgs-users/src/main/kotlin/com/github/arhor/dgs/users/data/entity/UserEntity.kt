@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Version
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
+import java.util.EnumSet
 
 @Immutable
 @Table(UserEntity.TABLE_NAME)
@@ -23,7 +24,7 @@ data class UserEntity(
     val password: String,
 
     @Column("settings")
-    val settings: Settings? = null,
+    val settings: EnumSet<Setting> = Setting.emptySet(),
 
     @Version
     @Column("version")
