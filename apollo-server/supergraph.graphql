@@ -1,0 +1,199 @@
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+{
+  query: Query
+  mutation: Mutation
+}
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+type Article implements Indentifiable
+  @join__implements(graph: ARTICLES, interface: "Indentifiable")
+  @join__implements(graph: COMMENTS, interface: "Indentifiable")
+  @join__type(graph: ARTICLES, key: "id")
+  @join__type(graph: COMMENTS, key: "id", extension: true)
+{
+  id: ID!
+  userId: ID! @join__field(graph: ARTICLES)
+  name: String! @join__field(graph: ARTICLES)
+  content: String! @join__field(graph: ARTICLES)
+  comments: [Comment!] @join__field(graph: COMMENTS)
+}
+
+type Comment implements Indentifiable
+  @join__implements(graph: COMMENTS, interface: "Indentifiable")
+  @join__type(graph: COMMENTS)
+{
+  id: ID!
+  userId: ID!
+  articleId: ID!
+  content: String!
+}
+
+input CreateArticleRequest
+  @join__type(graph: ARTICLES)
+{
+  userId: ID!
+  name: String!
+  content: String!
+}
+
+input CreateCommentRequest
+  @join__type(graph: COMMENTS)
+{
+  userId: ID!
+  articleId: ID!
+  content: String!
+}
+
+input CreateExtraDataRequest
+  @join__type(graph: EXTRADATA)
+{
+  entityId: ID!
+  entityType: ExtendedEntityType!
+  data: Object!
+}
+
+input CreateUserRequest
+  @join__type(graph: USERS)
+{
+  username: String!
+  password: String!
+  settings: Settings
+}
+
+enum ExtendedEntityType
+  @join__type(graph: EXTRADATA)
+{
+  User @join__enumValue(graph: EXTRADATA)
+}
+
+type ExtraData
+  @join__type(graph: EXTRADATA)
+{
+  id: ID!
+  entityId: ID!
+  entityType: String!
+  data: Object!
+}
+
+interface Indentifiable
+  @join__type(graph: ARTICLES)
+  @join__type(graph: COMMENTS)
+  @join__type(graph: EXTRADATA)
+{
+  id: ID!
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  ARTICLES @join__graph(name: "articles", url: "http://localhost:5002/graphql")
+  COMMENTS @join__graph(name: "comments", url: "http://localhost:5003/graphql")
+  EXTRADATA @join__graph(name: "extradata", url: "http://localhost:5004/graphql")
+  USERS @join__graph(name: "users", url: "http://localhost:5001/graphql")
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type Mutation
+  @join__type(graph: ARTICLES)
+  @join__type(graph: COMMENTS)
+  @join__type(graph: EXTRADATA)
+  @join__type(graph: USERS)
+{
+  createArticle(request: CreateArticleRequest!): Article! @join__field(graph: ARTICLES)
+  createComment(request: CreateCommentRequest!): Comment! @join__field(graph: COMMENTS)
+  createExtraData(request: CreateExtraDataRequest!): ExtraData @join__field(graph: EXTRADATA)
+  createUser(request: CreateUserRequest!): User! @join__field(graph: USERS)
+  deleteUser(userId: ID!): Boolean! @join__field(graph: USERS)
+}
+
+scalar Object
+  @join__type(graph: EXTRADATA)
+
+interface Page
+  @join__type(graph: ARTICLES)
+  @join__type(graph: COMMENTS)
+{
+  page: Int!
+  size: Int!
+  totalPages: Int!
+  totalItems: Int!
+}
+
+type Query
+  @join__type(graph: ARTICLES)
+  @join__type(graph: COMMENTS)
+  @join__type(graph: EXTRADATA)
+  @join__type(graph: USERS)
+{
+  articles(limit: Int!, offset: Int!): [Article!]! @join__field(graph: ARTICLES)
+  user(username: String): User @join__field(graph: USERS)
+  users(offset: Int!, limit: Int!): [User!]! @join__field(graph: USERS)
+  availableUserSettings: Settings! @join__field(graph: USERS)
+}
+
+scalar Settings
+  @join__type(graph: USERS)
+
+input UpdateCommentRequest
+  @join__type(graph: COMMENTS)
+{
+  id: ID!
+  content: String!
+}
+
+input UpdateUserRequest
+  @join__type(graph: USERS)
+{
+  id: ID!
+  password: String
+  settings: Settings
+}
+
+type User implements Indentifiable
+  @join__implements(graph: ARTICLES, interface: "Indentifiable")
+  @join__implements(graph: COMMENTS, interface: "Indentifiable")
+  @join__implements(graph: EXTRADATA, interface: "Indentifiable")
+  @join__type(graph: ARTICLES, key: "id", extension: true)
+  @join__type(graph: COMMENTS, key: "id", extension: true)
+  @join__type(graph: EXTRADATA, key: "id", extension: true)
+  @join__type(graph: USERS, key: "id")
+{
+  id: ID!
+  articles: [Article!] @join__field(graph: ARTICLES)
+  comments: [Comment!] @join__field(graph: COMMENTS)
+
+  """
+  Additional data associated with User entity. Represented as an object with undetermined structure.
+  """
+  extradata: ExtraData @join__field(graph: EXTRADATA)
+  username: String! @join__field(graph: USERS)
+  settings: Settings @join__field(graph: USERS)
+}

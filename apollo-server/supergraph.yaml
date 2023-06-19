@@ -1,0 +1,19 @@
+federation_version: =2.4.7
+
+subgraphs:
+  users:
+    routing_url: http://localhost:5001/graphql
+    schema:
+      file: ../dgs-users/src/main/resources/schema/schema.graphql
+  articles:
+    routing_url: http://localhost:5002/graphql
+    schema:
+      file: ../dgs-articles/src/main/resources/schema/schema.graphql
+  comments:
+    routing_url: http://localhost:5003/graphql
+    schema:
+      file: ../dgs-comments/src/main/resources/schema/schema.graphql
+  extradata:
+    routing_url: http://localhost:5004/graphql
+    schema:
+      file: ../dgs-extradata/src/main/resources/schema/schema.graphql

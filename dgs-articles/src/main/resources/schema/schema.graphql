@@ -25,7 +25,7 @@ input CreateArticleRequest {
     content: String!
 }
 
-type Article implements Indentifiable {
+type Article implements Indentifiable @key(fields: "id") {
     id: ID!
     userId: ID!
     name: String!
