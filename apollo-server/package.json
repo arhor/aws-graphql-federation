@@ -8,15 +8,11 @@
         "email": "arhor18@gmail.com"
     },
     "scripts": {
-        "start": "node index.js",
-        "rover": "rover supergraph compose --config ./supergraph.yaml --output supergraph.graphql --elv2-license accept"
+        "start": "node index.js"
     },
     "dependencies": {
         "@apollo/gateway": "^2.4.7",
         "@apollo/server": "^4.7.3",
         "graphql": "^16.6.0"
-    },
-    "devDependencies": {
-        "@apollo/rover": "^0.16.0"
     }
 }
