@@ -48,11 +48,6 @@ dependencies {
     kapt("org.springframework:spring-context-indexer")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
-    compileOnly("com.google.code.findbugs:jsr305")
-    compileOnly("org.mapstruct:mapstruct")
-
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
     implementation(platform(":shared-bom"))
     implementation(":shared-lib")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -63,13 +58,20 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.retry:spring-retry")
+    implementation("org.springframework.security:spring-security-crypto")
+
+    compileOnly("com.google.code.findbugs:jsr305")
+    compileOnly("org.mapstruct:mapstruct")
+
+    runtimeOnly("org.postgresql:postgresql")
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("com.ninja-squad:springmockk")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

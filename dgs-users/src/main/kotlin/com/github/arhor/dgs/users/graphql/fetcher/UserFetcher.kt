@@ -9,7 +9,9 @@ import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 
 @DgsComponent
-class UserFetcher(private val userService: UserService) {
+class UserFetcher(
+    private val userService: UserService,
+) {
 
     @DgsMutation
     fun createUser(@InputArgument request: CreateUserRequest): User =

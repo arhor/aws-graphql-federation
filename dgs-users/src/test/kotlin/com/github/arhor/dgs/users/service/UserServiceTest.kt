@@ -15,18 +15,19 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @Suppress("ClassName")
 internal class UserServiceTest {
 
     private val userMapper: UserMapper = mockk()
     private val userRepository: UserRepository = mockk()
-    private val userPasswordEncoder: UserPasswordEncoder = mockk()
+    private val passwordEncoder: PasswordEncoder = mockk()
 
     private val userService: UserService = UserServiceImpl(
         userMapper,
         userRepository,
-        userPasswordEncoder,
+        passwordEncoder,
     )
 
     @Nested
@@ -45,7 +46,7 @@ internal class UserServiceTest {
             )
 
             every { userRepository.existsByUsername(any()) } returns false
-            every { userPasswordEncoder.encode(any()) } answers { firstArg() }
+            every { passwordEncoder.encode(any()) } answers { firstArg() }
             every { userMapper.mapToEntity(any()) } answers convertingDtoToUser()
             every { userRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
             every { userMapper.mapToDTO(any()) } answers convertingUserToDto()

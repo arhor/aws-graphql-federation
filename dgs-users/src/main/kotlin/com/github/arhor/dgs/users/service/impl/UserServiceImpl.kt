@@ -9,11 +9,11 @@ import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserRequest
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.UserMapper
-import com.github.arhor.dgs.users.service.UserPasswordEncoder
 import com.github.arhor.dgs.users.service.UserService
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.properties.Delegates
@@ -22,7 +22,7 @@ import kotlin.properties.Delegates
 class UserServiceImpl(
     private val userMapper: UserMapper,
     private val userRepository: UserRepository,
-    private val userPasswordEncoder: UserPasswordEncoder,
+    private val passwordEncoder: PasswordEncoder,
 ) : UserService {
 
     @Transactional
@@ -34,7 +34,7 @@ class UserServiceImpl(
                 operation = Operation.CREATE,
             )
         }
-        return request.copy(password = userPasswordEncoder.encode(request.password))
+        return request.copy(password = passwordEncoder.encode(request.password))
             .let { userMapper.mapToEntity(it) }
             .let { userRepository.save(it) }
             .let { userMapper.mapToDTO(it) }
