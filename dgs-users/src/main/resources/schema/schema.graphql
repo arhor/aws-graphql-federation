@@ -1,12 +1,9 @@
 # noinspection GraphQLTypeRedefinition
 # noinspection DgsEntityFetcherInspector
 
-scalar Settings
-
 type Query {
     user(username: String): User
     users(offset: Int!, limit: Int!): [User!]!
-    availableUserSettings: Settings!
 }
 
 type Mutation {
@@ -18,17 +15,27 @@ type Mutation {
 input CreateUserRequest {
     username: String!
     password: String!
-    settings: Settings
+    settings: [Setting!]
 }
 
 input UpdateUserRequest {
     id: ID!
     password: String
-    settings: Settings
+    settings: [Setting!]
 }
 
 type User @key(fields: "id") {
     id: ID!
     username: String!
-    settings: Settings
+    settings: [Setting!]
+}
+
+interface WithName {
+    name: String
+}
+
+enum Setting {
+    AGE_OVER_18
+    GORGEOUS_CAT_OWNER
+    STAR_WARS_LOVER
 }

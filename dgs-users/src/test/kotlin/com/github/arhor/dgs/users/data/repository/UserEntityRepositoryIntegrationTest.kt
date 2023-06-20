@@ -3,7 +3,7 @@ package com.github.arhor.dgs.users.data.repository
 import com.github.arhor.dgs.lib.config.ConfigureAdditionalBeans
 import com.github.arhor.dgs.users.config.ConfigureDatabase
 import com.github.arhor.dgs.users.data.entity.UserEntity
-import com.github.arhor.dgs.users.data.entity.listener.UserStateChangedEventListener
+import com.github.arhor.dgs.users.data.listener.UserStateChangedEventListener
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sns.core.SnsOperations
 import io.mockk.every

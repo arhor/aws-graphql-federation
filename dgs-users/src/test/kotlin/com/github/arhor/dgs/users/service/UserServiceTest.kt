@@ -1,9 +1,9 @@
 package com.github.arhor.dgs.users.service
 
-import com.github.arhor.dgs.users.data.entity.Setting
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
+import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.impl.UserServiceImpl
 import io.mockk.Call
@@ -16,6 +16,7 @@ import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.util.EnumSet
 
 @Suppress("ClassName")
 internal class UserServiceTest {
@@ -38,7 +39,7 @@ internal class UserServiceTest {
             val expectedId = 1L
             val expectedUsername = "test@email.com"
             val expectedPassword = "TestPassword123"
-            val expectedSettings = Setting.emptySet()
+            val expectedSettings = emptyList<String>()
 
             val userCreateRequest = CreateUserRequest(
                 username = expectedUsername,
@@ -124,10 +125,11 @@ internal class UserServiceTest {
 
     private fun convertingDtoToUser(): MockKAnswerScope<UserEntity, *>.(Call) -> UserEntity = {
         firstArg<CreateUserRequest>().let {
+
             UserEntity(
                 username = it.username,
                 password = it.password,
-                settings = it.settings ?: Setting.emptySet(),
+                settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it.settings ?: emptyList()) },
             )
         }
     }
@@ -145,7 +147,7 @@ internal class UserServiceTest {
             User(
                 id = it.id.toString(),
                 username = it.username,
-                settings = it.settings,
+                settings = it.settings.toList(),
             )
         }
     }

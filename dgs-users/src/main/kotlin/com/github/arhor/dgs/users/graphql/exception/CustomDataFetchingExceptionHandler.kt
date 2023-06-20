@@ -21,8 +21,8 @@ class CustomDataFetchingExceptionHandler(
     @Autowired(required = true)
     constructor() : this(delegate = DefaultDataFetcherExceptionHandler())
 
-    override fun handleException(handlerParameters: DFEHParams): CompletableFuture<DFEHResult> {
-        return when (val excn = handlerParameters.exception.unwrapCompletionException()) {
+    override fun handleException(handlerParameters: DFEHParams): CompletableFuture<DFEHResult> =
+        when (val excn = handlerParameters.exception.unwrap()) {
             is CustomGQLException -> {
                 excn.toGraphQlError(handlerParameters.path)
                     .let { DataFetcherExceptionHandlerResult.newResult(it).build() }
@@ -33,8 +33,10 @@ class CustomDataFetchingExceptionHandler(
                 delegate.handleException(handlerParameters)
             }
         }
-    }
 
-    private fun Throwable.unwrapCompletionException(): Throwable =
-        if (this is CompletionException && cause != null) cause!! else this
+    private fun Throwable.unwrap(): Throwable =
+        when {
+            this is CompletionException && cause != null -> cause!!
+            else -> this
+        }
 }

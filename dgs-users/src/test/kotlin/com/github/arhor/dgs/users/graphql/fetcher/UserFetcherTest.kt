@@ -1,8 +1,7 @@
 package com.github.arhor.dgs.users.graphql.fetcher
 
-import com.github.arhor.dgs.users.data.entity.Setting
+import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.User
-import com.github.arhor.dgs.users.graphql.scalar.SettingsScalar
 import com.github.arhor.dgs.users.service.UserService
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
@@ -14,17 +13,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.EnumSet
 
 @SpringBootTest(
     classes = [
         DgsAutoConfiguration::class,
         DgsExtendedScalarsAutoConfiguration::class,
-        SettingsScalar::class,
         UserFetcher::class,
     ]
 )
-internal class UserEntityDataFetcherTest {
+internal class UserFetcherTest {
 
     @MockkBean
     private lateinit var userService: UserService
@@ -67,7 +64,7 @@ internal class UserEntityDataFetcherTest {
         val user = User(
             id = "1",
             username = "test-user",
-            settings = EnumSet.allOf(Setting::class.java),
+            settings = Setting.values().toList(),
         )
 
         every { userService.getAllUsers(limit = any(), offset = any()) } returns listOf(user)

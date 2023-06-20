@@ -1,5 +1,6 @@
 package com.github.arhor.dgs.users.data.entity
 
+import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
@@ -24,7 +25,7 @@ data class UserEntity(
     val password: String,
 
     @Column("settings")
-    val settings: EnumSet<Setting> = Setting.emptySet(),
+    val settings: EnumSet<Setting> = EnumSet.noneOf(Setting::class.java),
 
     @Version
     @Column("version")

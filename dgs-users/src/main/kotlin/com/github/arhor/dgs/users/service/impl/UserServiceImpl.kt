@@ -6,6 +6,7 @@ import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
+import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserRequest
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.UserMapper
@@ -16,6 +17,7 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.EnumSet
 import kotlin.properties.Delegates
 
 @Service
@@ -57,10 +59,10 @@ class UserServiceImpl(
             }
         )
         request.password?.let {
-            user = user.copy(password = it)
+            user = user.copy(password = passwordEncoder.encode(it))
         }
         request.settings?.let {
-            user = user.copy(settings = it)
+            user = user.copy(settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it) })
         }
         if (changed) {
             user = userRepository.save(user)

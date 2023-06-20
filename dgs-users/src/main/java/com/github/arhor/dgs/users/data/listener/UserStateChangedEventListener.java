@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.data.entity.listener;
+package com.github.arhor.dgs.users.data.listener;
 
 import com.github.arhor.dgs.users.data.entity.UserEntity;
 import io.awspring.cloud.sns.core.SnsNotification;
@@ -10,13 +10,11 @@ import org.springframework.core.env.MissingRequiredPropertiesException;
 import org.springframework.data.relational.core.mapping.event.AbstractRelationalEventListener;
 import org.springframework.data.relational.core.mapping.event.AfterDeleteEvent;
 import org.springframework.data.relational.core.mapping.event.AfterSaveEvent;
-import org.springframework.data.relational.core.mapping.event.RelationalEvent;
 import org.springframework.messaging.MessagingException;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.function.Function;
 
 @Component
 @Retryable(retryFor = MessagingException.class)
@@ -28,17 +26,17 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
     private static final String HEADER_PAYLOAD_TYPE = "xPayloadType";
 
     private final SnsOperations snsOperations;
-    private final String userUpdatedEventsDestination;
-    private final String userDeletedEventsDestination;
+    private final String userUpdatedEventsTopic;
+    private final String userDeletedEventsTopic;
 
     @Autowired
     public UserStateChangedEventListener(
         final SnsOperations snsOperations,
-        @Value("${" + USER_UPDATED_EVENTS_PROP + ":#{null}}") final String userUpdatedEventsDestination,
-        @Value("${" + USER_DELETED_EVENTS_PROP + ":#{null}}") final String userDeletedEventsDestination
+        @Value("${" + USER_UPDATED_EVENTS_PROP + ":#{null}}") final String userUpdatedEventsTopic,
+        @Value("${" + USER_DELETED_EVENTS_PROP + ":#{null}}") final String userDeletedEventsTopic
     ) {
-        final var updatedDestMissing = userUpdatedEventsDestination == null;
-        final var deletedDestMissing = userDeletedEventsDestination == null;
+        final var updatedDestMissing = userUpdatedEventsTopic == null;
+        final var deletedDestMissing = userDeletedEventsTopic == null;
 
         if (updatedDestMissing || deletedDestMissing) {
             final var error = new MissingRequiredPropertiesException();
@@ -53,28 +51,33 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
             throw error;
         }
         this.snsOperations = snsOperations;
-        this.userUpdatedEventsDestination = userUpdatedEventsDestination;
-        this.userDeletedEventsDestination = userDeletedEventsDestination;
+        this.userUpdatedEventsTopic = userUpdatedEventsTopic;
+        this.userDeletedEventsTopic = userDeletedEventsTopic;
     }
 
     @Override
     public void onAfterSave(@Nonnull final AfterSaveEvent<UserEntity> event) {
-        sendNotification(event, UserStateChange.Updated::new, userUpdatedEventsDestination);
+        sendNotification(
+            userUpdatedEventsTopic,
+            new UserStateChange.Updated(event)
+        );
     }
 
     @Override
     public void onAfterDelete(@Nonnull final AfterDeleteEvent<UserEntity> event) {
-        sendNotification(event, UserStateChange.Deleted::new, userDeletedEventsDestination);
+        sendNotification(
+            userDeletedEventsTopic,
+            new UserStateChange.Deleted(event)
+        );
     }
 
-    private void sendNotification(
-        final RelationalEvent<UserEntity> event,
-        final Function<UserEntity, UserStateChange> stateChangeExtractor,
-        final String destination
-    ) {
-        final var changedState = stateChangeExtractor.apply(event.getEntity());
-        final var notification = new SnsNotification<>(changedState, Map.of(HEADER_PAYLOAD_TYPE, changedState.type()));
-
-        snsOperations.sendNotification(destination, notification);
+    private void sendNotification(final String destination, final UserStateChange payload) {
+        snsOperations.sendNotification(
+            destination,
+            new SnsNotification<>(
+                payload,
+                Map.of(HEADER_PAYLOAD_TYPE, payload.type())
+            )
+        );
     }
 }

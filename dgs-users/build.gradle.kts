@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
+    id("jacoco")
 }
 
 val javaVersion: String = libs.versions.java.get()
@@ -112,16 +113,55 @@ tasks {
     generateJava {
         language = "kotlin"
         packageName = "com.github.arhor.dgs.users.generated.graphql"
-        typeMapping = mutableMapOf(
-            "Settings" to "java.util.EnumSet<com.github.arhor.dgs.users.data.entity.Setting>",
-        )
     }
 
     test {
         useJUnitPlatform()
     }
 
+    jacocoTestReport {
+        shouldRunAfter(test)
+        shouldApplyExclusionsTo(classDirectories)
+    }
+
+    jacocoTestCoverageVerification {
+        shouldRunAfter(jacocoTestReport)
+        shouldApplyExclusionsTo(classDirectories)
+
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.30.toBigDecimal()
+                }
+            }
+        }
+    }
+
+    check {
+        dependsOn(
+            jacocoTestReport,
+            jacocoTestCoverageVerification,
+        )
+    }
+
     wrapper {
         gradleVersion = libs.versions.gradle.asProvider().get()
     }
+}
+
+fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
+    classDirectories.setFrom(
+        files(
+            classDirectories.files.map {
+                fileTree(it) {
+                    exclude(
+                        "com/github/arhor/dgs/users/Main*.class",
+                        "com/github/arhor/dgs/users/aop/*",
+                        "com/github/arhor/dgs/users/config/*",
+                        "com/github/arhor/dgs/users/generated/*",
+                    )
+                }
+            }
+        )
+    )
 }
