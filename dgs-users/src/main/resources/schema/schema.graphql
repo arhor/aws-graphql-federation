@@ -1,37 +1,36 @@
 # noinspection GraphQLTypeRedefinition
 # noinspection DgsEntityFetcherInspector
 
+scalar Long
+
 type Query {
-    user(username: String): User
+    userById(id: Long!): User
+    userByUsername(username: String!): User
     users(offset: Int!, limit: Int!): [User!]!
 }
 
 type Mutation {
-    createUser(request: CreateUserRequest!): User!
-    updateUser(request: UpdateUserRequest!): User!
-    deleteUser(userId: ID!): Boolean!
+    createUser(input: CreateUserInput!): User!
+    updateUser(input: UpdateUserInput!): User!
+    deleteUser(id: Long!): Boolean!
 }
 
-input CreateUserRequest {
+input CreateUserInput {
     username: String!
     password: String!
     settings: [Setting!]
 }
 
-input UpdateUserRequest {
-    id: ID!
+input UpdateUserInput {
+    id: Long!
     password: String
     settings: [Setting!]
 }
 
 type User @key(fields: "id") {
-    id: ID!
+    id: Long!
     username: String!
     settings: [Setting!]
-}
-
-interface WithName {
-    name: String
 }
 
 enum Setting {

@@ -6,9 +6,9 @@ import com.github.arhor.dgs.lib.exception.EntityNotFoundException
 import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
-import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
+import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.Setting
-import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserRequest
+import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.UserMapper
 import com.github.arhor.dgs.users.service.UserService
@@ -29,15 +29,15 @@ class UserServiceImpl(
 ) : UserService {
 
     @Transactional
-    override fun createUser(request: CreateUserRequest): User {
-        if (userRepository.existsByUsername(request.username)) {
+    override fun createUser(input: CreateUserInput): User {
+        if (userRepository.existsByUsername(input.username)) {
             throw EntityDuplicateException(
                 entity = USER.TYPE_NAME,
-                condition = "${USER.Username} = ${request.username}",
+                condition = "${USER.Username} = ${input.username}",
                 operation = Operation.CREATE,
             )
         }
-        return request.copy(password = passwordEncoder.encode(request.password))
+        return input.copy(password = passwordEncoder.encode(input.password))
             .let { userMapper.mapToEntity(it) }
             .let { userRepository.save(it) }
             .let { userMapper.mapToDTO(it) }
@@ -45,12 +45,12 @@ class UserServiceImpl(
 
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
-    override fun updateUser(request: UpdateUserRequest): User {
+    override fun updateUser(input: UpdateUserInput): User {
         var changed = false
         var user by Delegates.observable(
-            initialValue = userRepository.findByIdOrNull(request.id.toLong()) ?: throw EntityNotFoundException(
+            initialValue = userRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
                 entity = USER.TYPE_NAME,
-                condition = "${USER.Id} = ${request.id}",
+                condition = "${USER.Id} = ${input.id}",
                 operation = Operation.UPDATE,
             ),
             onChange = { _, prev, next ->
@@ -59,10 +59,10 @@ class UserServiceImpl(
                 }
             }
         )
-        request.password?.let {
+        input.password?.let {
             user = user.copy(password = passwordEncoder.encode(it))
         }
-        request.settings?.let {
+        input.settings?.let {
             user = user.copy(settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it) })
         }
         if (changed) {
@@ -72,17 +72,27 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun deleteUser(userId: Long): Boolean {
-        return when (val affected = userRepository.deleteByIdReturningNumberRecordsAffected(userId)) {
+    override fun deleteUser(id: Long): Boolean {
+        return when (val affected = userRepository.deleteByIdReturningNumberRecordsAffected(id)) {
             1 -> true
             0 -> false
             else -> throw EntityDuplicateException(
                 entity = USER.TYPE_NAME,
-                condition = "${USER.Id} = $userId",
+                condition = "${USER.Id} = $id",
                 operation = Operation.DELETE,
                 cause = IllegalStateException("More than 1 user inactivated, but $affected records were affected")
             )
         }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getUserById(id: Long): User {
+        return userRepository.findByIdOrNull(id)?.let { userMapper.mapToDTO(it) }
+            ?: throw EntityNotFoundException(
+                entity = USER.TYPE_NAME,
+                condition = "${USER.Id} = $id",
+                operation = Operation.READ,
+            )
     }
 
     @Transactional(readOnly = true)

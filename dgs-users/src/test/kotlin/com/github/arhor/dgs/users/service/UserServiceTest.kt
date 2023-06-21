@@ -7,7 +7,7 @@ import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
-import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
+import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.impl.UserServiceImpl
@@ -54,7 +54,7 @@ internal class UserServiceTest {
             val expectedPassword = "TestPassword123"
             val expectedSettings = emptyList<String>()
 
-            val userCreateRequest = CreateUserRequest(
+            val input = CreateUserInput(
                 username = expectedUsername,
                 password = expectedPassword,
             )
@@ -66,7 +66,7 @@ internal class UserServiceTest {
             every { mockkUserMapper.mapToDTO(any()) } answers convertingUserToDto()
 
             // When
-            val result = userService.createUser(userCreateRequest)
+            val result = userService.createUser(input)
 
             // Then
             assertThat(result)
@@ -83,14 +83,14 @@ internal class UserServiceTest {
         @Test
         fun `should throw EntityDuplicateException creating user with already taken username`() {
             // Given
-            val request = CreateUserRequest(
+            val input = CreateUserInput(
                 username = "test-username",
                 password = "test-password",
             )
 
             val expectedEntity = USER.TYPE_NAME
             val expectedOperation = Operation.CREATE
-            val expectedCondition = "${USER.Username} = ${request.username}"
+            val expectedCondition = "${USER.Username} = ${input.username}"
             val expectedExceptionType = EntityDuplicateException::class.java
 
             val username = slot<String>()
@@ -98,12 +98,12 @@ internal class UserServiceTest {
             every { mockkUserRepository.existsByUsername(capture(username)) } returns true
 
             // When
-            val result = catchException { userService.createUser(request) }
+            val result = catchException { userService.createUser(input) }
 
             // Then
             assertThat(username)
                 .returns(true, from { it.isCaptured })
-                .returns(request.username, from { it.captured })
+                .returns(input.username, from { it.captured })
 
             assertThat(result)
                 .asInstanceOf(throwable(expectedExceptionType))
@@ -169,7 +169,7 @@ internal class UserServiceTest {
     }
 
     private fun convertingDtoToUser(): MockKAnswerScope<UserEntity, *>.(Call) -> UserEntity = {
-        firstArg<CreateUserRequest>().let {
+        firstArg<CreateUserInput>().let {
 
             UserEntity(
                 username = it.username,
@@ -186,7 +186,7 @@ internal class UserServiceTest {
     private fun convertingUserToDto(): MockKAnswerScope<User, *>.(Call) -> User = {
         firstArg<UserEntity>().let {
             User(
-                id = it.id.toString(),
+                id = it.id!!,
                 username = it.username,
                 settings = it.settings.toList(),
             )

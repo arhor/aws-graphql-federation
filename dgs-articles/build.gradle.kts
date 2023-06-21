@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
+    jacoco
 }
 
 val javaVersion: String = libs.versions.java.get()
@@ -42,11 +43,6 @@ dependencies {
     kapt("org.springframework:spring-context-indexer")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
-    compileOnly("com.google.code.findbugs:jsr305")
-    compileOnly("org.mapstruct:mapstruct")
-
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
     implementation(platform(":shared-bom"))
     implementation(":shared-lib")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -58,13 +54,19 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-    implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.retry:spring-retry")
+
+    compileOnly("com.google.code.findbugs:jsr305")
+    compileOnly("org.mapstruct:mapstruct")
+
+    runtimeOnly("org.postgresql:postgresql")
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("com.ninja-squad:springmockk")
     testImplementation("io.awspring.cloud:spring-cloud-aws-test")
@@ -113,7 +115,49 @@ tasks {
         useJUnitPlatform()
     }
 
+    jacocoTestReport {
+        shouldRunAfter(test)
+        shouldApplyExclusionsTo(classDirectories)
+    }
+
+    jacocoTestCoverageVerification {
+        shouldRunAfter(jacocoTestReport)
+        shouldApplyExclusionsTo(classDirectories)
+
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.30.toBigDecimal()
+                }
+            }
+        }
+    }
+
+    check {
+        dependsOn(
+            jacocoTestReport,
+            jacocoTestCoverageVerification,
+        )
+    }
+
     wrapper {
         gradleVersion = libs.versions.gradle.asProvider().get()
     }
+}
+
+fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
+    classDirectories.setFrom(
+        files(
+            classDirectories.files.map {
+                fileTree(it) {
+                    exclude(
+                        "com/github/arhor/dgs/users/**/Main*.class",
+                        "com/github/arhor/dgs/users/**/aop/",
+                        "com/github/arhor/dgs/users/**/config/",
+                        "com/github/arhor/dgs/users/**/generated/",
+                    )
+                }
+            }
+        )
+    )
 }

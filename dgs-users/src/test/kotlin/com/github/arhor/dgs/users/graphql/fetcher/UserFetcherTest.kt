@@ -63,14 +63,14 @@ internal class UserFetcherTest {
         assertThat(result.isDataPresent)
             .isTrue
         assertThat(result.getData<Map<String, *>>())
-            .containsEntry("users", emptyList<Any>())
+            .containsEntry(QUERY.Users, emptyList<Any>())
     }
 
     @Test
     fun `should return successful result containing list with single expected user`() {
         // given
         val user = User(
-            id = "1",
+            id = 1,
             username = "test-user",
             settings = Setting.values().toList(),
         )
@@ -99,11 +99,11 @@ internal class UserFetcherTest {
             .isTrue
         assertThat(result.getData<Map<Any, Any>>())
             .containsEntry(
-                "users", listOf(
+                QUERY.Users, listOf(
                     mapOf(
-                        "id" to user.id,
-                        "username" to user.username,
-                        "settings" to user.settings?.map { it.name },
+                        USER.Id to user.id,
+                        USER.Username to user.username,
+                        USER.Settings to user.settings?.map { it.name },
                     )
                 )
             )
@@ -112,14 +112,14 @@ internal class UserFetcherTest {
     @Test
     fun `should return expected user by username without any exceptions`() {
         // Given
-        val id = "1"
+        val id = 1L
         val username = "test-username"
 
         val expectedErrors = emptyList<GraphQLError>()
         val expectedPresent = true
         val expectedData =
             mapOf(
-                QUERY.User to mapOf(
+                QUERY.UserByUsername to mapOf(
                     USER.Id to id,
                     USER.Username to username
                 )
@@ -130,8 +130,8 @@ internal class UserFetcherTest {
         // When
         val result = dgsQueryExecutor.execute(
             """
-            query (${'$'}username: String) {
-                user(username: ${'$'}username) {
+            query (${'$'}username: String!) {
+                userByUsername(username: ${'$'}username) {
                     id
                     username
                 }
@@ -148,7 +148,7 @@ internal class UserFetcherTest {
     }
 
     @Test
-    fun `should return GQL error trying to find user by incorrerct username`() {
+    fun `should return GQL error trying to find user by incorrect username`() {
         // Given
         val username = "test-username"
 
@@ -163,8 +163,8 @@ internal class UserFetcherTest {
         // When
         val result = dgsQueryExecutor.execute(
             """
-            query (${'$'}username: String) {
-                user(username: ${'$'}username) {
+            query (${'$'}username: String!) {
+                userByUsername(username: ${'$'}username) {
                     id
                     username
                 }
@@ -176,6 +176,6 @@ internal class UserFetcherTest {
         // Then
         assertThat(result.errors)
             .singleElement()
-            .returns(listOf(QUERY.User), from { it.path })
+            .returns(listOf(QUERY.UserByUsername), from { it.path })
     }
 }

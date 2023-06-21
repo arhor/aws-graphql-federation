@@ -1,38 +1,39 @@
 # noinspection GraphQLTypeRedefinition
+# noinspection DgsEntityFetcherInspector
+
+scalar Long
 
 type Query {
+    articleById(id: Long!): Article
     articles(limit: Int!, offset: Int!): [Article!]!
 }
 
 type Mutation {
-    createArticle(request: CreateArticleRequest!): Article!
+    createArticle(input: CreateArticleInput!): Article!
+    updateArticle(input: UpdateArticleInput!): Article!
+    deleteArticle(id: Long!): Boolean!
 }
 
-interface Indentifiable {
-    id: ID!
-}
-
-interface Page {
-    page: Int!
-    size: Int!
-    totalPages: Int!
-    totalItems: Int!
-}
-
-input CreateArticleRequest {
-    userId: ID!
+input CreateArticleInput {
+    userId: Long!
     name: String!
     content: String!
 }
 
-type Article implements Indentifiable @key(fields: "id") {
-    id: ID!
-    userId: ID!
-    name: String!
+input UpdateArticleInput {
+    id: Long!
+    name: String
+    content: String
+}
+
+type Article @key(fields: "id") {
+    id: Long!
+    userId: Long
+    title: String!
     content: String!
 }
 
-type User implements Indentifiable @key(fields: "id") @extends {
-    id: ID! @external
+type User @key(fields: "id") @extends {
+    id: Long! @external
     articles: [Article!]
 }

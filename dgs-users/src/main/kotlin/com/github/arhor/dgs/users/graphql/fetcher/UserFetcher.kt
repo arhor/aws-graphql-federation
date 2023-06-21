@@ -1,7 +1,7 @@
 package com.github.arhor.dgs.users.graphql.fetcher
 
-import com.github.arhor.dgs.users.generated.graphql.types.CreateUserRequest
-import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserRequest
+import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.UserService
 import com.netflix.graphql.dgs.DgsComponent
@@ -15,19 +15,23 @@ class UserFetcher(
 ) {
 
     @DgsMutation
-    fun createUser(@InputArgument request: CreateUserRequest): User =
-        userService.createUser(request)
+    fun createUser(@InputArgument input: CreateUserInput): User =
+        userService.createUser(input)
 
     @DgsMutation
-    fun updateUser(@InputArgument request: UpdateUserRequest): User =
-        userService.updateUser(request)
+    fun updateUser(@InputArgument input: UpdateUserInput): User =
+        userService.updateUser(input)
 
     @DgsMutation
-    fun deleteUser(@InputArgument userId: Long): Boolean =
-        userService.deleteUser(userId)
+    fun deleteUser(@InputArgument id: Long): Boolean =
+        userService.deleteUser(id)
 
     @DgsQuery
-    fun user(@InputArgument username: String): User =
+    fun userById(@InputArgument id: Long): User =
+        userService.getUserById(id)
+
+    @DgsQuery
+    fun userByUsername(@InputArgument username: String): User =
         userService.getUserByUsername(username)
 
     @DgsQuery
