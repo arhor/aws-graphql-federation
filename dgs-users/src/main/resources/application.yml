@@ -1,20 +1,11 @@
 server:
   port: ${PORT:0}
-  error:
-    whitelabel:
-      enabled: false
-  compression:
-    enabled: true
-    min-response-size: 10240
 
 spring:
   application:
     name: dgs-users
   aop:
     proxy-target-class: false
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
   profiles:
     active: ${SPRING_ACTIVE_PROFILES:dev}
   jmx:

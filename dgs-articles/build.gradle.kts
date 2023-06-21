@@ -17,11 +17,6 @@ java {
     }
 }
 
-testlogger {
-    theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
-    showStandardStreams = true
-}
-
 repositories {
     mavenCentral()
 }

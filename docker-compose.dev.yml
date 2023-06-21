@@ -14,7 +14,7 @@ services:
   dgs-users-db:
     image: postgres:12-alpine
     ports:
-      - "5432:5432"
+      - "5501:5432"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
@@ -29,6 +29,7 @@ services:
       - localstack
     env_file:
       - ".env"
+      - "./dgs-users/.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5001/actuator/health | grep UP || exit 1"
@@ -40,11 +41,11 @@ services:
   dgs-articles-db:
     image: postgres:12-alpine
     ports:
-      - "5433:5432"
+      - "5502:5432"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - ".env"
+      - "./dgs-articles/.env"
 
   dgs-articles-app:
     image: dgs-articles-app:latest
@@ -55,6 +56,7 @@ services:
       - localstack
     env_file:
       - ".env"
+      - "./dgs-articles/.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5002/actuator/health | grep UP || exit 1"
