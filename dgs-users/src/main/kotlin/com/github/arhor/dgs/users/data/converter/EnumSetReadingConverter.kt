@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.data.entity.converter
+package com.github.arhor.dgs.users.data.converter
 
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.convert.ReadingConverter

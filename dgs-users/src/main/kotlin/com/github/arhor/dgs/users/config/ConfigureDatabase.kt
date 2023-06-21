@@ -1,7 +1,7 @@
 package com.github.arhor.dgs.users.config
 
-import com.github.arhor.dgs.users.data.entity.converter.EnumSetReadingConverter
-import com.github.arhor.dgs.users.data.entity.converter.EnumSetWritingConverter
+import com.github.arhor.dgs.users.data.converter.EnumSetReadingConverter
+import com.github.arhor.dgs.users.data.converter.EnumSetWritingConverter
 import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer
 import org.springframework.context.annotation.Bean
