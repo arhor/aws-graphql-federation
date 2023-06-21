@@ -1,5 +1,6 @@
 .gradle/
 build/
+dist/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
@@ -12,8 +13,6 @@ build/
 out/
 
 node_modules/
-dist/
-app-client/src/gql/
 # Logs
-logs
+logs/
 *.log
