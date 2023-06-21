@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:5001}
+  port: ${PORT:0}
   error:
     whitelabel:
       enabled: false
@@ -30,9 +30,9 @@ spring:
       platform: postgres
   datasource:
     driverClassName: org.postgresql.Driver
-    url: ${USERS_DB_JDBC_URL}
-    username: ${USERS_DB_JDBC_USERNAME}
-    password: ${USERS_DB_JDBC_PASSWORD}
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
     hikari:
       auto-commit: false
   flyway:
@@ -77,9 +77,9 @@ spring:
     activate:
       on-profile: dev
     import:
-      - optional:file:../../.env.dev[.properties]
-      - optional:file:../.env.dev[.properties]
-      - optional:file:./.env.dev[.properties]
+      - optional:file:../../.env[.properties]
+      - optional:file:../.env[.properties]
+      - optional:file:./.env[.properties]
   cache:
     caffeine:
       spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s,recordStats'

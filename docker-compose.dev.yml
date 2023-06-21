@@ -18,7 +18,7 @@ services:
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - ".env"
+      - "./dgs-users/.env"
 
   dgs-users-app:
     image: dgs-users-app:latest
@@ -31,7 +31,7 @@ services:
       - ".env"
     network_mode: host
     healthcheck:
-      test: "curl --fail --silent localhost:5001/api/health | grep UP || exit 1"
+      test: "curl --fail --silent localhost:5001/actuator/health | grep UP || exit 1"
       interval: 5s
       timeout: 5s
       retries: 5
@@ -57,7 +57,7 @@ services:
       - ".env"
     network_mode: host
     healthcheck:
-      test: "curl --fail --silent localhost:5002/api/health | grep UP || exit 1"
+      test: "curl --fail --silent localhost:5002/actuator/health | grep UP || exit 1"
       interval: 5s
       timeout: 5s
       retries: 5
@@ -83,7 +83,7 @@ services:
       - ".env"
     network_mode: host
     healthcheck:
-      test: "curl --fail --silent localhost:5003/api/health | grep UP || exit 1"
+      test: "curl --fail --silent localhost:5003/actuator/health | grep UP || exit 1"
       interval: 5s
       timeout: 5s
       retries: 5
@@ -109,7 +109,7 @@ services:
       - ".env"
     network_mode: host
     healthcheck:
-      test: "curl --fail --silent localhost:5003/api/health | grep UP || exit 1"
+      test: "curl --fail --silent localhost:5004/actuator/health | grep UP || exit 1"
       interval: 5s
       timeout: 5s
       retries: 5
