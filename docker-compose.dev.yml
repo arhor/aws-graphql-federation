@@ -28,7 +28,6 @@ services:
       - dgs-users-db
       - localstack
     env_file:
-      - ".env"
       - "./dgs-users/.env"
     network_mode: host
     healthcheck:
@@ -55,7 +54,6 @@ services:
       - dgs-articles-db
       - localstack
     env_file:
-      - ".env"
       - "./dgs-articles/.env"
     network_mode: host
     healthcheck:
@@ -68,11 +66,11 @@ services:
   dgs-comments-db:
     image: postgres:12-alpine
     ports:
-      - "5433:5432"
+      - "5503:5432"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - ".env"
+      - "./dgs-comments/.env"
 
   dgs-comments-app:
     image: dgs-comments-app:latest
@@ -82,7 +80,7 @@ services:
       - dgs-comments-db
       - localstack
     env_file:
-      - ".env"
+      - "./dgs-comments/.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5003/actuator/health | grep UP || exit 1"
@@ -94,11 +92,11 @@ services:
   dgs-extradata-db:
     image: postgres:12-alpine
     ports:
-      - "5434:5432"
+      - "5504:5432"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - ".env"
+      - "./dgs-extradata/.env"
 
   dgs-extradata-app:
     image: dgs-extradata-app:latest
@@ -107,8 +105,6 @@ services:
     depends_on:
       - dgs-extradata-db
       - localstack
-    env_file:
-      - ".env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5004/actuator/health | grep UP || exit 1"
@@ -116,6 +112,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    env_file:
+      - "./dgs-extradata/.env"
 
   apollo-server:
     image: apollo-server:latest
@@ -126,6 +124,4 @@ services:
       - dgs-articles-app
       - dgs-comments-app
       - dgs-extradata-app
-    env_file:
-      - ".env"
     network_mode: host

@@ -60,10 +60,10 @@ dgs:
       enabled: false
 
 application-props:
-  retry-attempts: 5
   aws:
-    user-updated-queue: ${AWS_SQS_USER_UPDATED_QUEUE}
-    user-deleted-queue: ${AWS_SQS_USER_DELETED_QUEUE}
+    sqs:
+      user-updated-events: ${AWS_SQS_USER_UPDATED_EVENTS}
+      user-deleted-events: ${AWS_SQS_USER_DELETED_EVENTS}
 
 ---
 
