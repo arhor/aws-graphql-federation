@@ -2,6 +2,7 @@ package com.github.arhor.dgs.users.service.impl
 
 import com.github.arhor.dgs.lib.OffsetBasedPageRequest
 import com.github.arhor.dgs.lib.exception.EntityDuplicateException
+import com.github.arhor.dgs.lib.exception.EntityNotFoundException
 import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
@@ -47,7 +48,7 @@ class UserServiceImpl(
     override fun updateUser(request: UpdateUserRequest): User {
         var changed = false
         var user by Delegates.observable(
-            initialValue = userRepository.findByIdOrNull(request.id.toLong()) ?: throw EntityDuplicateException(
+            initialValue = userRepository.findByIdOrNull(request.id.toLong()) ?: throw EntityNotFoundException(
                 entity = USER.TYPE_NAME,
                 condition = "${USER.Id} = ${request.id}",
                 operation = Operation.UPDATE,
@@ -87,7 +88,7 @@ class UserServiceImpl(
     @Transactional(readOnly = true)
     override fun getUserByUsername(username: String): User {
         return userRepository.findByUsername(username)?.let { userMapper.mapToDTO(it) }
-            ?: throw EntityDuplicateException(
+            ?: throw EntityNotFoundException(
                 entity = USER.TYPE_NAME,
                 condition = "${USER.Username} = $username",
                 operation = Operation.READ,

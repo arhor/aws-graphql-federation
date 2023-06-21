@@ -8,6 +8,7 @@ import org.mapstruct.NullValueMappingStrategy
 @MapperConfig(
     componentModel = MappingConstants.ComponentModel.SPRING,
     injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+    implementationPackage = "<PACKAGE_NAME>.generated",
     nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
 )
 class MapstructCommonConfig

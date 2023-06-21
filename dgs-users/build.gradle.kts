@@ -18,10 +18,6 @@ java {
     }
 }
 
-testlogger {
-    theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
-}
-
 repositories {
     mavenCentral()
 }
@@ -131,7 +127,7 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = 0.30.toBigDecimal()
+                    minimum = 0.60.toBigDecimal()
                 }
             }
         }
@@ -155,10 +151,10 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/dgs/users/Main*.class",
-                        "com/github/arhor/dgs/users/aop/*",
-                        "com/github/arhor/dgs/users/config/*",
-                        "com/github/arhor/dgs/users/generated/*",
+                        "com/github/arhor/dgs/users/**/Main*.class",
+                        "com/github/arhor/dgs/users/**/aop/",
+                        "com/github/arhor/dgs/users/**/config/",
+                        "com/github/arhor/dgs/users/**/generated/",
                     )
                 }
             }
