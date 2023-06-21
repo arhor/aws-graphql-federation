@@ -4,56 +4,36 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import graphql.ExecutionInput
 import graphql.execution.preparsed.PreparsedDocumentEntry
 import graphql.execution.preparsed.PreparsedDocumentProvider
-import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.time.Duration
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Function
+
+private typealias ParsingValidator = Function<ExecutionInput, PreparsedDocumentEntry>
 
 @EnableCaching
 @Configuration(proxyBeanMethods = false)
 class ConfigureCaching {
 
     @Bean
-    fun asyncCachePreParsedDocumentProvider(asyncExecutor: Executor): PreparsedDocumentProvider {
-        return object : PreparsedDocumentProvider {
-            private val logger = LoggerFactory.getLogger(javaClass)
-            private val cache = Caffeine
-                .newBuilder()
-                .maximumSize(250)
-                .expireAfterAccess(Duration.ofMinutes(10))
-                .executor(asyncExecutor)
-                .buildAsync<String, PreparsedDocumentEntry>()
-
-            @Deprecated("Deprecated in Java")
-            override fun getDocument(
-                execInput: ExecutionInput,
-                validator: Function<ExecutionInput, PreparsedDocumentEntry>,
-            ): PreparsedDocumentEntry {
-
-                logger.debug("Loading GQL document from the cache synchronously")
-
-                return cache.synchronous().get(execInput.query) { currentQuery ->
-                    logger.debug("Query-cache miss! query: {}", currentQuery)
-                    validator.apply(execInput)
-                }
+    @Suppress("OVERRIDE_DEPRECATION")
+    fun asyncCachePreParsedDocumentProvider(asyncExecutor: Executor): PreparsedDocumentProvider =
+        object : PreparsedDocumentProvider {
+            private val cache = buildAsyncCache<String, PreparsedDocumentEntry> {
+                maximumSize(250)
+                expireAfterAccess(Duration.ofMinutes(10))
+                executor(asyncExecutor)
             }
 
-            override fun getDocumentAsync(
-                execInput: ExecutionInput,
-                validator: Function<ExecutionInput, PreparsedDocumentEntry>,
-            ): CompletableFuture<PreparsedDocumentEntry> {
+            override fun getDocument(execInput: ExecutionInput, validator: ParsingValidator) =
+                cache.synchronous().get(execInput.query) { _ -> validator.apply(execInput) }
 
-                logger.debug("Loading GQL document from the cache asynchronously")
-
-                return cache.get(execInput.query) { currentQuery ->
-                    logger.debug("Query-cache miss! query: {}", currentQuery)
-                    validator.apply(execInput)
-                }
-            }
+            override fun getDocumentAsync(execInput: ExecutionInput, validator: ParsingValidator) =
+                cache.get(execInput.query) { _ -> validator.apply(execInput) }
         }
-    }
+
+    private inline fun <K, V> buildAsyncCache(init: Caffeine<Any, Any>.() -> Unit) =
+        Caffeine.newBuilder().apply { init() }.buildAsync<K, V>()
 }
