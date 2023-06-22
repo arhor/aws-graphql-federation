@@ -1,12 +1,11 @@
 package com.github.arhor.dgs.users.api.listener;
 
+import com.github.arhor.dgs.users.config.props.AppProps;
 import com.github.arhor.dgs.users.data.entity.UserEntity;
 import io.awspring.cloud.sns.core.SnsNotification;
 import io.awspring.cloud.sns.core.SnsOperations;
 import jakarta.annotation.Nonnull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.MissingRequiredPropertiesException;
 import org.springframework.data.relational.core.mapping.event.AbstractRelationalEventListener;
 import org.springframework.data.relational.core.mapping.event.AfterDeleteEvent;
 import org.springframework.data.relational.core.mapping.event.AfterSaveEvent;
@@ -20,9 +19,6 @@ import java.util.Map;
 @Retryable(retryFor = MessagingException.class)
 public class UserRelationalEventListener extends AbstractRelationalEventListener<UserEntity> {
 
-    public static final String USER_UPDATED_EVENTS_PROP = "application-props.aws.sns.user-updated-events";
-    public static final String USER_DELETED_EVENTS_PROP = "application-props.aws.sns.user-deleted-events";
-
     private static final String HEADER_PAYLOAD_TYPE = "xPayloadType";
 
     private final SnsOperations snsOperations;
@@ -30,29 +26,10 @@ public class UserRelationalEventListener extends AbstractRelationalEventListener
     private final String userDeletedEventsTopic;
 
     @Autowired
-    public UserRelationalEventListener(
-        final SnsOperations snsOperations,
-        @Value("${" + USER_UPDATED_EVENTS_PROP + ":#{null}}") final String userUpdatedEventsTopic,
-        @Value("${" + USER_DELETED_EVENTS_PROP + ":#{null}}") final String userDeletedEventsTopic
-    ) {
-        final var updatedDestMissing = userUpdatedEventsTopic == null;
-        final var deletedDestMissing = userDeletedEventsTopic == null;
-
-        if (updatedDestMissing || deletedDestMissing) {
-            final var error = new MissingRequiredPropertiesException();
-            final var props = error.getMissingRequiredProperties();
-
-            if (updatedDestMissing) {
-                props.add(USER_UPDATED_EVENTS_PROP);
-            }
-            if (deletedDestMissing) {
-                props.add(USER_DELETED_EVENTS_PROP);
-            }
-            throw error;
-        }
+    public UserRelationalEventListener(final SnsOperations snsOperations, final AppProps appProps) {
         this.snsOperations = snsOperations;
-        this.userUpdatedEventsTopic = userUpdatedEventsTopic;
-        this.userDeletedEventsTopic = userDeletedEventsTopic;
+        this.userUpdatedEventsTopic = appProps.getAws().getSns().getUserUpdatedEvents();
+        this.userDeletedEventsTopic = appProps.getAws().getSns().getUserDeletedEvents();
     }
 
     @Override

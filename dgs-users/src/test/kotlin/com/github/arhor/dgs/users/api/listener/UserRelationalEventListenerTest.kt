@@ -2,9 +2,8 @@
 
 package com.github.arhor.dgs.users.api.listener
 
-import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener.USER_DELETED_EVENTS_PROP
-import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener.USER_UPDATED_EVENTS_PROP
 import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener.UserStateChange
+import com.github.arhor.dgs.users.config.props.AppProps
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
@@ -14,53 +13,25 @@ import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.catchThrowable
 import org.assertj.core.api.Assertions.from
-import org.assertj.core.api.InstanceOfAssertFactories.type
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.Arguments.arguments
-import org.junit.jupiter.params.provider.MethodSource
-import org.springframework.core.env.MissingRequiredPropertiesException
 import org.springframework.data.relational.core.conversion.AggregateChange
 import org.springframework.data.relational.core.mapping.event.AfterDeleteEvent
 import org.springframework.data.relational.core.mapping.event.AfterSaveEvent
 import org.springframework.data.relational.core.mapping.event.Identifier
-import java.util.stream.Stream
 
 internal class UserRelationalEventListenerTest {
 
     private val mockSnsOperations = mockk<SnsOperations>()
+    private val mockAppProps = mockk<AppProps> {
+        every { aws.sns.userUpdatedEvents } returns TEST_USER_UPDATED_EVENTS
+        every { aws.sns.userDeletedEvents } returns TEST_USER_DELETED_EVENTS
+    }
 
     private val listener = UserRelationalEventListener(
         mockSnsOperations,
-        TEST_USER_UPDATED_EVENTS,
-        TEST_USER_DELETED_EVENTS,
+        mockAppProps,
     )
-
-    @MethodSource
-    @ParameterizedTest
-    fun `constructor should throw MissingRequiredPropertiesException`(
-        // Given
-        userUpdatedEventsTopic: String?,
-        userDeletedEventsTopic: String?,
-        expectedMissingProperties: Set<String>,
-    ) {
-        // When
-        val result = catchThrowable {
-            UserRelationalEventListener(
-                mockSnsOperations,
-                userUpdatedEventsTopic,
-                userDeletedEventsTopic,
-            )
-        }
-
-        // Then
-        assertThat(result)
-            .asInstanceOf(type(MissingRequiredPropertiesException::class.java))
-            .returns(expectedMissingProperties) { it.missingRequiredProperties }
-    }
 
     @Test
     fun `onAfterSave should send SNS notification with expected topic name and payload`() {
@@ -127,13 +98,5 @@ internal class UserRelationalEventListenerTest {
         private const val TEST_USER_DELETED_EVENTS = "test-user-deleted-events"
 
         private const val STUB_USER_ID = -1L
-
-        @JvmStatic
-        fun `constructor should throw MissingRequiredPropertiesException`(): Stream<Arguments> =
-            Stream.of(
-                arguments(null, null, setOf(USER_UPDATED_EVENTS_PROP, USER_DELETED_EVENTS_PROP)),
-                arguments(TEST_USER_UPDATED_EVENTS, null, setOf(USER_DELETED_EVENTS_PROP)),
-                arguments(null, TEST_USER_DELETED_EVENTS, setOf(USER_UPDATED_EVENTS_PROP)),
-            )
     }
 }

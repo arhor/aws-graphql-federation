@@ -3,7 +3,6 @@ package com.github.arhor.dgs.users.data.repository
 import com.github.arhor.dgs.lib.config.ConfigureAdditionalBeans
 import com.github.arhor.dgs.users.config.ConfigureDatabase
 import com.github.arhor.dgs.users.data.entity.UserEntity
-import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sns.core.SnsOperations
 import io.mockk.every
@@ -30,19 +29,9 @@ import java.time.LocalDateTime
 
 @DataJdbcTest
 @DirtiesContext
-@Testcontainers(
-    disabledWithoutDocker = true,
-)
-@ContextConfiguration(
-    classes = [
-        ConfigureDatabase::class,
-        ConfigureAdditionalBeans::class,
-        UserRelationalEventListener::class,
-    ],
-)
-@AutoConfigureTestDatabase(
-    replace = AutoConfigureTestDatabase.Replace.NONE,
-)
+@Testcontainers(disabledWithoutDocker = true)
+@ContextConfiguration(classes = [ConfigureDatabase::class, ConfigureAdditionalBeans::class])
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 internal class UserEntityRepositoryIntegrationTest {
 
     @Autowired
@@ -202,9 +191,6 @@ internal class UserEntityRepositoryIntegrationTest {
     }
 
     companion object {
-        private const val USER_UPDATED_TEST_EVENTS_DESTINATION = "user-updated-test-events"
-        private const val USER_DELETED_TEST_EVENTS_DESTINATION = "user-deleted-test-events"
-
         /* language=SQL */
         private val INSERT_QUERY = """
             INSERT INTO ${UserEntity.TABLE_NAME} (
@@ -226,8 +212,8 @@ internal class UserEntityRepositoryIntegrationTest {
                 add("spring.datasource.url", db::getJdbcUrl)
                 add("spring.datasource.username", db::getUsername)
                 add("spring.datasource.password", db::getPassword)
-                add(UserRelationalEventListener.USER_UPDATED_EVENTS_PROP) { USER_UPDATED_TEST_EVENTS_DESTINATION }
-                add(UserRelationalEventListener.USER_DELETED_EVENTS_PROP) { USER_DELETED_TEST_EVENTS_DESTINATION }
+                add("application-props.aws.sns.user-updated-events") { "user-updated-test-events" }
+                add("application-props.aws.sns.user-deleted-events") { "user-deleted-test-events" }
             }
         }
     }
