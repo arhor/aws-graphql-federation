@@ -39,6 +39,7 @@ configurations {
 
 dependencies {
     kapt(platform(":shared-bom"))
+    kapt("com.querydsl:querydsl-apt::general")
     kapt("org.mapstruct:mapstruct-processor")
     kapt("org.springframework:spring-context-indexer")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
@@ -49,6 +50,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
     implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
+    implementation("com.querydsl:querydsl-sql")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
     implementation("org.flywaydb:flyway-core")
@@ -109,6 +111,9 @@ tasks {
     generateJava {
         language = "kotlin"
         packageName = "com.github.arhor.dgs.articles.generated.graphql"
+        typeMapping = mutableMapOf(
+            "Url" to "java.net.URL"
+        )
     }
 
     test {

@@ -1,9 +1,9 @@
-package com.github.arhor.dgs.articles.graphql.fetcher
+package com.github.arhor.dgs.articles.api.datafetcher
 
 import com.github.arhor.dgs.articles.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.articles.generated.graphql.types.Article
+import com.github.arhor.dgs.articles.generated.graphql.types.ArticlesLookupInput
 import com.github.arhor.dgs.articles.generated.graphql.types.CreateArticleInput
-import com.github.arhor.dgs.articles.generated.graphql.types.CreateArticleRequest
 import com.github.arhor.dgs.articles.generated.graphql.types.UpdateArticleInput
 import com.github.arhor.dgs.articles.generated.graphql.types.User
 import com.github.arhor.dgs.articles.service.ArticleService
@@ -29,14 +29,14 @@ class ArticleFetcher(private val articleService: ArticleService) {
         articleService.deleteArticle(id)
 
     @DgsQuery
-    fun articleById(@InputArgument id: Long): Article =
+    fun article(@InputArgument id: Long): Article =
         articleService.getArticleById(id)
 
     @DgsQuery
-    fun articles(@InputArgument limit: Int, @InputArgument offset: Int): List<Article> =
-        articleService.getArticles(limit, offset)
+    fun articles(@InputArgument input: ArticlesLookupInput): List<Article> =
+        articleService.getArticles(input)
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
     fun user(values: Map<String, Any>): User =
-        User(id = values["id"] as Long)
+        User(id = values[USER.Id] as Long)
 }

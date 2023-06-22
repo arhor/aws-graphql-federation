@@ -5,7 +5,7 @@ scalar Long
 
 type Query {
     user(id: Long!): User
-    users(input: UsersLookupInput = {}): [User!]!
+    users(input: UsersLookupInput! = {}): [User!]!
 }
 
 type Mutation {

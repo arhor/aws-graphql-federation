@@ -1,5 +1,6 @@
 package com.github.arhor.dgs.articles.data.entity
 
+import com.querydsl.core.annotations.QueryEntity
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
@@ -7,10 +8,12 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.net.URL
 import java.time.LocalDateTime
 
 @Table(ArticleEntity.TABLE_NAME)
 @Immutable
+@QueryEntity
 data class ArticleEntity(
     @Id
     @Column("id")
@@ -19,8 +22,11 @@ data class ArticleEntity(
     @Column("user_id")
     val userId: String?,
 
-    @Column("name")
-    val name: String,
+    @Column("header")
+    val header: String,
+
+    @Column("banner")
+    val banner: URL?,
 
     @Column("content")
     val content: String,

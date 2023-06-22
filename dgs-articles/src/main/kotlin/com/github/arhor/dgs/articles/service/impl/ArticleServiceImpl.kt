@@ -2,12 +2,12 @@ package com.github.arhor.dgs.articles.service.impl
 
 import com.github.arhor.dgs.articles.data.repository.ArticleRepository
 import com.github.arhor.dgs.articles.generated.graphql.types.Article
+import com.github.arhor.dgs.articles.generated.graphql.types.ArticlesLookupInput
 import com.github.arhor.dgs.articles.generated.graphql.types.CreateArticleInput
-import com.github.arhor.dgs.articles.generated.graphql.types.CreateArticleRequest
 import com.github.arhor.dgs.articles.generated.graphql.types.UpdateArticleInput
 import com.github.arhor.dgs.articles.service.ArticleService
-import com.github.arhor.dgs.articles.service.mapper.ArticleMapper
-import com.github.arhor.dgs.lib.OffsetBasedPageRequest
+import com.github.arhor.dgs.articles.service.ArticleMapper
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -37,9 +37,9 @@ class ArticleServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getArticles(limit: Int, offset: Int): List<Article> {
+    override fun getArticles(input: ArticlesLookupInput): List<Article> {
         return articleRepository
-            .findAll(OffsetBasedPageRequest(offset, limit))
+            .findAll(PageRequest.of(input.page, input.size))
             .map(articleMapper::mapToDTO)
             .toList()
     }

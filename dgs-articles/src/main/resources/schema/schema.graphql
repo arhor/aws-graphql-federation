@@ -2,10 +2,11 @@
 # noinspection DgsEntityFetcherInspector
 
 scalar Long
+scalar Upload
 
 type Query {
-    articleById(id: Long!): Article
-    articles(limit: Int!, offset: Int!): [Article!]!
+    article(id: Long!): Article
+    articles(input: ArticlesLookupInput! = {}): [Article!]!
 }
 
 type Mutation {
@@ -14,22 +15,30 @@ type Mutation {
     deleteArticle(id: Long!): Boolean!
 }
 
+input ArticlesLookupInput {
+    page: Int! = 0
+    size: Int! = 20
+}
+
 input CreateArticleInput {
     userId: Long!
-    name: String!
+    header: String!
+    banner: Upload
     content: String!
 }
 
 input UpdateArticleInput {
     id: Long!
-    name: String
+    header: String
+    banner: Upload
     content: String
 }
 
 type Article @key(fields: "id") {
     id: Long!
     userId: Long
-    title: String!
+    header: String!
+    banner: String
     content: String!
 }
 

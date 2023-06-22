@@ -13,6 +13,7 @@ graphql-dgs-bom = "7.0.0"
 graphql-dgs-codegen = "5.8.1"
 testcontainers = "1.18.0"
 gradle-test-logger = "3.2.0"
+querydsl = "5.0.0"
 
 [plugins]
 test-logger = { id = "com.adarshr.test-logger", version.ref = "gradle-test-logger" }
