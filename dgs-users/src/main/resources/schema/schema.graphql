@@ -4,15 +4,19 @@
 scalar Long
 
 type Query {
-    userById(id: Long!): User
-    userByUsername(username: String!): User
-    users(offset: Int!, limit: Int!): [User!]!
+    user(id: Long!): User
+    users(input: UsersLookupInput = {}): [User!]!
 }
 
 type Mutation {
     createUser(input: CreateUserInput!): User!
     updateUser(input: UpdateUserInput!): User!
     deleteUser(id: Long!): Boolean!
+}
+
+input UsersLookupInput {
+    page: Int! = 0
+    size: Int! = 20
 }
 
 input CreateUserInput {

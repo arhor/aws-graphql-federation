@@ -6,6 +6,7 @@ import com.github.arhor.dgs.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.User
+import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.dgs.users.graphql.exception.CustomDataFetchingExceptionHandler
 import com.github.arhor.dgs.users.service.UserService
 import com.netflix.graphql.dgs.DgsQueryExecutor
@@ -40,13 +41,13 @@ internal class UserFetcherTest {
     @Test
     fun `should return successful result containing empty list of users`() {
         // given
-        every { userService.getAllUsers(limit = any(), offset = any()) } returns emptyList()
+        every { userService.getAllUsers(any()) } returns emptyList()
 
         // when
         val result = dgsQueryExecutor.execute(
             """
             query {
-                users(limit: 10, offset: 0) {
+                users {
                     id
                     username
                     settings
@@ -56,7 +57,7 @@ internal class UserFetcherTest {
         )
 
         // then
-        verify { userService.getAllUsers(limit = 10, offset = 0) }
+        verify { userService.getAllUsers(input = UsersLookupInput(page = 0, size = 20)) }
 
         assertThat(result.errors)
             .isEmpty()
@@ -75,13 +76,13 @@ internal class UserFetcherTest {
             settings = Setting.values().toList(),
         )
 
-        every { userService.getAllUsers(limit = any(), offset = any()) } returns listOf(user)
+        every { userService.getAllUsers(any()) } returns listOf(user)
 
         // when
         val result = dgsQueryExecutor.execute(
             """
             query {
-                users(limit: 10, offset: 0) {
+                users(input: { page: 0, size: 10 }) {
                     id
                     username
                     settings
@@ -91,7 +92,7 @@ internal class UserFetcherTest {
         )
 
         // then
-        verify { userService.getAllUsers(limit = 10, offset = 0) }
+        verify { userService.getAllUsers(input = UsersLookupInput(page = 0, size = 10)) }
 
         assertThat(result.errors)
             .isEmpty()
@@ -119,25 +120,25 @@ internal class UserFetcherTest {
         val expectedPresent = true
         val expectedData =
             mapOf(
-                QUERY.UserByUsername to mapOf(
+                QUERY.User to mapOf(
                     USER.Id to id,
                     USER.Username to username
                 )
             )
 
-        every { userService.getUserByUsername(username = any()) } answers { User(id = id, username = firstArg()) }
+        every { userService.getUserById(any()) } answers { User(id = firstArg(), username = username) }
 
         // When
         val result = dgsQueryExecutor.execute(
             """
-            query (${'$'}username: String!) {
-                userByUsername(username: ${'$'}username) {
+            query (${'$'}id: Long!) {
+                user(id: ${'$'}id) {
                     id
                     username
                 }
             }
             """,
-            mapOf(USER.Username to username)
+            mapOf(USER.Id to id)
         )
 
         // Then
@@ -150,12 +151,12 @@ internal class UserFetcherTest {
     @Test
     fun `should return GQL error trying to find user by incorrect username`() {
         // Given
-        val username = "test-username"
+        val id = 1L
 
-        every { userService.getUserByUsername(username = any()) } answers {
+        every { userService.getUserById(any()) } answers {
             throw EntityNotFoundException(
                 entity = USER.TYPE_NAME,
-                condition = "${USER.Username} = ${firstArg<String>()}",
+                condition = "${USER.Id} = ${firstArg<Long>()}",
                 operation = Operation.READ,
             )
         }
@@ -163,19 +164,19 @@ internal class UserFetcherTest {
         // When
         val result = dgsQueryExecutor.execute(
             """
-            query (${'$'}username: String!) {
-                userByUsername(username: ${'$'}username) {
+            query (${'$'}id: Long!) {
+                user(id: ${'$'}id) {
                     id
                     username
                 }
             }
             """,
-            mapOf(USER.Username to username)
+            mapOf(USER.Id to id)
         )
 
         // Then
         assertThat(result.errors)
             .singleElement()
-            .returns(listOf(QUERY.UserByUsername), from { it.path })
+            .returns(listOf(QUERY.User), from { it.path })
     }
 }

@@ -1,6 +1,5 @@
 package com.github.arhor.dgs.users.service.impl
 
-import com.github.arhor.dgs.lib.OffsetBasedPageRequest
 import com.github.arhor.dgs.lib.exception.EntityDuplicateException
 import com.github.arhor.dgs.lib.exception.EntityNotFoundException
 import com.github.arhor.dgs.lib.exception.Operation
@@ -10,9 +9,11 @@ import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
+import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.dgs.users.service.UserMapper
 import com.github.arhor.dgs.users.service.UserService
 import org.springframework.dao.OptimisticLockingFailureException
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -96,19 +97,9 @@ class UserServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getUserByUsername(username: String): User {
-        return userRepository.findByUsername(username)?.let { userMapper.mapToDTO(it) }
-            ?: throw EntityNotFoundException(
-                entity = USER.TYPE_NAME,
-                condition = "${USER.Username} = $username",
-                operation = Operation.READ,
-            )
-    }
-
-    @Transactional(readOnly = true)
-    override fun getAllUsers(limit: Int, offset: Int): List<User> {
+    override fun getAllUsers(input: UsersLookupInput): List<User> {
         return userRepository
-            .findAll(OffsetBasedPageRequest(limit, offset))
+            .findAll(PageRequest.of(input.page, input.size))
             .map(userMapper::mapToDTO)
             .toList()
     }

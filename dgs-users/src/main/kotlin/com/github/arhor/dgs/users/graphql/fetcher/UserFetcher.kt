@@ -3,6 +3,7 @@ package com.github.arhor.dgs.users.graphql.fetcher
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
+import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.dgs.users.service.UserService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
@@ -27,14 +28,10 @@ class UserFetcher(
         userService.deleteUser(id)
 
     @DgsQuery
-    fun userById(@InputArgument id: Long): User =
+    fun user(@InputArgument id: Long): User =
         userService.getUserById(id)
 
     @DgsQuery
-    fun userByUsername(@InputArgument username: String): User =
-        userService.getUserByUsername(username)
-
-    @DgsQuery
-    fun users(@InputArgument limit: Int, @InputArgument offset: Int): List<User> =
-        userService.getAllUsers(limit = limit, offset = offset)
+    fun users(@InputArgument input: UsersLookupInput): List<User> =
+        userService.getAllUsers(input)
 }

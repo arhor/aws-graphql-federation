@@ -11,8 +11,8 @@ import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import java.util.EnumSet
 
-@Immutable
 @Table(UserEntity.TABLE_NAME)
+@Immutable
 data class UserEntity(
     @Id
     @Column("id")
