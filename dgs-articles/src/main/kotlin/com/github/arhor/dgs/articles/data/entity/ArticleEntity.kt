@@ -8,7 +8,6 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
-import java.net.URL
 import java.time.LocalDateTime
 
 @Table(ArticleEntity.TABLE_NAME)
@@ -26,7 +25,7 @@ data class ArticleEntity(
     val header: String,
 
     @Column("banner")
-    val banner: URL?,
+    val banner: String?,
 
     @Column("content")
     val content: String,
