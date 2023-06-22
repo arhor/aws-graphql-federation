@@ -3,7 +3,7 @@ package com.github.arhor.dgs.users.data.repository
 import com.github.arhor.dgs.lib.config.ConfigureAdditionalBeans
 import com.github.arhor.dgs.users.config.ConfigureDatabase
 import com.github.arhor.dgs.users.data.entity.UserEntity
-import com.github.arhor.dgs.users.data.listener.UserStateChangedEventListener
+import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sns.core.SnsOperations
 import io.mockk.every
@@ -37,7 +37,7 @@ import java.time.LocalDateTime
     classes = [
         ConfigureDatabase::class,
         ConfigureAdditionalBeans::class,
-        UserStateChangedEventListener::class,
+        UserRelationalEventListener::class,
     ],
 )
 @AutoConfigureTestDatabase(
@@ -180,7 +180,7 @@ internal class UserEntityRepositoryIntegrationTest {
 //            .returns(userId, from { it.userId })
 //    }
 
-    @Suppress("UNUSED_CHANGED_VALUE")
+    @Suppress("UNUSED_CHANGED_VALUE", "SameParameterValue")
     private fun createUserUsingJDBC(username: String, password: String): Long {
         val initialVersion = 1L
         val currentTimestamp = Timestamp.valueOf(LocalDateTime.now())
@@ -226,8 +226,8 @@ internal class UserEntityRepositoryIntegrationTest {
                 add("spring.datasource.url", db::getJdbcUrl)
                 add("spring.datasource.username", db::getUsername)
                 add("spring.datasource.password", db::getPassword)
-                add(UserStateChangedEventListener.USER_UPDATED_EVENTS_PROP) { USER_UPDATED_TEST_EVENTS_DESTINATION }
-                add(UserStateChangedEventListener.USER_DELETED_EVENTS_PROP) { USER_DELETED_TEST_EVENTS_DESTINATION }
+                add(UserRelationalEventListener.USER_UPDATED_EVENTS_PROP) { USER_UPDATED_TEST_EVENTS_DESTINATION }
+                add(UserRelationalEventListener.USER_DELETED_EVENTS_PROP) { USER_DELETED_TEST_EVENTS_DESTINATION }
             }
         }
     }

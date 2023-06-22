@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.graphql.exception
+package com.github.arhor.dgs.users.api.graphql
 
 import com.github.arhor.dgs.lib.exception.EntityDuplicateException
 import com.github.arhor.dgs.lib.exception.EntityNotFoundException
@@ -18,7 +18,7 @@ private typealias DFEHParams = DataFetcherExceptionHandlerParameters
 private typealias DFEHResult = DataFetcherExceptionHandlerResult
 
 @Component
-class CustomDataFetchingExceptionHandler(private val delegate: DFEHandler) : DFEHandler by delegate {
+class GlobalDataFetchingExceptionHandler(private val delegate: DFEHandler) : DFEHandler by delegate {
 
     @Autowired
     constructor() : this(delegate = DefaultDataFetcherExceptionHandler())

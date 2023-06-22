@@ -1,13 +1,13 @@
-package com.github.arhor.dgs.users.graphql.fetcher
+package com.github.arhor.dgs.users.api.graphql.datafetcher
 
 import com.github.arhor.dgs.lib.exception.EntityNotFoundException
 import com.github.arhor.dgs.lib.exception.Operation
+import com.github.arhor.dgs.users.api.graphql.GlobalDataFetchingExceptionHandler
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
-import com.github.arhor.dgs.users.graphql.exception.CustomDataFetchingExceptionHandler
 import com.github.arhor.dgs.users.service.UserService
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest
         DgsAutoConfiguration::class,
         DgsExtendedScalarsAutoConfiguration::class,
         UserFetcher::class,
-        CustomDataFetchingExceptionHandler::class,
+        GlobalDataFetchingExceptionHandler::class,
     ]
 )
 internal class UserFetcherTest {

@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.data.listener;
+package com.github.arhor.dgs.users.api.listener;
 
 import com.github.arhor.dgs.users.data.entity.UserEntity;
 import io.awspring.cloud.sns.core.SnsNotification;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Component
 @Retryable(retryFor = MessagingException.class)
-public class UserStateChangedEventListener extends AbstractRelationalEventListener<UserEntity> {
+public class UserRelationalEventListener extends AbstractRelationalEventListener<UserEntity> {
 
     public static final String USER_UPDATED_EVENTS_PROP = "application-props.aws.sns.user-updated-events";
     public static final String USER_DELETED_EVENTS_PROP = "application-props.aws.sns.user-deleted-events";
@@ -30,7 +30,7 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
     private final String userDeletedEventsTopic;
 
     @Autowired
-    public UserStateChangedEventListener(
+    public UserRelationalEventListener(
         final SnsOperations snsOperations,
         @Value("${" + USER_UPDATED_EVENTS_PROP + ":#{null}}") final String userUpdatedEventsTopic,
         @Value("${" + USER_DELETED_EVENTS_PROP + ":#{null}}") final String userDeletedEventsTopic
@@ -56,10 +56,11 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
     }
 
     @Override
+    @SuppressWarnings("DataFlowIssue")
     public void onAfterSave(@Nonnull final AfterSaveEvent<UserEntity> event) {
         sendNotification(
             userUpdatedEventsTopic,
-            new UserStateChange.Updated(event)
+            new UserStateChange.Updated(event.getEntity().getId())
         );
     }
 
@@ -67,7 +68,7 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
     public void onAfterDelete(@Nonnull final AfterDeleteEvent<UserEntity> event) {
         sendNotification(
             userDeletedEventsTopic,
-            new UserStateChange.Deleted(event)
+            new UserStateChange.Deleted((Long) event.getId().getValue())
         );
     }
 
@@ -79,5 +80,24 @@ public class UserStateChangedEventListener extends AbstractRelationalEventListen
                 Map.of(HEADER_PAYLOAD_TYPE, payload.type())
             )
         );
+    }
+
+    sealed interface UserStateChange {
+
+        String type();
+
+        record Updated(Long id) implements UserStateChange {
+            @Override
+            public String type() {
+                return "UserStateChange.Updated";
+            }
+        }
+
+        record Deleted(Long id) implements UserStateChange {
+            @Override
+            public String type() {
+                return "UserStateChange.Deleted";
+            }
+        }
     }
 }

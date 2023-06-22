@@ -2,7 +2,6 @@ package com.github.arhor.dgs.users.service
 
 import com.github.arhor.dgs.lib.mapstruct.IgnoreAuditMappings
 import com.github.arhor.dgs.lib.mapstruct.MapstructCommonConfig
-import com.github.arhor.dgs.lib.mapstruct.OptionalMapper
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
@@ -11,7 +10,7 @@ import org.mapstruct.Mapping
 
 @Mapper(
     config = MapstructCommonConfig::class,
-    uses = [OptionalMapper::class],
+    implementationPackage = "com.github.arhor.dgs.users.generated.mapper",
 )
 interface UserMapper {
 

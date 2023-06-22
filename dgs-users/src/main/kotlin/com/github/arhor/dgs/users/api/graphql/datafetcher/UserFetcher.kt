@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.graphql.fetcher
+package com.github.arhor.dgs.users.api.graphql.datafetcher
 
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput

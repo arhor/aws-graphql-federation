@@ -1,10 +1,11 @@
 @file:Suppress("ClassName")
 
-package com.github.arhor.dgs.users.data.listener
+package com.github.arhor.dgs.users.api.listener
 
+import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener.USER_DELETED_EVENTS_PROP
+import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener.USER_UPDATED_EVENTS_PROP
+import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener.UserStateChange
 import com.github.arhor.dgs.users.data.entity.UserEntity
-import com.github.arhor.dgs.users.data.listener.UserStateChangedEventListener.USER_DELETED_EVENTS_PROP
-import com.github.arhor.dgs.users.data.listener.UserStateChangedEventListener.USER_UPDATED_EVENTS_PROP
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import io.mockk.every
@@ -28,11 +29,11 @@ import org.springframework.data.relational.core.mapping.event.AfterSaveEvent
 import org.springframework.data.relational.core.mapping.event.Identifier
 import java.util.stream.Stream
 
-internal class UserStateChangedEventListenerTest {
+internal class UserRelationalEventListenerTest {
 
     private val mockSnsOperations = mockk<SnsOperations>()
 
-    private val listener = UserStateChangedEventListener(
+    private val listener = UserRelationalEventListener(
         mockSnsOperations,
         TEST_USER_UPDATED_EVENTS,
         TEST_USER_DELETED_EVENTS,
@@ -48,7 +49,7 @@ internal class UserStateChangedEventListenerTest {
     ) {
         // When
         val result = catchThrowable {
-            UserStateChangedEventListener(
+            UserRelationalEventListener(
                 mockSnsOperations,
                 userUpdatedEventsTopic,
                 userDeletedEventsTopic,
@@ -74,7 +75,7 @@ internal class UserStateChangedEventListenerTest {
         every { mockSnsOperations.sendNotification(capture(snsTopicName), capture(notification)) } just runs
 
         val relationalEvent = AfterSaveEvent(entity, change)
-        val expectedPayload = UserStateChange.Updated(relationalEvent)
+        val expectedPayload = UserStateChange.Updated(STUB_USER_ID)
         val expectedSnsName = TEST_USER_UPDATED_EVENTS
 
         // When
@@ -105,7 +106,7 @@ internal class UserStateChangedEventListenerTest {
         every { mockSnsOperations.sendNotification(capture(snsTopicName), capture(notification)) } just runs
 
         val relationalEvent = AfterDeleteEvent(id, entity, change)
-        val expectedPayload = UserStateChange.Deleted(relationalEvent)
+        val expectedPayload = UserStateChange.Deleted(STUB_USER_ID)
         val expectedSnsName = TEST_USER_DELETED_EVENTS
 
         // When
