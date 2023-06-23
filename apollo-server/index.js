@@ -1,7 +1,10 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
-import { verify } from 'jsonwebtoken';
+import { v4 as uuid } from 'uuid';
+
+const TOKEN_HEADER_PREFIX_NAME = 'Bearer ';
+const TOKEN_HEADER_PREFIX_SIZE = TOKEN_HEADER_PREFIX_NAME.length;
 
 const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
@@ -15,10 +18,7 @@ const gateway = new ApolloGateway({
     buildService: ({ url }) => new RemoteGraphQLDataSource({
         url,
         willSendRequest: ({ request, context }) => {
-            const currentUser = context.user;
-            if (currentUser) {
-                request.http.headers.set('x-current-user', JSON.stringify(currentUser));
-            }
+            request.http.headers.set('x-request-id', uuid());
         }
     })
 });
@@ -30,8 +30,8 @@ const server = new ApolloServer({
 const { url } = await startStandaloneServer(server, {
     context: async ({ req }) => {
         const header = req.headers.authorization;
-        if (header) {
-            const token = header.replace('Bearer ', '');
+        if (header && header.startsWith(TOKEN_HEADER_PREFIX_NAME)) {
+            const token = header.substring(TOKEN_HEADER_PREFIX_SIZE);
             if (token) {
                 const data = await fetch('http://localhost:5001/api/jwt/verify', { method: 'POST', body: JSON.stringify({ token }) });
                 const user = await data.json();

@@ -35,6 +35,6 @@ class ExtendedRequestContextFilter : OrderedRequestContextFilter() {
     }
 
     companion object {
-        private const val REQUEST_ID = "X-REQUEST-ID"
+        private const val REQUEST_ID = "x-request-id"
     }
 }
