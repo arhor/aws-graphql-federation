@@ -6,9 +6,10 @@ plugins {
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
-    id("jacoco")
+    jacoco
 }
 
+extra["kotlin.version"] = libs.versions.kotlin.asProvider().get()
 val javaVersion: String = libs.versions.java.get()
 
 java {
@@ -36,8 +37,6 @@ configurations {
         exclude(group = "org.apache.logging.log4j", module = "log4j-api")
     }
 }
-
-extra["kotlin.version"] = libs.versions.kotlin.asProvider().get()
 
 dependencies {
     kapt(platform(":shared-bom"))

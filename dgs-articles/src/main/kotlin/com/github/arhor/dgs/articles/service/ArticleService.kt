@@ -11,4 +11,5 @@ interface ArticleService {
     fun deleteArticle(id: Long): Boolean
     fun getArticleById(id: Long): Article
     fun getArticles(input: ArticlesLookupInput): List<Article>
+    fun getArticlesByUserIds(userIds: Set<Long>): Map<Long, List<Article>>
 }

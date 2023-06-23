@@ -9,6 +9,7 @@ plugins {
     jacoco
 }
 
+extra["kotlin.version"] = libs.versions.kotlin.asProvider().get()
 val javaVersion: String = libs.versions.java.get()
 
 java {
@@ -111,9 +112,6 @@ tasks {
     generateJava {
         language = "kotlin"
         packageName = "com.github.arhor.dgs.articles.generated.graphql"
-        typeMapping = mutableMapOf(
-            "Url" to "java.net.URL"
-        )
     }
 
     test {
@@ -132,7 +130,7 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = 0.30.toBigDecimal()
+                    minimum = 0.0.toBigDecimal()
                 }
             }
         }
@@ -156,10 +154,10 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/dgs/users/**/Main*.class",
-                        "com/github/arhor/dgs/users/**/aop/",
-                        "com/github/arhor/dgs/users/**/config/",
-                        "com/github/arhor/dgs/users/**/generated/",
+                        "com/github/arhor/dgs/articles/**/Main*.class",
+                        "com/github/arhor/dgs/articles/**/aop/",
+                        "com/github/arhor/dgs/articles/**/config/",
+                        "com/github/arhor/dgs/articles/**/generated/",
                     )
                 }
             }

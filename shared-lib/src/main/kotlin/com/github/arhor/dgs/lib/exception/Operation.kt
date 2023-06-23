@@ -5,6 +5,5 @@ enum class Operation {
     READ,
     UPDATE,
     DELETE,
+    UNKNOWN,
 }
-
-fun Operation?.toString() = this?.toString() ?: "UNKNOWN"

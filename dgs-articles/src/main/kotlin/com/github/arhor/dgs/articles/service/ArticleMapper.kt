@@ -17,5 +17,5 @@ interface ArticleMapper {
     @Mapping(target = "banner", ignore = true)
     fun mapToEntity(input: CreateArticleInput): ArticleEntity
 
-    fun mapToDTO(it: ArticleEntity): Article
+    fun mapToDTO(entity: ArticleEntity): Article
 }
