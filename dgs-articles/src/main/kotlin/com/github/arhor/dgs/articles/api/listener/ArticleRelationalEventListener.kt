@@ -12,8 +12,8 @@ import org.springframework.messaging.MessagingException
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
-@Component
-@Retryable(retryFor = [MessagingException::class])
+//@Component
+//@Retryable(retryFor = [MessagingException::class])
 class ArticleRelationalEventListener(
     private val snsOperations: SnsOperations,
     appProps: AppProps,
@@ -47,7 +47,12 @@ class ArticleRelationalEventListener(
     }
 
     sealed class ArticleStateChange(val type: String) {
-        data class Updated(val id: Long) : ArticleStateChange("ArticleStateChange.Updated")
-        data class Deleted(val id: Long) : ArticleStateChange("ArticleStateChange.Deleted")
+        data class Updated(val id: Long) : ArticleStateChange(UPDATED)
+        data class Deleted(val id: Long) : ArticleStateChange(DELETED)
+
+        companion object {
+            private val UPDATED = "${ArticleStateChange::class.simpleName}.${Updated::class.simpleName}"
+            private val DELETED = "${ArticleStateChange::class.simpleName}.${Deleted::class.simpleName}"
+        }
     }
 }

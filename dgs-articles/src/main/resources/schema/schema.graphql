@@ -13,8 +13,6 @@ type Mutation {
     createArticle(input: CreateArticleInput!): Article!
     updateArticle(input: UpdateArticleInput!): Article!
     deleteArticle(id: Long!): Boolean!
-    createTag(input: CreateTagInput!): Tag!
-    deleteTag(id: Long!): Boolean!
 }
 
 input ArticlesLookupInput {
@@ -27,6 +25,7 @@ input CreateArticleInput {
     header: String!
     banner: Upload
     content: String!
+    tags: [String!]
 }
 
 input UpdateArticleInput {
@@ -34,11 +33,7 @@ input UpdateArticleInput {
     header: String
     banner: Upload
     content: String
-}
-
-input CreateTagInput {
-    articleId: Long!
-    name: String!
+    tags: [String!]
 }
 
 type Article @key(fields: "id") {
@@ -47,12 +42,7 @@ type Article @key(fields: "id") {
     header: String!
     banner: String
     content: String!
-    tags: [Tag!]
-}
-
-type Tag {
-    id: Long!
-    name: String!
+    tags: [String!]
 }
 
 type User @key(fields: "id") @extends {

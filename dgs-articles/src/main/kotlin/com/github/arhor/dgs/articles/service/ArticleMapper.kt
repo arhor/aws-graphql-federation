@@ -15,7 +15,9 @@ interface ArticleMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "banner", ignore = true)
+    @Mapping(target = "tags", expression = "java(java.util.Collections.emptySet())")
     fun mapToEntity(input: CreateArticleInput): ArticleEntity
 
+    @Mapping(target = "tags", ignore = true)
     fun mapToDTO(entity: ArticleEntity): Article
 }

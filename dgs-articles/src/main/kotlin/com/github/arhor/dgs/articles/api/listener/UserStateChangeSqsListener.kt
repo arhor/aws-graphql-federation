@@ -8,15 +8,15 @@ import org.springframework.stereotype.Component
 @Component
 class UserStateChangeSqsListener {
 
-    @SqsListener("\${application-props.aws.sqs.user-updated-events}")
-    fun handleUserUpdate(message: Message<String>) {
-        logger.debug("Processing event: {}", message)
-    }
-
-    @SqsListener("\${application-props.aws.sqs.user-deleted-events}")
-    fun handleUserDelete(message: Message<String>) {
-        logger.debug("Processing event: {}", message)
-    }
+//    @SqsListener("\${application-props.aws.sqs.user-updated-events}")
+//    fun handleUserUpdate(message: Message<String>) {
+//        logger.debug("Processing event: {}", message)
+//    }
+//
+//    @SqsListener("\${application-props.aws.sqs.user-deleted-events}")
+//    fun handleUserDelete(message: Message<String>) {
+//        logger.debug("Processing event: {}", message)
+//    }
 
     companion object {
         private val logger = LoggerFactory.getLogger(UserStateChangeSqsListener::class.java)

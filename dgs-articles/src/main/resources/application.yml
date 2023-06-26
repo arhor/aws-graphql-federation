@@ -61,6 +61,9 @@ dgs:
 
 application-props:
   aws:
+    sns:
+      article-updated-events: STUB
+      article-deleted-events: STUB
     sqs:
       user-updated-events: ${AWS_SQS_USER_UPDATED_EVENTS}
       user-deleted-events: ${AWS_SQS_USER_DELETED_EVENTS}
@@ -72,9 +75,9 @@ spring:
     activate:
       on-profile: dev
     import:
-      - optional:file:../../.env.dev[.properties]
-      - optional:file:../.env.dev[.properties]
-      - optional:file:./.env.dev[.properties]
+      - optional:file:../../.env[.properties]
+      - optional:file:../.env[.properties]
+      - optional:file:./.env[.properties]
   cache:
     caffeine:
       spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s,recordStats'
