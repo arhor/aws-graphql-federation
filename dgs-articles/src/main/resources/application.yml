@@ -67,6 +67,8 @@ application-props:
     sqs:
       user-updated-events: ${AWS_SQS_USER_UPDATED_EVENTS}
       user-deleted-events: ${AWS_SQS_USER_DELETED_EVENTS}
+    s3:
+      banners-bucket-name: STUB
 
 ---
 

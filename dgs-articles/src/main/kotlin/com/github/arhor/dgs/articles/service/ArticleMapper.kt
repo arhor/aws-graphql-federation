@@ -18,9 +18,9 @@ import java.util.Collections
 interface ArticleMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "banner", ignore = true)
+    @Mapping(target = "banner", expression = "java(banner)")
     @Mapping(target = "tags", expression = "java(tags)")
-    fun mapToEntity(dto: CreateArticleInput, tags: Set<TagRef>): ArticleEntity
+    fun mapToEntity(dto: CreateArticleInput, banner: String?, tags: Set<TagRef>): ArticleEntity
 
     @Mapping(target = "tags", ignore = true)
     fun mapToDTO(entity: ArticleEntity): Article

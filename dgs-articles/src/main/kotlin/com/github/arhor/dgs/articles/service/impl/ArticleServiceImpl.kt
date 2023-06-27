@@ -3,6 +3,7 @@ package com.github.arhor.dgs.articles.service.impl
 import com.github.arhor.dgs.articles.data.entity.TagEntity
 import com.github.arhor.dgs.articles.data.entity.TagRef
 import com.github.arhor.dgs.articles.data.repository.ArticleRepository
+import com.github.arhor.dgs.articles.data.repository.FileRepository
 import com.github.arhor.dgs.articles.data.repository.TagRepository
 import com.github.arhor.dgs.articles.generated.graphql.types.Article
 import com.github.arhor.dgs.articles.generated.graphql.types.ArticlesLookupInput
@@ -12,19 +13,31 @@ import com.github.arhor.dgs.articles.service.ArticleMapper
 import com.github.arhor.dgs.articles.service.ArticleService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Service
 class ArticleServiceImpl(
     private val articleMapper: ArticleMapper,
     private val articleRepository: ArticleRepository,
+    private val fileRepository: FileRepository,
     private val tagRepository: TagRepository,
 ) : ArticleService {
 
     @Transactional
     override fun createArticle(input: CreateArticleInput): Article {
-        return articleMapper.mapToEntity(dto = input, tags = materialize(input.tags))
+        val tagRefs = materialize(input.tags)
+        val bannerFilename = input.banner?.let { it.name + UUID.randomUUID() }
+
+        val article = articleMapper.mapToEntity(dto = input, banner = bannerFilename, tags = tagRefs)
             .let(articleRepository::save)
             .let(articleMapper::mapToDTO)
+
+        if (bannerFilename != null) {
+            input.banner.inputStream.use {
+                fileRepository.upload(filename = bannerFilename, data = it)
+            }
+        }
+        return article
     }
 
     @Transactional

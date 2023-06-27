@@ -12,8 +12,8 @@ import org.springframework.messaging.MessagingException
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
-//@Component
-//@Retryable(retryFor = [MessagingException::class])
+@Component
+@Retryable(retryFor = [MessagingException::class])
 class ArticleRelationalEventListener(
     private val snsOperations: SnsOperations,
     appProps: AppProps,
