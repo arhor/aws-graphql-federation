@@ -22,7 +22,7 @@ class ArticleServiceImpl(
 
     @Transactional
     override fun createArticle(input: CreateArticleInput): Article {
-        return articleMapper.mapToEntity(dto = input, tags = input.tags.materialize())
+        return articleMapper.mapToEntity(dto = input, tags = materialize(input.tags))
             .let(articleRepository::save)
             .let(articleMapper::mapToDTO)
     }
@@ -64,10 +64,10 @@ class ArticleServiceImpl(
     /**
      * Persists missing tags to the database, returning tag references.
      */
-    private fun List<String>?.materialize(): Set<TagRef> = when {
-        this != null -> {
-            val presentTags = tagRepository.findAllByNameIn(this)
-            val missingTags = (this - presentTags.mapTo(HashSet()) { it.name }).map(TagEntity::new)
+    private fun materialize(tags: List<String>?): Set<TagRef> = when {
+        tags != null -> {
+            val presentTags = tagRepository.findAllByNameIn(tags)
+            val missingTags = (tags - presentTags.mapTo(HashSet()) { it.name }).map(TagEntity::create)
             val createdTags = tagRepository.saveAll(missingTags)
 
             val initialCapacity = presentTags.size + createdTags.size

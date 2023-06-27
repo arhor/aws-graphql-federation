@@ -14,37 +14,46 @@ import java.time.LocalDateTime
 @Immutable
 data class ArticleEntity(
     @Id
-    @Column("id")
+    @Column(COL_ID)
     val id: Long? = null,
 
-    @Column("user_id")
+    @Column(COL_USER_ID)
     val userId: Long?,
 
-    @Column("header")
+    @Column(COL_HEADER)
     val header: String,
 
-    @Column("banner")
+    @Column(COL_BANNER)
     val banner: String?,
 
-    @Column("content")
+    @Column(COL_CONTENT)
     val content: String,
 
     @Version
-    @Column("version")
+    @Column(COL_VERSION)
     val version: Long? = null,
 
     @CreatedDate
-    @Column("created_date_time")
+    @Column(COL_CREATED_DATE_TIME)
     val createdDateTime: LocalDateTime? = null,
 
     @LastModifiedDate
-    @Column("updated_date_time")
+    @Column(COL_UPDATED_DATE_TIME)
     val updatedDateTime: LocalDateTime? = null,
 
-    @MappedCollection(idColumn = "article_id")
+    @MappedCollection(idColumn = TagRef.COL_ARTICLE_ID)
     val tags: Set<TagRef> = emptySet()
 ) {
     companion object {
         const val TABLE_NAME = "articles"
+
+        const val COL_ID = "id"
+        const val COL_USER_ID = "user_id"
+        const val COL_HEADER = "header"
+        const val COL_BANNER = "banner"
+        const val COL_CONTENT = "content"
+        const val COL_VERSION = "version"
+        const val COL_CREATED_DATE_TIME = "created_date_time"
+        const val COL_UPDATED_DATE_TIME = "updated_date_time"
     }
 }

@@ -9,15 +9,18 @@ import org.springframework.data.relational.core.mapping.Table
 @Immutable
 data class TagEntity(
     @Id
-    @Column("id")
+    @Column(COL_ID)
     val id: Long? = null,
 
-    @Column("name")
+    @Column(COL_NAME)
     val name: String,
 ) {
     companion object {
         const val TABLE_NAME = "tags"
 
-        fun new(name: String) = TagEntity(name = name)
+        const val COL_ID = "id"
+        const val COL_NAME = "name"
+
+        fun create(name: String) = TagEntity(name = name)
     }
 }
