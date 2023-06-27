@@ -73,7 +73,7 @@ class ArticleServiceImpl(
         val article = articleRepository.findByIdOrNull(id) ?: throw EntityNotFoundException(
             entity = ARTICLE.TYPE_NAME,
             condition = "${ARTICLE.Id} = $id",
-            operation = Operation.READ,
+            operation = Operation.DELETE,
         )
         articleRepository.delete(article)
         article.banner?.let { fileRepository.delete(it) }
