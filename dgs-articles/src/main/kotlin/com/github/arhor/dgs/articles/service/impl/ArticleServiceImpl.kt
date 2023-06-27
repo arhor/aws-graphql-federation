@@ -62,7 +62,7 @@ class ArticleServiceImpl(
     }
 
     /**
-     * Persists missing tags to the database, returning all tag entities with id property set.
+     * Persists missing tags to the database, returning tag references.
      */
     private fun List<String>?.materialize(): Set<TagRef> = when {
         this != null -> {
