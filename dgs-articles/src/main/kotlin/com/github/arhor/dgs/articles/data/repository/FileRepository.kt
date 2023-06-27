@@ -6,4 +6,5 @@ interface FileRepository {
 
     fun upload(filename: String, data: InputStream)
     fun download(filename: String): InputStream
+    fun delete(filename: String)
 }

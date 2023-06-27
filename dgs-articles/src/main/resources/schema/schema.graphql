@@ -31,7 +31,6 @@ input CreateArticleInput {
 input UpdateArticleInput {
     id: Long!
     header: String
-    banner: Upload
     content: String
     tags: [String!]
 }

@@ -7,7 +7,6 @@ import io.awspring.cloud.s3.S3Operations
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import java.io.InputStream
-import java.util.UUID
 
 @Component
 @Retryable(retryFor = [S3Exception::class])
@@ -25,5 +24,9 @@ class S3FileRepositoryImpl(
     override fun download(filename: String): InputStream {
         // FIXME: input stream must be closed correctly here
         return s3Operations.download(bannersBucketName, filename).inputStream
+    }
+
+    override fun delete(filename: String) {
+        s3Operations.deleteObject(bannersBucketName, filename)
     }
 }

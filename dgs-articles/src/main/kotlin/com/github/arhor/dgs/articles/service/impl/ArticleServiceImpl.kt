@@ -5,12 +5,18 @@ import com.github.arhor.dgs.articles.data.entity.TagRef
 import com.github.arhor.dgs.articles.data.repository.ArticleRepository
 import com.github.arhor.dgs.articles.data.repository.FileRepository
 import com.github.arhor.dgs.articles.data.repository.TagRepository
+import com.github.arhor.dgs.articles.generated.graphql.DgsConstants.ARTICLE
 import com.github.arhor.dgs.articles.generated.graphql.types.Article
 import com.github.arhor.dgs.articles.generated.graphql.types.ArticlesLookupInput
 import com.github.arhor.dgs.articles.generated.graphql.types.CreateArticleInput
 import com.github.arhor.dgs.articles.generated.graphql.types.UpdateArticleInput
 import com.github.arhor.dgs.articles.service.ArticleMapper
 import com.github.arhor.dgs.articles.service.ArticleService
+import com.github.arhor.dgs.lib.exception.EntityNotFoundException
+import com.github.arhor.dgs.lib.exception.Operation
+import org.springframework.dao.OptimisticLockingFailureException
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -41,21 +47,47 @@ class ArticleServiceImpl(
     }
 
     @Transactional
+    @Retryable(retryFor = [OptimisticLockingFailureException::class])
     override fun updateArticle(input: UpdateArticleInput): Article {
-        TODO("Not yet implemented")
+        val initialArticle = articleRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
+            entity = ARTICLE.TYPE_NAME,
+            condition = "${ARTICLE.Id} = ${input.id}",
+            operation = Operation.UPDATE,
+        )
+        var currentArticle = initialArticle
+
+        input.header?.let { currentArticle = currentArticle.copy(header = it) }
+        input.content?.let { currentArticle = currentArticle.copy(content = it) }
+        input.tags?.let { currentArticle = currentArticle.copy(tags = materialize(it)) }
+
+        return articleMapper.mapToDTO(
+            entity = when (currentArticle != initialArticle) {
+                true -> articleRepository.save(currentArticle)
+                else -> currentArticle
+            }
+        )
     }
 
     @Transactional
     override fun deleteArticle(id: Long): Boolean {
-        // delete article
-        // ensure there ar e no m2m links
-        // delete banner image from S3
-        TODO("Not yet implemented")
+        val article = articleRepository.findByIdOrNull(id) ?: throw EntityNotFoundException(
+            entity = ARTICLE.TYPE_NAME,
+            condition = "${ARTICLE.Id} = $id",
+            operation = Operation.READ,
+        )
+        articleRepository.delete(article)
+        article.banner?.let { fileRepository.delete(it) }
+        return true
     }
 
     @Transactional(readOnly = true)
     override fun getArticleById(id: Long): Article {
-        TODO("Not yet implemented")
+        return articleRepository.findByIdOrNull(id)?.let(articleMapper::mapToDTO)
+            ?: throw EntityNotFoundException(
+                entity = ARTICLE.TYPE_NAME,
+                condition = "${ARTICLE.Id} = $id",
+                operation = Operation.READ,
+            )
     }
 
     @Transactional(readOnly = true)
