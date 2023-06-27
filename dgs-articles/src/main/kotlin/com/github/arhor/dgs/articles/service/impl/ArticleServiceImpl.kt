@@ -26,7 +26,7 @@ class ArticleServiceImpl(
     @Transactional
     override fun createArticle(input: CreateArticleInput): Article {
         val tagRefs = materialize(input.tags)
-        val bannerFilename = input.banner?.let { it.name + UUID.randomUUID() }
+        val bannerFilename = input.banner?.let { "${input.userId}__${UUID.randomUUID()}__${it.name}" }
 
         val article = articleMapper.mapToEntity(dto = input, banner = bannerFilename, tags = tagRefs)
             .let(articleRepository::save)
