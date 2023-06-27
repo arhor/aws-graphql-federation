@@ -3,7 +3,7 @@ package com.github.arhor.dgs.articles.service.impl
 import com.github.arhor.dgs.articles.data.entity.TagEntity
 import com.github.arhor.dgs.articles.data.entity.TagRef
 import com.github.arhor.dgs.articles.data.repository.ArticleRepository
-import com.github.arhor.dgs.articles.data.repository.FileRepository
+import com.github.arhor.dgs.articles.data.repository.BannerImageRepository
 import com.github.arhor.dgs.articles.data.repository.TagRepository
 import com.github.arhor.dgs.articles.generated.graphql.DgsConstants.ARTICLE
 import com.github.arhor.dgs.articles.generated.graphql.types.Article
@@ -25,7 +25,7 @@ import java.util.UUID
 class ArticleServiceImpl(
     private val articleMapper: ArticleMapper,
     private val articleRepository: ArticleRepository,
-    private val fileRepository: FileRepository,
+    private val bannerImageRepository: BannerImageRepository,
     private val tagRepository: TagRepository,
 ) : ArticleService {
 
@@ -39,9 +39,7 @@ class ArticleServiceImpl(
             .let(articleMapper::mapToDTO)
 
         if (bannerFilename != null) {
-            input.banner.inputStream.use {
-                fileRepository.upload(filename = bannerFilename, data = it)
-            }
+            bannerImageRepository.upload(filename = bannerFilename, data = input.banner.inputStream)
         }
         return article
     }
@@ -82,7 +80,7 @@ class ArticleServiceImpl(
             operation = Operation.DELETE,
         )
         articleRepository.delete(article)
-        article.banner?.let { fileRepository.delete(it) }
+        article.banner?.let { bannerImageRepository.delete(it) }
         return true
     }
 
