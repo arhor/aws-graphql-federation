@@ -14,5 +14,11 @@ data class TagRef(
 ) {
     companion object {
         const val TABLE_NAME = "articles_has_tags"
+
+        fun create(entity: TagEntity): TagRef = TagRef(
+            tagId = AggregateReference.to(
+                entity.id ?: throw IllegalStateException("TagEntity must be persisted")
+            )
+        )
     }
 }

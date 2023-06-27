@@ -5,7 +5,6 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
-import org.springframework.data.jdbc.core.mapping.AggregateReference
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.MappedCollection
 import org.springframework.data.relational.core.mapping.Table
@@ -45,16 +44,6 @@ data class ArticleEntity(
     @MappedCollection(idColumn = "article_id")
     val tags: Set<TagRef> = emptySet()
 ) {
-    fun withTags(tags: Collection<TagEntity>): ArticleEntity = copy(
-        tags = this.tags + tags.map {
-            TagRef(
-                tagId = AggregateReference.to(
-                    it.id ?: throw IllegalStateException("TagEntity must be persisted")
-                )
-            )
-        }
-    )
-
     companion object {
         const val TABLE_NAME = "articles"
     }

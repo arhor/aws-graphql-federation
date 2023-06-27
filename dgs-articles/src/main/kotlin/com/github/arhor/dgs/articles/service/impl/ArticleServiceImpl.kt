@@ -1,6 +1,7 @@
 package com.github.arhor.dgs.articles.service.impl
 
 import com.github.arhor.dgs.articles.data.entity.TagEntity
+import com.github.arhor.dgs.articles.data.entity.TagRef
 import com.github.arhor.dgs.articles.data.repository.ArticleRepository
 import com.github.arhor.dgs.articles.data.repository.TagRepository
 import com.github.arhor.dgs.articles.generated.graphql.types.Article
@@ -21,8 +22,7 @@ class ArticleServiceImpl(
 
     @Transactional
     override fun createArticle(input: CreateArticleInput): Article {
-        return articleMapper.mapToEntity(input)
-            .withTags(input.tags.materialize())
+        return articleMapper.mapToEntity(dto = input, tags = input.tags.materialize())
             .let(articleRepository::save)
             .let(articleMapper::mapToDTO)
     }
@@ -51,31 +51,32 @@ class ArticleServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getArticlesByUserIds(userIds: Set<Long>): Map<Long, List<Article>> =
-        when {
-            userIds.isNotEmpty() -> {
-                articleRepository
-                    .findAllByUserIdIn(userIds)
-                    .groupBy({ it.userId!! }, articleMapper::mapToDTO)
-            }
-
-            else -> {
-                emptyMap()
-            }
+    override fun getArticlesByUserIds(userIds: Set<Long>): Map<Long, List<Article>> = when {
+        userIds.isNotEmpty() -> {
+            articleRepository
+                .findAllByUserIdIn(userIds)
+                .groupBy({ it.userId!! }, articleMapper::mapToDTO)
         }
+
+        else -> emptyMap()
+    }
 
     /**
      * Persists missing tags to the database, returning all tag entities with id property set.
      */
-    private fun List<String>?.materialize(): List<TagEntity> {
-        return if (this != null) {
+    private fun List<String>?.materialize(): Set<TagRef> = when {
+        this != null -> {
             val presentTags = tagRepository.findAllByNameIn(this)
             val missingTags = (this - presentTags.mapTo(HashSet()) { it.name }).map(TagEntity::new)
             val createdTags = tagRepository.saveAll(missingTags)
 
-            presentTags + createdTags
-        } else {
-            emptyList()
+            val initialCapacity = presentTags.size + createdTags.size
+
+            sequenceOf(presentTags, createdTags)
+                .flatten()
+                .mapTo(HashSet(initialCapacity), TagRef::create)
         }
+
+        else -> emptySet()
     }
 }
