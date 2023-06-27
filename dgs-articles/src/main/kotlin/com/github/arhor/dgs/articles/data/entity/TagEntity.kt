@@ -17,5 +17,7 @@ data class TagEntity(
 ) {
     companion object {
         const val TABLE_NAME = "tags"
+
+        fun new(name: String) = TagEntity(name = name)
     }
 }

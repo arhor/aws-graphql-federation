@@ -21,12 +21,8 @@ class ArticleServiceImpl(
 
     @Transactional
     override fun createArticle(input: CreateArticleInput): Article {
-        val tags =
-            input.tags?.map { name -> TagEntity(name = name) }?.let(tagRepository::saveAll)
-                ?: emptyList()
-
         return articleMapper.mapToEntity(input)
-            .withTags(tags)
+            .withTags(input.tags.materialize())
             .let(articleRepository::save)
             .let(articleMapper::mapToDTO)
     }
@@ -67,4 +63,19 @@ class ArticleServiceImpl(
                 emptyMap()
             }
         }
+
+    /**
+     * Persists missing tags to the database, returning all tag entities with id property set.
+     */
+    private fun List<String>?.materialize(): List<TagEntity> {
+        return if (this != null) {
+            val presentTags = tagRepository.findAllByNameIn(this)
+            val missingTags = (this - presentTags.asSequence().map { it.name }.toSet()).map(TagEntity::new)
+            val createdTags = tagRepository.saveAll(missingTags)
+
+            presentTags + createdTags
+        } else {
+            emptyList()
+        }
+    }
 }

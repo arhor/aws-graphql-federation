@@ -12,4 +12,6 @@ interface TagRepository : ListCrudRepository<TagEntity, Long> {
         resultSetExtractorRef = ArticleIdToTagNamesResultSetExtractor.BEAN_NAME,
     )
     fun findAllByArticleIdIn(articleIds: Collection<Long>): Map<Long, List<String>>
+
+    fun findAllByNameIn(tagNames: Collection<String>): List<TagEntity>
 }
