@@ -70,7 +70,7 @@ class ArticleServiceImpl(
     private fun List<String>?.materialize(): List<TagEntity> {
         return if (this != null) {
             val presentTags = tagRepository.findAllByNameIn(this)
-            val missingTags = (this - presentTags.asSequence().map { it.name }.toSet()).map(TagEntity::new)
+            val missingTags = (this - presentTags.mapTo(HashSet()) { it.name }).map(TagEntity::new)
             val createdTags = tagRepository.saveAll(missingTags)
 
             presentTags + createdTags
