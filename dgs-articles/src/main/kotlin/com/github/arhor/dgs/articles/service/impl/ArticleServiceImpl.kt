@@ -47,6 +47,9 @@ class ArticleServiceImpl(
 
     @Transactional
     override fun deleteArticle(id: Long): Boolean {
+        // delete article
+        // ensure there ar e no m2m links
+        // delete banner image from S3
         TODO("Not yet implemented")
     }
 
