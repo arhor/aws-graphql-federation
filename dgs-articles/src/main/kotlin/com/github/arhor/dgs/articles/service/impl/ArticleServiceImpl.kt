@@ -49,21 +49,27 @@ class ArticleServiceImpl(
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
     override fun updateArticle(input: UpdateArticleInput): Article {
-        val initialArticle = articleRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
+        val initialState = articleRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
             entity = ARTICLE.TYPE_NAME,
             condition = "${ARTICLE.Id} = ${input.id}",
             operation = Operation.UPDATE,
         )
-        var currentArticle = initialArticle
+        var currentState = initialState
 
-        input.header?.let { currentArticle = currentArticle.copy(header = it) }
-        input.content?.let { currentArticle = currentArticle.copy(content = it) }
-        input.tags?.let { currentArticle = currentArticle.copy(tags = materialize(it)) }
+        input.header?.let {
+            currentState = currentState.copy(header = it)
+        }
+        input.content?.let {
+            currentState = currentState.copy(content = it)
+        }
+        input.tags?.let {
+            currentState = currentState.copy(tags = materialize(it))
+        }
 
         return articleMapper.mapToDTO(
-            entity = when (currentArticle != initialArticle) {
-                true -> articleRepository.save(currentArticle)
-                else -> currentArticle
+            entity = when (currentState != initialState) {
+                true -> articleRepository.save(currentState)
+                else -> initialState
             }
         )
     }

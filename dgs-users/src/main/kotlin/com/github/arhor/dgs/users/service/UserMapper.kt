@@ -18,5 +18,5 @@ interface UserMapper {
     @Mapping(target = "id", ignore = true)
     fun mapToEntity(input: CreateUserInput): UserEntity
 
-    fun mapToDTO(user: UserEntity): User
+    fun mapToDTO(entity: UserEntity): User
 }

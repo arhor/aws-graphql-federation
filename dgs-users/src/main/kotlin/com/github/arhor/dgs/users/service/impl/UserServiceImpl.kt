@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.EnumSet
-import kotlin.properties.Delegates
 
 @Service
 class UserServiceImpl(
@@ -47,29 +46,26 @@ class UserServiceImpl(
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
     override fun updateUser(input: UpdateUserInput): User {
-        var changed = false
-        var user by Delegates.observable(
-            initialValue = userRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
-                entity = USER.TYPE_NAME,
-                condition = "${USER.Id} = ${input.id}",
-                operation = Operation.UPDATE,
-            ),
-            onChange = { _, prev, next ->
-                if (prev != next) {
-                    changed = true
-                }
-            }
+        val initialState = userRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
+            entity = USER.TYPE_NAME,
+            condition = "${USER.Id} = ${input.id}",
+            operation = Operation.UPDATE,
         )
+        var currentState = initialState
+
         input.password?.let {
-            user = user.copy(password = passwordEncoder.encode(it))
+            currentState = currentState.copy(password = passwordEncoder.encode(it))
         }
         input.settings?.let {
-            user = user.copy(settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it) })
+            currentState = currentState.copy(settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it) })
         }
-        if (changed) {
-            user = userRepository.save(user)
-        }
-        return userMapper.mapToDTO(user)
+
+        return userMapper.mapToDTO(
+            entity = when (currentState != initialState) {
+                true -> userRepository.save(currentState)
+                else -> initialState
+            }
+        )
     }
 
     @Transactional
