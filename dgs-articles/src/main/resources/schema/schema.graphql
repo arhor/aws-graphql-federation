@@ -16,8 +16,8 @@ type Mutation {
 }
 
 input ArticlesLookupInput {
-    page: Int! = 0
-    size: Int! = 20
+    page: Long! = 0
+    size: Long! = 20
 }
 
 input CreateArticleInput {

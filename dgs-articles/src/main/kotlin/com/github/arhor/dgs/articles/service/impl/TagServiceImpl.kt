@@ -12,9 +12,7 @@ class TagServiceImpl(
     override fun getTagsByArticleIds(articleIds: Set<Long>): Map<Long, List<String>> =
         when {
             articleIds.isNotEmpty() -> {
-                tagRepository
-                    .findAllByArticleIdIn(articleIds)
-                    .groupBy({ it.articleId }, { it.name })
+                tagRepository.findAllByArticleIdIn(articleIds)
             }
 
             else -> {

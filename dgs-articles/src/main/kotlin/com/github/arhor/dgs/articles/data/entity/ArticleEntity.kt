@@ -19,7 +19,7 @@ data class ArticleEntity(
     val id: Long? = null,
 
     @Column("user_id")
-    val userId: String?,
+    val userId: Long?,
 
     @Column("header")
     val header: String,

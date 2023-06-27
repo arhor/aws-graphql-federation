@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS "articles"
 (
     "id"                   BIGSERIAL       NOT NULL PRIMARY KEY,
-    "user_id"              VARCHAR(512)    NULL,
+    "user_id"              BIGINT          NULL,
     "header"               VARCHAR(512)    NOT NULL,
     "banner"               VARCHAR(512)    NULL,
     "content"              TEXT            NOT NULL,

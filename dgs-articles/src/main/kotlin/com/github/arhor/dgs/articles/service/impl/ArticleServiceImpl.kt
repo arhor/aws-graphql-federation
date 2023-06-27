@@ -9,7 +9,6 @@ import com.github.arhor.dgs.articles.generated.graphql.types.CreateArticleInput
 import com.github.arhor.dgs.articles.generated.graphql.types.UpdateArticleInput
 import com.github.arhor.dgs.articles.service.ArticleMapper
 import com.github.arhor.dgs.articles.service.ArticleService
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -50,7 +49,7 @@ class ArticleServiceImpl(
     @Transactional(readOnly = true)
     override fun getArticles(input: ArticlesLookupInput): List<Article> {
         return articleRepository
-            .findAll(PageRequest.of(input.page, input.size))
+            .findAll(limit = input.size, offset = input.page * input.size)
             .map(articleMapper::mapToDTO)
             .toList()
     }
@@ -61,7 +60,7 @@ class ArticleServiceImpl(
             userIds.isNotEmpty() -> {
                 articleRepository
                     .findAllByUserIdIn(userIds)
-                    .groupBy({ it.id!! }, articleMapper::mapToDTO)
+                    .groupBy({ it.userId!! }, articleMapper::mapToDTO)
             }
 
             else -> {
