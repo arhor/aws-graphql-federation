@@ -55,11 +55,10 @@ dgs:
     graphiql:
       enabled: false
 
-application-props:
+app-props:
   aws:
     sns:
-      user-updated-events: ${AWS_SNS_USER_UPDATED_EVENTS}
-      user-deleted-events: ${AWS_SNS_USER_DELETED_EVENTS}
+      user-state-changes: ${AWS_SNS_USER_STATE_CHANGES}
 
 ---
 

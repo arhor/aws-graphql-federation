@@ -59,14 +59,12 @@ dgs:
     graphiql:
       enabled: false
 
-application-props:
+app-props:
   aws:
     sns:
-      article-updated-events: STUB
-      article-deleted-events: STUB
+      article-state-changes: ${AWS_SQS_ARTICLE_STATE_CHANGES}
     sqs:
-      user-updated-events: ${AWS_SQS_USER_UPDATED_EVENTS}
-      user-deleted-events: ${AWS_SQS_USER_DELETED_EVENTS}
+      user-state-changes: ${AWS_SQS_USER_STATE_CHANGES}
     s3:
       banners-bucket-name: STUB
 

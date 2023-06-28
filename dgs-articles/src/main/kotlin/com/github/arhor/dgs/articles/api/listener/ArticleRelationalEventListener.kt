@@ -19,26 +19,27 @@ class ArticleRelationalEventListener(
     appProps: AppProps,
 ) : AbstractRelationalEventListener<ArticleEntity>() {
 
-    private val articleUpdatedEventsTopic = appProps.aws.sns.articleUpdatedEvents
-    private val articleDeletedEventsTopic = appProps.aws.sns.articleDeletedEvents
+    private val articleStateChangesTopic = appProps.aws.sns.articleStateChanges
 
     override fun onAfterSave(event: AfterSaveEvent<ArticleEntity>) {
         sendNotification(
-            destination = articleUpdatedEventsTopic,
-            payload = ArticleStateChange.Updated(event.entity.id!!),
+            payload = ArticleStateChange.Updated(
+                id = event.entity.id!!
+            )
         )
     }
 
     override fun onAfterDelete(event: AfterDeleteEvent<ArticleEntity>) {
         sendNotification(
-            destination = articleDeletedEventsTopic,
-            payload = ArticleStateChange.Deleted(event.id.value as Long),
+            payload = ArticleStateChange.Deleted(
+                id = event.id.value as Long
+            )
         )
     }
 
-    private fun sendNotification(destination: String, payload: ArticleStateChange) {
+    private fun sendNotification(payload: ArticleStateChange) {
         snsOperations.sendNotification(
-            destination,
+            articleStateChangesTopic,
             SnsNotification(
                 payload,
                 mapOf(HEADER_PAYLOAD_TYPE to payload.type)

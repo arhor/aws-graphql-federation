@@ -212,8 +212,8 @@ internal class UserEntityRepositoryIntegrationTest {
                 add("spring.datasource.url", db::getJdbcUrl)
                 add("spring.datasource.username", db::getUsername)
                 add("spring.datasource.password", db::getPassword)
-                add("application-props.aws.sns.user-updated-events") { "user-updated-test-events" }
-                add("application-props.aws.sns.user-deleted-events") { "user-deleted-test-events" }
+                add("app-props.aws.sns.user-updated-events") { "user-updated-test-events" }
+                add("app-props.aws.sns.user-deleted-events") { "user-deleted-test-events" }
             }
         }
     }

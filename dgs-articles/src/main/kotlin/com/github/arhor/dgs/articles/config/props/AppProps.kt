@@ -2,7 +2,7 @@ package com.github.arhor.dgs.articles.config.props
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties(prefix = "application-props")
+@ConfigurationProperties(prefix = "app-props")
 data class AppProps(
     val aws: Aws,
 ) {
@@ -11,8 +11,7 @@ data class AppProps(
         val s3: S3,
     ) {
         data class Sns(
-            val articleUpdatedEvents: String,
-            val articleDeletedEvents: String,
+            val articleStateChanges: String,
         )
 
         data class S3(

@@ -68,7 +68,7 @@ dgs:
     graphiql:
       enabled: false
 
-application-props:
+app-props:
   retry-attempts: 5
   aws:
     user-updated-queue: ${AWS_SQS_USER_UPDATED_QUEUE}

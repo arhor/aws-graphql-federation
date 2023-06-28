@@ -24,8 +24,7 @@ internal class UserRelationalEventListenerTest {
 
     private val mockSnsOperations = mockk<SnsOperations>()
     private val mockAppProps = mockk<AppProps> {
-        every { aws.sns.userUpdatedEvents } returns TEST_USER_UPDATED_EVENTS
-        every { aws.sns.userDeletedEvents } returns TEST_USER_DELETED_EVENTS
+        every { aws.sns.userStateChanges } returns TEST_USER_STATE_CHANGES
     }
 
     private val listener = UserRelationalEventListener(
@@ -47,7 +46,7 @@ internal class UserRelationalEventListenerTest {
 
         val relationalEvent = AfterSaveEvent(entity, change)
         val expectedPayload = UserStateChange.Updated(STUB_USER_ID)
-        val expectedSnsName = TEST_USER_UPDATED_EVENTS
+        val expectedSnsName = TEST_USER_STATE_CHANGES
 
         // When
         listener.onApplicationEvent(relationalEvent)
@@ -78,7 +77,7 @@ internal class UserRelationalEventListenerTest {
 
         val relationalEvent = AfterDeleteEvent(id, entity, change)
         val expectedPayload = UserStateChange.Deleted(STUB_USER_ID)
-        val expectedSnsName = TEST_USER_DELETED_EVENTS
+        val expectedSnsName = TEST_USER_STATE_CHANGES
 
         // When
         listener.onApplicationEvent(relationalEvent)
@@ -94,9 +93,7 @@ internal class UserRelationalEventListenerTest {
     }
 
     companion object {
-        private const val TEST_USER_UPDATED_EVENTS = "test-user-updated-events"
-        private const val TEST_USER_DELETED_EVENTS = "test-user-deleted-events"
-
+        private const val TEST_USER_STATE_CHANGES = "test-user-state-changes"
         private const val STUB_USER_ID = -1L
     }
 }

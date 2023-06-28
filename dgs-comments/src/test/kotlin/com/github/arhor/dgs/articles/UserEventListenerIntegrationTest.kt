@@ -68,8 +68,8 @@ internal class UserEventListenerIntegrationTest {
                 add("spring.cloud.aws.credentials.secret-key") { localstack.secretKey }
                 add("spring.cloud.aws.region.static") { localstack.region }
                 add("spring.cloud.aws.sqs.endpoint") { localstack.getEndpointOverride(SQS) }
-                add("application-props.aws.user-updated-queue") { USER_UPDATED_TEST_QUEUE }
-                add("application-props.aws.user-deleted-queue") { USER_DELETED_TEST_QUEUE }
+                add("app-props.aws.user-updated-queue") { USER_UPDATED_TEST_QUEUE }
+                add("app-props.aws.user-deleted-queue") { USER_DELETED_TEST_QUEUE }
             }
             logger.info("---------------------------------------------------------------------------------------------")
         }

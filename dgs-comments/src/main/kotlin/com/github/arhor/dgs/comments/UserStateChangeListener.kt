@@ -14,13 +14,13 @@ class UserStateChangeListener(
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @SqsListener("\${application-props.aws.user-updated-queue}")
+    @SqsListener("\${app-props.aws.user-updated-queue}")
     fun handleUserUpdate(message: Message<String>) {
         logger.debug("Processing event: {}", message)
         consumer.accept(objectMapper.registeredModuleIds.joinToString())
     }
 
-    @SqsListener("\${application-props.aws.user-deleted-queue}")
+    @SqsListener("\${app-props.aws.user-deleted-queue}")
     fun handleUserDelete(message: Message<String>) {
         logger.debug("Processing event: {}", message)
         consumer.accept(objectMapper.registeredModuleIds.joinToString())

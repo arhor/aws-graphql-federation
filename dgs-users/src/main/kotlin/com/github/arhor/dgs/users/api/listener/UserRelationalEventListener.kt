@@ -19,26 +19,27 @@ class UserRelationalEventListener(
     appProps: AppProps,
 ) : AbstractRelationalEventListener<UserEntity>() {
 
-    private val userUpdatedEventsTopic = appProps.aws.sns.userUpdatedEvents
-    private val userDeletedEventsTopic = appProps.aws.sns.userDeletedEvents
+    private val userStateChangesTopic = appProps.aws.sns.userStateChanges
 
     override fun onAfterSave(event: AfterSaveEvent<UserEntity>) {
         sendNotification(
-            destination = userUpdatedEventsTopic,
-            payload = UserStateChange.Updated(event.entity.id!!)
+            payload = UserStateChange.Updated(
+                id = event.entity.id!!
+            )
         )
     }
 
     override fun onAfterDelete(event: AfterDeleteEvent<UserEntity>) {
         sendNotification(
-            destination = userDeletedEventsTopic,
-            payload = UserStateChange.Deleted(event.id.value as Long)
+            payload = UserStateChange.Deleted(
+                id = event.id.value as Long
+            )
         )
     }
 
-    private fun sendNotification(destination: String, payload: UserStateChange) {
+    private fun sendNotification(payload: UserStateChange) {
         snsOperations.sendNotification(
-            destination,
+            userStateChangesTopic,
             SnsNotification(
                 payload,
                 mapOf(HEADER_PAYLOAD_TYPE to payload.type)

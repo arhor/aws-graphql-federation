@@ -50,8 +50,8 @@ internal class UserStateChangeSqsListenerTest {
                 add("spring.cloud.aws.credentials.secret-key") { localstack.secretKey }
                 add("spring.cloud.aws.region.static") { localstack.region }
                 add("spring.cloud.aws.sqs.endpoint") { localstack.getEndpointOverride(SQS) }
-                add("application-props.aws.sqs.user-updated-events") { USER_UPDATED_TEST_QUEUE }
-                add("application-props.aws.sqs.user-deleted-events") { USER_DELETED_TEST_QUEUE }
+                add("app-props.aws.sqs.user-updated-events") { USER_UPDATED_TEST_QUEUE }
+                add("app-props.aws.sqs.user-deleted-events") { USER_DELETED_TEST_QUEUE }
             }
         }
 
