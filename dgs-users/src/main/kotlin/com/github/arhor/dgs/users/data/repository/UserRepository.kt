@@ -10,11 +10,12 @@ interface UserRepository :
     CrudRepository<UserEntity, Long>,
     PagingAndSortingRepository<UserEntity, Long> {
 
-    fun findByUsername(username: String): UserEntity?
-
     fun existsByUsername(username: String): Boolean
 
+    /**
+     * Delete User entity by its id, returning number entities affected.
+     */
     @Modifying
     @Query(value = "DELETE FROM ${UserEntity.TABLE_NAME} e WHERE e.id = :userId")
-    fun deleteByIdReturningNumberRecordsAffected(userId: Long): Int
+    fun deleteUserById(userId: Long): Int
 }

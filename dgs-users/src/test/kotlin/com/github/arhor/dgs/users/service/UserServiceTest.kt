@@ -9,6 +9,7 @@ import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.Setting
+import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.impl.UserServiceImpl
 import io.mockk.Call
@@ -28,20 +29,21 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.EnumSet
 import java.util.stream.Stream
 
 internal class UserServiceTest {
 
-    private val mockkUserMapper: UserMapper = mockk()
-    private val mockkUserRepository: UserRepository = mockk()
-    private val mockkPasswordEncoder: PasswordEncoder = mockk()
+    private val mockUserMapper: UserMapper = mockk()
+    private val mockUserRepository: UserRepository = mockk()
+    private val mockPasswordEncoder: PasswordEncoder = mockk()
 
     private val userService: UserService = UserServiceImpl(
-        mockkUserMapper,
-        mockkUserRepository,
-        mockkPasswordEncoder,
+        mockUserMapper,
+        mockUserRepository,
+        mockPasswordEncoder,
     )
 
     @Nested
@@ -59,11 +61,11 @@ internal class UserServiceTest {
                 password = expectedPassword,
             )
 
-            every { mockkUserRepository.existsByUsername(any()) } returns false
-            every { mockkPasswordEncoder.encode(any()) } answers { firstArg() }
-            every { mockkUserMapper.mapToEntity(any()) } answers convertingDtoToUser()
-            every { mockkUserRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
-            every { mockkUserMapper.mapToDTO(any()) } answers convertingUserToDto()
+            every { mockUserRepository.existsByUsername(any()) } returns false
+            every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
+            every { mockUserMapper.mapToEntity(any()) } answers convertingDtoToUser
+            every { mockUserRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
+            every { mockUserMapper.mapToDTO(any()) } answers convertingUserToDto
 
             // When
             val result = userService.createUser(input)
@@ -74,10 +76,10 @@ internal class UserServiceTest {
                 .returns(expectedUsername, from { it.username })
                 .returns(expectedSettings, from { it.settings })
 
-            verify(exactly = 1) { mockkUserRepository.existsByUsername(any()) }
-            verify(exactly = 1) { mockkUserMapper.mapToEntity(any()) }
-            verify(exactly = 1) { mockkUserRepository.save(any()) }
-            verify(exactly = 1) { mockkUserMapper.mapToDTO(any()) }
+            verify(exactly = 1) { mockUserRepository.existsByUsername(any()) }
+            verify(exactly = 1) { mockUserMapper.mapToEntity(any()) }
+            verify(exactly = 1) { mockUserRepository.save(any()) }
+            verify(exactly = 1) { mockUserMapper.mapToDTO(any()) }
         }
 
         @Test
@@ -95,7 +97,7 @@ internal class UserServiceTest {
 
             val username = slot<String>()
 
-            every { mockkUserRepository.existsByUsername(capture(username)) } returns true
+            every { mockUserRepository.existsByUsername(capture(username)) } returns true
 
             // When
             val result = catchException { userService.createUser(input) }
@@ -116,6 +118,66 @@ internal class UserServiceTest {
     }
 
     @Nested
+    inner class `UserService # updateUser` {
+
+        @Test
+        fun `should save updated user state to repository when there are actual changes`() {
+            // Given
+            val user = UserEntity(
+                id = 1,
+                username = "test-username",
+                password = "test-password",
+                settings = EnumSet.allOf(Setting::class.java)
+            )
+
+            every { mockUserRepository.findByIdOrNull(any()) } returns user
+            every { mockUserRepository.save(any()) } answers { firstArg() }
+            every { mockUserMapper.mapToDTO(any()) } answers convertingUserToDto
+            every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
+
+            // When
+            userService.updateUser(
+                input = UpdateUserInput(
+                    id = user.id!!,
+                    password = "${user.password}-updated",
+                    settings = (user.settings + Setting.AGE_OVER_18).toList(),
+                )
+            )
+
+            // Then
+            verify(exactly = 1) { mockUserRepository.save(any()) }
+        }
+
+        @Test
+        fun `should not call save method on repository when there are no changes in user state`() {
+            // Given
+            val user = UserEntity(
+                id = 1,
+                username = "test-username",
+                password = "test-password",
+                settings = EnumSet.allOf(Setting::class.java)
+            )
+
+            every { mockUserRepository.findByIdOrNull(any()) } returns user
+            every { mockUserRepository.save(any()) } answers { firstArg() }
+            every { mockUserMapper.mapToDTO(any()) } answers convertingUserToDto
+            every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
+
+            // When
+            userService.updateUser(
+                input = UpdateUserInput(
+                    id = user.id!!,
+                    password = user.password,
+                    settings = user.settings.toList(),
+                )
+            )
+
+            // Then
+            verify(exactly = 0) { mockUserRepository.save(any()) }
+        }
+    }
+
+    @Nested
     inner class `UserService # deleteUser` {
 
         @MethodSource("com.github.arhor.dgs.users.service.UserServiceTest#delete user positive test data factory")
@@ -127,7 +189,7 @@ internal class UserServiceTest {
         ) {
             val expectedId = 1L
 
-            every { mockkUserRepository.deleteByIdReturningNumberRecordsAffected(any()) } returns affectedRowNum
+            every { mockUserRepository.deleteUserById(any()) } returns affectedRowNum
 
             // When
             val result = userService.deleteUser(expectedId)
@@ -136,61 +198,53 @@ internal class UserServiceTest {
             assertThat(result)
                 .isEqualTo(expectedResult)
 
-            verify(exactly = 1) { mockkUserRepository.deleteByIdReturningNumberRecordsAffected(expectedId) }
+            verify(exactly = 1) { mockUserRepository.deleteUserById(expectedId) }
 
-            confirmVerified(mockkUserMapper, mockkUserRepository, mockkPasswordEncoder)
+            confirmVerified(mockUserMapper, mockUserRepository, mockPasswordEncoder)
         }
 
         @Test
         fun `should throw EntityDuplicateException trying to delete more then one user by id`() {
             // Given
             val id = 1L
+            val numberOfDeletedUsers = 2
+            val expectedExceptionType = IllegalStateException::class.java
 
-            val expectedEntity = USER.TYPE_NAME
-            val expectedOperation = Operation.DELETE
-            val expectedCondition = "${USER.Id} = $id"
-            val expectedExceptionType = EntityDuplicateException::class.java
-
-
-            every { mockkUserRepository.deleteByIdReturningNumberRecordsAffected(any()) } returns 2
+            every { mockUserRepository.deleteUserById(any()) } returns numberOfDeletedUsers
 
             // When
             val result = catchException { userService.deleteUser(id) }
 
             // Then
             assertThat(result)
-                .asInstanceOf(throwable(expectedExceptionType))
-                .satisfies(
-                    { assertThat(it.entity).describedAs("entity").isEqualTo(expectedEntity) },
-                    { assertThat(it.operation).describedAs("operation").isEqualTo(expectedOperation) },
-                    { assertThat(it.condition).describedAs("condition").isEqualTo(expectedCondition) },
+                .isInstanceOf(expectedExceptionType)
+        }
+    }
+
+    private val convertingDtoToUser: MockKAnswerScope<UserEntity, *>.(Call) -> UserEntity
+        get() = {
+            firstArg<CreateUserInput>().let {
+                UserEntity(
+                    username = it.username,
+                    password = it.password,
+                    settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it.settings ?: emptyList()) },
                 )
+            }
         }
-    }
 
-    private fun convertingDtoToUser(): MockKAnswerScope<UserEntity, *>.(Call) -> UserEntity = {
-        firstArg<CreateUserInput>().let {
-
-            UserEntity(
-                username = it.username,
-                password = it.password,
-                settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it.settings ?: emptyList()) },
-            )
+    private val convertingUserToDto: MockKAnswerScope<User, *>.(Call) -> User
+        get() = {
+            firstArg<UserEntity>().let {
+                User(
+                    id = it.id!!,
+                    username = it.username,
+                    settings = it.settings.toList(),
+                )
+            }
         }
-    }
 
     private fun copyingUserWithAssignedId(id: Long): MockKAnswerScope<UserEntity, *>.(Call) -> UserEntity = {
         firstArg<UserEntity>().copy(id = id)
-    }
-
-    private fun convertingUserToDto(): MockKAnswerScope<User, *>.(Call) -> User = {
-        firstArg<UserEntity>().let {
-            User(
-                id = it.id!!,
-                username = it.username,
-                settings = it.settings.toList(),
-            )
-        }
     }
 
     companion object {

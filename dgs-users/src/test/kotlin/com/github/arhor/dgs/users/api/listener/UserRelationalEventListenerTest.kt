@@ -50,7 +50,7 @@ internal class UserRelationalEventListenerTest {
         val expectedSnsName = TEST_USER_UPDATED_EVENTS
 
         // When
-        listener.onAfterSave(relationalEvent)
+        listener.onApplicationEvent(relationalEvent)
 
         // Then
         assertThat(snsTopicName)
@@ -81,7 +81,7 @@ internal class UserRelationalEventListenerTest {
         val expectedSnsName = TEST_USER_DELETED_EVENTS
 
         // When
-        listener.onAfterDelete(relationalEvent)
+        listener.onApplicationEvent(relationalEvent)
 
         // Then
         assertThat(snsTopicName)
