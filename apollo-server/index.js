@@ -12,7 +12,6 @@ const gateway = new ApolloGateway({
             { url: 'http://localhost:5001/graphql', name: 'users' },
             { url: 'http://localhost:5002/graphql', name: 'articles' },
             { url: 'http://localhost:5003/graphql', name: 'comments' },
-            { url: 'http://localhost:5004/graphql', name: 'extradata' },
         ],
     }),
     buildService: ({ url }) => new RemoteGraphQLDataSource({

@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.extradata.data.entity.converter
+package com.github.arhor.dgs.lib.converter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.postgresql.util.PGobject
