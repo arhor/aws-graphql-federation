@@ -5,21 +5,14 @@ import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sqs.operations.SqsOperations
 import io.awspring.cloud.test.sqs.SqsTest
 import io.mockk.verify
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.support.GenericMessage
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.localstack.LocalStackContainer
-import org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS
-import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import org.testcontainers.utility.DockerImageName
 
 @SqsTest(UserChangeSqsListener::class)
 @Testcontainers(disabledWithoutDocker = true)
-internal class UserChangeSqsListenerTest {
+internal class UserChangeSqsListenerTest : BaseSqsListenerTest() {
 
     @Autowired
     private lateinit var sqs: SqsOperations
@@ -38,38 +31,5 @@ internal class UserChangeSqsListenerTest {
 
         // Then
         verify(exactly = 1, timeout = 3000) { mockCommentService.unlinkCommentsFromUser(userId) }
-    }
-
-    companion object {
-        private const val USER_UPDATED_TEST_EVENTS_QUEUE = "user-updated-test-events"
-        private const val USER_DELETED_TEST_EVENTS_QUEUE = "user-deleted-test-events"
-
-        @JvmStatic
-        @Container
-        private val localstack =
-            LocalStackContainer(DockerImageName.parse("localstack/localstack:1.4.0"))
-                .withServices(SQS)
-
-        @JvmStatic
-        @DynamicPropertySource
-        fun registerDynamicProperties(registry: DynamicPropertyRegistry) {
-            with(registry) {
-                add("spring.cloud.aws.credentials.access-key") { localstack.accessKey }
-                add("spring.cloud.aws.credentials.secret-key") { localstack.secretKey }
-                add("spring.cloud.aws.region.static") { localstack.region }
-                add("spring.cloud.aws.sqs.endpoint") { localstack.getEndpointOverride(SQS) }
-                add("app-props.aws.user-updates") { USER_UPDATED_TEST_EVENTS_QUEUE }
-                add("app-props.aws.user-deletes") { USER_DELETED_TEST_EVENTS_QUEUE }
-            }
-        }
-
-        @JvmStatic
-        @BeforeAll
-        fun createTestQueues() {
-            with(localstack) {
-                execInContainer("awslocal", "sqs", "create-queue", "--queue-name", USER_UPDATED_TEST_EVENTS_QUEUE)
-                execInContainer("awslocal", "sqs", "create-queue", "--queue-name", USER_DELETED_TEST_EVENTS_QUEUE)
-            }
-        }
     }
 }
