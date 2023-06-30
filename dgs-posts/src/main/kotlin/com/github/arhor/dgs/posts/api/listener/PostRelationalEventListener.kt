@@ -23,32 +23,35 @@ class PostRelationalEventListener(
 
     override fun onAfterSave(event: AfterSaveEvent<PostEntity>) {
         sendNotification(
-            payload = ArticleStateChange.Updated(
-                id = event.entity.id!!
-            )
+            payload = PostChange.Updated(id = event.entity.id!!),
+            type = POST_CHANGE_UPDATED
         )
     }
 
     override fun onAfterDelete(event: AfterDeleteEvent<PostEntity>) {
         sendNotification(
-            payload = ArticleStateChange.Deleted(
-                id = event.id.value as Long
-            )
+            payload = PostChange.Deleted(id = event.id.value as Long),
+            type = POST_CHANGE_DELETED
         )
     }
 
-    private fun sendNotification(payload: ArticleStateChange) {
+    private fun sendNotification(payload: PostChange, type: String) {
         snsOperations.sendNotification(
             postChangesTopic,
             SnsNotification(
                 payload,
-                mapOf(HEADER_PAYLOAD_TYPE to payload.type)
+                mapOf(HEADER_PAYLOAD_TYPE to type)
             )
         )
     }
 
-    sealed class ArticleStateChange(val type: String) {
-        data class Updated(val id: Long) : ArticleStateChange(type = "ArticleStateChange.Updated")
-        data class Deleted(val id: Long) : ArticleStateChange(type = "ArticleStateChange.Deleted")
+    companion object {
+        private const val POST_CHANGE_UPDATED = "PostChange.Updated"
+        private const val POST_CHANGE_DELETED = "PostChange.Deleted"
+    }
+
+    sealed interface PostChange {
+        data class Updated(val id: Long) : PostChange
+        data class Deleted(val id: Long) : PostChange
     }
 }

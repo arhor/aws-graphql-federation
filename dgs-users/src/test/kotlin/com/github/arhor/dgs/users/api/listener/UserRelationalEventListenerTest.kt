@@ -2,7 +2,7 @@
 
 package com.github.arhor.dgs.users.api.listener
 
-import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener.UserStateChange
+import com.github.arhor.dgs.users.api.listener.UserRelationalEventListener.UserChange
 import com.github.arhor.dgs.users.config.props.AppProps
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import io.awspring.cloud.sns.core.SnsNotification
@@ -24,7 +24,7 @@ internal class UserRelationalEventListenerTest {
 
     private val mockSnsOperations = mockk<SnsOperations>()
     private val mockAppProps = mockk<AppProps> {
-        every { aws.sns.userStateChanges } returns TEST_USER_STATE_CHANGES
+        every { aws.sns.userChanges } returns TEST_USER_STATE_CHANGES
     }
 
     private val listener = UserRelationalEventListener(
@@ -45,7 +45,7 @@ internal class UserRelationalEventListenerTest {
         every { mockSnsOperations.sendNotification(capture(snsTopicName), capture(notification)) } just runs
 
         val relationalEvent = AfterSaveEvent(entity, change)
-        val expectedPayload = UserStateChange.Updated(STUB_USER_ID)
+        val expectedPayload = UserChange.Updated(STUB_USER_ID)
         val expectedSnsName = TEST_USER_STATE_CHANGES
 
         // When
@@ -76,7 +76,7 @@ internal class UserRelationalEventListenerTest {
         every { mockSnsOperations.sendNotification(capture(snsTopicName), capture(notification)) } just runs
 
         val relationalEvent = AfterDeleteEvent(id, entity, change)
-        val expectedPayload = UserStateChange.Deleted(STUB_USER_ID)
+        val expectedPayload = UserChange.Deleted(STUB_USER_ID)
         val expectedSnsName = TEST_USER_STATE_CHANGES
 
         // When

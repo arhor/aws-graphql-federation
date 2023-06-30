@@ -15,7 +15,9 @@ import io.mockk.Call
 import io.mockk.MockKAnswerScope
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -181,7 +183,7 @@ internal class UserServiceTest {
         ) {
             val expectedId = 1L
 
-            every { mockUserRepository.deleteUserById(any()) } returns affectedRowNum
+            every { mockUserRepository.deleteById(any()) } just runs
 
             // When
             val result = userService.deleteUser(expectedId)
@@ -190,26 +192,9 @@ internal class UserServiceTest {
             assertThat(result)
                 .isEqualTo(expectedResult)
 
-            verify(exactly = 1) { mockUserRepository.deleteUserById(expectedId) }
+            verify(exactly = 1) { mockUserRepository.deleteById(expectedId) }
 
             confirmVerified(mockUserMapper, mockUserRepository, mockPasswordEncoder)
-        }
-
-        @Test
-        fun `should throw EntityDuplicateException trying to delete more then one user by id`() {
-            // Given
-            val id = 1L
-            val numberOfDeletedUsers = 2
-            val expectedExceptionType = IllegalStateException::class.java
-
-            every { mockUserRepository.deleteUserById(any()) } returns numberOfDeletedUsers
-
-            // When
-            val result = catchException { userService.deleteUser(id) }
-
-            // Then
-            assertThat(result)
-                .isInstanceOf(expectedExceptionType)
         }
     }
 

@@ -1,19 +1,19 @@
 package com.github.arhor.dgs.posts.service.impl
 
+import com.github.arhor.dgs.lib.exception.EntityNotFoundException
+import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.posts.data.entity.TagEntity
 import com.github.arhor.dgs.posts.data.entity.TagRef
-import com.github.arhor.dgs.posts.data.repository.PostRepository
 import com.github.arhor.dgs.posts.data.repository.BannerImageRepository
+import com.github.arhor.dgs.posts.data.repository.PostRepository
 import com.github.arhor.dgs.posts.data.repository.TagRepository
 import com.github.arhor.dgs.posts.generated.graphql.DgsConstants.POST
+import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.dgs.posts.generated.graphql.types.Post
 import com.github.arhor.dgs.posts.generated.graphql.types.PostsLookupInput
-import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.dgs.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.dgs.posts.service.PostMapper
 import com.github.arhor.dgs.posts.service.PostService
-import com.github.arhor.dgs.lib.exception.EntityNotFoundException
-import com.github.arhor.dgs.lib.exception.Operation
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable
@@ -75,14 +75,18 @@ class PostServiceImpl(
 
     @Transactional
     override fun deletePost(id: Long): Boolean {
-        val post = postRepository.findByIdOrNull(id) ?: throw EntityNotFoundException(
-            entity = POST.TYPE_NAME,
-            condition = "${POST.Id} = $id",
-            operation = Operation.DELETE,
-        )
-        postRepository.delete(post)
-        post.banner?.let { bannerImageRepository.delete(it) }
-        return true
+        return when (val post = postRepository.findByIdOrNull(id)) {
+            null -> {
+                false
+            }
+
+            else -> {
+                postRepository.delete(post)
+                post.banner?.let { bannerImageRepository.delete(it) }
+                true
+            }
+        }
+
     }
 
     @Transactional(readOnly = true)

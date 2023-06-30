@@ -19,36 +19,39 @@ class UserRelationalEventListener(
     appProps: AppProps,
 ) : AbstractRelationalEventListener<UserEntity>() {
 
-    private val userStateChangesTopic = appProps.aws.sns.userStateChanges
+    private val userChangesTopic = appProps.aws.sns.userChanges
 
     override fun onAfterSave(event: AfterSaveEvent<UserEntity>) {
         sendNotification(
-            payload = UserStateChange.Updated(
-                id = event.entity.id!!
-            )
+            payload = UserChange.Updated(id = event.entity.id!!),
+            type = USER_CHANGE_UPDATED
         )
     }
 
     override fun onAfterDelete(event: AfterDeleteEvent<UserEntity>) {
         sendNotification(
-            payload = UserStateChange.Deleted(
-                id = event.id.value as Long
-            )
+            payload = UserChange.Deleted(id = event.id.value as Long),
+            type = USER_CHANGE_DELETED
         )
     }
 
-    private fun sendNotification(payload: UserStateChange) {
+    private fun sendNotification(payload: UserChange, type: String) {
         snsOperations.sendNotification(
-            userStateChangesTopic,
+            userChangesTopic,
             SnsNotification(
                 payload,
-                mapOf(HEADER_PAYLOAD_TYPE to payload.type)
+                mapOf(HEADER_PAYLOAD_TYPE to type)
             )
         )
     }
 
-    sealed class UserStateChange(val type: String) {
-        data class Updated(val id: Long) : UserStateChange("UserStateChange.Updated")
-        data class Deleted(val id: Long) : UserStateChange("UserStateChange.Deleted")
+    companion object {
+        private const val USER_CHANGE_UPDATED = "UserChange.Updated"
+        private const val USER_CHANGE_DELETED = "UserChange.Deleted"
+    }
+
+    sealed interface UserChange {
+        data class Updated(val id: Long) : UserChange
+        data class Deleted(val id: Long) : UserChange
     }
 }

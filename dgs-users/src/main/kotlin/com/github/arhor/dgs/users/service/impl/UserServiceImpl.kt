@@ -65,11 +65,17 @@ class UserServiceImpl(
 
     @Transactional
     override fun deleteUser(id: Long): Boolean {
-        return when (val affected = userRepository.deleteUserById(id)) {
-            1 -> true
-            0 -> false
-            else -> throw IllegalStateException("More than 1 user inactivated, but $affected records were affected")
+        return when (val user = userRepository.findByIdOrNull(id)) {
+            null -> {
+                false
+            }
+
+            else -> {
+                userRepository.delete(user)
+                true
+            }
         }
+
     }
 
     @Transactional(readOnly = true)
