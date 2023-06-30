@@ -1,6 +1,6 @@
-package com.github.arhor.dgs.comments.api.graphql.fetcher
+package com.github.arhor.dgs.comments.api.graphql.datafetcher
 
-import com.github.arhor.dgs.comments.api.graphql.loader.CommentBatchLoader
+import com.github.arhor.dgs.comments.api.graphql.dataloader.CommentBatchLoader
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.POST
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.comments.generated.graphql.types.Comment
@@ -12,10 +12,8 @@ import com.github.arhor.dgs.comments.service.CommentService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
-import com.netflix.graphql.dgs.DgsEntityFetcher
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
-import java.math.BigInteger
 import java.util.concurrent.CompletableFuture
 
 @DgsComponent

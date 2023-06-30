@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.comments.api.graphql.loader
+package com.github.arhor.dgs.comments.api.graphql.dataloader
 
 import com.github.arhor.dgs.comments.generated.graphql.types.Comment
 import com.github.arhor.dgs.comments.service.CommentService

@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.comments.api.graphql.fetcher
+package com.github.arhor.dgs.comments.api.graphql.datafetcher
 
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.POST
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.USER
