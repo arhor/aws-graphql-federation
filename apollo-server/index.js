@@ -10,7 +10,7 @@ const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
         subgraphs: [
             { url: 'http://localhost:5001/graphql', name: 'users' },
-            { url: 'http://localhost:5002/graphql', name: 'articles' },
+            { url: 'http://localhost:5002/graphql', name: 'posts' },
             { url: 'http://localhost:5003/graphql', name: 'comments' },
         ],
     }),

@@ -19,8 +19,8 @@ data class CommentEntity(
     @Column("user_id")
     val userId: Long?,
 
-    @Column("article_id")
-    val articleId: Long,
+    @Column("post_id")
+    val postId: Long,
 
     @Column("content")
     val content: String,

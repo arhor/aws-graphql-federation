@@ -18,6 +18,32 @@ class CommentServiceImpl(
     private val commentMapper: CommentMapper,
 ) : CommentService {
 
+    @Transactional(readOnly = true)
+    override fun getCommentsByUserId(userId: Long): List<Comment> {
+        return findInternal(
+            id = userId,
+            source = commentRepository::findAllByUserId
+        )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getCommentsByUserIds(userIds: Collection<Long>): Map<Long, List<Comment>> {
+        return findInternalInBatch(
+            ids = userIds,
+            source = commentRepository::findAllByUserIdIn,
+            classifier = Comment::userId
+        )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getCommentsByPostIds(postIds: Collection<Long>): Map<Long, List<Comment>> {
+        return findInternalInBatch(
+            ids = postIds,
+            source = commentRepository::findAllByPostIdIn,
+            classifier = Comment::postId
+        )
+    }
+
     @Transactional
     override fun createComment(request: CreateCommentRequest): Comment {
         return commentMapper.mapToEntity(request)
@@ -33,52 +59,15 @@ class CommentServiceImpl(
         TODO("Not yet implemented")
     }
 
-    @Transactional(readOnly = true)
-    override fun getCommentsUserId(userId: String): List<Comment> {
-        return findInternal(
-            id = userId,
-            source = commentRepository::findAllByUserId
-        )
-    }
-
-    @Transactional(readOnly = true)
-    override fun getCommentsByUserIds(userIds: Collection<String>): Map<String, List<Comment>> {
-        return findInternalInBatch(
-            ids = userIds,
-            source = commentRepository::findAllByUserIdIn,
-            classifier = Comment::userId
-        )
-    }
-
-    @Transactional(readOnly = true)
-    override fun getCommentsByTopicId(articleId: String): List<Comment> {
-        return findInternal(
-            id = articleId,
-            source = commentRepository::findAllByArticleId
-        )
-    }
-
-    @Transactional(readOnly = true)
-    override fun getCommentsByTopicIds(articleIds: Collection<String>): Map<String, List<Comment>> {
-        return findInternalInBatch(
-            ids = articleIds,
-            source = commentRepository::findAllByArticleIdIn,
-            classifier = Comment::articleId
-        )
-    }
-
-    private inline fun findInternal(id: String, source: (String) -> Stream<CommentEntity>): List<Comment> {
-        return source.invoke(id).use { data ->
-            data.map(commentMapper::mapToDTO)
-                .toList()
-        }
+    private inline fun findInternal(id: Long, source: (Long) -> Stream<CommentEntity>): List<Comment> {
+        return source.invoke(id).use { it.map(commentMapper::mapToDTO).toList() }
     }
 
     private inline fun findInternalInBatch(
-        ids: Collection<String>,
-        source: (Collection<String>) -> Stream<CommentEntity>,
-        crossinline classifier: (Comment) -> String
-    ): Map<String, List<Comment>> {
+        ids: Collection<Long>,
+        source: (Collection<Long>) -> Stream<CommentEntity>,
+        crossinline classifier: (Comment) -> Long
+    ): Map<Long, List<Comment>> {
 
         return when {
             ids.isNotEmpty() -> {

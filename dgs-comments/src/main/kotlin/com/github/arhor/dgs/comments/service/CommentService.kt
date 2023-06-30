@@ -5,11 +5,10 @@ import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentReques
 import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentRequest
 
 interface CommentService {
+    fun getCommentsByUserId(userId: Long): Collection<Comment>
+    fun getCommentsByUserIds(userIds: Collection<Long>): Map<Long, List<Comment>>
+    fun getCommentsByPostIds(postIds: Collection<Long>): Map<Long, List<Comment>>
     fun createComment(request: CreateCommentRequest): Comment
     fun updateComment(request: UpdateCommentRequest): Comment
     fun deleteComment(id: Long)
-    fun getCommentsUserId(userId: String): Collection<Comment>
-    fun getCommentsByUserIds(userIds: Collection<String>): Map<String, List<Comment>>
-    fun getCommentsByTopicId(articleId: String): Collection<Comment>
-    fun getCommentsByTopicIds(articleIds: Collection<String>): Map<String, List<Comment>>
 }

@@ -1,44 +1,40 @@
 # noinspection GraphQLTypeRedefinition
 
+scalar Long
+
 type Mutation {
     createComment(request: CreateCommentRequest!): Comment!
 }
 
 interface Indentifiable {
-    id: ID!
-}
-
-interface Page {
-    page: Int!
-    size: Int!
-    totalPages: Int!
-    totalItems: Int!
+    id: Long!
 }
 
 input CreateCommentRequest {
-    userId: ID!
-    articleId: ID!
+    userId: Long!
+    postId: Long!
     content: String!
 }
 
 input UpdateCommentRequest {
-    id: ID!
+    userId: Long!
+    postId: Long!
     content: String!
 }
 
 type Comment implements Indentifiable {
-    id: ID!
-    userId: ID!
-    articleId: ID!
+    id: Long!
+    userId: Long!
+    postId: Long!
     content: String!
 }
 
-type Article implements Indentifiable @key(fields: "id") @extends {
-    id: ID! @external
+type Post implements Indentifiable @key(fields: "id") @extends {
+    id: Long! @external
     comments: [Comment!]
 }
 
 type User implements Indentifiable @key(fields: "id") @extends {
-    id: ID! @external
+    id: Long! @external
     comments: [Comment!]
 }

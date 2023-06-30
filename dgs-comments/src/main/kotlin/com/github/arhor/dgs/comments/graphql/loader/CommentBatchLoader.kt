@@ -10,10 +10,10 @@ import java.util.function.Function
 
 sealed class CommentBatchLoader(
     private val executor: Executor,
-    private val loadingFunction: Function<Set<String>, Map<String, List<Comment>>>,
-) : MappedBatchLoader<String, List<Comment>> {
+    private val loadingFunction: Function<Set<Long>, Map<Long, List<Comment>>>,
+) : MappedBatchLoader<Long, List<Comment>> {
 
-    override fun load(keys: Set<String>): CompletableFuture<Map<String, List<Comment>>> {
+    override fun load(keys: Set<Long>): CompletableFuture<Map<Long, List<Comment>>> {
         return CompletableFuture.supplyAsync({ loadingFunction.apply(keys) }, executor)
     }
 
@@ -24,8 +24,8 @@ sealed class CommentBatchLoader(
     )
 
     @DgsDataLoader(maxBatchSize = 50)
-    class ForArticle(asyncExecutor: Executor, commentService: CommentService) : CommentBatchLoader(
+    class ForPost(asyncExecutor: Executor, commentService: CommentService) : CommentBatchLoader(
         executor = asyncExecutor,
-        loadingFunction = commentService::getCommentsByTopicIds
+        loadingFunction = commentService::getCommentsByPostIds
     )
 }

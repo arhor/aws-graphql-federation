@@ -1,0 +1,50 @@
+# noinspection GraphQLTypeRedefinition
+# noinspection DgsEntityFetcherInspector
+
+scalar Long
+scalar Upload
+
+type Query {
+    post(id: Long!): Post
+    posts(input: PostsLookupInput! = {}): [Post!]!
+}
+
+type Mutation {
+    createPost(input: CreatePostInput!): Post!
+    updatePost(input: UpdatePostInput!): Post!
+    deletePost(id: Long!): Boolean!
+}
+
+input PostsLookupInput {
+    page: Long! = 0
+    size: Long! = 20
+}
+
+input CreatePostInput {
+    userId: Long!
+    header: String!
+    banner: Upload
+    content: String!
+    tags: [String!]
+}
+
+input UpdatePostInput {
+    id: Long!
+    header: String
+    content: String
+    tags: [String!]
+}
+
+type Post @key(fields: "id") {
+    id: Long!
+    userId: Long
+    header: String!
+    banner: String
+    content: String!
+    tags: [String!]
+}
+
+type User @key(fields: "id") @extends {
+    id: Long! @external
+    posts: [Post!]
+}
