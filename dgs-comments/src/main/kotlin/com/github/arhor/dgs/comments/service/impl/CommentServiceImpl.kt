@@ -83,6 +83,17 @@ class CommentServiceImpl(
     }
 
     @Transactional
+    override fun deleteCommentsFromPost(postId: Long) {
+        val commentsToDelete =
+            commentRepository.findAllByPostId(postId).use { data ->
+                data.toList()
+            }
+        if (commentsToDelete.isNotEmpty()) {
+            commentRepository.deleteAll(commentsToDelete)
+        }
+    }
+
+    @Transactional
     override fun unlinkCommentsFromUser(userId: Long) {
         val unlinkedComments =
             commentRepository.findAllByUserId(userId).use { data ->
