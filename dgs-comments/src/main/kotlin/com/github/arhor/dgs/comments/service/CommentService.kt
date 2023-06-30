@@ -10,4 +10,5 @@ interface CommentService {
     fun createComment(input: CreateCommentInput): Comment
     fun updateComment(input: UpdateCommentInput): Comment
     fun deleteComment(id: Long): Boolean
+    fun unlinkCommentFromUser(userId: Long)
 }

@@ -84,6 +84,17 @@ class CommentServiceImpl(
         }
     }
 
+    override fun unlinkCommentFromUser(userId: Long) {
+        val unlinkedComments =
+            commentRepository.findAllByUserId(userId).use { data ->
+                data.map { it.copy(userId = null) }
+                    .toList()
+            }
+        if (unlinkedComments.isNotEmpty()) {
+            commentRepository.saveAll(unlinkedComments)
+        }
+    }
+
     private inline fun findInternalInBatch(
         ids: Collection<Long>,
         source: (Collection<Long>) -> Stream<CommentEntity>,

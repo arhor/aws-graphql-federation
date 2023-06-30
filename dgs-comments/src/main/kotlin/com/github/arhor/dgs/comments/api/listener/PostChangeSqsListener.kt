@@ -1,20 +1,25 @@
 package com.github.arhor.dgs.comments.api.listener
 
+import com.github.arhor.dgs.comments.service.CommentService
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class PostChangeSqsListener {
+class PostChangeSqsListener @Autowired constructor(
+    private val commentService: CommentService,
+) {
 
     @SqsListener("\${app-props.aws.sqs.post-updates}")
-    fun handleUserUpdates(change: PostChange.Updated) {
-        logger.debug("Processing update event: {}", change)
+    fun handlePostUpdatedEvent(event: PostChange.Updated) {
+        logger.debug("Processing post-updated event: {}", event)
     }
 
     @SqsListener("\${app-props.aws.sqs.post-deletes}")
-    fun handleUserDeletes(change: PostChange.Deleted) {
-        logger.debug("Processing delete event: {}", change)
+    fun handlePostDeletedEvent(event: PostChange.Deleted) {
+        logger.debug("Processing post-deleted event: {}", event)
+        commentService.deleteComment(id = event.id)
     }
 
     sealed interface PostChange {
