@@ -26,24 +26,6 @@ const server = new ApolloServer({
     gateway,
 });
 
-const { url } = await startStandaloneServer(server, {
-    context: async ({ req }) => {
-        const header = req.headers.authorization;
-        if (header && header.startsWith(TOKEN_HEADER_PREFIX_NAME)) {
-            const token = header.substring(TOKEN_HEADER_PREFIX_SIZE);
-            if (token) {
-                const data = await fetch('http://localhost:5001/api/jwt/verify', { method: 'POST', body: JSON.stringify({ token }) });
-                const user = await data.json();
-
-                return {
-                    user: {
-                        id: user.id,
-                    }
-                };
-            }
-        }
-        return {};
-    },
-});
+const { url } = await startStandaloneServer(server);
 
 console.log(`🚀 Server listening at: ${url}`);
