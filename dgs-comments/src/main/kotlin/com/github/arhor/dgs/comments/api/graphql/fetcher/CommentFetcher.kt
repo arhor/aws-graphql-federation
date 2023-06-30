@@ -1,13 +1,13 @@
 package com.github.arhor.dgs.comments.api.graphql.fetcher
 
+import com.github.arhor.dgs.comments.api.graphql.loader.CommentBatchLoader
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.POST
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.comments.generated.graphql.types.Comment
-import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentRequest
-import com.github.arhor.dgs.comments.generated.graphql.types.Indentifiable
+import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentInput
 import com.github.arhor.dgs.comments.generated.graphql.types.Post
+import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentInput
 import com.github.arhor.dgs.comments.generated.graphql.types.User
-import com.github.arhor.dgs.comments.api.graphql.loader.CommentBatchLoader
 import com.github.arhor.dgs.comments.service.CommentService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
@@ -21,32 +21,35 @@ import java.util.concurrent.CompletableFuture
 @DgsComponent
 class CommentFetcher(private val commentService: CommentService) {
 
-    @DgsMutation
-    fun createComment(@InputArgument request: CreateCommentRequest) =
-        commentService.createComment(request)
+    /* Queries */
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Comments)
-    fun userComments(dfe: DgsDataFetchingEnvironment) =
-        dfe.loadCommentsUsing<CommentBatchLoader.ForUser>()
+    fun userComments(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Comment>> =
+        dfe.loadCommentsUsing<CommentBatchLoader.ForUser, User>(User::id)
 
     @DgsData(parentType = POST.TYPE_NAME, field = POST.Comments)
-    fun articleComments(dfe: DgsDataFetchingEnvironment) =
-        dfe.loadCommentsUsing<CommentBatchLoader.ForPost>()
+    fun postComments(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Comment>> =
+        dfe.loadCommentsUsing<CommentBatchLoader.ForPost, Post>(Post::id)
 
-    @DgsEntityFetcher(name = POST.TYPE_NAME)
-    fun fetchPost(values: Map<String, Any>): Post =
-        Post(id = (values[POST.Id] as BigInteger).longValueExact())
+    /* Mutations */
 
-    @DgsEntityFetcher(name = USER.TYPE_NAME)
-    fun fetchUser(values: Map<String, Any>): User =
-        User(id = (values[USER.Id] as BigInteger).longValueExact())
+    @DgsMutation
+    fun createComment(@InputArgument input: CreateCommentInput): Comment =
+        commentService.createComment(input)
 
-    private inline fun <reified T> DgsDataFetchingEnvironment.loadCommentsUsing(): CompletableFuture<List<Comment>>
-        where T : CommentBatchLoader {
+    @DgsMutation
+    fun updateComment(@InputArgument input: UpdateCommentInput): Comment =
+        commentService.updateComment(input)
+
+    /* Internal implementation */
+
+    private inline fun <reified T, D> DgsDataFetchingEnvironment.loadCommentsUsing(
+        id: D.() -> Long
+    ): CompletableFuture<List<Comment>> where T : CommentBatchLoader {
 
         val loader = getDataLoader<Long, List<Comment>>(T::class.java)
-        val source = getSource<Indentifiable>()
+        val source = getSource<D>()
 
-        return loader.load(source.id.toLong())
+        return loader.load(source.id())
     }
 }

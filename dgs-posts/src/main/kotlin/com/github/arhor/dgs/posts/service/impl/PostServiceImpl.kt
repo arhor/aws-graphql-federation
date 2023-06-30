@@ -89,7 +89,6 @@ class PostServiceImpl(
                 true
             }
         }
-
     }
 
     @Transactional(readOnly = true)

@@ -7,10 +7,12 @@ import com.netflix.graphql.dgs.DgsEntityFetcher
 import java.math.BigInteger
 
 @DgsComponent
-class UserFetcher {
+class FederatedEntityFetchers {
+
+    /* Entity Fetchers */
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
-    fun user(values: Map<String, Any>): User = User(
+    fun fetchUser(values: Map<String, Any>): User = User(
         id = values[USER.Id].let {
             when (it) {
                 is BigInteger -> it.longValueExact()

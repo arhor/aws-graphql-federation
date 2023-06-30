@@ -3,37 +3,34 @@
 scalar Long
 
 type Mutation {
-    createComment(request: CreateCommentRequest!): Comment!
+    createComment(input: CreateCommentInput!): Comment!
+    updateComment(input: UpdateCommentInput!): Comment!
 }
 
-interface Indentifiable {
-    id: Long!
-}
-
-input CreateCommentRequest {
+input CreateCommentInput {
     userId: Long!
     postId: Long!
     content: String!
 }
 
-input UpdateCommentRequest {
+input UpdateCommentInput {
     id: Long!
     content: String
 }
 
-type Comment implements Indentifiable {
+type Comment {
     id: Long!
     userId: Long!
     postId: Long!
     content: String!
 }
 
-type Post implements Indentifiable @key(fields: "id") @extends {
+type Post @key(fields: "id") @extends {
     id: Long! @external
     comments: [Comment!]
 }
 
-type User implements Indentifiable @key(fields: "id") @extends {
+type User @key(fields: "id") @extends {
     id: Long! @external
     comments: [Comment!]
 }
