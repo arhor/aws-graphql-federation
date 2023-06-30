@@ -19,7 +19,7 @@ class UserChangeSqsListener @Autowired constructor(
     @SqsListener("\${app-props.aws.sqs.user-deletes}")
     fun handleUserDeletedEvent(event: UserChange.Deleted) {
         logger.debug("Processing user-deleted event: {}", event)
-        commentService.unlinkCommentFromUser(userId = event.id)
+        commentService.unlinkCommentsFromUser(userId = event.id)
     }
 
     sealed interface UserChange {

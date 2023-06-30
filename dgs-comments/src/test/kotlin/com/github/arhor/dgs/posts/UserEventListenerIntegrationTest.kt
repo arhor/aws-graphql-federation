@@ -1,6 +1,5 @@
 package com.github.arhor.dgs.posts
 
-import com.github.arhor.dgs.comments.UserStateChangeListener
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sqs.operations.SqsOperations
 import io.awspring.cloud.test.sqs.SqsTest

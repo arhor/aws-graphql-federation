@@ -66,10 +66,7 @@ class UserServiceImpl(
     @Transactional
     override fun deleteUser(id: Long): Boolean {
         return when (val user = userRepository.findByIdOrNull(id)) {
-            null -> {
-                false
-            }
-
+            null -> false
             else -> {
                 userRepository.delete(user)
                 true

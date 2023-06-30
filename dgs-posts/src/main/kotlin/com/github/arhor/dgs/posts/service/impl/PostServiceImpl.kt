@@ -29,6 +29,35 @@ class PostServiceImpl(
     private val tagRepository: TagRepository,
 ) : PostService {
 
+    @Transactional(readOnly = true)
+    override fun getPostById(id: Long): Post {
+        return postRepository.findByIdOrNull(id)?.let(postMapper::mapToDTO)
+            ?: throw EntityNotFoundException(
+                entity = POST.TYPE_NAME,
+                condition = "${POST.Id} = $id",
+                operation = Operation.READ,
+            )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getPosts(input: PostsLookupInput): List<Post> {
+        return postRepository
+            .findAll(limit = input.size, offset = input.page * input.size)
+            .map(postMapper::mapToDTO)
+            .toList()
+    }
+
+    @Transactional(readOnly = true)
+    override fun getPostsByUserIds(userIds: Set<Long>): Map<Long, List<Post>> = when {
+        userIds.isNotEmpty() -> {
+            postRepository
+                .findAllByUserIdIn(userIds)
+                .groupBy({ it.userId!! }, postMapper::mapToDTO)
+        }
+
+        else -> emptyMap()
+    }
+
     @Transactional
     override fun createPost(input: CreatePostInput): Post {
         val tagRefs = materialize(input.tags)
@@ -79,10 +108,7 @@ class PostServiceImpl(
     @Transactional
     override fun deletePost(id: Long): Boolean {
         return when (val post = postRepository.findByIdOrNull(id)) {
-            null -> {
-                false
-            }
-
+            null -> false
             else -> {
                 postRepository.delete(post)
                 post.banner?.let { bannerImageRepository.delete(it) }
@@ -91,33 +117,16 @@ class PostServiceImpl(
         }
     }
 
-    @Transactional(readOnly = true)
-    override fun getPostById(id: Long): Post {
-        return postRepository.findByIdOrNull(id)?.let(postMapper::mapToDTO)
-            ?: throw EntityNotFoundException(
-                entity = POST.TYPE_NAME,
-                condition = "${POST.Id} = $id",
-                operation = Operation.READ,
-            )
-    }
-
-    @Transactional(readOnly = true)
-    override fun getPosts(input: PostsLookupInput): List<Post> {
-        return postRepository
-            .findAll(limit = input.size, offset = input.page * input.size)
-            .map(postMapper::mapToDTO)
-            .toList()
-    }
-
-    @Transactional(readOnly = true)
-    override fun getPostsByUserIds(userIds: Set<Long>): Map<Long, List<Post>> = when {
-        userIds.isNotEmpty() -> {
-            postRepository
-                .findAllByUserIdIn(userIds)
-                .groupBy({ it.userId!! }, postMapper::mapToDTO)
+    @Transactional
+    override fun unlinkPostsFromUser(userId: Long) {
+        val unlinkedPosts =
+            postRepository.findAllByUserId(userId).use { data ->
+                data.map { it.copy(userId = null) }
+                    .toList()
+            }
+        if (unlinkedPosts.isNotEmpty()) {
+            postRepository.saveAll(unlinkedPosts)
         }
-
-        else -> emptyMap()
     }
 
     /**

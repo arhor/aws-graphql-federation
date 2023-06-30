@@ -71,12 +71,10 @@ class CommentServiceImpl(
         )
     }
 
+    @Transactional
     override fun deleteComment(id: Long): Boolean {
         return when (val comment = commentRepository.findByIdOrNull(id)) {
-            null -> {
-                false
-            }
-
+            null -> false
             else -> {
                 commentRepository.delete(comment)
                 true
@@ -84,7 +82,8 @@ class CommentServiceImpl(
         }
     }
 
-    override fun unlinkCommentFromUser(userId: Long) {
+    @Transactional
+    override fun unlinkCommentsFromUser(userId: Long) {
         val unlinkedComments =
             commentRepository.findAllByUserId(userId).use { data ->
                 data.map { it.copy(userId = null) }
