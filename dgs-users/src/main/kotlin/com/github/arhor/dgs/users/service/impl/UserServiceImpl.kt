@@ -6,7 +6,6 @@ import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
@@ -19,7 +18,6 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.EnumSet
 
 @Service
 class UserServiceImpl(
@@ -55,9 +53,6 @@ class UserServiceImpl(
 
         input.password?.let {
             currentState = currentState.copy(password = passwordEncoder.encode(it))
-        }
-        input.settings?.let {
-            currentState = currentState.copy(settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it) })
         }
 
         return userMapper.mapToDTO(

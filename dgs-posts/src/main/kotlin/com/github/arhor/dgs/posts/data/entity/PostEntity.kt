@@ -1,5 +1,6 @@
 package com.github.arhor.dgs.posts.data.entity
 
+import com.github.arhor.dgs.posts.generated.graphql.types.Option
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
@@ -9,6 +10,7 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.MappedCollection
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
+import java.util.EnumSet
 
 @Table(PostEntity.TABLE_NAME)
 @Immutable
@@ -29,6 +31,9 @@ data class PostEntity(
     @Column(COL_CONTENT)
     val content: String,
 
+    @Column("options")
+    val options: Options = Options(),
+
     @Version
     @Column(COL_VERSION)
     val version: Long? = null,
@@ -44,6 +49,11 @@ data class PostEntity(
     @MappedCollection(idColumn = TagRef.COL_POST_ID)
     val tags: Set<TagRef> = emptySet()
 ) {
+    /**
+     * Wrapper class over EnumSet is required to make it available for custom conversions.
+     */
+    data class Options(val items: EnumSet<Option> = EnumSet.noneOf(Option::class.java))
+
     companion object {
         const val TABLE_NAME = "posts"
 

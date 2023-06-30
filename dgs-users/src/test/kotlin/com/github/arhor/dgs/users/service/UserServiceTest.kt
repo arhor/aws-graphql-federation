@@ -8,7 +8,6 @@ import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.impl.UserServiceImpl
@@ -31,7 +30,6 @@ import org.junit.jupiter.params.provider.Arguments.arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
-import java.util.EnumSet
 import java.util.stream.Stream
 
 internal class UserServiceTest {
@@ -54,7 +52,6 @@ internal class UserServiceTest {
             val expectedId = 1L
             val expectedUsername = "test@email.com"
             val expectedPassword = "TestPassword123"
-            val expectedSettings = emptyList<String>()
 
             val input = CreateUserInput(
                 username = expectedUsername,
@@ -72,9 +69,8 @@ internal class UserServiceTest {
 
             // Then
             assertThat(result)
-                .returns(expectedId, from { it.id.toLong() })
+                .returns(expectedId, from { it.id })
                 .returns(expectedUsername, from { it.username })
-                .returns(expectedSettings, from { it.settings })
 
             verify(exactly = 1) { mockUserRepository.existsByUsername(any()) }
             verify(exactly = 1) { mockUserMapper.mapToEntity(any()) }
@@ -127,7 +123,6 @@ internal class UserServiceTest {
                 id = 1,
                 username = "test-username",
                 password = "test-password",
-                settings = EnumSet.allOf(Setting::class.java)
             )
 
             every { mockUserRepository.findByIdOrNull(any()) } returns user
@@ -140,7 +135,6 @@ internal class UserServiceTest {
                 input = UpdateUserInput(
                     id = user.id!!,
                     password = "${user.password}-updated",
-                    settings = (user.settings + Setting.AGE_OVER_18).toList(),
                 )
             )
 
@@ -155,7 +149,6 @@ internal class UserServiceTest {
                 id = 1,
                 username = "test-username",
                 password = "test-password",
-                settings = EnumSet.allOf(Setting::class.java)
             )
 
             every { mockUserRepository.findByIdOrNull(any()) } returns user
@@ -168,7 +161,6 @@ internal class UserServiceTest {
                 input = UpdateUserInput(
                     id = user.id!!,
                     password = user.password,
-                    settings = user.settings.toList(),
                 )
             )
 
@@ -227,7 +219,6 @@ internal class UserServiceTest {
                 UserEntity(
                     username = it.username,
                     password = it.password,
-                    settings = EnumSet.noneOf(Setting::class.java).apply { addAll(it.settings ?: emptyList()) },
                 )
             }
         }
@@ -238,7 +229,6 @@ internal class UserServiceTest {
                 User(
                     id = it.id!!,
                     username = it.username,
-                    settings = it.settings.toList(),
                 )
             }
         }

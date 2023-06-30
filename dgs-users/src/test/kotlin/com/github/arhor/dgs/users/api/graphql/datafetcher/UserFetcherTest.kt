@@ -5,7 +5,6 @@ import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.api.graphql.GlobalDataFetchingExceptionHandler
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
-import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.dgs.users.service.UserService
@@ -50,7 +49,6 @@ internal class UserFetcherTest {
                 users {
                     id
                     username
-                    settings
                 }
             }
             """
@@ -73,7 +71,6 @@ internal class UserFetcherTest {
         val user = User(
             id = 1,
             username = "test-user",
-            settings = Setting.values().toList(),
         )
 
         every { userService.getAllUsers(any()) } returns listOf(user)
@@ -85,7 +82,6 @@ internal class UserFetcherTest {
                 users(input: { page: 0, size: 10 }) {
                     id
                     username
-                    settings
                 }
             }
             """
@@ -104,7 +100,6 @@ internal class UserFetcherTest {
                     mapOf(
                         USER.Id to user.id,
                         USER.Username to user.username,
-                        USER.Settings to user.settings?.map { it.name },
                     )
                 )
             )

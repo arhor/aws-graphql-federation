@@ -1,5 +1,7 @@
 package com.github.arhor.dgs.posts.config
 
+import com.github.arhor.dgs.posts.data.converter.EnumSetReadingConverter
+import com.github.arhor.dgs.posts.data.converter.EnumSetWritingConverter
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,6 +19,11 @@ import java.util.function.Supplier
 @EnableJdbcRepositories(basePackages = ["com.github.arhor.dgs.posts.data.repository"])
 @EnableTransactionManagement
 class ConfigureDatabase : AbstractJdbcConfiguration() {
+
+    override fun userConverters() = listOf(
+        EnumSetReadingConverter,
+        EnumSetWritingConverter,
+    )
 
     @Bean
     fun currentDateTimeProvider(currentDateTimeSupplier: Supplier<LocalDateTime>) = DateTimeProvider {

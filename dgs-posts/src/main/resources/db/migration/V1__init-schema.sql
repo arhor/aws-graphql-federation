@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS "posts"
     "header"               VARCHAR(512)    NOT NULL,
     "banner"               VARCHAR(512)    NULL,
     "content"              TEXT            NOT NULL,
+    "options"              BIGINT          NOT NULL,
     "version"              BIGINT          NOT NULL,
     "created_date_time"    TIMESTAMP       NOT NULL,
     "updated_date_time"    TIMESTAMP       NULL

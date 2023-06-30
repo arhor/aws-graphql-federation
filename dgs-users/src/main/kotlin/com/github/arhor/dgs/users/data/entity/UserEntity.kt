@@ -1,6 +1,5 @@
 package com.github.arhor.dgs.users.data.entity
 
-import com.github.arhor.dgs.users.generated.graphql.types.Setting
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
@@ -9,7 +8,6 @@ import org.springframework.data.annotation.Version
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
-import java.util.EnumSet
 
 @Table(UserEntity.TABLE_NAME)
 @Immutable
@@ -23,9 +21,6 @@ data class UserEntity(
 
     @Column("password")
     val password: String,
-
-    @Column("settings")
-    val settings: EnumSet<Setting> = EnumSet.noneOf(Setting::class.java),
 
     @Version
     @Column("version")

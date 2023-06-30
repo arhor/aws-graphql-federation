@@ -25,6 +25,7 @@ input CreatePostInput {
     header: String!
     banner: Upload
     content: String!
+    options: [Option!]
     tags: [String!]
 }
 
@@ -33,6 +34,7 @@ input UpdatePostInput {
     header: String
     content: String
     tags: [String!]
+    options: [Option!]
 }
 
 type Post @key(fields: "id") {
@@ -41,7 +43,12 @@ type Post @key(fields: "id") {
     header: String!
     banner: String
     content: String!
+    options: [Option!]
     tags: [String!]
+}
+
+enum Option {
+    NSFW
 }
 
 type User @key(fields: "id") @extends {

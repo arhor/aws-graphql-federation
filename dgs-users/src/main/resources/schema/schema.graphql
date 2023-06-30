@@ -22,23 +22,14 @@ input UsersLookupInput {
 input CreateUserInput {
     username: String!
     password: String!
-    settings: [Setting!]
 }
 
 input UpdateUserInput {
     id: Long!
     password: String
-    settings: [Setting!]
 }
 
 type User @key(fields: "id") {
     id: Long!
     username: String!
-    settings: [Setting!]
-}
-
-enum Setting {
-    AGE_OVER_18
-    GORGEOUS_CAT_OWNER
-    STAR_WARS_LOVER
 }
