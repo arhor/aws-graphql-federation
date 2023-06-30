@@ -17,9 +17,8 @@ input CreateCommentRequest {
 }
 
 input UpdateCommentRequest {
-    userId: Long!
-    postId: Long!
-    content: String!
+    id: Long!
+    content: String
 }
 
 type Comment implements Indentifiable {

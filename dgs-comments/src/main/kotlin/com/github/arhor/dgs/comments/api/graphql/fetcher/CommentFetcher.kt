@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.comments.graphql.fetcher
+package com.github.arhor.dgs.comments.api.graphql.fetcher
 
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.POST
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.USER
@@ -7,7 +7,7 @@ import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentReques
 import com.github.arhor.dgs.comments.generated.graphql.types.Indentifiable
 import com.github.arhor.dgs.comments.generated.graphql.types.Post
 import com.github.arhor.dgs.comments.generated.graphql.types.User
-import com.github.arhor.dgs.comments.graphql.loader.CommentBatchLoader
+import com.github.arhor.dgs.comments.api.graphql.loader.CommentBatchLoader
 import com.github.arhor.dgs.comments.service.CommentService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData

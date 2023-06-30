@@ -8,14 +8,6 @@ spring:
     proxy-target-class: false
   profiles:
     active: ${SPRING_ACTIVE_PROFILES:dev}
-  jmx:
-    enabled: false
-  mvc:
-    throw-exception-if-no-handler-found: true
-    format:
-      date-time: iso
-      date: iso
-      time: iso
   sql:
     init:
       platform: postgres
@@ -39,13 +31,6 @@ spring:
   cache:
     caffeine:
       spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s'
-  session:
-    store-type: jdbc
-    jdbc:
-      initialize-schema: always
-  devtools:
-    livereload:
-      enabled: false
   cloud:
     aws:
       credentials:
