@@ -1,25 +1,25 @@
-name: DGS Users service CI
+name: DGS Comments service CI
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'gds-users/**'
+      - 'gds-comments/**'
       - 'shared-bom/**'
       - 'shared-lib/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - 'gds-users/**'
+      - 'gds-comments/**'
       - 'shared-bom/**'
       - 'shared-lib/**'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: './dgs-users'
+    working-directory: './dgs-comments'
 
 jobs:
   build:
@@ -38,5 +38,5 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Build DGS Users service
+      - name: Build DGS Comments service
         run: './gradlew :build'

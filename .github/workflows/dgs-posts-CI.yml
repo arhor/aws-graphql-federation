@@ -1,25 +1,25 @@
-name: DGS Users service CI
+name: DGS Posts service CI
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'gds-users/**'
+      - 'gds-posts/**'
       - 'shared-bom/**'
       - 'shared-lib/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - 'gds-users/**'
+      - 'gds-posts/**'
       - 'shared-bom/**'
       - 'shared-lib/**'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: './dgs-users'
+    working-directory: './dgs-posts'
 
 jobs:
   build:
@@ -38,5 +38,5 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Build DGS Users service
+      - name: Build DGS Posts service
         run: './gradlew :build'
