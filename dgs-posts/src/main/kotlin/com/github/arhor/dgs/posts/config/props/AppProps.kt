@@ -11,7 +11,7 @@ data class AppProps(
         val s3: S3,
     ) {
         data class Sns(
-            val postStateChanges: String,
+            val postChanges: String,
         )
 
         data class S3(

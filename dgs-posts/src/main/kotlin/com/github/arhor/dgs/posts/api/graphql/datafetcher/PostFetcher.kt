@@ -24,11 +24,11 @@ class PostFetcher @Autowired constructor(
     /* Queries */
 
     @DgsQuery
-    fun article(@InputArgument id: Long): Post =
+    fun post(@InputArgument id: Long): Post =
         postService.getPostById(id)
 
     @DgsQuery
-    fun articles(@InputArgument input: PostsLookupInput): List<Post> =
+    fun posts(@InputArgument input: PostsLookupInput): List<Post> =
         postService.getPosts(input)
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Posts)

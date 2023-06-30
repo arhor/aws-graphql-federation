@@ -35,7 +35,13 @@ abstract class PostMapper {
     @Mapping(target = "tags", ignore = true)
     abstract fun mapToDTO(projection: PostProjection): Post
 
-    protected fun wrap(options: List<Option>): PostEntity.Options {
-        return PostEntity.Options(items = EnumSet.noneOf(Option::class.java).apply { addAll(options) })
+    protected fun wrap(options: List<Option>?): PostEntity.Options {
+        return PostEntity.Options(
+            items = EnumSet.noneOf(Option::class.java).apply {
+                if (options != null) {
+                    addAll(options)
+                }
+            }
+        )
     }
 }
