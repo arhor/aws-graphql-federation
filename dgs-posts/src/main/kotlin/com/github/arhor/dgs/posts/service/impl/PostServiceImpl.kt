@@ -61,6 +61,9 @@ class PostServiceImpl(
         input.content?.let {
             currentState = currentState.copy(content = it)
         }
+        input.options?.let {
+            currentState = currentState.copy(options = postMapper.wrapOptions(it))
+        }
         input.tags?.let {
             currentState = currentState.copy(tags = materialize(it))
         }

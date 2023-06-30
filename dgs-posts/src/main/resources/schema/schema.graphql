@@ -33,8 +33,8 @@ input UpdatePostInput {
     id: Long!
     header: String
     content: String
-    tags: [String!]
     options: [Option!]
+    tags: [String!]
 }
 
 type Post @key(fields: "id") {
