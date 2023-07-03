@@ -19,7 +19,7 @@ class PostChangeSqsListener @Autowired constructor(
     @SqsListener("\${app-props.aws.sqs.post-deletes}")
     fun handlePostDeletedEvent(event: PostChange.Deleted) {
         logger.debug("Processing post-deleted event: {}", event)
-        commentService.deleteComment(id = event.id)
+        commentService.deleteCommentsFromPost(postId = event.id)
     }
 
     sealed interface PostChange {
