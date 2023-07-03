@@ -10,6 +10,7 @@ import io.mockk.just
 import io.mockk.runs
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.test.annotation.DirtiesContext
@@ -43,10 +44,10 @@ internal class UserChangeSqsListenerTest {
     @Test
     fun `should call unlinkCommentsFromUser method on the CommentService on User Deleted event`() {
         // Given
-        println("----------------------------------------------------------------")
-        println("----------------------------------------------------------------")
-        println("----------------------------------------------------------------")
-        println(sqs)
+        logger.info("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
+        logger.info("{}", sqs)
 
         val userId = 1L
         val event = UserChangeSqsListener.UserChange.Deleted(id = userId)
@@ -54,27 +55,29 @@ internal class UserChangeSqsListenerTest {
         every { mockCommentService.unlinkCommentsFromUser(any()) } just runs
 
         // When
-        println(sqs.send(USER_DELETED_TEST_EVENTS_QUEUE, event))
+        logger.info("{}", sqs.send(USER_DELETED_TEST_EVENTS_QUEUE, event))
 
         // Then
         verify(timeout = 10_000) { mockCommentService.unlinkCommentsFromUser(any()) }
-        println("----------------------------------------------------------------")
-        println("----------------------------------------------------------------")
-        println("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
     }
 
     @Test
     fun `should call deleteCommentsFromPost method on the CommentService on Post Deleted event`() {
         // Given
-        println("----------------------------------------------------------------")
-        println("----------------------------------------------------------------")
-        println("----------------------------------------------------------------")
-        println(sqs)
+        logger.info("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
+        logger.info("{}", sqs)
 
         val postId = 1L
         val event = PostChangeSqsListener.PostChange.Deleted(id = postId)
 
-        every { mockCommentService.deleteCommentsFromPost(any()) } just runs
+        every { mockCommentService.deleteCommentsFromPost(any()) } answers {
+
+        }
 
         // When
         sqs.send(POST_DELETED_TEST_EVENTS_QUEUE, event)
@@ -82,9 +85,9 @@ internal class UserChangeSqsListenerTest {
         // Then
         verify(exactly = 1, timeout = 10_000) { mockCommentService.deleteCommentsFromPost(postId) }
 
-        println("----------------------------------------------------------------")
-        println("----------------------------------------------------------------")
-        println("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------")
     }
 
     companion object {
@@ -92,6 +95,8 @@ internal class UserChangeSqsListenerTest {
         private const val USER_DELETED_TEST_EVENTS_QUEUE = "user-deleted-test-events"
         private const val POST_UPDATED_TEST_EVENTS_QUEUE = "post-updated-test-events"
         private const val POST_DELETED_TEST_EVENTS_QUEUE = "post-deleted-test-events"
+
+        private val logger = LoggerFactory.getLogger(UserChangeSqsListenerTest::class.java)
 
         @JvmStatic
         @Container
