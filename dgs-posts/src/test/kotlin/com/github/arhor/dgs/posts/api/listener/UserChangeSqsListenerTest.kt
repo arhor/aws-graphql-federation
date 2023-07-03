@@ -8,18 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.support.GenericMessage
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import org.springframework.test.context.TestPropertySource
 import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 
-@TestPropertySource(
-    properties = [
-        "spring.main.lazy-initialization=true"
-    ]
-)
 @SqsTest(UserChangeSqsListener::class)
 @Testcontainers(disabledWithoutDocker = true)
 internal class UserChangeSqsListenerTest {

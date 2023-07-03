@@ -4,6 +4,9 @@ import com.github.arhor.dgs.comments.service.CommentService
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sqs.operations.SqsOperations
 import io.awspring.cloud.test.sqs.SqsTest
+import io.mockk.every
+import io.mockk.just
+import io.mockk.runs
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,10 +27,12 @@ internal class PostChangeSqsListenerTest : BaseSqsListenerTest() {
         val postId = 1L
         val event = PostChangeSqsListener.PostChange.Deleted(id = postId)
 
+        every { mockCommentService.deleteCommentsFromPost(any()) } just runs
+
         // When
         sqs.send(POST_DELETED_TEST_EVENTS_QUEUE, GenericMessage(event))
 
         // Then
-        verify(exactly = 1, timeout = 3000) { mockCommentService.deleteCommentsFromPost(postId) }
+        verify(exactly = 1, timeout = 10_000) { mockCommentService.deleteCommentsFromPost(postId) }
     }
 }

@@ -1,7 +1,10 @@
 package com.github.arhor.dgs.comments.api.listener
 
+import com.fasterxml.jackson.module.kotlin.kotlinModule
 import org.junit.jupiter.api.BeforeAll
+import org.springframework.context.annotation.Bean
 import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.localstack.LocalStackContainer
@@ -11,7 +14,13 @@ import org.testcontainers.utility.DockerImageName
 
 @DirtiesContext
 @Testcontainers(disabledWithoutDocker = true)
+@ContextConfiguration(classes = [BaseSqsListenerTest.Config::class])
 internal abstract class BaseSqsListenerTest {
+
+    class Config {
+        @Bean
+        fun kotlinModuleBean() = kotlinModule()
+    }
 
     companion object {
         const val USER_UPDATED_TEST_EVENTS_QUEUE = "user-updated-test-events"
