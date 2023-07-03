@@ -8,10 +8,8 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.support.GenericMessage
-import org.testcontainers.junit.jupiter.Testcontainers
 
 @SqsTest(UserChangeSqsListener::class)
-@Testcontainers(disabledWithoutDocker = true)
 internal class UserChangeSqsListenerTest : BaseSqsListenerTest() {
 
     @Autowired

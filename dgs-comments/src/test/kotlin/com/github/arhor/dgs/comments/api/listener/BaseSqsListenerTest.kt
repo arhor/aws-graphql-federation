@@ -33,10 +33,10 @@ internal abstract class BaseSqsListenerTest {
                 add("spring.cloud.aws.credentials.secret-key") { localstack.secretKey }
                 add("spring.cloud.aws.region.static") { localstack.region }
                 add("spring.cloud.aws.sqs.endpoint") { localstack.getEndpointOverride(LocalStackContainer.Service.SQS) }
-                add("app-props.aws.user-updates") { USER_UPDATED_TEST_EVENTS_QUEUE }
-                add("app-props.aws.user-deletes") { USER_DELETED_TEST_EVENTS_QUEUE }
-                add("app-props.aws.post-updates") { POST_UPDATED_TEST_EVENTS_QUEUE }
-                add("app-props.aws.post-deletes") { POST_DELETED_TEST_EVENTS_QUEUE }
+                add("app-props.aws.sqs.user-updates") { USER_UPDATED_TEST_EVENTS_QUEUE }
+                add("app-props.aws.sqs.user-deletes") { USER_DELETED_TEST_EVENTS_QUEUE }
+                add("app-props.aws.sqs.post-updates") { POST_UPDATED_TEST_EVENTS_QUEUE }
+                add("app-props.aws.sqs.post-deletes") { POST_DELETED_TEST_EVENTS_QUEUE }
             }
         }
 
