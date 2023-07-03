@@ -5,14 +5,14 @@ on:
     branches:
       - 'master'
     paths:
-      - 'gds-posts/**'
+      - 'dgs-posts/**'
       - 'shared-bom/**'
       - 'shared-lib/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - 'gds-posts/**'
+      - 'dgs-posts/**'
       - 'shared-bom/**'
       - 'shared-lib/**'
   workflow_dispatch:
