@@ -18,10 +18,6 @@ java {
     }
 }
 
-testlogger {
-    showStandardStreams = true
-}
-
 repositories {
     mavenCentral()
 }
