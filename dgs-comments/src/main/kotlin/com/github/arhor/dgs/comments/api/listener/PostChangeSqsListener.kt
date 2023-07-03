@@ -12,24 +12,19 @@ class PostChangeSqsListener @Autowired constructor(
     private val commentService: CommentService,
 ) {
 
-    init {
-        logger.info(">>>>> $javaClass initialized! <<<<<")
+    @SqsListener("\${app-props.aws.sqs.post-updated-events-source}")
+    fun handlePostUpdatedEvent(message: Message<Map<String, Any?>>) {
+        logger.debug("Processing post-updated event: {}", message)
     }
 
-    @SqsListener("\${app-props.aws.sqs.post-updates}")
-    fun handlePostUpdatedEvent(event: Message<PostChange.Updated>) {
-        logger.debug("Processing post-updated event: {}", event)
-    }
+    @SqsListener("\${app-props.aws.sqs.post-deleted-events-source}")
+    fun handlePostDeletedEvent(message: Message<Map<String, Any?>>) {
+        logger.debug("Processing post-deleted event: {}", message)
 
-    @SqsListener("\${app-props.aws.sqs.post-deletes}")
-    fun handlePostDeletedEvent(event: Message<PostChange.Deleted>) {
-        logger.debug("Processing post-deleted event: {}", event)
-        commentService.deleteCommentsFromPost(postId = 1L /*event.id*/)
-    }
+        val deletedPostId = message.payload["id"].toString().toLong()
+        val affectedComments = commentService.deleteCommentsFromPost(postId = deletedPostId)
 
-    sealed interface PostChange {
-        data class Updated(val id: Long) : PostChange
-        data class Deleted(val id: Long) : PostChange
+        logger.debug("Successfully deleted {} comments for the post with id {}", affectedComments, deletedPostId)
     }
 
     companion object {

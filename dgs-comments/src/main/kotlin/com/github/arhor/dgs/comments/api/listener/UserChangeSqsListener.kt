@@ -12,24 +12,19 @@ class UserChangeSqsListener @Autowired constructor(
     private val commentService: CommentService,
 ) {
 
-    init {
-        logger.info(">>>>> $javaClass initialized! <<<<<")
+    @SqsListener("\${app-props.aws.sqs.user-updated-events-source}")
+    fun handleUserUpdatedEvent(message: Message<Map<String, Any?>>) {
+        logger.debug("Processing user-updated event: {}", message)
     }
 
-    @SqsListener("\${app-props.aws.sqs.user-updates}")
-    fun handleUserUpdatedEvent(event: Message<String>) {
-        logger.debug("Processing user-updated event: {}", event)
-    }
+    @SqsListener("\${app-props.aws.sqs.user-deleted-events-source}")
+    fun handleUserDeletedEvent(message: Message<Map<String, Any?>>) {
+        logger.debug("Processing user-deleted event: {}", message)
 
-    @SqsListener("\${app-props.aws.sqs.user-deletes}")
-    fun handleUserDeletedEvent(event: Message<String>) {
-        logger.debug("Processing user-deleted event: {}", event)
-        commentService.unlinkCommentsFromUser(userId = 1L /*event.id*/)
-    }
+        val deletedUserId = message.payload["id"].toString().toLong()
+        val affectedComments = commentService.unlinkCommentsFromUser(userId = deletedUserId)
 
-    sealed interface UserChange {
-        data class Updated(val id: Long) : UserChange
-        data class Deleted(val id: Long) : UserChange
+        logger.debug("Successfully unlinked {} comments for the user with id {}", affectedComments, deletedUserId)
     }
 
     companion object {

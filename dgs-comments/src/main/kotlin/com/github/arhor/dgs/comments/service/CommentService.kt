@@ -10,6 +10,6 @@ interface CommentService {
     fun createComment(input: CreateCommentInput): Comment
     fun updateComment(input: UpdateCommentInput): Comment
     fun deleteComment(id: Long): Boolean
-    fun deleteCommentsFromPost(postId: Long)
-    fun unlinkCommentsFromUser(userId: Long)
+    fun deleteCommentsFromPost(postId: Long): Int
+    fun unlinkCommentsFromUser(userId: Long): Int
 }
