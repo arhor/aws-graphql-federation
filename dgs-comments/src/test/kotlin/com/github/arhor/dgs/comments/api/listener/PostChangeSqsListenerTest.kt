@@ -27,7 +27,7 @@ import org.testcontainers.utility.DockerImageName
 @DirtiesContext
 @Testcontainers(disabledWithoutDocker = true)
 @ContextConfiguration(classes = [BaseSqsListenerTest.Config::class])
-@SqsTest(PostChangeSqsListener::class)
+@SqsTest(listeners = [PostChangeSqsListener::class])
 internal class PostChangeSqsListenerTest {
 
     @Autowired

@@ -13,7 +13,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.messaging.support.GenericMessage
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -26,7 +25,7 @@ import org.testcontainers.utility.DockerImageName
 @DirtiesContext
 @Testcontainers(disabledWithoutDocker = true)
 @ContextConfiguration(classes = [BaseSqsListenerTest.Config::class])
-@SqsTest(UserChangeSqsListener::class)
+@SqsTest(listeners = [UserChangeSqsListener::class])
 internal class UserChangeSqsListenerTest {
 
     @Autowired
@@ -37,12 +36,12 @@ internal class UserChangeSqsListenerTest {
 
     @Test
     fun `should call unlinkCommentsFromUser method on the CommentService on User Deleted event`() {
+        // Given
         println("----------------------------------------------------------------")
         println("----------------------------------------------------------------")
         println("----------------------------------------------------------------")
         println(sqs)
 
-        // Given
         val userId = 1L
         val event = UserChangeSqsListener.UserChange.Deleted(id = userId)
 
