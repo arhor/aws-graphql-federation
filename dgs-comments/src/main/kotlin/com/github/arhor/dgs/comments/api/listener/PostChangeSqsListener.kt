@@ -17,12 +17,12 @@ class PostChangeSqsListener @Autowired constructor(
     }
 
     @SqsListener("\${app-props.aws.sqs.post-updates}")
-    fun handlePostUpdatedEvent(event: Message<String>) {
+    fun handlePostUpdatedEvent(event: Message<PostChange.Updated>) {
         logger.debug("Processing post-updated event: {}", event)
     }
 
     @SqsListener("\${app-props.aws.sqs.post-deletes}")
-    fun handlePostDeletedEvent(event: Message<String>) {
+    fun handlePostDeletedEvent(event: Message<PostChange.Deleted>) {
         logger.debug("Processing post-deleted event: {}", event)
         commentService.deleteCommentsFromPost(postId = 1L /*event.id*/)
     }
