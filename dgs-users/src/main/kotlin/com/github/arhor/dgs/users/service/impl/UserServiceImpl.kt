@@ -1,5 +1,6 @@
 package com.github.arhor.dgs.users.service.impl
 
+import com.github.arhor.dgs.lib.event.UserEvent
 import com.github.arhor.dgs.lib.exception.EntityDuplicateException
 import com.github.arhor.dgs.lib.exception.EntityNotFoundException
 import com.github.arhor.dgs.lib.exception.Operation
@@ -9,6 +10,7 @@ import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
+import com.github.arhor.dgs.users.service.UserEventEmitter
 import com.github.arhor.dgs.users.service.UserMapper
 import com.github.arhor.dgs.users.service.UserService
 import org.springframework.dao.OptimisticLockingFailureException
@@ -23,8 +25,27 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(
     private val userMapper: UserMapper,
     private val userRepository: UserRepository,
+    private val userEventEmitter: UserEventEmitter,
     private val passwordEncoder: PasswordEncoder,
 ) : UserService {
+
+    @Transactional(readOnly = true)
+    override fun getUserById(id: Long): User {
+        return userRepository.findByIdOrNull(id)?.let { userMapper.mapToDTO(it) }
+            ?: throw EntityNotFoundException(
+                entity = USER.TYPE_NAME,
+                condition = "${USER.Id} = $id",
+                operation = Operation.READ,
+            )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getAllUsers(input: UsersLookupInput): List<User> {
+        return userRepository
+            .findAll(PageRequest.of(input.page, input.size))
+            .map(userMapper::mapToDTO)
+            .toList()
+    }
 
     @Transactional
     override fun createUser(input: CreateUserInput): User {
@@ -39,6 +60,7 @@ class UserServiceImpl(
             .let { userMapper.mapToEntity(it) }
             .let { userRepository.save(it) }
             .let { userMapper.mapToDTO(it) }
+            .also { userEventEmitter.emit(UserEvent.Created(id = it.id)) }
     }
 
     @Transactional
@@ -69,27 +91,10 @@ class UserServiceImpl(
             null -> false
             else -> {
                 userRepository.delete(user)
+                userEventEmitter.emit(UserEvent.Deleted(id = id))
                 true
             }
         }
 
-    }
-
-    @Transactional(readOnly = true)
-    override fun getUserById(id: Long): User {
-        return userRepository.findByIdOrNull(id)?.let { userMapper.mapToDTO(it) }
-            ?: throw EntityNotFoundException(
-                entity = USER.TYPE_NAME,
-                condition = "${USER.Id} = $id",
-                operation = Operation.READ,
-            )
-    }
-
-    @Transactional(readOnly = true)
-    override fun getAllUsers(input: UsersLookupInput): List<User> {
-        return userRepository
-            .findAll(PageRequest.of(input.page, input.size))
-            .map(userMapper::mapToDTO)
-            .toList()
     }
 }

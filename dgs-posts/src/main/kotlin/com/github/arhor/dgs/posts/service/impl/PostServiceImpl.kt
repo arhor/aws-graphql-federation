@@ -1,5 +1,6 @@
 package com.github.arhor.dgs.posts.service.impl
 
+import com.github.arhor.dgs.lib.event.PostEvent
 import com.github.arhor.dgs.lib.exception.EntityNotFoundException
 import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.posts.data.entity.TagEntity
@@ -12,6 +13,7 @@ import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.dgs.posts.generated.graphql.types.Post
 import com.github.arhor.dgs.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.dgs.posts.generated.graphql.types.UpdatePostInput
+import com.github.arhor.dgs.posts.service.PostEventEmitter
 import com.github.arhor.dgs.posts.service.PostMapper
 import com.github.arhor.dgs.posts.service.PostService
 import org.springframework.dao.OptimisticLockingFailureException
@@ -25,6 +27,7 @@ import java.util.UUID
 class PostServiceImpl(
     private val postMapper: PostMapper,
     private val postRepository: PostRepository,
+    private val postEventEmitter: PostEventEmitter,
     private val bannerImageRepository: BannerImageRepository,
     private val tagRepository: TagRepository,
 ) : PostService {
@@ -71,6 +74,7 @@ class PostServiceImpl(
         if (bannerFilename != null) {
             bannerImageRepository.upload(filename = bannerFilename, data = input.banner.inputStream)
         }
+        postEventEmitter.emit(PostEvent.Created(id = post.id))
         return post
     }
 
@@ -112,20 +116,9 @@ class PostServiceImpl(
             else -> {
                 postRepository.delete(post)
                 post.banner?.let { bannerImageRepository.delete(it) }
+                postEventEmitter.emit(PostEvent.Deleted(id = id))
                 true
             }
-        }
-    }
-
-    @Transactional
-    override fun unlinkPostsFromUser(userId: Long) {
-        val unlinkedPosts =
-            postRepository.findAllByUserId(userId).use { data ->
-                data.map { it.copy(userId = null) }
-                    .toList()
-            }
-        if (unlinkedPosts.isNotEmpty()) {
-            postRepository.saveAll(unlinkedPosts)
         }
     }
 

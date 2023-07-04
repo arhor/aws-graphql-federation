@@ -10,7 +10,7 @@ data class AppProps(
         val sns: Sns,
     ) {
         data class Sns(
-            val userChanges: String,
+            val userEvents: String,
         )
     }
 }

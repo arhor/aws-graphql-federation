@@ -14,9 +14,9 @@ import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 
-@SqsTest(UserChangeSqsListener::class)
+@SqsTest(UserEventSqsListener::class)
 @Testcontainers(disabledWithoutDocker = true)
-internal class UserChangeSqsListenerTest {
+internal class UserEventSqsListenerTest {
 
     @Autowired
     private lateinit var sqs: SqsOperations

@@ -82,31 +82,6 @@ class CommentServiceImpl(
         }
     }
 
-    @Transactional
-    override fun deleteCommentsFromPost(postId: Long): Int {
-        val commentsToDelete =
-            commentRepository.findAllByPostId(postId).use { data ->
-                data.toList()
-            }
-        if (commentsToDelete.isNotEmpty()) {
-            commentRepository.deleteAll(commentsToDelete)
-        }
-        return commentsToDelete.size
-    }
-
-    @Transactional
-    override fun unlinkCommentsFromUser(userId: Long): Int {
-        val unlinkedComments =
-            commentRepository.findAllByUserId(userId).use { data ->
-                data.map { it.copy(userId = null) }
-                    .toList()
-            }
-        if (unlinkedComments.isNotEmpty()) {
-            commentRepository.saveAll(unlinkedComments)
-        }
-        return unlinkedComments.size
-    }
-
     private inline fun findInternalInBatch(
         ids: Collection<Long>,
         source: (Collection<Long>) -> Stream<CommentEntity>,

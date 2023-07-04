@@ -47,7 +47,7 @@ dgs:
 app-props:
   aws:
     sns:
-      user-changes: ${AWS_SNS_USER_CHANGES}
+      user-events: ${AWS_SNS_USER_EVENTS}
 
 ---
 
