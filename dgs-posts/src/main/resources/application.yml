@@ -47,7 +47,7 @@ dgs:
 app-props:
   aws:
     sns:
-      post-changes: ${AWS_SNS_POST_CHANGES}
+      post-events: ${AWS_SNS_POST_EVENTS}
     sqs:
       user-created-events: ${AWS_SQS_USER_UPDATED_EVENTS}
       user-deleted-events: ${AWS_SQS_USER_DELETED_EVENTS}

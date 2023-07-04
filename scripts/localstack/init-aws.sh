@@ -42,7 +42,7 @@ awslocal sns subscribe \
 
 ######################################################## POSTS #########################################################
 
-post_changes_arn=$(awslocal sns create-topic --name post-changes --output text)
+post_events_arn=$(awslocal sns create-topic --name post-events --output text)
 
 post_created_events_for_comments_url=$(awslocal sqs create-queue --queue-name post-created-events-for-comments --output text)
 post_deleted_events_for_comments_url=$(awslocal sqs create-queue --queue-name post-deleted-events-for-comments --output text)
@@ -51,13 +51,13 @@ post_created_events_for_comments_arn=$(awslocal sqs get-queue-attributes --queue
 post_deleted_events_for_comments_arn=$(awslocal sqs get-queue-attributes --queue-url "$post_deleted_events_for_comments_url" --attribute-names QueueArn --query Attributes --output text)
 
 awslocal sns subscribe \
-    --topic-arn "$post_changes_arn" \
+    --topic-arn "$post_events_arn" \
     --protocol sqs \
     --notification-endpoint "$post_created_events_for_comments_arn" \
     --attributes '{ "FilterPolicy": "{\"x_event_type\":[\"PostEvent.Created\"]}", "RawMessageDelivery": "true" }'
 
 awslocal sns subscribe \
-    --topic-arn "$post_changes_arn" \
+    --topic-arn "$post_events_arn" \
     --protocol sqs \
     --notification-endpoint "$post_deleted_events_for_comments_arn" \
     --attributes '{ "FilterPolicy": "{\"x_event_type\":[\"PostEvent.Deleted\"]}", "RawMessageDelivery": "true" }'
