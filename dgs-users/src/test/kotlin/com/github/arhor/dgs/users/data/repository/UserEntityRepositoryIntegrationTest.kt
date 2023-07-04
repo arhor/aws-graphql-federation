@@ -33,31 +33,36 @@ internal class UserEntityRepositoryIntegrationTest {
     @Test
     fun `should return true for the email of an existing user`() {
         // Given
-        val user = userRepository.save(UserEntity(username = "test-username", password = "test-password"))
+        val createdUser = createPersistedUser()
 
         // When
-        val result = userRepository.existsByUsername(user.username)
+        val result = userRepository.existsByUsername(createdUser.username)
 
         // Then
         assertThat(result)
             .isTrue()
     }
 
-//    @Test
-//    fun `should return false for the email of a non-existing user`() {
-//        // Given
-//        val notPersistedUser = UserEntity(
-//            username = "test2@email.com",
-//            password = "TestPassword123",
-//        )
-//
-//        // When
-//        val result = userRepository.existsByUsername(notPersistedUser.username)
-//
-//        // Then
-//        assertThat(result)
-//            .isFalse()
-//    }
+    @Test
+    fun `should return false for the email of a non-existing user`() {
+        // Given
+        val deletedUser = createPersistedUser().also { userRepository.delete(it) }
+
+        // When
+        val result = userRepository.existsByUsername(deletedUser.username)
+
+        // Then
+        assertThat(result)
+            .isFalse()
+    }
+
+    private fun createPersistedUser(): UserEntity =
+        userRepository.save(
+            UserEntity(
+                username = "test-username",
+                password = "test-password",
+            )
+        )
 
     companion object {
         @JvmStatic
