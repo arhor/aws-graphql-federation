@@ -11,10 +11,12 @@ import com.netflix.graphql.dgs.DgsEntityFetcher
 class FederatedEntityFetchers(
     private val userService: UserService,
 ) {
+
     /* Entity Fetchers */
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
-    fun fetchUser(values: Map<String, Any>): User {
-        return userService.getUserById(userId = values.getLong(USER.Id))
-    }
+    fun fetchUser(values: Map<String, Any>): User? =
+        userService.getUserById(
+            userId = values.getLong(USER.Id)
+        )
 }

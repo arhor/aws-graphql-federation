@@ -14,7 +14,7 @@ abstract class EntityConditionException(
     val operation: Operation,
     cause: Exception? = null,
 ) : RuntimeException(
-    /* message = */ "Operation [${operation}] over the entity [$entity] failed under the condition [$condition]",
+    /* message = */ "Operation [${operation}] for the entity [$entity] failed under the condition [$condition]",
     /* cause   = */ cause,
 ) {
     /**

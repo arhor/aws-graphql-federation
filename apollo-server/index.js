@@ -14,7 +14,7 @@ const gateway = new ApolloGateway({
     buildService: ({ url }) => new RemoteGraphQLDataSource({
         url,
         willSendRequest: ({ request, context }) => {
-            request.http.headers.set('x-request-id', context.globalRequestId);
+            request.http.headers.set('x-request-id', context.globalRequestId ?? uuid());
         },
     }),
 });

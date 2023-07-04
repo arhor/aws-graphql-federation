@@ -1,5 +1,6 @@
 package com.github.arhor.dgs.posts.api.listener
 
+import com.github.arhor.dgs.lib.event.UserEvent
 import com.github.arhor.dgs.posts.service.UserService
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory
@@ -12,8 +13,8 @@ class UserEventSqsListener @Autowired constructor(
 ) {
 
     @SqsListener("\${app-props.aws.sqs.user-created-events}")
-    fun handleUserCreatedEvent(event: UserEvent.Updated) {
-        logger.debug("Processing user-updated event: {}", event)
+    fun handleUserCreatedEvent(event: UserEvent.Created) {
+        logger.debug("Processing user-created event: {}", event)
         userService.createUser(userId = event.id)
     }
 
@@ -21,11 +22,6 @@ class UserEventSqsListener @Autowired constructor(
     fun handleUserDeletedEvent(event: UserEvent.Deleted) {
         logger.debug("Processing user-deleted event: {}", event)
         userService.deleteUser(userId = event.id)
-    }
-
-    sealed interface UserEvent {
-        data class Updated(val id: Long) : UserEvent
-        data class Deleted(val id: Long) : UserEvent
     }
 
     companion object {

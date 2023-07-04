@@ -53,5 +53,6 @@ enum Option {
 
 type User @key(fields: "id") @extends {
     id: Long! @external
+    username: String @external
     posts: [Post!]
 }

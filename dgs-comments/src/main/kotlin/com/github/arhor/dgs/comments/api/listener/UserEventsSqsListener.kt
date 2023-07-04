@@ -1,6 +1,7 @@
 package com.github.arhor.dgs.comments.api.listener
 
 import com.github.arhor.dgs.comments.service.UserService
+import com.github.arhor.dgs.lib.event.UserEvent
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,11 +22,6 @@ class UserEventsSqsListener @Autowired constructor(
     fun handleUserDeletedEvent(event: UserEvent.Deleted) {
         logger.debug("Processing user-deleted event: {}", event)
         userService.deleteUser(userId = event.id)
-    }
-
-    sealed interface UserEvent {
-        data class Created(val id: Long) : UserEvent
-        data class Deleted(val id: Long) : UserEvent
     }
 
     companion object {

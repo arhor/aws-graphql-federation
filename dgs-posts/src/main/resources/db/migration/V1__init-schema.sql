@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "posts"
         FOREIGN KEY ("user_id")
             REFERENCES "users" ("id")
             ON UPDATE CASCADE
-            ON DELETE SET NULL,
+            ON DELETE SET NULL
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "tags"

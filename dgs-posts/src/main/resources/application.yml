@@ -49,7 +49,7 @@ app-props:
     sns:
       post-events: ${AWS_SNS_POST_EVENTS}
     sqs:
-      user-created-events: ${AWS_SQS_USER_UPDATED_EVENTS}
+      user-created-events: ${AWS_SQS_USER_CREATED_EVENTS}
       user-deleted-events: ${AWS_SQS_USER_DELETED_EVENTS}
     s3:
       banners-bucket-name: STUB

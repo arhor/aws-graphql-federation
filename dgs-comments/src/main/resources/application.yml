@@ -69,7 +69,7 @@ spring:
   devtools:
     livereload:
       enabled: true
-      port: 35730
+      port: 35731
   cloud:
     aws:
       sns:
