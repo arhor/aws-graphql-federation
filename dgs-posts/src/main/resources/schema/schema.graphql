@@ -52,7 +52,7 @@ enum Option {
     NSFW
 }
 
-extend type User @key(fields: "id") {
+type User @key(fields: "id") @extends {
     id: Long! @external
     posts: [Post!]
 }

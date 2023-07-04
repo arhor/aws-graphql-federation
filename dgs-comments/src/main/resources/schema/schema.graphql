@@ -27,12 +27,12 @@ type Comment {
     content: String!
 }
 
-extend type Post @key(fields: "id") {
+type Post @key(fields: "id") @extends {
     id: Long! @external
     comments: [Comment!]
 }
 
-extend type User @key(fields: "id") {
+type User @key(fields: "id") @extends {
     id: Long! @external
     comments: [Comment!]
 }
