@@ -5,8 +5,10 @@ import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.POST
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.comments.generated.graphql.types.Comment
 import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentInput
+import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentResult
 import com.github.arhor.dgs.comments.generated.graphql.types.Post
 import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentInput
+import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentResult
 import com.github.arhor.dgs.comments.generated.graphql.types.User
 import com.github.arhor.dgs.comments.service.CommentService
 import com.netflix.graphql.dgs.DgsComponent
@@ -32,12 +34,16 @@ class CommentFetcher(private val commentService: CommentService) {
     /* Mutations */
 
     @DgsMutation
-    fun createComment(@InputArgument input: CreateCommentInput): Comment =
-        commentService.createComment(input)
+    fun createComment(@InputArgument input: CreateCommentInput): CreateCommentResult =
+        CreateCommentResult(
+            comment = commentService.createComment(input)
+        )
 
     @DgsMutation
-    fun updateComment(@InputArgument input: UpdateCommentInput): Comment =
-        commentService.updateComment(input)
+    fun updateComment(@InputArgument input: UpdateCommentInput): UpdateCommentResult =
+        UpdateCommentResult(
+            comment = commentService.updateComment(input)
+        )
 
     /* Internal implementation */
 

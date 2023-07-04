@@ -5,8 +5,8 @@
 scalar Long
 
 type Mutation {
-    createComment(input: CreateCommentInput!): Comment!
-    updateComment(input: UpdateCommentInput!): Comment!
+    createComment(input: CreateCommentInput!): CreateCommentResult
+    updateComment(input: UpdateCommentInput!): UpdateCommentResult
 }
 
 input CreateCommentInput {
@@ -18,6 +18,14 @@ input CreateCommentInput {
 input UpdateCommentInput {
     id: Long!
     content: String
+}
+
+type CreateCommentResult {
+    comment: Comment
+}
+
+type UpdateCommentResult {
+    comment: Comment
 }
 
 type Comment {
