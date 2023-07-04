@@ -9,9 +9,9 @@ type Query {
 }
 
 type Mutation {
-    createUser(input: CreateUserInput!): User!
-    updateUser(input: UpdateUserInput!): User!
-    deleteUser(id: Long!): Boolean!
+    createUser(input: CreateUserInput!): CreateUserResult
+    updateUser(input: UpdateUserInput!): UpdateUserResult
+    deleteUser(input: DeleteUserInput!): DeleteUserResult
 }
 
 input UsersLookupInput {
@@ -27,6 +27,22 @@ input CreateUserInput {
 input UpdateUserInput {
     id: Long!
     password: String
+}
+
+input DeleteUserInput {
+    id: Long!
+}
+
+type CreateUserResult {
+    user: User
+}
+
+type UpdateUserResult {
+    user: User
+}
+
+type DeleteUserResult {
+    success: Boolean
 }
 
 type User @key(fields: "id") {
