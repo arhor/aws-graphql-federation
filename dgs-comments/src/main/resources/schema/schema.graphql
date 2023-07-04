@@ -1,4 +1,6 @@
 # noinspection GraphQLTypeRedefinition
+# noinspection GraphQLMemberRedefinition
+# noinspection DgsEntityFetcherInspector
 
 scalar Long
 
@@ -25,12 +27,12 @@ type Comment {
     content: String!
 }
 
-type Post @key(fields: "id") @extends {
+extend type Post @key(fields: "id") {
     id: Long! @external
     comments: [Comment!]
 }
 
-type User @key(fields: "id") @extends {
+extend type User @key(fields: "id") {
     id: Long! @external
     comments: [Comment!]
 }

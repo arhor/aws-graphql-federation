@@ -1,4 +1,5 @@
 # noinspection GraphQLTypeRedefinition
+# noinspection GraphQLMemberRedefinition
 # noinspection DgsEntityFetcherInspector
 
 scalar Long
@@ -51,8 +52,7 @@ enum Option {
     NSFW
 }
 
-type User @key(fields: "id") @extends {
+extend type User @key(fields: "id") {
     id: Long! @external
-    username: String @external
     posts: [Post!]
 }
