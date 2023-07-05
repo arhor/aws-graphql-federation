@@ -8,6 +8,7 @@ import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.ninjasquad.springmockk.MockkBean
@@ -201,7 +202,7 @@ internal class UserServiceTest {
             every { mockUserEventEmitter.emit(any()) } just runs
 
             // When
-            userService.deleteUser(expectedId)
+            userService.deleteUser(DeleteUserInput(expectedId))
 
             // Then
             verify(exactly = 1) { mockUserRepository.findByIdOrNull(any()) }

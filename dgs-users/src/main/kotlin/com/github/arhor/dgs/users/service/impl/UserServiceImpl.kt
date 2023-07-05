@@ -7,6 +7,7 @@ import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
@@ -86,15 +87,14 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun deleteUser(id: Long): Boolean {
-        return when (val user = userRepository.findByIdOrNull(id)) {
+    override fun deleteUser(input: DeleteUserInput): Boolean {
+        return when (val user = userRepository.findByIdOrNull(input.id)) {
             null -> false
             else -> {
                 userRepository.delete(user)
-                userEventEmitter.emit(UserEvent.Deleted(id = id))
+                userEventEmitter.emit(UserEvent.Deleted(id = user.id!!))
                 true
             }
         }
-
     }
 }

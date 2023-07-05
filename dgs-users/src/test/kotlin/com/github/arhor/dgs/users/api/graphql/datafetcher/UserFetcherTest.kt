@@ -7,6 +7,12 @@ import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.api.graphql.GlobalDataFetchingExceptionHandler
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
+import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.CreateUserResult
+import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserResult
+import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserResult
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.dgs.users.service.UserService
@@ -34,11 +40,11 @@ import org.springframework.boot.test.context.SpringBootTest
 )
 internal class UserFetcherTest {
 
-    @Autowired
-    private lateinit var dgsQueryExecutor: DgsQueryExecutor
-
     @MockkBean
     private lateinit var userService: UserService
+
+    @Autowired
+    private lateinit var dgsQueryExecutor: DgsQueryExecutor
 
     @Nested
     inner class `query { user }` {
@@ -185,11 +191,119 @@ internal class UserFetcherTest {
     }
 
     @Nested
-    inner class `mutation { createUser }` {}
+    inner class `mutation { createUser }` {
+
+        @Test
+        fun `should create new user and return result object containing created user data`() {
+            // Given
+            val id = -1L
+            val username = "test-username"
+            val password = "test-password"
+            val expectedUser = User(id, username)
+
+            every { userService.createUser(any()) } returns expectedUser
+
+            // When
+            val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+                """
+                mutation {
+                    createUser(
+                        input: {
+                            username: "$username"
+                            password: "$password"
+                        }
+                    ) {
+                        user {
+                            id
+                            username
+                        }
+                    }
+                }
+                """.trimIndent(),
+                "$.data.createUser",
+                CreateUserResult::class.java
+            )
+
+            // Then
+            assertThat(result)
+                .returns(expectedUser, from { it.user })
+
+            verify(exactly = 1) { userService.createUser(CreateUserInput(username, password)) }
+        }
+    }
 
     @Nested
-    inner class `mutation { updateUser }` {}
+    inner class `mutation { updateUser }` {
+        @Test
+        fun `should update existing user and return result object containing updated user data`() {
+            // Given
+            val id = -1L
+            val username = "test-username"
+            val password = "test-password"
+            val expectedUser = User(id, username)
+
+            every { userService.updateUser(any()) } returns expectedUser
+
+            // When
+            val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+                """
+                mutation {
+                    updateUser(
+                        input: {
+                            id: $id
+                            password: "$password"
+                        }
+                    ) {
+                        user {
+                            id
+                            username
+                        }
+                    }
+                }
+                """.trimIndent(),
+                "$.data.updateUser",
+                UpdateUserResult::class.java
+            )
+
+            // Then
+            assertThat(result)
+                .returns(expectedUser, from { it.user })
+
+            verify(exactly = 1) { userService.updateUser(UpdateUserInput(id, password)) }
+        }
+    }
 
     @Nested
-    inner class `mutation { deleteUser }` {}
+    inner class `mutation { deleteUser }` {
+        @Test
+        fun `should delete existing user and return result object containing success field with value true`() {
+            // Given
+            val id = -1L
+
+            every { userService.deleteUser(any()) } returns true
+
+            // When
+            val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+                """
+                mutation {
+                    deleteUser(
+                        input: {
+                            id: $id
+                        }
+                    ) {
+                        success
+                    }
+                }
+                """.trimIndent(),
+                "$.data.deleteUser",
+                DeleteUserResult::class.java
+            )
+
+            // Then
+            assertThat(result)
+                .returns(true, from { it.success })
+
+            verify(exactly = 1) { userService.deleteUser(DeleteUserInput(id)) }
+        }
+    }
 }

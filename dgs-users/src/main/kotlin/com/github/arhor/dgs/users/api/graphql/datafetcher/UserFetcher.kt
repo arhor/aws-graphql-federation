@@ -44,6 +44,6 @@ class UserFetcher(private val userService: UserService) {
     @DgsMutation
     fun deleteUser(@InputArgument input: DeleteUserInput): DeleteUserResult =
         DeleteUserResult(
-            success = userService.deleteUser(input.id)
+            success = userService.deleteUser(input)
         )
 }
