@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run all services" type="CompoundRunConfigurationType">
+    <toRun name="dgs-users [bootRun]" type="GradleRunConfiguration" />
+    <toRun name="dgs-posts [bootRun]" type="GradleRunConfiguration" />
+    <toRun name="dgs-comments [bootRun]" type="GradleRunConfiguration" />
+    <method v="2" />
+  </configuration>
+</component>
