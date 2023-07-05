@@ -62,8 +62,6 @@ dependencies {
     implementation("org.springframework.retry:spring-retry")
     implementation("org.springframework.security:spring-security-crypto")
 
-//    compileOnly("com.google.code.findbugs:jsr305")
-
     runtimeOnly("org.postgresql:postgresql")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -125,7 +123,7 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = 0.50.toBigDecimal()
+                    minimum = 0.80.toBigDecimal()
                 }
             }
         }

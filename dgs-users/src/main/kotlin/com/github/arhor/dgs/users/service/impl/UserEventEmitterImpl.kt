@@ -6,25 +6,30 @@ import com.github.arhor.dgs.users.service.UserEventEmitter
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import org.springframework.messaging.MessagingException
+import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
 @Component
 class UserEventEmitterImpl(
-    private val snsOperations: SnsOperations,
-    appProps: AppProps,
+    private val appProps: AppProps,
+    private val sns: SnsOperations,
 ) : UserEventEmitter {
 
-    private val userEventsTopic = appProps.aws.sns.userEvents
-
-    @Retryable(retryFor = [MessagingException::class])
+    @Retryable(
+        include = [
+            MessagingException::class,
+        ],
+        backoff = Backoff(
+            delayExpression = "\${app-props.retry.delay:1000}",
+            multiplierExpression = "\${app-props.retry.multiplier:0}",
+        ),
+        maxAttemptsExpression = "\${app-props.retry.max-attempts:3}",
+    )
     override fun emit(event: UserEvent) {
-        snsOperations.sendNotification(
-            userEventsTopic,
-            SnsNotification(
-                event,
-                event.attributes()
-            )
-        )
+        val snsTopicName = appProps.aws.sns.userEvents
+        val notification = SnsNotification(event, event.attributes())
+
+        sns.sendNotification(snsTopicName, notification)
     }
 }
