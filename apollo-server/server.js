@@ -3,12 +3,8 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
 import { v4 as uuid } from 'uuid';
 
-function error(message) {
-    throw Error(message);
-}
-
-function requiredEnv(variable) {
-    return process.env[variable] || error(`Missing env variable: ${variable}`);
+function required(variable) {
+    return process.env[variable] || (() => { throw Error(`Missing env variable: ${variable}`) })();
 }
 
 const gateway = new ApolloGateway({
@@ -17,9 +13,9 @@ const gateway = new ApolloGateway({
      */
     supergraphSdl: new IntrospectAndCompose({
         subgraphs: [
-            { url: requiredEnv('SUBGRAPH_URL_USERS'), name: 'users' },
-            { url: requiredEnv('SUBGRAPH_URL_POSTS'), name: 'posts' },
-            { url: requiredEnv('SUBGRAPH_URL_COMMS'), name: 'comments' },
+            { url: required('SUBGRAPH_URL_USERS'), name: 'users' },
+            { url: required('SUBGRAPH_URL_POSTS'), name: 'posts' },
+            { url: required('SUBGRAPH_URL_COMMS'), name: 'comments' },
         ],
     }),
     buildService: ({ url }) => new RemoteGraphQLDataSource({
