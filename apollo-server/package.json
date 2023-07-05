@@ -8,12 +8,16 @@
         "email": "arhor18@gmail.com"
     },
     "scripts": {
-        "start": "node index.js"
+        "start": "node server.js",
+        "serve": "node -r dotenv/config server.js"
     },
     "dependencies": {
         "@apollo/gateway": "^2.4.7",
         "@apollo/server": "^4.7.3",
         "graphql": "^16.6.0",
         "uuid": "^9.0.0"
+    },
+    "devDependencies": {
+        "dotenv": "^16.3.1"
     }
 }
