@@ -45,11 +45,11 @@ class GlobalDataFetchingExceptionHandlerTest {
         @JvmStatic
         fun `should call delegate only for unexpected exceptions`(): Stream<Arguments> = Stream.of(
             // @formatter:off
-            arguments( EntityNotFoundException("STUB", "STUB")                      , 0 ),
-            arguments( CompletionException(EntityNotFoundException("STUB", "STUB")) , 0 ),
-            arguments( EntityDuplicateException("STUB", "STUB")                     , 0 ),
-            arguments( CompletionException(EntityDuplicateException("STUB", "STUB")), 0 ),
-            arguments( RuntimeException("STUB")                                     , 1 ),
+            arguments( EntityNotFoundException("TEST", "TEST")                      , 0 ),
+            arguments( CompletionException(EntityNotFoundException("TEST", "TEST")) , 0 ),
+            arguments( EntityDuplicateException("TEST", "TEST")                     , 0 ),
+            arguments( CompletionException(EntityDuplicateException("TEST", "TEST")), 0 ),
+            arguments( RuntimeException("TEST")                                     , 1 ),
             // @formatter:on
         )
     }

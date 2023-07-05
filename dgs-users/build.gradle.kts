@@ -40,7 +40,6 @@ configurations {
 
 dependencies {
     kapt(platform(":shared-bom"))
-    kapt("org.mapstruct:mapstruct-processor")
     kapt("org.springframework:spring-context-indexer")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -63,8 +62,7 @@ dependencies {
     implementation("org.springframework.retry:spring-retry")
     implementation("org.springframework.security:spring-security-crypto")
 
-    compileOnly("com.google.code.findbugs:jsr305")
-    compileOnly("org.mapstruct:mapstruct")
+//    compileOnly("com.google.code.findbugs:jsr305")
 
     runtimeOnly("org.postgresql:postgresql")
 

@@ -10,7 +10,7 @@ import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
-import com.github.arhor.dgs.users.service.impl.UserServiceImpl
+import com.ninjasquad.springmockk.MockkBean
 import io.mockk.Call
 import io.mockk.MockKAnswerScope
 import io.mockk.confirmVerified
@@ -26,22 +26,40 @@ import org.assertj.core.api.Assertions.from
 import org.assertj.core.api.InstanceOfAssertFactories.throwable
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.ComponentScan.Filter
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 
+@SpringJUnitConfig
 internal class UserServiceTest {
 
-    private val mockUserMapper: UserMapper = mockk()
-    private val mockUserRepository: UserRepository = mockk()
-    private val mockUserEventEmitter: UserEventEmitter = mockk()
-    private val mockPasswordEncoder: PasswordEncoder = mockk()
-
-    private val userService: UserService = UserServiceImpl(
-        mockUserMapper,
-        mockUserRepository,
-        mockUserEventEmitter,
-        mockPasswordEncoder,
+    @Configuration
+    @ComponentScan(
+        useDefaultFilters = false, includeFilters = [
+            Filter(type = ASSIGNABLE_TYPE, classes = [UserService::class])
+        ]
     )
+    class Config
+
+    @MockkBean
+    private lateinit var mockUserMapper: UserMapper
+
+    @MockkBean
+    private lateinit var mockUserRepository: UserRepository
+
+    @MockkBean
+    private lateinit var mockUserEventEmitter: UserEventEmitter
+
+    @MockkBean
+    private lateinit var mockPasswordEncoder: PasswordEncoder
+
+    @Autowired
+    private lateinit var userService: UserService
 
     @Nested
     inner class `UserService # createUser` {
