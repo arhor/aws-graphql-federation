@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run all services" type="CompoundRunConfigurationType">
+    <toRun name="docker-compose.dev.yml.localstack: Compose Deployment" type="docker-deploy" />
     <toRun name="dgs-comments [bootRun]" type="GradleRunConfiguration" />
     <toRun name="dgs-posts [bootRun]" type="GradleRunConfiguration" />
     <toRun name="dgs-users [bootRun]" type="GradleRunConfiguration" />
