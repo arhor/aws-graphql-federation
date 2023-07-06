@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Test cloudformation"
+
+Resources:
+  UserEventsTopic:
+    Type: "AWS:SNS:Topic"
+    Properties:
+      TopicName: "user-events"
+
+  UserCreatedEventsForPostsQueue:
+    Type: "AWS:SQS:Queue"
+    Properties:
+      QueueName: "user-created-events-for-posts"
+
+  UserDeletedEventsForPostsQueue:
+    Type: "AWS:SQS:Queue"
+    Properties:
+      QueueName: "user-deleted-events-for-posts"
+
+  UserCreatedEventsForCommentsQueue:
+    Type: "AWS:SQS:Queue"
+    Properties:
+      QueueName: "user-created-events-for-comments"
+
+  UserDeletedEventsForCommentsQueue:
+    Type: "AWS:SQS:Queue"
+    Properties:
+      QueueName: "user-deleted-events-for-comments"
+
+  UserCreatedEventsForPostsQueueSubscription:
+    Type: "AWS:SNS:Subscription"
+    Properties:
+      Protocol: "sqs"
+      Endpoint: "!GetAtt UserCreatedEventsForPostsQueue.Arn"
+      TopicArn: "!Ref UserEventsTopic"
+      FilterPolicy:
+        x_event_type:
+          - "UserEvent.Created"
+      RawMessageDelivery: "true"
+
+  UserDeletedEventsForPostsQueueSubscription:
+    Type: "AWS:SNS:Subscription"
+    Properties:
+      Protocol: "sqs"
+      Endpoint: "!GetAtt UserDeletedEventsForPostsQueue.Arn"
+      TopicArn: "!Ref UserEventsTopic"
+      FilterPolicy:
+        x_event_type:
+          - "UserEvent.Deleted"
+      RawMessageDelivery: "true"
+
+  UserCreatedEventsForCommentsQueueSubscription:
+    Type: "AWS:SNS:Subscription"
+    Properties:
+      Protocol: "sqs"
+      Endpoint: "!GetAtt UserCreatedEventsForCommentsQueue.Arn"
+      TopicArn: "!Ref UserEventsTopic"
+      FilterPolicy:
+        x_event_type:
+          - "UserEvent.Created"
+      RawMessageDelivery: "true"
+
+  UserDeletedEventsForCommentsQueueSubscription:
+    Type: "AWS:SNS:Subscription"
+    Properties:
+      Protocol: "sqs"
+      Endpoint: "!GetAtt UserDeletedEventsForCommentsQueue.Arn"
+      TopicArn: "!Ref UserEventsTopic"
+      FilterPolicy:
+        x_event_type:
+          - "UserEvent.Deleted"
+      RawMessageDelivery: "true"
