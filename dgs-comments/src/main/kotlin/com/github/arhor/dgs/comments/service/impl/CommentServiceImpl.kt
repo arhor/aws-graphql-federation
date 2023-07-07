@@ -26,19 +26,19 @@ class CommentServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getCommentsByUserIds(userIds: Collection<Long>): Map<Long, List<Comment>> {
-        return findInternalInBatch(
+        return findCommentsThenGroupBy(
             ids = userIds,
-            source = commentRepository::findAllByUserIdIn,
-            classifier = Comment::userId
+            dataFun = commentRepository::findAllByUserIdIn,
+            groupBy = Comment::userId,
         )
     }
 
     @Transactional(readOnly = true)
     override fun getCommentsByPostIds(postIds: Collection<Long>): Map<Long, List<Comment>> {
-        return findInternalInBatch(
+        return findCommentsThenGroupBy(
             ids = postIds,
-            source = commentRepository::findAllByPostIdIn,
-            classifier = Comment::postId
+            dataFun = commentRepository::findAllByPostIdIn,
+            groupBy = Comment::postId,
         )
     }
 
@@ -82,17 +82,21 @@ class CommentServiceImpl(
         }
     }
 
-    private inline fun findInternalInBatch(
-        ids: Collection<Long>,
-        source: (Collection<Long>) -> Stream<CommentEntity>,
-        crossinline classifier: (Comment) -> Long
-    ): Map<Long, List<Comment>> {
-
+    /**
+     * @param ids     ids of the comments
+     * @param dataFun function that will be used to load comments in case ids collection is not empty
+     * @param groupBy function that will be used to classify object for grouping operation
+     */
+    private fun <K> findCommentsThenGroupBy(
+        ids: Collection<K>,
+        dataFun: (Collection<K>) -> Stream<CommentEntity>,
+        groupBy: (Comment) -> K,
+    ): Map<K, List<Comment>> {
         return when {
             ids.isNotEmpty() -> {
-                source.invoke(ids).use { data ->
+                dataFun(ids).use { data ->
                     data.map(commentMapper::mapToDTO)
-                        .collect(groupingBy { classifier.invoke(it) })
+                        .collect(groupingBy(groupBy))
                 }
             }
 
