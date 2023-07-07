@@ -1,73 +1,158 @@
-AWSTemplateFormatVersion: "2010-09-09"
-
-Description: "Test cloudformation"
+AWSTemplateFormatVersion: 2010-09-09
 
 Resources:
+  # SNS Topics
+
   UserEventsTopic:
-    Type: "AWS:SNS:Topic"
+    Type: AWS:SNS:Topic
     Properties:
-      TopicName: "user-events"
+      TopicName: user-events
+
+  PostEventsTopic:
+    Type: AWS:SNS:Topic
+    Properties:
+      TopicName: post-events
+
+  # SQS Queues
 
   UserCreatedEventsForPostsQueue:
-    Type: "AWS:SQS:Queue"
+    Type: AWS:SQS:Queue
     Properties:
-      QueueName: "user-created-events-for-posts"
+      QueueName: user-created-events-for-posts
 
   UserDeletedEventsForPostsQueue:
-    Type: "AWS:SQS:Queue"
+    Type: AWS:SQS:Queue
     Properties:
-      QueueName: "user-deleted-events-for-posts"
+      QueueName: user-deleted-events-for-posts
 
   UserCreatedEventsForCommentsQueue:
-    Type: "AWS:SQS:Queue"
+    Type: AWS:SQS:Queue
     Properties:
-      QueueName: "user-created-events-for-comments"
+      QueueName: user-created-events-for-comments
 
   UserDeletedEventsForCommentsQueue:
-    Type: "AWS:SQS:Queue"
+    Type: AWS:SQS:Queue
     Properties:
-      QueueName: "user-deleted-events-for-comments"
+      QueueName: user-deleted-events-for-comments
+
+  PostCreatedEventsForCommentsQueue:
+    Type: AWS:SQS:Queue
+    Properties:
+      QueueName: post-created-events-for-comments
+
+  PostDeletedEventsForCommentsQueue:
+    Type: AWS:SQS:Queue
+    Properties:
+      QueueName: post-deleted-events-for-comments
+
+  # SQS Queue Policies
+
+  UserEventsQueuesPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref UserCreatedEventsForPostsQueue
+        - !Ref UserDeletedEventsForPostsQueue
+        - !Ref UserCreatedEventsForCommentsQueue
+        - !Ref UserDeletedEventsForCommentsQueue
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt UserCreatedEventsForPostsQueue.Arn
+              - !GetAtt UserDeletedEventsForPostsQueue.Arn
+              - !GetAtt UserCreatedEventsForCommentsQueue.Arn
+              - !GetAtt UserDeletedEventsForCommentsQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref UserEventsTopic
+
+  PostEventsQueuesPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref PostCreatedEventsForCommentsQueue
+        - !Ref PostDeletedEventsForCommentsQueue
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt PostCreatedEventsForCommentsQueue.Arn
+              - !GetAtt PostDeletedEventsForCommentsQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref PostEventsTopic
+
+  # SQS -> SNS Subscriptions
 
   UserCreatedEventsForPostsQueueSubscription:
-    Type: "AWS:SNS:Subscription"
+    Type: AWS:SNS:Subscription
     Properties:
-      Protocol: "sqs"
-      Endpoint: "!GetAtt UserCreatedEventsForPostsQueue.Arn"
-      TopicArn: "!Ref UserEventsTopic"
+      Protocol: sqs
+      TopicArn: !Ref UserEventsTopic
+      Endpoint: !GetAtt UserCreatedEventsForPostsQueue.Arn
       FilterPolicy:
         x_event_type:
-          - "UserEvent.Created"
-      RawMessageDelivery: "true"
+          - UserEvent.Created
+      RawMessageDelivery: true
 
   UserDeletedEventsForPostsQueueSubscription:
-    Type: "AWS:SNS:Subscription"
+    Type: AWS:SNS:Subscription
     Properties:
-      Protocol: "sqs"
-      Endpoint: "!GetAtt UserDeletedEventsForPostsQueue.Arn"
-      TopicArn: "!Ref UserEventsTopic"
+      Protocol: sqs
+      TopicArn: !Ref UserEventsTopic
+      Endpoint: !GetAtt UserDeletedEventsForPostsQueue.Arn
       FilterPolicy:
         x_event_type:
-          - "UserEvent.Deleted"
-      RawMessageDelivery: "true"
+          - UserEvent.Deleted
+      RawMessageDelivery: true
 
   UserCreatedEventsForCommentsQueueSubscription:
-    Type: "AWS:SNS:Subscription"
+    Type: AWS:SNS:Subscription
     Properties:
-      Protocol: "sqs"
-      Endpoint: "!GetAtt UserCreatedEventsForCommentsQueue.Arn"
-      TopicArn: "!Ref UserEventsTopic"
+      Protocol: sqs
+      TopicArn: !Ref UserEventsTopic
+      Endpoint: !GetAtt UserCreatedEventsForCommentsQueue.Arn
       FilterPolicy:
         x_event_type:
-          - "UserEvent.Created"
-      RawMessageDelivery: "true"
+          - UserEvent.Created
+      RawMessageDelivery: true
 
   UserDeletedEventsForCommentsQueueSubscription:
-    Type: "AWS:SNS:Subscription"
+    Type: AWS:SNS:Subscription
     Properties:
-      Protocol: "sqs"
-      Endpoint: "!GetAtt UserDeletedEventsForCommentsQueue.Arn"
-      TopicArn: "!Ref UserEventsTopic"
+      Protocol: sqs
+      TopicArn: !Ref UserEventsTopic
+      Endpoint: !GetAtt UserDeletedEventsForCommentsQueue.Arn
       FilterPolicy:
         x_event_type:
-          - "UserEvent.Deleted"
-      RawMessageDelivery: "true"
+          - UserEvent.Deleted
+      RawMessageDelivery: true
+
+  PostCreatedEventsForCommentsQueueSubscription:
+    Type: AWS:SNS:Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref PostEventsTopic
+      Endpoint: !GetAtt PostCreatedEventsForCommentsQueue.Arn
+      FilterPolicy:
+        x_event_type:
+          - PostEvent.Created
+      RawMessageDelivery: true
+
+  PostDeletedEventsForCommentsQueueSubscription:
+    Type: AWS:SNS:Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref PostEventsTopic
+      Endpoint: !GetAtt PostDeletedEventsForCommentsQueue.Arn
+      FilterPolicy:
+        x_event_type:
+          - PostEvent.Deleted
+      RawMessageDelivery: true
