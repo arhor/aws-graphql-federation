@@ -16,10 +16,13 @@ import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
+import org.springframework.beans.factory.annotation.Autowired
 import java.util.concurrent.CompletableFuture
 
 @DgsComponent
-class CommentFetcher(private val commentService: CommentService) {
+class CommentFetcher @Autowired constructor(
+    private val commentService: CommentService,
+) {
 
     /* Queries */
 

@@ -19,14 +19,12 @@ class FederatedEntityFetchers(
     /* Entity Fetchers */
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
-    fun fetchUser(values: Map<String, Any>): User? =
-        userService.getUserById(
-            userId = values.getLong(USER.Id)
-        )
+    fun fetchUser(values: Map<String, Any>): User? = userService.getUserById(
+        userId = values.getLong(USER.Id)
+    )
 
     @DgsEntityFetcher(name = POST.TYPE_NAME)
-    fun fetchPost(values: Map<String, Any>): Post? =
-        postService.getPostById(
-            postId = values.getLong(POST.Id)
-        )
+    fun fetchPost(values: Map<String, Any>): Post? = postService.getPostById(
+        postId = values.getLong(POST.Id)
+    )
 }
