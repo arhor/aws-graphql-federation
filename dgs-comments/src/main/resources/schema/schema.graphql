@@ -30,7 +30,7 @@ type UpdateCommentResult {
 
 type Comment {
     id: Long!
-    userId: Long!
+    userId: Long
     postId: Long!
     content: String!
 }

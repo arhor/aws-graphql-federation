@@ -29,7 +29,7 @@ class CommentServiceImpl(
         return findCommentsThenGroupBy(
             ids = userIds,
             dataFun = commentRepository::findAllByUserIdIn,
-            groupBy = Comment::userId,
+            groupBy = { it.userId!! },
         )
     }
 
@@ -38,7 +38,7 @@ class CommentServiceImpl(
         return findCommentsThenGroupBy(
             ids = postIds,
             dataFun = commentRepository::findAllByPostIdIn,
-            groupBy = Comment::postId,
+            groupBy = { it.postId },
         )
     }
 
