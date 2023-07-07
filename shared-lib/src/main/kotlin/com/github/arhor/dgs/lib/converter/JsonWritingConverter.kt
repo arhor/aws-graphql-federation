@@ -7,10 +7,10 @@ import org.springframework.core.convert.converter.Converter
 import org.springframework.data.convert.ReadingConverter
 
 @ReadingConverter
-class JsonWritingConverter(private val objectMapper: ObjectMapper) : Converter<PGobject, Map<String, Any>> {
+class JsonWritingConverter(private val objectMapper: ObjectMapper) : Converter<PGobject, Map<String, Any?>> {
 
-    override fun convert(source: PGobject): Map<String, Any> {
-        return source.value?.let { objectMapper.readValue<Map<String, Any>>(it) }
+    override fun convert(source: PGobject): Map<String, Any?> {
+        return source.value?.let { objectMapper.readValue<Map<String, Any?>>(it) }
             ?: emptyMap()
     }
 }
