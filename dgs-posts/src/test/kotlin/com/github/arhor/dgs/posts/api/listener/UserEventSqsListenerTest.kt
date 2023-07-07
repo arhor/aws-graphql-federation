@@ -39,7 +39,7 @@ internal class UserEventSqsListenerTest {
         @JvmStatic
         @Container
         private val localstack =
-            LocalStackContainer(DockerImageName.parse("localstack/localstack:2.1.0"))
+            LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
                 .withServices(SQS)
 
         @JvmStatic
