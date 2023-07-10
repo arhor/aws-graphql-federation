@@ -13,9 +13,12 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import org.springframework.beans.factory.annotation.Autowired
 
 @DgsComponent
-class UserFetcher(private val userService: UserService) {
+class UserFetcher @Autowired constructor(
+    private val userService: UserService,
+) {
 
     /* Queries */
 
@@ -31,19 +34,13 @@ class UserFetcher(private val userService: UserService) {
 
     @DgsMutation
     fun createUser(@InputArgument input: CreateUserInput): CreateUserResult =
-        CreateUserResult(
-            user = userService.createUser(input)
-        )
+        CreateUserResult(user = userService.createUser(input))
 
     @DgsMutation
     fun updateUser(@InputArgument input: UpdateUserInput): UpdateUserResult =
-        UpdateUserResult(
-            user = userService.updateUser(input)
-        )
+        UpdateUserResult(user = userService.updateUser(input))
 
     @DgsMutation
     fun deleteUser(@InputArgument input: DeleteUserInput): DeleteUserResult =
-        DeleteUserResult(
-            success = userService.deleteUser(input)
-        )
+        DeleteUserResult(success = userService.deleteUser(input))
 }

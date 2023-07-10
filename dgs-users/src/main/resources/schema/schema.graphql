@@ -9,9 +9,15 @@ type Query {
 }
 
 type Mutation {
+    authenticate(input: AuthenticationInput!): AuthenticationResult
     createUser(input: CreateUserInput!): CreateUserResult
     updateUser(input: UpdateUserInput!): UpdateUserResult
     deleteUser(input: DeleteUserInput!): DeleteUserResult
+}
+
+input AuthenticationInput {
+    username: String!
+    password: String!
 }
 
 input UsersLookupInput {
@@ -31,6 +37,10 @@ input UpdateUserInput {
 
 input DeleteUserInput {
     id: Long!
+}
+
+type AuthenticationResult {
+    accessToken: String
 }
 
 type CreateUserResult {

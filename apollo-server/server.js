@@ -1,49 +1,43 @@
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
-import { v4 as uuid } from 'uuid';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import express from 'express';
+import { expressjwt } from 'express-jwt';
+import http from 'http';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import * as uuid from 'uuid';
+import { gateway } from './gateway.js';
 
-function required(variable) {
-    return process.env[variable] || (() => { throw Error(`Missing env variable: ${variable}`) })();
-}
+const app = express();
+const httpServer = http.createServer(app);
+const apolloServer = new ApolloServer({
+    gateway,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+});
 
-const gateway = new ApolloGateway({
-    /**
-     * This property defines Supergraph Schema, composing it from subgraphs in downstream services. 
-     */
-    supergraphSdl: new IntrospectAndCompose({
-        subgraphs: [
-            { url: required('SUBGRAPH_URL_USERS'), name: 'users' },
-            { url: required('SUBGRAPH_URL_POSTS'), name: 'posts' },
-            { url: required('SUBGRAPH_URL_COMMS'), name: 'comments' },
-        ],
+await apolloServer.start();
+
+app.use(
+    '/',
+    cors(),
+    bodyParser.json(),
+    expressjwt({
+        secret: '2VXAh+LCSh9lzKV/7djiYzeqjjV05JjuLoXJNOZv6M4pzERH+sGEC4VJXqoQSbIhtUBlOs5rYFR+limfmtu3TvwMFj/BrN2qHOvXUXbr1v0=',
+        algorithms: ['HS256', 'HS512'],
+        credentialsRequired: false,
     }),
-    buildService: ({ url }) => new RemoteGraphQLDataSource({
-        url,
-
-        /**
-         * This function will be invoked before every request to downstream services.
-         */
-        willSendRequest: ({ request, context }) => {
-            request.http.headers.set('x-request-id', context.globalRequestId ?? uuid());
+    expressMiddleware(apolloServer, {
+        context: ({ req }) => {
+            console.log(req.auth);
+            return {
+                currentUser: req.auth ? (() => ({ id: req.auth.id, authorities: req.auth.authorities }))() : null,
+                requestId: uuid.v4(),
+            };
         },
     }),
-});
+);
 
-const server = new ApolloServer({
-    gateway,
-});
+await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
 
-const { url } = await startStandaloneServer(server, {
-    /**
-     * This function allows to define execution context of incoming request.
-     * It will be invoked once before processing.
-     */
-    context: () => {
-        return {
-            globalRequestId: uuid(),
-        };
-    },
-});
-
-console.log(`🚀 Server listening at: ${url}`);
+console.log(`🚀 Server ready at http://localhost:4000`);
