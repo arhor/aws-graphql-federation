@@ -83,18 +83,13 @@ class CommentServiceImpl(
     }
 
     @Transactional
-    override fun deleteCommentsFromPost(postId: Long) {
-        commentRepository.findAllByPostId(postId)
-            .use { it.toList() }
-            .let { commentRepository.deleteAll(it) }
+    override fun unlinkCommentsFromUser(userId: Long) {
+        commentRepository.unlinkAllFromUser(userId)
     }
 
     @Transactional
-    override fun unlinkCommentsFromUser(userId: Long) {
-        commentRepository.findAllByUserId(userId)
-            .use { it.toList() }
-            .map { it.copy(userId = null) }
-            .let { commentRepository.saveAll(it) }
+    override fun deleteCommentsFromPost(postId: Long) {
+        commentRepository.deleteAllFromPost(postId)
     }
 
     /**

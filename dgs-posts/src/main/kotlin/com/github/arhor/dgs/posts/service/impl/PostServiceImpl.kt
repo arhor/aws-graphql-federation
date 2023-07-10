@@ -123,12 +123,8 @@ class PostServiceImpl @Autowired constructor(
     }
 
     @Transactional
-    @Retryable(retryFor = [OptimisticLockingFailureException::class])
     override fun unlinkPostsFromUser(userId: Long) {
-        val userPosts = postRepository.findAllByUserId(userId)
-        val samePostsButUnlinked = userPosts.map { it.copy(userId = null) }
-
-        postRepository.saveAll(samePostsButUnlinked)
+        postRepository.unlinkAllFromUser(userId)
     }
 
     /**
