@@ -28,34 +28,31 @@ class CommentFetcher @Autowired constructor(
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Comments)
     fun userComments(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Comment>> =
-        dfe.loadCommentsUsing<CommentBatchLoader.ForUser, User>(User::id)
+        loadCommentsUsing<CommentBatchLoader.ForUser, User>(dfe, User::id)
 
     @DgsData(parentType = POST.TYPE_NAME, field = POST.Comments)
     fun postComments(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Comment>> =
-        dfe.loadCommentsUsing<CommentBatchLoader.ForPost, Post>(Post::id)
+        loadCommentsUsing<CommentBatchLoader.ForPost, Post>(dfe, Post::id)
 
     /* Mutations */
 
     @DgsMutation
     fun createComment(@InputArgument input: CreateCommentInput): CreateCommentResult =
-        CreateCommentResult(
-            comment = commentService.createComment(input)
-        )
+        CreateCommentResult(comment = commentService.createComment(input))
 
     @DgsMutation
     fun updateComment(@InputArgument input: UpdateCommentInput): UpdateCommentResult =
-        UpdateCommentResult(
-            comment = commentService.updateComment(input)
-        )
+        UpdateCommentResult(comment = commentService.updateComment(input))
 
     /* Internal implementation */
 
-    private inline fun <reified T, D> DgsDataFetchingEnvironment.loadCommentsUsing(
+    private inline fun <reified T, D> loadCommentsUsing(
+        dfe: DgsDataFetchingEnvironment,
         id: D.() -> Long
     ): CompletableFuture<List<Comment>> where T : CommentBatchLoader {
 
-        val loader = getDataLoader<Long, List<Comment>>(T::class.java)
-        val source = getSource<D>()
+        val loader = dfe.getDataLoader<Long, List<Comment>>(T::class.java)
+        val source = dfe.getSource<D>()
 
         return loader.load(source.id())
     }

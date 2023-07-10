@@ -61,7 +61,6 @@ class UserServiceImpl(
             .let { userMapper.mapToEntity(it) }
             .let { userRepository.save(it) }
             .let { userMapper.mapToDTO(it) }
-            .also { userEventEmitter.emit(UserEvent.Created(id = it.id)) }
     }
 
     @Transactional

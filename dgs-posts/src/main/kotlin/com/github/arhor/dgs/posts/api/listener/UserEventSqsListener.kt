@@ -1,7 +1,7 @@
 package com.github.arhor.dgs.posts.api.listener
 
 import com.github.arhor.dgs.lib.event.UserEvent
-import com.github.arhor.dgs.posts.service.UserService
+import com.github.arhor.dgs.posts.service.PostService
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,19 +9,15 @@ import org.springframework.stereotype.Component
 
 @Component
 class UserEventSqsListener @Autowired constructor(
-    private val userService: UserService,
+    private val postService: PostService,
 ) {
 
-    @SqsListener("\${app-props.aws.sqs.user-created-events}")
-    fun handleUserCreatedEvent(event: UserEvent.Created) {
-        logger.debug("Processing user-created event: {}", event)
-        userService.createUser(userId = event.id)
-    }
-
     @SqsListener("\${app-props.aws.sqs.user-deleted-events}")
-    fun handleUserDeletedEvent(event: UserEvent.Deleted) {
-        logger.debug("Processing user-deleted event: {}", event)
-        userService.deleteUser(userId = event.id)
+    fun handleUserDeletedEvents(event: UserEvent.Deleted) {
+        val deletedUserId = event.id
+
+        logger.debug("Processing user deleted event with id: {}", deletedUserId)
+        postService.unlinkPostsFromUser(userId = deletedUserId)
     }
 
     companion object {

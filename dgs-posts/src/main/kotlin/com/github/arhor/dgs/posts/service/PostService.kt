@@ -1,8 +1,8 @@
 package com.github.arhor.dgs.posts.service
 
+import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.dgs.posts.generated.graphql.types.Post
 import com.github.arhor.dgs.posts.generated.graphql.types.PostsLookupInput
-import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.dgs.posts.generated.graphql.types.UpdatePostInput
 
 interface PostService {
@@ -12,4 +12,5 @@ interface PostService {
     fun createPost(input: CreatePostInput): Post
     fun updatePost(input: UpdatePostInput): Post
     fun deletePost(id: Long): Boolean
+    fun unlinkPostsFromUser(userId: Long)
 }

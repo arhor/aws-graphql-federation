@@ -82,15 +82,30 @@ class CommentServiceImpl(
         }
     }
 
+    @Transactional
+    override fun deleteCommentsFromPost(postId: Long) {
+        commentRepository.findAllByPostId(postId)
+            .use { it.toList() }
+            .let { commentRepository.deleteAll(it) }
+    }
+
+    @Transactional
+    override fun unlinkCommentsFromUser(userId: Long) {
+        commentRepository.findAllByUserId(userId)
+            .use { it.toList() }
+            .map { it.copy(userId = null) }
+            .let { commentRepository.saveAll(it) }
+    }
+
     /**
      * @param ids     ids of the comments
      * @param dataFun function that will be used to load comments in case ids collection is not empty
      * @param groupBy function that will be used to classify object for grouping operation
      */
-    private fun <K> findCommentsThenGroupBy(
+    private inline fun <K> findCommentsThenGroupBy(
         ids: Collection<K>,
         dataFun: (Collection<K>) -> Stream<CommentEntity>,
-        groupBy: (Comment) -> K,
+        noinline groupBy: (Comment) -> K,
     ): Map<K, List<Comment>> {
         return when {
             ids.isNotEmpty() -> {

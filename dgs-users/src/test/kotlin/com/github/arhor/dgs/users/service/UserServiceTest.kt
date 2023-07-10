@@ -81,7 +81,6 @@ internal class UserServiceTest {
             every { mockUserMapper.mapToEntity(any()) } answers convertingDtoToUser
             every { mockUserRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
             every { mockUserMapper.mapToDTO(any()) } answers convertingUserToDto
-            every { mockUserEventEmitter.emit(any()) } just runs
 
             // When
             val result = userService.createUser(input)
@@ -95,7 +94,6 @@ internal class UserServiceTest {
             verify(exactly = 1) { mockUserMapper.mapToEntity(any()) }
             verify(exactly = 1) { mockUserRepository.save(any()) }
             verify(exactly = 1) { mockUserMapper.mapToDTO(any()) }
-            verify(exactly = 1) { mockUserEventEmitter.emit(any()) }
         }
 
         @Test

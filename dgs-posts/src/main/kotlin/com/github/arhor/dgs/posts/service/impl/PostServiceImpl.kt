@@ -75,7 +75,6 @@ class PostServiceImpl @Autowired constructor(
         if (bannerFilename != null) {
             bannerImageRepository.upload(filename = bannerFilename, data = input.banner.inputStream)
         }
-        postEventEmitter.emit(PostEvent.Created(id = post.id))
         return post
     }
 
@@ -121,6 +120,15 @@ class PostServiceImpl @Autowired constructor(
                 true
             }
         }
+    }
+
+    @Transactional
+    @Retryable(retryFor = [OptimisticLockingFailureException::class])
+    override fun unlinkPostsFromUser(userId: Long) {
+        val userPosts = postRepository.findAllByUserId(userId)
+        val samePostsButUnlinked = userPosts.map { it.copy(userId = null) }
+
+        postRepository.saveAll(samePostsButUnlinked)
     }
 
     /**

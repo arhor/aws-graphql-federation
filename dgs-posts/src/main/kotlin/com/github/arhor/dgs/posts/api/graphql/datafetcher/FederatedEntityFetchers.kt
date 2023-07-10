@@ -3,20 +3,14 @@ package com.github.arhor.dgs.posts.api.graphql.datafetcher
 import com.github.arhor.dgs.lib.getLong
 import com.github.arhor.dgs.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.posts.generated.graphql.types.User
-import com.github.arhor.dgs.posts.service.UserService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsEntityFetcher
 
 @DgsComponent
-class FederatedEntityFetchers(
-    private val userService: UserService,
-) {
+class FederatedEntityFetchers {
 
     /* Entity Fetchers */
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
-    fun fetchUser(values: Map<String, Any>): User? =
-        userService.getUserById(
-            userId = values.getLong(USER.Id)
-        )
+    fun resolveUser(values: Map<String, Any>) = User(id = values.getLong(USER.Id))
 }
