@@ -1,9 +1,10 @@
 @file:Suppress("ClassName")
 
-package com.github.arhor.dgs.users.service
+package com.github.arhor.dgs.users.service.events
 
 import com.github.arhor.dgs.lib.event.UserEvent
 import com.github.arhor.dgs.users.config.props.AppProps
+import com.github.arhor.dgs.users.service.events.UserEventEmitter
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations

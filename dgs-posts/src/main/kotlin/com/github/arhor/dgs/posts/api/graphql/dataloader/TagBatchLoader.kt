@@ -13,6 +13,6 @@ class TagBatchLoader(
 ) : MappedBatchLoader<Long, List<String>> {
 
     override fun load(keys: Set<Long>): CompletableFuture<Map<Long, List<String>>> {
-        return CompletableFuture.supplyAsync({ tagService.getTagsByArticleIds(keys) }, asyncExecutor)
+        return CompletableFuture.supplyAsync({ tagService.getTagsByPostIds(keys) }, asyncExecutor)
     }
 }

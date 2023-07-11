@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.service
+package com.github.arhor.dgs.users.service.events
 
 import com.github.arhor.dgs.lib.event.UserEvent
 

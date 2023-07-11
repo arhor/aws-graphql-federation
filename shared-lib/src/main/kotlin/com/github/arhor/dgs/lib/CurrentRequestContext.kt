@@ -7,6 +7,7 @@ import java.lang.invoke.MethodHandles
 import java.util.UUID
 
 data class CurrentRequestContext(val requestId: UUID) {
+
     init {
         RequestContextHolder
             .currentRequestAttributes()
@@ -27,7 +28,5 @@ data class CurrentRequestContext(val requestId: UUID) {
             log.debug("Cannot get CurrentRequestContext instance from the request attributes", e)
             null
         }
-
-        val requestId: String get() = get()?.requestId?.toString() ?: "UNKNOWN"
     }
 }

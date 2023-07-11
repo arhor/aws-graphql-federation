@@ -13,9 +13,10 @@ import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.dgs.posts.generated.graphql.types.Post
 import com.github.arhor.dgs.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.dgs.posts.generated.graphql.types.UpdatePostInput
-import com.github.arhor.dgs.posts.service.PostEventEmitter
-import com.github.arhor.dgs.posts.service.PostMapper
+import com.github.arhor.dgs.posts.service.events.PostEventEmitter
 import com.github.arhor.dgs.posts.service.PostService
+import com.github.arhor.dgs.posts.service.mapping.OptionsMapper
+import com.github.arhor.dgs.posts.service.mapping.PostMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
@@ -31,11 +32,12 @@ class PostServiceImpl @Autowired constructor(
     private val postEventEmitter: PostEventEmitter,
     private val bannerImageRepository: BannerImageRepository,
     private val tagRepository: TagRepository,
+    private val optionsMapper: OptionsMapper,
 ) : PostService {
 
     @Transactional(readOnly = true)
     override fun getPostById(id: Long): Post {
-        return postRepository.findByIdOrNull(id)?.let(postMapper::mapToDTO)
+        return postRepository.findByIdOrNull(id)?.let(postMapper::map)
             ?: throw EntityNotFoundException(
                 entity = POST.TYPE_NAME,
                 condition = "${POST.Id} = $id",
@@ -47,7 +49,7 @@ class PostServiceImpl @Autowired constructor(
     override fun getPosts(input: PostsLookupInput): List<Post> {
         return postRepository
             .findAll(limit = input.size, offset = input.page * input.size)
-            .map(postMapper::mapToDTO)
+            .map(postMapper::map)
             .toList()
     }
 
@@ -56,7 +58,7 @@ class PostServiceImpl @Autowired constructor(
         userIds.isNotEmpty() -> {
             postRepository
                 .findAllByUserIdIn(userIds)
-                .groupBy({ it.userId!! }, postMapper::mapToDTO)
+                .groupBy({ it.userId!! }, postMapper::map)
         }
 
         else -> emptyMap()
@@ -68,9 +70,9 @@ class PostServiceImpl @Autowired constructor(
         val bannerFilename = input.banner?.let { "${input.userId}__${UUID.randomUUID()}__${it.name}" }
 
         val post =
-            postMapper.mapToEntity(dto = input, banner = bannerFilename, tags = tagRefs)
+            postMapper.map(input = input, banner = bannerFilename, tags = tagRefs)
                 .let(postRepository::save)
-                .let(postMapper::mapToDTO)
+                .let(postMapper::map)
 
         if (bannerFilename != null) {
             bannerImageRepository.upload(filename = bannerFilename, data = input.banner.inputStream)
@@ -86,22 +88,14 @@ class PostServiceImpl @Autowired constructor(
             condition = "${POST.Id} = ${input.id}",
             operation = Operation.UPDATE,
         )
-        var currentState = initialState
+        val currentState = initialState.copy(
+            header = input.header ?: initialState.header,
+            content = input.content ?: initialState.content,
+            options = input.options?.let(optionsMapper::map) ?: initialState.options,
+            tags = input.tags?.let(::materialize) ?: initialState.tags
+        )
 
-        input.header?.let {
-            currentState = currentState.copy(header = it)
-        }
-        input.content?.let {
-            currentState = currentState.copy(content = it)
-        }
-        input.options?.let {
-            currentState = currentState.copy(options = postMapper.wrapOptions(it))
-        }
-        input.tags?.let {
-            currentState = currentState.copy(tags = materialize(it))
-        }
-
-        return postMapper.mapToDTO(
+        return postMapper.map(
             entity = when (currentState != initialState) {
                 true -> postRepository.save(currentState)
                 else -> initialState
@@ -136,11 +130,14 @@ class PostServiceImpl @Autowired constructor(
             val missingTags = (tags - presentTags.mapTo(HashSet()) { it.name }).map(TagEntity::create)
             val createdTags = tagRepository.saveAll(missingTags)
 
-            val initialCapacity = presentTags.size + createdTags.size
-
-            sequenceOf(presentTags, createdTags)
-                .flatten()
-                .mapTo(HashSet(initialCapacity), TagRef::create)
+            HashSet<TagRef>(presentTags.size + createdTags.size).also {
+                for (tag in presentTags) {
+                    it += TagRef.create(tag)
+                }
+                for (tag in createdTags) {
+                    it += TagRef.create(tag)
+                }
+            }
         }
 
         else -> emptySet()

@@ -10,8 +10,6 @@ dependencies {
         api("io.jsonwebtoken:jjwt-impl:${libs.versions.jjwt.get()}")
         api("io.jsonwebtoken:jjwt-jackson:${libs.versions.jjwt.get()}")
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.versions.kotlin.coroutines.get()}")
-        api("org.mapstruct:mapstruct:${libs.versions.mapstruct.get()}")
-        api("org.mapstruct:mapstruct-processor:${libs.versions.mapstruct.get()}")
     }
 }
 

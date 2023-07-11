@@ -7,12 +7,15 @@ import com.github.arhor.dgs.lib.exception.Operation
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.CreateUserResult
 import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserResult
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
+import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserResult
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
-import com.github.arhor.dgs.users.service.UserEventEmitter
-import com.github.arhor.dgs.users.service.UserMapper
+import com.github.arhor.dgs.users.service.events.UserEventEmitter
+import com.github.arhor.dgs.users.service.mapping.UserMapper
 import com.github.arhor.dgs.users.service.UserService
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.domain.PageRequest
@@ -32,7 +35,7 @@ class UserServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getUserById(id: Long): User {
-        return userRepository.findByIdOrNull(id)?.let { userMapper.mapToDTO(it) }
+        return userRepository.findByIdOrNull(id)?.let { userMapper.mapToResult(it) }
             ?: throw EntityNotFoundException(
                 entity = USER.TYPE_NAME,
                 condition = "${USER.Id} = $id",
@@ -44,12 +47,12 @@ class UserServiceImpl(
     override fun getAllUsers(input: UsersLookupInput): List<User> {
         return userRepository
             .findAll(PageRequest.of(input.page, input.size))
-            .map(userMapper::mapToDTO)
+            .map(userMapper::mapToResult)
             .toList()
     }
 
     @Transactional
-    override fun createUser(input: CreateUserInput): User {
+    override fun createUser(input: CreateUserInput): CreateUserResult {
         if (userRepository.existsByUsername(input.username)) {
             throw EntityDuplicateException(
                 entity = USER.TYPE_NAME,
@@ -57,43 +60,45 @@ class UserServiceImpl(
                 operation = Operation.CREATE,
             )
         }
-        return input.copy(password = passwordEncoder.encode(input.password))
+        val user = input.copy(password = passwordEncoder.encode(input.password))
             .let { userMapper.mapToEntity(it) }
             .let { userRepository.save(it) }
-            .let { userMapper.mapToDTO(it) }
+            .let { userMapper.mapToResult(it) }
+
+        return CreateUserResult(user)
     }
 
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
-    override fun updateUser(input: UpdateUserInput): User {
+    override fun updateUser(input: UpdateUserInput): UpdateUserResult {
         val initialState = userRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
             entity = USER.TYPE_NAME,
             condition = "${USER.Id} = ${input.id}",
             operation = Operation.UPDATE,
         )
-        var currentState = initialState
-
-        input.password?.let {
-            currentState = currentState.copy(password = passwordEncoder.encode(it))
-        }
-
-        return userMapper.mapToDTO(
+        val currentState = initialState.copy(
+            password = input.password?.let(passwordEncoder::encode) ?: initialState.password
+        )
+        val user = userMapper.mapToResult(
             entity = when (currentState != initialState) {
                 true -> userRepository.save(currentState)
                 else -> initialState
             }
         )
+        return UpdateUserResult(user)
     }
 
     @Transactional
-    override fun deleteUser(input: DeleteUserInput): Boolean {
-        return when (val user = userRepository.findByIdOrNull(input.id)) {
-            null -> false
-            else -> {
-                userRepository.delete(user)
-                userEventEmitter.emit(UserEvent.Deleted(id = user.id!!))
-                true
+    override fun deleteUser(input: DeleteUserInput): DeleteUserResult {
+        return DeleteUserResult(
+            success = when (val user = userRepository.findByIdOrNull(input.id)) {
+                null -> false
+                else -> {
+                    userRepository.delete(user)
+                    userEventEmitter.emit(UserEvent.Deleted(id = user.id!!))
+                    true
+                }
             }
-        }
+        )
     }
 }

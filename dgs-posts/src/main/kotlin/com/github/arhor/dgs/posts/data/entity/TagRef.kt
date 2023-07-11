@@ -23,7 +23,7 @@ data class TagRef(
         const val COL_POST_ID = "post_id"
         const val COL_TAG_ID = "tag_id"
 
-        fun create(entity: TagEntity): TagRef = TagRef(
+        fun create(entity: TagEntity) = TagRef(
             tagId = AggregateReference.to(
                 entity.id ?: throw IllegalStateException("Referenced entity must be persisted")
             )

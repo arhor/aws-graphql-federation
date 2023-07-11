@@ -44,15 +44,15 @@ type AuthenticationResult {
 }
 
 type CreateUserResult {
-    user: User
+    user: User!
 }
 
 type UpdateUserResult {
-    user: User
+    user: User!
 }
 
 type DeleteUserResult {
-    success: Boolean
+    success: Boolean!
 }
 
 type User @key(fields: "id") {

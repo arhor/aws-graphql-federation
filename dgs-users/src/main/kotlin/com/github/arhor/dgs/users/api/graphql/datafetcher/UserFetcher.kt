@@ -20,7 +20,7 @@ class UserFetcher @Autowired constructor(
     private val userService: UserService,
 ) {
 
-    /* Queries */
+    /* ---------- Queries ---------- */
 
     @DgsQuery
     fun user(@InputArgument id: Long): User =
@@ -30,17 +30,17 @@ class UserFetcher @Autowired constructor(
     fun users(@InputArgument input: UsersLookupInput): List<User> =
         userService.getAllUsers(input)
 
-    /* Mutations */
+    /* ---------- Mutations ---------- */
 
     @DgsMutation
     fun createUser(@InputArgument input: CreateUserInput): CreateUserResult =
-        CreateUserResult(user = userService.createUser(input))
+        userService.createUser(input)
 
     @DgsMutation
     fun updateUser(@InputArgument input: UpdateUserInput): UpdateUserResult =
-        UpdateUserResult(user = userService.updateUser(input))
+        userService.updateUser(input)
 
     @DgsMutation
     fun deleteUser(@InputArgument input: DeleteUserInput): DeleteUserResult =
-        DeleteUserResult(success = userService.deleteUser(input))
+        userService.deleteUser(input)
 }

@@ -10,14 +10,13 @@ class TagServiceImpl @Autowired constructor(
     private val tagRepository: TagRepository,
 ) : TagService {
 
-    override fun getTagsByArticleIds(postIds: Set<Long>): Map<Long, List<String>> =
-        when {
-            postIds.isNotEmpty() -> {
-                tagRepository.findAllByArticleIdIn(postIds)
-            }
-
-            else -> {
-                emptyMap()
-            }
+    override fun getTagsByPostIds(postIds: Set<Long>): Map<Long, List<String>> = when {
+        postIds.isNotEmpty() -> {
+            tagRepository.findAllByArticleIdIn(postIds)
         }
+
+        else -> {
+            emptyMap()
+        }
+    }
 }

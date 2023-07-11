@@ -28,13 +28,10 @@ app.use(
         credentialsRequired: false,
     }),
     expressMiddleware(apolloServer, {
-        context: ({ req }) => {
-            console.log(req.auth);
-            return {
-                currentUser: req.auth ? (() => ({ id: req.auth.id, authorities: req.auth.authorities }))() : null,
-                requestId: uuid.v4(),
-            };
-        },
+        context: ({ req }) => ({
+            currentUser: req.auth ? { id: req.auth.id, authorities: req.auth.authorities } : null,
+            requestId: uuid.v4(),
+        }),
     }),
 );
 

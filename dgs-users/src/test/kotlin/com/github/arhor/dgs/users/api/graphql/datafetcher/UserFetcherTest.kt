@@ -201,7 +201,7 @@ internal class UserFetcherTest {
             val password = "test-password"
             val expectedUser = User(id, username)
 
-            every { userService.createUser(any()) } returns expectedUser
+            every { userService.createUser(any()) } returns CreateUserResult(expectedUser)
 
             // When
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -242,7 +242,7 @@ internal class UserFetcherTest {
             val password = "test-password"
             val expectedUser = User(id, username)
 
-            every { userService.updateUser(any()) } returns expectedUser
+            every { userService.updateUser(any()) } returns UpdateUserResult(expectedUser)
 
             // When
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -280,7 +280,7 @@ internal class UserFetcherTest {
             // Given
             val id = -1L
 
-            every { userService.deleteUser(any()) } returns true
+            every { userService.deleteUser(any()) } returns DeleteUserResult(true)
 
             // When
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(

@@ -11,6 +11,8 @@ import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
+import com.github.arhor.dgs.users.service.events.UserEventEmitter
+import com.github.arhor.dgs.users.service.mapping.UserMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.Call
 import io.mockk.MockKAnswerScope
@@ -80,20 +82,20 @@ internal class UserServiceTest {
             every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
             every { mockUserMapper.mapToEntity(any()) } answers convertingDtoToUser
             every { mockUserRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
-            every { mockUserMapper.mapToDTO(any()) } answers convertingUserToDto
+            every { mockUserMapper.mapToResult(any()) } answers convertingUserToDto
 
             // When
             val result = userService.createUser(input)
 
             // Then
-            assertThat(result)
+            assertThat(result.user)
                 .returns(expectedId, from { it.id })
                 .returns(expectedUsername, from { it.username })
 
             verify(exactly = 1) { mockUserRepository.existsByUsername(any()) }
             verify(exactly = 1) { mockUserMapper.mapToEntity(any()) }
             verify(exactly = 1) { mockUserRepository.save(any()) }
-            verify(exactly = 1) { mockUserMapper.mapToDTO(any()) }
+            verify(exactly = 1) { mockUserMapper.mapToResult(any()) }
         }
 
         @Test
@@ -145,7 +147,7 @@ internal class UserServiceTest {
 
             every { mockUserRepository.findByIdOrNull(any()) } returns user
             every { mockUserRepository.save(any()) } answers { firstArg() }
-            every { mockUserMapper.mapToDTO(any()) } answers convertingUserToDto
+            every { mockUserMapper.mapToResult(any()) } answers convertingUserToDto
             every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
 
             // When
@@ -171,7 +173,7 @@ internal class UserServiceTest {
 
             every { mockUserRepository.findByIdOrNull(any()) } returns user
             every { mockUserRepository.save(any()) } answers { firstArg() }
-            every { mockUserMapper.mapToDTO(any()) } answers convertingUserToDto
+            every { mockUserMapper.mapToResult(any()) } answers convertingUserToDto
             every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
 
             // When

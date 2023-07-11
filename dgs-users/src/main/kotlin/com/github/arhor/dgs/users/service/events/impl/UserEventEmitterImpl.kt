@@ -1,8 +1,8 @@
-package com.github.arhor.dgs.users.service.impl
+package com.github.arhor.dgs.users.service.events.impl
 
 import com.github.arhor.dgs.lib.event.UserEvent
 import com.github.arhor.dgs.users.config.props.AppProps
-import com.github.arhor.dgs.users.service.UserEventEmitter
+import com.github.arhor.dgs.users.service.events.UserEventEmitter
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import org.springframework.messaging.MessagingException
