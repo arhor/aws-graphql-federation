@@ -48,6 +48,9 @@ app-props:
   aws:
     sns:
       user-events: ${AWS_SNS_USER_EVENTS}
+  jwt:
+    secret: ${JWT_SECRET}
+    expire: ${JWT_EXPIRE}
 
 ---
 
