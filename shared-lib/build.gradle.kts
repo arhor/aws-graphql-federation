@@ -1,14 +1,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    alias(libs.plugins.test.logger)
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
+    alias(libs.plugins.test.logger)
 }
 
+extra["kotlin.version"] = libs.versions.kotlin.asProvider().get()
 val javaVersion: String = libs.versions.java.get()
 
 java {

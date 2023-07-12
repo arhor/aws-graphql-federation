@@ -78,7 +78,7 @@ Resources:
       Endpoint: !GetAtt UserDeletedEventsForPostsQueue.Arn
       FilterPolicy:
         x_event_type:
-          - UserEvent.Deleted
+          - UserEvent::Deleted
       RawMessageDelivery: true
 
   UserDeletedEventsForCommentsQueueSubscription:
@@ -89,7 +89,7 @@ Resources:
       Endpoint: !GetAtt UserDeletedEventsForCommentsQueue.Arn
       FilterPolicy:
         x_event_type:
-          - UserEvent.Deleted
+          - UserEvent::Deleted
       RawMessageDelivery: true
 
   PostDeletedEventsForCommentsQueueSubscription:
@@ -100,5 +100,5 @@ Resources:
       Endpoint: !GetAtt PostDeletedEventsForCommentsQueue.Arn
       FilterPolicy:
         x_event_type:
-          - PostEvent.Deleted
+          - PostEvent::Deleted
       RawMessageDelivery: true

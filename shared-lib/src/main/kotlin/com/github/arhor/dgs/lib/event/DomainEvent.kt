@@ -1,6 +1,6 @@
 package com.github.arhor.dgs.lib.event
 
-interface Event {
+interface DomainEvent {
 
     fun type(): String
 
