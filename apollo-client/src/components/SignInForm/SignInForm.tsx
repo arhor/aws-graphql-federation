@@ -1,4 +1,6 @@
-import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+import { FormEvent } from 'react';
+
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
@@ -9,9 +11,33 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
+import useAuthenticateMutation from '@/hooks/useAuthenticateMutation';
+import { Optional } from '@/utils/core-utils';
+
 const SignInForm = () => {
-    const [ searchParams ] = useSearchParams();
-    const hasError = searchParams.has('auth') && searchParams.get('auth') == 'failure';
+    const navigate = useNavigate();
+    const { authenticate } = useAuthenticateMutation();
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.currentTarget);
+
+        const username = formData.get('username') as Optional<string>;
+        const password = formData.get('password') as Optional<string>;
+
+        if (username && password) {
+            await authenticate({
+                variables: {
+                    input: {
+                        username,
+                        password,
+                    }
+                }
+            });
+            navigate('/');
+        }
+    };
 
     return (
         <Box
@@ -29,7 +55,7 @@ const SignInForm = () => {
             <Typography component="h1" variant="h5">
                 Sign in
             </Typography>
-            <Box component="form" action="/api/sign-in" method="POST" noValidate sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <Grid container justifyContent="center">
                     <Grid item xs={10}>
                         <TextField
@@ -51,8 +77,6 @@ const SignInForm = () => {
                             label="Password"
                             type="password"
                             id="password"
-                            error={hasError}
-                            helperText={hasError ? 'Incorrect Username or Password' : undefined}
                             autoComplete="current-password"
                         />
                     </Grid>

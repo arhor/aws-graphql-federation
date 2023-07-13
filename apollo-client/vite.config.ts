@@ -11,12 +11,6 @@ export default defineConfig(({ mode }) => {
     const rootProjectDir = fileURLToPath(new URL('..', import.meta.url));
     const variablePrefixes = [''];
 
-    console.log('--------------------------');
-    console.log(rootProjectDir);
-    console.log(mode);
-    
-    console.log('--------------------------');
-
     process.env = { ...loadEnv(mode, rootProjectDir, variablePrefixes) };
 
     return {
@@ -31,10 +25,9 @@ export default defineConfig(({ mode }) => {
         },
         server: {
             proxy: {
-                '^/(api|graphql)': {
-                    target: process.env.API_BASE_URL ?? (() => {
-                        throw new Error('Environment variable API_BASE_URL is missing');
-                    })(),
+                '^/(graphql)': {
+                    rewrite: path => path.replace('/graphql', '/'),
+                    target: 'http://localhost:4000',
                     changeOrigin: true,
                 },
             },
