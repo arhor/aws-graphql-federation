@@ -2,8 +2,10 @@ import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@a
 import fetcher from 'make-fetch-happen';
 import * as uuid from 'uuid';
 
-function required(variable) {
-    return process.env[variable] || (() => { throw Error(`Missing env variable: ${variable}`) })();
+export function required(variable) {
+    return process.env[variable] || (() => {
+        throw Error(`Missing env variable: ${variable}`);
+    })();
 }
 
 export const gateway = new ApolloGateway({

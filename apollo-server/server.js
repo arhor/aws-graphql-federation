@@ -7,7 +7,7 @@ import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import * as uuid from 'uuid';
-import { gateway } from './gateway.js';
+import { gateway, required } from './gateway.js';
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -23,7 +23,7 @@ app.use(
     cors(),
     bodyParser.json(),
     expressjwt({
-        secret: '2VXAh+LCSh9lzKV/7djiYzeqjjV05JjuLoXJNOZv6M4pzERH+sGEC4VJXqoQSbIhtUBlOs5rYFR+limfmtu3TvwMFj/BrN2qHOvXUXbr1v0=',
+        secret: required('SECRET'),
         algorithms: ['HS256', 'HS512'],
         credentialsRequired: false,
     }),
