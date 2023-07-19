@@ -6,7 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import { apolloClient } from '@/client';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { router } from '@/router.tsx';
+import { router } from '@/router';
 import AppThemeProvider from '@/theme/AppThemeProvider';
 
 function App() {

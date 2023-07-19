@@ -1,15 +1,15 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import AppLayout from '@/components/AppLayout';
-import Home from '@/views/Home.tsx';
-import NotFound from '@/views/NotFound.tsx';
-import SignIn from '@/views/SignIn.tsx';
-import SignUp from '@/views/SignUp.tsx';
+import Layout from '@/components/Layout';
+import Home from '@/views/Home';
+import NotFound from '@/views/NotFound';
+import SignIn from '@/views/SignIn';
+import SignUp from '@/views/SignUp';
 
 export const router = createBrowserRouter([
     {
         path: '',
-        element: <AppLayout />,
+        element: <Layout />,
         children: [
             {
                 index: true,
