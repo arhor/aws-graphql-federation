@@ -8,9 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-const Home = () => {
+function Feed() {
     const { t } = useTranslation();
-
     return (
         <TableContainer component={Paper}>
             <Table>
@@ -25,6 +24,6 @@ const Home = () => {
             </Table>
         </TableContainer>
     );
-};
+}
 
-export default Home;
+export default Feed;
