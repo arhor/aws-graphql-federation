@@ -1,27 +1,24 @@
-import { ApolloProvider } from '@apollo/client';
 import { SnackbarProvider } from 'notistack';
 import { RouterProvider } from 'react-router-dom';
 
 import CssBaseline from '@mui/material/CssBaseline';
 
-import { apolloClient } from '@/client';
+import ApolloClientProvider from '@/client/ApolloClientProvider';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { router } from '@/router';
 import AppThemeProvider from '@/theme/AppThemeProvider';
 
-function App() {
+export default function App() {
     return (
         <AppThemeProvider>
             <CssBaseline />
             <ErrorBoundary>
-                <ApolloProvider client={apolloClient}>
+                <ApolloClientProvider>
                     <SnackbarProvider preventDuplicate>
                         <RouterProvider router={router} />
                     </SnackbarProvider>
-                </ApolloProvider>
+                </ApolloClientProvider>
             </ErrorBoundary>
         </AppThemeProvider>
     );
 }
-
-export default App;

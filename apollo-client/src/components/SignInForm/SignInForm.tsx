@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import useAuthenticateMutation from '@/hooks/useAuthenticateMutation';
 import { Optional } from '@/utils/core-utils';
 
-const SignInForm = () => {
+export default function SignInForm() {
     const navigate = useNavigate();
     const { authenticate } = useAuthenticateMutation();
 
@@ -99,6 +99,4 @@ const SignInForm = () => {
             </Box>
         </Box>
     );
-};
-
-export default SignInForm;
+}

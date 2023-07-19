@@ -14,7 +14,7 @@ export type State = {
     errorInfo: ErrorInfo | null;
 };
 
-class ErrorBoundary extends Component<Props, State> {
+export default class ErrorBoundary extends Component<Props, State> {
     state: State = {
         error: null,
         errorInfo: null,
@@ -41,5 +41,3 @@ class ErrorBoundary extends Component<Props, State> {
         return this.props.children;
     }
 }
-
-export default ErrorBoundary;

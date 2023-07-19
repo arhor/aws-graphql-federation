@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 
-function Layout() {
+export default function Layout() {
     return (
         <>
             <Header />
@@ -16,5 +16,3 @@ function Layout() {
         </>
     );
 }
-
-export default Layout;

@@ -19,7 +19,7 @@ function determineColorMode(shouldUseDarkTheme: boolean): AppThemeMode {
     return shouldUseDarkTheme ? 'dark' : 'light';
 }
 
-function AppThemeProvider(props: { children: ReactNode }) {
+export default function AppThemeProvider(props: { children: ReactNode }) {
     const [colorMode, setColorMode] = useState<AppThemeMode>();
     const darkThemePreferred = useMediaQuery('(prefers-color-scheme: dark)');
 
@@ -41,5 +41,3 @@ function AppThemeProvider(props: { children: ReactNode }) {
         </AppThemeControlContext.Provider>
     );
 }
-
-export default AppThemeProvider;

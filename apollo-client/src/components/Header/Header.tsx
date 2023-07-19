@@ -11,7 +11,7 @@ import { useAppThemeControl } from '@/theme/AppThemeProvider';
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
-const Header = () => {
+export default function Header() {
     const theme = useTheme();
     const { t } = useTranslation();
     const { switchColorMode } = useAppThemeControl();
@@ -37,6 +37,4 @@ const Header = () => {
             <Offset />
         </>
     );
-};
-
-export default Header;
+}

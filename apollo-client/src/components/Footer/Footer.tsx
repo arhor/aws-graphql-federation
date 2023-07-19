@@ -24,7 +24,7 @@ const buttons = [
     },
 ];
 
-const Footer = () => {
+export default function Footer() {
     const { pathname } = useLocation();
     const [value, setValue] = useState<number>();
 
@@ -46,6 +46,4 @@ const Footer = () => {
             </BottomNavigation>
         </Paper>
     );
-};
-
-export default Footer;
+}

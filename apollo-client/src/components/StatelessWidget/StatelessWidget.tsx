@@ -15,7 +15,7 @@ export type Props = {
     button?: ReactElement;
 };
 
-const StatelessWidget = ({
+export default function StatelessWidget({
     type = 'page',
     size = 'large',
     padding = 2,
@@ -23,7 +23,7 @@ const StatelessWidget = ({
     title,
     description,
     button,
-}: Props) => {
+}: Props) {
     const boxStyle = determineBoxStyle(type, padding);
     const { imageWidth, imageHeight, variant } = determineWidgetParams(size);
 
@@ -47,6 +47,4 @@ const StatelessWidget = ({
             {button && button}
         </Box>
     );
-};
-
-export default StatelessWidget;
+}

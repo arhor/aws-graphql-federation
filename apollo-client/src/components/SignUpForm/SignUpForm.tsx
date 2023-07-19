@@ -14,8 +14,7 @@ import Typography from '@mui/material/Typography';
 import useCreateUserMutation from '@/hooks/useCreateUserMutation';
 import { Optional } from '@/utils/core-utils';
 
-
-const SignUpForm = () => {
+export default function SignUpForm() {
     const navigate = useNavigate();
     const { createUser } = useCreateUserMutation();
 
@@ -100,6 +99,4 @@ const SignUpForm = () => {
             </Box>
         </Box>
     );
-};
-
-export default SignUpForm;
+}

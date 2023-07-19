@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-function Feed() {
+export default function Feed() {
     const { t } = useTranslation();
     return (
         <TableContainer component={Paper}>
@@ -25,5 +25,3 @@ function Feed() {
         </TableContainer>
     );
 }
-
-export default Feed;
