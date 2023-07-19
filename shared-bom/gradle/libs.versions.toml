@@ -2,7 +2,6 @@
 java = "17"
 kotlin = "1.8.21"
 kotlin-coroutines = "1.7.1"
-gradle = "8.1.1"
 spring-boot = "3.1.1"
 spring-cloud-aws = "3.0.1"
 spring-dependency-management = "1.1.0"

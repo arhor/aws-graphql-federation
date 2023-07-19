@@ -39,4 +39,4 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Build DGS Users service
-        run: './gradlew :build'
+        run: 'gradle :build'

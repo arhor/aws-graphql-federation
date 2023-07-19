@@ -137,10 +137,6 @@ tasks {
             jacocoTestCoverageVerification,
         )
     }
-
-    wrapper {
-        gradleVersion = libs.versions.gradle.asProvider().get()
-    }
 }
 
 fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {

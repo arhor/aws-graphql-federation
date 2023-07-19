@@ -12,9 +12,3 @@ dependencies {
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.versions.kotlin.coroutines.get()}")
     }
 }
-
-tasks {
-    wrapper {
-        gradleVersion = libs.versions.gradle.asProvider().get()
-    }
-}

@@ -95,10 +95,6 @@ tasks {
         useJUnitPlatform()
     }
 
-    wrapper {
-        gradleVersion = libs.versions.gradle.asProvider().get()
-    }
-
     bootJar {
         enabled = false
     }

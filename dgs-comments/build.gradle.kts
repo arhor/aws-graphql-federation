@@ -114,8 +114,4 @@ tasks {
     test {
         useJUnitPlatform()
     }
-
-    wrapper {
-        gradleVersion = libs.versions.gradle.asProvider().get()
-    }
 }
