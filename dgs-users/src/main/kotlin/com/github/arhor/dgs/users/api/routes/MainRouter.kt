@@ -5,6 +5,7 @@ import org.springframework.web.servlet.function.RouterFunction
 import org.springframework.web.servlet.function.ServerResponse
 import org.springframework.web.servlet.function.router
 import java.security.KeyPair
+import java.security.PublicKey
 import java.util.*
 
 @Component
@@ -18,12 +19,12 @@ class MainRouter(jwtSigningKeyPair: KeyPair) : RouterFunction<ServerResponse> by
     GET(pattern = "public-key") {
         ServerResponse
             .ok()
-            .body(
-                """
-                -----BEGIN PUBLIC KEY-----
-                ${Base64.getEncoder().encodeToString(jwtSigningKeyPair.public.encoded)}
-                -----END PUBLIC KEY-----
-                """.trimIndent()
-            )
+            .body(jwtSigningKeyPair.public.asPemString())
     }
 })
+
+private fun PublicKey.asPemString(): String = """
+    -----BEGIN PUBLIC KEY-----
+    ${Base64.getEncoder().encodeToString(encoded)}
+    -----END PUBLIC KEY-----
+    """.trimIndent()
