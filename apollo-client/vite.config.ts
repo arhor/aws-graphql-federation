@@ -1,3 +1,5 @@
+// noinspection JSUnusedGlobalSymbols
+
 import { fileURLToPath, URL } from 'url';
 import dns from 'dns';
 

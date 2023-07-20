@@ -10,18 +10,18 @@ import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.security.KeyPair
 import java.util.Date
 import kotlin.time.Duration
 
 @Service
 class AuthServiceImpl(
-    @Value("\${app-props.jwt.secret}") secret: String,
     @Value("\${app-props.jwt.expire}") expire: String,
+    private val jwtSigningKeyPair: KeyPair,
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
 ) : AuthService {
 
-    private val jwtSecretKey = Keys.hmacShaKeyFor(secret.toByteArray())
     private val jwtExpiresIn = Duration.parse(expire).inWholeMilliseconds
 
     override fun authenticate(input: AuthenticationInput): AuthenticationResult =
@@ -39,7 +39,7 @@ class AuthServiceImpl(
             .setExpiration(Date(dateTill))
             .setSubject(user.id.toString())
             .claim(CLAIM_AUTHORITIES, listOf(ROLE_USER))
-            .signWith(jwtSecretKey)
+            .signWith(jwtSigningKeyPair.private)
             .compact()
     }
 

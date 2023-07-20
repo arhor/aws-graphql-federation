@@ -7,7 +7,18 @@ import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import * as uuid from 'uuid';
-import { gateway, required } from './gateway.js';
+import { gateway } from './gateway.js';
+import crypto from 'crypto';
+import { usersServiceUrl } from "./variables.js";
+
+const publicSecret =
+    await fetch(`${usersServiceUrl}/public-key`)
+        .then(it => it.text())
+        .then(it => crypto.createPublicKey(it))
+        .catch(err => {
+            console.error('[ERROR] Failed to receive/decode public key!');
+            throw err;
+        });
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -23,8 +34,8 @@ app.use(
     cors(),
     bodyParser.json(),
     expressjwt({
-        secret: required('SECRET'),
-        algorithms: ['HS256', 'HS512'],
+        secret: publicSecret,
+        algorithms: ['RS512'],
         credentialsRequired: false,
     }),
     expressMiddleware(apolloServer, {

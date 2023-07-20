@@ -1,19 +1,14 @@
 import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
 import fetcher from 'make-fetch-happen';
 import * as uuid from 'uuid';
-
-export function required(variable) {
-    return process.env[variable] || (() => {
-        throw Error(`Missing env variable: ${variable}`);
-    })();
-}
+import { commsServiceUrl, postsServiceUrl, usersServiceUrl } from './variables.js';
 
 export const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
         subgraphs: [
-            { url: required('SUBGRAPH_URL_USERS'), name: 'users' },
-            { url: required('SUBGRAPH_URL_POSTS'), name: 'posts' },
-            { url: required('SUBGRAPH_URL_COMMS'), name: 'comments' },
+            { url: `${usersServiceUrl}/graphql`, name: 'users' },
+            { url: `${postsServiceUrl}/graphql`, name: 'posts' },
+            { url: `${commsServiceUrl}/graphql`, name: 'comments' },
         ],
     }),
     buildService: ({ url, name }) => new RemoteGraphQLDataSource({
@@ -23,7 +18,7 @@ export const gateway = new ApolloGateway({
             retry: {
                 retries: 5,
                 factor: 2,
-                minTimeout: 1 * 1000,
+                minTimeout: 1000,
                 maxTimeout: 60 * 1000,
                 randomize: true,
             },
@@ -32,8 +27,13 @@ export const gateway = new ApolloGateway({
             }
         }),
         willSendRequest: ({ request, context }) => {
-            request.http.headers.set('x-request-id', context.requestId ?? uuid.v4());
-            request.http.headers.set('x-current-user', context.currentUser ? JSON.stringify(context.currentUser) : null);
+            const {
+                requestId,
+                currentUser,
+            } = context;
+
+            request.http.headers.set('x-request-id', requestId ?? uuid.v4());
+            request.http.headers.set('x-current-user', currentUser ? JSON.stringify(currentUser) : null);
         },
     }),
 });
