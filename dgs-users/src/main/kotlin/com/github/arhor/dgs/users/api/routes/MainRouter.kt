@@ -1,15 +1,13 @@
 package com.github.arhor.dgs.users.api.routes
 
+import com.github.arhor.dgs.users.service.TokenProvider
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.function.RouterFunction
 import org.springframework.web.servlet.function.ServerResponse
 import org.springframework.web.servlet.function.router
-import java.security.KeyPair
-import java.security.PublicKey
-import java.util.*
 
 @Component
-class MainRouter(jwtSigningKeyPair: KeyPair) : RouterFunction<ServerResponse> by router({
+class MainRouter(private val tokenProvider: TokenProvider) : RouterFunction<ServerResponse> by router({
 
     GET(pattern = "favicon.ico") {
         ServerResponse
@@ -19,12 +17,6 @@ class MainRouter(jwtSigningKeyPair: KeyPair) : RouterFunction<ServerResponse> by
     GET(pattern = "public-key") {
         ServerResponse
             .ok()
-            .body(jwtSigningKeyPair.public.asPemString())
+            .body(tokenProvider.activePublicKey())
     }
 })
-
-private fun PublicKey.asPemString(): String = """
-    -----BEGIN PUBLIC KEY-----
-    ${Base64.getEncoder().encodeToString(encoded)}
-    -----END PUBLIC KEY-----
-    """.trimIndent()
