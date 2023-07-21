@@ -32,7 +32,7 @@ class AuthServiceImpl(
                 logger.error("Provided incorrect password for the user with id: {}", user.id)
             }
         } else {
-            logger.error("Cannot find user with username: {}", input.username)
+            logger.error("Provided incorrect username: {}", input.username)
         }
         throw DgsBadRequestException(message = "Bad Credentials")
     }

@@ -16,6 +16,15 @@ java {
         sourceCompatibility = it
         targetCompatibility = it
     }
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
+    }
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
+    }
 }
 
 testlogger {
