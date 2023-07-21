@@ -6,6 +6,7 @@ import com.github.arhor.dgs.users.generated.graphql.types.AuthenticationResult
 import com.github.arhor.dgs.users.service.AuthService
 import com.github.arhor.dgs.users.service.TokenProvider
 import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
+import io.jsonwebtoken.Claims
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -22,10 +23,10 @@ class AuthServiceImpl(
         if (user != null) {
             if (passwordEncoder.matches(input.password, user.password)) {
                 val signedJwt =
-                    tokenProvider.createSignedJwt(
-                        identity = user.id.toString(),
-                        params = mapOf(CLAIM_AUTHORITIES to listOf(ROLE_USER))
-                    )
+                    tokenProvider.createSignedJwt {
+                        claim(CLAIM_SUBJECT, user.id.toString())
+                        claim(CLAIM_AUTHORITIES, listOf(ROLE_USER))
+                    }
                 return AuthenticationResult(accessToken = signedJwt)
             } else {
                 logger.error("Provided incorrect password for the user with id: {}", user.id)
@@ -37,6 +38,7 @@ class AuthServiceImpl(
     }
 
     companion object {
+        const val CLAIM_SUBJECT = Claims.SUBJECT
         const val CLAIM_AUTHORITIES = "authorities"
         const val ROLE_USER = "ROLE_USER"
 

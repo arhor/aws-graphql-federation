@@ -1,6 +1,7 @@
 package com.github.arhor.dgs.users.service.impl
 
 import com.github.arhor.dgs.users.service.TokenProvider
+import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
@@ -15,19 +16,14 @@ class JwtTokenProviderImpl(@Value("\${app-props.jwt.expire}") expire: String) : 
     private val jwtExpiration = Duration.parse(expire).inWholeMilliseconds
     private val jwtSigningKey = Keys.keyPairFor(SignatureAlgorithm.RS512)
 
-    override fun createSignedJwt(identity: String, params: Map<String, Any>): String {
+    override fun createSignedJwt(customize: JwtBuilder.() -> Unit): String {
         val dateFrom = System.currentTimeMillis()
         val dateTill = dateFrom + jwtExpiration
 
         return Jwts.builder()
             .setIssuedAt(Date(dateFrom))
             .setExpiration(Date(dateTill))
-            .setSubject(identity)
-            .apply {
-                for ((name, value) in params) {
-                    claim(name, value)
-                }
-            }
+            .apply(customize)
             .signWith(jwtSigningKey.private)
             .compact()
     }
