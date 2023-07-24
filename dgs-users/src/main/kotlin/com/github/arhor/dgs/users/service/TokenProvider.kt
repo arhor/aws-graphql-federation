@@ -4,6 +4,6 @@ import io.jsonwebtoken.JwtBuilder
 
 interface TokenProvider {
 
-    fun createSignedJwt(customize: JwtBuilder.() -> Unit): String
+    fun createSignedJwt(customize: JwtBuilder.() -> Unit = {}): String
     fun activePublicKey(): String
 }
