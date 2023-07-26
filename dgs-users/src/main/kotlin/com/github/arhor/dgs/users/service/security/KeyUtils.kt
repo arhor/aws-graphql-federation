@@ -10,8 +10,8 @@ import java.util.Base64
 
 const val PUBLIC_KEY = "PUBLIC KEY"
 
-val PUBLIC_KEY_START = PUBLIC_KEY.startTag()
-val PUBLIC_KEY_CLOSE = PUBLIC_KEY.closeTag()
+val PUBLIC_KEY_START = startTag(PUBLIC_KEY)
+val PUBLIC_KEY_CLOSE = closeTag(PUBLIC_KEY)
 
 private val rsaKeyFactory by lazy { KeyFactory.getInstance("RSA") }
 
@@ -32,5 +32,5 @@ fun String.convertToRsaPublicKey() =
         .let { rsaKeyFactory.generatePublic(it) as RSAPublicKey }
 
 private fun tag(content: String) = "-----${content}-----"
-private fun String.startTag() = tag("BEGIN ${uppercase()}")
-private fun String.closeTag() = tag("END ${uppercase()}")
+private fun startTag(name: String) = tag("BEGIN ${name.uppercase()}")
+private fun closeTag(name: String) = tag("END ${name.uppercase()}")
