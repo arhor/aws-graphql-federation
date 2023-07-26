@@ -1,7 +1,7 @@
 package com.github.arhor.dgs.users.service.impl
 
 import com.github.arhor.dgs.users.service.TokenProvider
-import com.github.arhor.dgs.users.service.security.toPemString
+import com.github.arhor.dgs.users.service.security.convertToPEMString
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -30,6 +30,6 @@ class JwtTokenProviderImpl(@Value("\${app-props.jwt.expire:#{null}}") expire: St
     }
 
     override fun activePublicKey(): String {
-        return jwtSigningKey.public.toPemString()
+        return jwtSigningKey.public.convertToPEMString()
     }
 }

@@ -1,6 +1,6 @@
 package com.github.arhor.dgs.users.service
 
-import com.github.arhor.dgs.users.service.security.toRsaPublicKey
+import com.github.arhor.dgs.users.service.security.convertToRsaPublicKey
 import io.jsonwebtoken.Jwts
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,7 +31,7 @@ internal class TokenProviderTest {
     @Test
     fun `should pass`() {
         // Given
-        val rsaPubKey = tokenProvider.activePublicKey().toRsaPublicKey()
+        val rsaPubKey = tokenProvider.activePublicKey().convertToRsaPublicKey()
         val jwtParser = Jwts.parserBuilder().setSigningKey(rsaPubKey).build()
 
         // When
