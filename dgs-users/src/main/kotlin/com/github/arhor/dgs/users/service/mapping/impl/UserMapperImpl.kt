@@ -16,6 +16,6 @@ class UserMapperImpl : UserMapper {
 
     override fun mapToResult(entity: UserEntity): User = User(
         id = entity.id ?: throw IllegalArgumentException("Entity must be persisted with assigned id!"),
-        username = entity.username
+        username = entity.username,
     )
 }

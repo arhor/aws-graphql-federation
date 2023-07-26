@@ -15,13 +15,14 @@ import org.springframework.context.annotation.FilterType
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 
 @SpringJUnitConfig
-internal class UserMapperImplTest {
+internal class UserMapperTest {
 
     @Configuration
     @ComponentScan(
-        useDefaultFilters = false, includeFilters = [
+        includeFilters = [
             ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [UserMapper::class])
-        ]
+        ],
+        useDefaultFilters = false,
     )
     class Config
 

@@ -13,7 +13,6 @@ import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.time.Duration.Companion.minutes
 
-
 @SpringJUnitConfig
 internal class TokenProviderTest {
 

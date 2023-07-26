@@ -9,12 +9,12 @@ import org.springframework.web.servlet.function.router
 @Component
 class MainRouter(private val tokenProvider: TokenProvider) : RouterFunction<ServerResponse> by router({
 
-    GET(pattern = "favicon.ico") {
+    GET("favicon.ico") {
         ServerResponse
             .noContent()
             .build()
     }
-    GET(pattern = "public-key") {
+    GET("public-key") {
         ServerResponse
             .ok()
             .body(tokenProvider.activePublicKey())
