@@ -2,7 +2,7 @@
   <configuration default="false" name="dgs-comments [bootRun]" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
-      <option name="externalProjectPath" value="$PROJECT_DIR$/dgs-comments" />
+      <option name="externalProjectPath" value="$PROJECT_DIR$/services/dgs-comments" />
       <option name="externalSystemIdString" value="GRADLE" />
       <option name="scriptParameters" value="" />
       <option name="taskDescriptions">
@@ -30,7 +30,7 @@
       </extension>
     </EXTENSION>
     <DebugAllEnabled>false</DebugAllEnabled>
-    <ForceTestExec>false</ForceTestExec>
+    <RunAsTest>false</RunAsTest>
     <method v="2">
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="docker-compose.dev.yml.dgs-comments-db: Compose Deployment" run_configuration_type="docker-deploy" />
     </method>

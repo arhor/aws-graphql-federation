@@ -23,7 +23,7 @@ services:
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - "./dgs-users/.env"
+      - "./services/dgs-users/.env"
 
   dgs-users-app:
     image: dgs-users-app:latest
@@ -33,7 +33,7 @@ services:
       - dgs-users-db
       - localstack
     env_file:
-      - "./dgs-users/.env"
+      - "./services/dgs-users/.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5001/actuator/health | grep UP || exit 1"
@@ -49,7 +49,7 @@ services:
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - "./dgs-posts/.env"
+      - "./services/dgs-posts/.env"
 
   dgs-posts-app:
     image: dgs-posts-app:latest
@@ -59,7 +59,7 @@ services:
       - dgs-posts-db
       - localstack
     env_file:
-      - "./dgs-posts/.env"
+      - "./services/dgs-posts/.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5002/actuator/health | grep UP || exit 1"
@@ -75,7 +75,7 @@ services:
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - "./dgs-comments/.env"
+      - "./services/dgs-comments/.env"
 
   dgs-comments-app:
     image: dgs-comments-app:latest
@@ -85,7 +85,7 @@ services:
       - dgs-comments-db
       - localstack
     env_file:
-      - "./dgs-comments/.env"
+      - "./services/dgs-comments/.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5003/actuator/health | grep UP || exit 1"
