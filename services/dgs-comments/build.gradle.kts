@@ -79,6 +79,11 @@ dependencies {
 
     testImplementation("com.ninja-squad:springmockk")
     testImplementation("io.awspring.cloud:spring-cloud-aws-test")
+    testImplementation("io.kotest:kotest-assertions-core-jvm")
+    testImplementation("io.kotest:kotest-framework-datatest-jvm")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm")
+    testImplementation("io.kotest.extensions:kotest-extensions-spring")
+    testImplementation("io.kotest.extensions:kotest-extensions-testcontainers")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:localstack")
