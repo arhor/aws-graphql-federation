@@ -1,6 +1,6 @@
 package com.github.arhor.dgs.users.data.repository
 
-import com.github.arhor.dgs.lib.config.ConfigureAdditionalBeans
+import com.github.arhor.dgs.users.config.ConfigureAdditionalBeans
 import com.github.arhor.dgs.users.config.ConfigureDatabase
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import org.assertj.core.api.Assertions.assertThat

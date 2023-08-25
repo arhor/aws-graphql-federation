@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.lib.converter
+package com.github.arhor.dgs.users.data.converter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.postgresql.util.PGobject

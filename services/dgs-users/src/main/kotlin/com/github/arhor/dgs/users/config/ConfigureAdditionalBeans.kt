@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.lib.config
+package com.github.arhor.dgs.users.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

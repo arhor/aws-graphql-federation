@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.lib.config
+package com.github.arhor.dgs.users.config
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import graphql.ExecutionInput

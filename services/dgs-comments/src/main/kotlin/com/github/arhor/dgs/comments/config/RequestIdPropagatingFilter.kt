@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.lib
+package com.github.arhor.dgs.comments.config
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

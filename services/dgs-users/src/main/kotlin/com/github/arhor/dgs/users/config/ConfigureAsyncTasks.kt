@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.lib.config
+package com.github.arhor.dgs.users.config
 
 import org.slf4j.MDC
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler

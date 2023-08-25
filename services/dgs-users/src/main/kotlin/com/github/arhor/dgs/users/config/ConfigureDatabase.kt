@@ -1,5 +1,8 @@
 package com.github.arhor.dgs.users.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.arhor.dgs.users.data.converter.JsonReadingConverter
+import com.github.arhor.dgs.users.data.converter.JsonWritingConverter
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,7 +19,12 @@ import java.util.function.Supplier
 @EnableJdbcAuditing(modifyOnCreate = false, dateTimeProviderRef = "currentDateTimeProvider")
 @EnableJdbcRepositories(basePackages = ["com.github.arhor.dgs.users.data.repository"])
 @EnableTransactionManagement
-class ConfigureDatabase : AbstractJdbcConfiguration() {
+class ConfigureDatabase(private val objectMapper: ObjectMapper) : AbstractJdbcConfiguration() {
+
+    override fun userConverters() = listOf(
+        JsonReadingConverter(objectMapper),
+        JsonWritingConverter(objectMapper),
+    )
 
     @Bean
     fun currentDateTimeProvider(currentDateTimeSupplier: Supplier<LocalDateTime>) = DateTimeProvider {
