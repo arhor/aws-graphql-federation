@@ -5,7 +5,9 @@ import com.github.arhor.dgs.comments.data.repository.CommentRepository
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.COMMENT
 import com.github.arhor.dgs.comments.generated.graphql.types.Comment
 import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentInput
+import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentResult
 import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentInput
+import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentResult
 import com.github.arhor.dgs.comments.service.CommentService
 import com.github.arhor.dgs.comments.service.mapper.CommentMapper
 import com.github.arhor.dgs.lib.exception.EntityNotFoundException
@@ -43,15 +45,16 @@ class CommentServiceImpl(
     }
 
     @Transactional
-    override fun createComment(input: CreateCommentInput): Comment {
+    override fun createComment(input: CreateCommentInput): CreateCommentResult {
         return commentMapper.mapToEntity(input)
             .let { commentRepository.save(it) }
             .let { commentMapper.mapToDTO(it) }
+            .let { CreateCommentResult(comment = it) }
     }
 
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
-    override fun updateComment(input: UpdateCommentInput): Comment {
+    override fun updateComment(input: UpdateCommentInput): UpdateCommentResult {
         val initialState = commentRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
             entity = COMMENT.TYPE_NAME,
             condition = "${COMMENT.Id} = ${input.id}",
@@ -63,11 +66,13 @@ class CommentServiceImpl(
             currentState = currentState.copy(content = it)
         }
 
-        return commentMapper.mapToDTO(
-            entity = when (currentState != initialState) {
-                true -> commentRepository.save(currentState)
-                else -> initialState
-            }
+        return UpdateCommentResult(
+            comment = commentMapper.mapToDTO(
+                entity = when (currentState != initialState) {
+                    true -> commentRepository.save(currentState)
+                    else -> initialState
+                }
+            )
         )
     }
 

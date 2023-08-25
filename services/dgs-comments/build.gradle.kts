@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
+    jacoco
 }
 
 extra["kotlin.version"] = libs.versions.kotlin.asProvider().get()
@@ -128,4 +129,46 @@ tasks {
     test {
         useJUnitPlatform()
     }
+
+    jacocoTestReport {
+        shouldRunAfter(test)
+        shouldApplyExclusionsTo(classDirectories)
+    }
+
+    jacocoTestCoverageVerification {
+        shouldRunAfter(jacocoTestReport)
+        shouldApplyExclusionsTo(classDirectories)
+
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.00.toBigDecimal()
+                }
+            }
+        }
+    }
+
+    check {
+        dependsOn(
+            jacocoTestReport,
+            jacocoTestCoverageVerification,
+        )
+    }
+}
+
+fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
+    classDirectories.setFrom(
+        files(
+            classDirectories.files.map {
+                fileTree(it) {
+                    exclude(
+                        "com/github/arhor/dgs/comments/**/Main*.class",
+                        "com/github/arhor/dgs/comments/**/aop/",
+                        "com/github/arhor/dgs/comments/**/config/",
+                        "com/github/arhor/dgs/comments/**/generated/",
+                    )
+                }
+            }
+        )
+    )
 }

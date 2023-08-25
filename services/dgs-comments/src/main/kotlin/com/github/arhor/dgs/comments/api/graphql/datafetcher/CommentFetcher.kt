@@ -38,11 +38,11 @@ class CommentFetcher @Autowired constructor(
 
     @DgsMutation
     fun createComment(@InputArgument input: CreateCommentInput): CreateCommentResult =
-        CreateCommentResult(comment = commentService.createComment(input))
+        commentService.createComment(input)
 
     @DgsMutation
     fun updateComment(@InputArgument input: UpdateCommentInput): UpdateCommentResult =
-        UpdateCommentResult(comment = commentService.updateComment(input))
+        commentService.updateComment(input)
 
     /* Internal implementation */
 
