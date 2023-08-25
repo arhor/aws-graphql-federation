@@ -10,7 +10,6 @@ import org.springframework.boot.web.context.WebServerApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Profile
 import org.springframework.retry.annotation.EnableRetry
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.context.WebApplicationContext
 import java.lang.invoke.MethodHandles
 
@@ -20,9 +19,6 @@ private val logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass(
 @EnableConfigurationProperties(AppProps::class)
 @SpringBootApplication
 class Main {
-
-    @Bean
-    fun passwordEncoder() = BCryptPasswordEncoder()
 
     @Bean
     @Profile("dev")
