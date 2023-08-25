@@ -28,8 +28,8 @@ class CommentServiceImpl(
     override fun getCommentsByUserIds(userIds: Collection<Long>): Map<Long, List<Comment>> {
         return findCommentsThenGroupBy(
             ids = userIds,
-            dataFun = commentRepository::findAllByUserIdIn,
-            groupBy = { it.userId!! },
+            dataSource = commentRepository::findAllByUserIdIn,
+            classifier = { it.userId!! },
         )
     }
 
@@ -37,8 +37,8 @@ class CommentServiceImpl(
     override fun getCommentsByPostIds(postIds: Collection<Long>): Map<Long, List<Comment>> {
         return findCommentsThenGroupBy(
             ids = postIds,
-            dataFun = commentRepository::findAllByPostIdIn,
-            groupBy = { it.postId },
+            dataSource = commentRepository::findAllByPostIdIn,
+            classifier = { it.postId },
         )
     }
 
@@ -94,19 +94,19 @@ class CommentServiceImpl(
 
     /**
      * @param ids     ids of the comments
-     * @param dataFun function that will be used to load comments in case ids collection is not empty
-     * @param groupBy function that will be used to classify object for grouping operation
+     * @param dataSource function that will be used to load comments in case ids collection is not empty
+     * @param classifier function that will be used to classify object for grouping operation
      */
     private inline fun <K> findCommentsThenGroupBy(
         ids: Collection<K>,
-        dataFun: (Collection<K>) -> Stream<CommentEntity>,
-        noinline groupBy: (Comment) -> K,
+        dataSource: (Collection<K>) -> Stream<CommentEntity>,
+        noinline classifier: (Comment) -> K,
     ): Map<K, List<Comment>> {
         return when {
             ids.isNotEmpty() -> {
-                dataFun(ids).use { data ->
+                dataSource(ids).use { data ->
                     data.map(commentMapper::mapToDTO)
-                        .collect(groupingBy(groupBy))
+                        .collect(groupingBy(classifier))
                 }
             }
 
