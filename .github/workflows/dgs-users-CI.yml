@@ -5,21 +5,21 @@ on:
     branches:
       - 'master'
     paths:
-      - 'dgs-users/**'
-      - 'shared-bom/**'
-      - 'shared-lib/**'
+      - 'services/dgs-users/**'
+      - 'services/shared-bom/**'
+      - 'services/shared-lib/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - 'dgs-users/**'
-      - 'shared-bom/**'
-      - 'shared-lib/**'
+      - 'services/dgs-users/**'
+      - 'services/shared-bom/**'
+      - 'services/shared-lib/**'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: './dgs-users'
+    working-directory: './services/dgs-users'
 
 jobs:
   build:
