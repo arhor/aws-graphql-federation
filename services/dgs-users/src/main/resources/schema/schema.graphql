@@ -4,7 +4,7 @@
 scalar Long
 
 type Query {
-    user(id: Long!): User @provides(fields: "username")
+    user(id: Long!): User
     users(input: UsersLookupInput! = {}): [User!]!
 }
 

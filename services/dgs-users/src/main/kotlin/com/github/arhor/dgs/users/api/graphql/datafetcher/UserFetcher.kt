@@ -13,10 +13,9 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
-import org.springframework.beans.factory.annotation.Autowired
 
 @DgsComponent
-class UserFetcher @Autowired constructor(
+class UserFetcher(
     private val userService: UserService,
 ) {
 

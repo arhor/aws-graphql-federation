@@ -11,7 +11,7 @@ import { gateway } from './gateway.js';
 import crypto from 'crypto';
 import { usersServiceUrl } from "./variables.js";
 
-const publicSecret =
+const publicKey =
     await fetch(`${usersServiceUrl}/public-key`)
         .then(it => it.text())
         .then(it => crypto.createPublicKey(it))
@@ -34,7 +34,7 @@ app.use(
     cors(),
     bodyParser.json(),
     expressjwt({
-        secret: publicSecret,
+        secret: publicKey,
         algorithms: ['RS512'],
         credentialsRequired: false,
     }),

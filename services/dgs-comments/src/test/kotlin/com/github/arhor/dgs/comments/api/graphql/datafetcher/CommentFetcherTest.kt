@@ -3,6 +3,7 @@
 package com.github.arhor.dgs.comments.api.graphql.datafetcher
 
 import com.github.arhor.dgs.comments.api.graphql.GlobalDataFetchingExceptionHandler
+import com.github.arhor.dgs.comments.api.graphql.dataloader.CommentBatchLoader
 import com.github.arhor.dgs.comments.generated.graphql.types.Comment
 import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentInput
 import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentResult
@@ -21,17 +22,21 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.concurrent.CompletableFuture
 
 @SpringBootTest(
     classes = [
         CommentFetcher::class,
         DgsAutoConfiguration::class,
         DgsExtendedScalarsAutoConfiguration::class,
+        FederatedEntityFetchers::class,
         GlobalDataFetchingExceptionHandler::class,
     ]
 )
 internal class CommentFetcherTest(
     @MockkBean private val commentService: CommentService,
+    @MockkBean private val commentsLoaderForUser: CommentBatchLoader.ForUser,
+    @MockkBean private val commentsLoaderForPost: CommentBatchLoader.ForPost,
     @Autowired private val dgsQueryExecutor: DgsQueryExecutor,
 ) : DescribeSpec({
 
