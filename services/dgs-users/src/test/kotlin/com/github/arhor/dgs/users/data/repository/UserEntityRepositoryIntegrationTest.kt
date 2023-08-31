@@ -23,7 +23,13 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @DataJdbcTest
 @DirtiesContext
 @Testcontainers(disabledWithoutDocker = true)
-@ContextConfiguration(classes = [ConfigureDatabase::class, ConfigureAdditionalBeans::class, UserEntityRepositoryIntegrationTest.Config::class])
+@ContextConfiguration(
+    classes = [
+        ConfigureDatabase::class,
+        ConfigureAdditionalBeans::class,
+        UserEntityRepositoryIntegrationTest.Config::class,
+    ]
+)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 internal class UserEntityRepositoryIntegrationTest {
 
