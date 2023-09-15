@@ -1,44 +1,46 @@
 package com.github.arhor.dgs.users.config
 
 import org.slf4j.MDC
-import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME
+import org.springframework.boot.task.TaskExecutorBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
+import org.springframework.core.task.TaskDecorator
 import org.springframework.scheduling.annotation.AsyncConfigurer
 import org.springframework.scheduling.annotation.EnableAsync
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor
 import org.springframework.web.context.request.RequestContextHolder
-import java.util.concurrent.Executor
 
 @EnableAsync
 @Configuration(proxyBeanMethods = false)
 class ConfigureAsyncTasks : AsyncConfigurer {
 
-    override fun getAsyncUncaughtExceptionHandler(): AsyncUncaughtExceptionHandler {
-        return SimpleAsyncUncaughtExceptionHandler()
-    }
+    @Lazy
+    @Autowired
+    private lateinit var taskExecutorBuilder: TaskExecutorBuilder
 
     @Bean(APPLICATION_TASK_EXECUTOR_BEAN_NAME)
-    override fun getAsyncExecutor(): Executor {
-        val executor = ThreadPoolTaskExecutor()
+    override fun getAsyncExecutor() = DelegatingSecurityContextAsyncTaskExecutor(
+        taskExecutorBuilder
+            .build()
+            .also { it.initialize() }
+    )
 
-        executor.initialize()
-        executor.setTaskDecorator(::decorateUsingParentContext)
+    override fun getAsyncUncaughtExceptionHandler() = SimpleAsyncUncaughtExceptionHandler()
 
-        return executor
-    }
-
-    private fun decorateUsingParentContext(task: Runnable): Runnable {
+    @Bean
+    fun parentContextTaskDecorator() = TaskDecorator {
         val attributes = RequestContextHolder.getRequestAttributes()
         val contextMap = MDC.getCopyOfContextMap()
 
-        return if (attributes == null && contextMap == null) task else Runnable {
+        if (attributes == null && contextMap == null) it else Runnable {
             try {
                 RequestContextHolder.setRequestAttributes(attributes)
                 MDC.setContextMap(contextMap ?: emptyMap())
-                task.run()
+                it.run()
             } finally {
                 MDC.clear()
                 RequestContextHolder.resetRequestAttributes()
