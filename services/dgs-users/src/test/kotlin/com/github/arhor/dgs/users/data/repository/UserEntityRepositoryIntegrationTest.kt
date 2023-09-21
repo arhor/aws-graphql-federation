@@ -1,16 +1,14 @@
 package com.github.arhor.dgs.users.data.repository
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.arhor.dgs.users.config.ConfigureAdditionalBeans
 import com.github.arhor.dgs.users.config.ConfigureDatabase
 import com.github.arhor.dgs.users.data.entity.UserEntity
+import com.github.arhor.dgs.users.test.TestObjectMapperConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
@@ -27,17 +25,11 @@ import org.testcontainers.junit.jupiter.Testcontainers
     classes = [
         ConfigureDatabase::class,
         ConfigureAdditionalBeans::class,
-        UserEntityRepositoryIntegrationTest.Config::class,
+        TestObjectMapperConfig::class,
     ]
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 internal class UserEntityRepositoryIntegrationTest {
-
-    @Configuration(proxyBeanMethods = false)
-    class Config {
-        @Bean
-        fun objectMapper() = jacksonObjectMapper()
-    }
 
     @Autowired
     private lateinit var userRepository: UserRepository

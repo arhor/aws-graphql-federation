@@ -4,7 +4,7 @@ import org.slf4j.MDC
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME
-import org.springframework.boot.task.TaskExecutorBuilder
+import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -20,7 +20,7 @@ class ConfigureAsyncTasks : AsyncConfigurer {
 
     @Lazy
     @Autowired
-    private lateinit var taskExecutorBuilder: TaskExecutorBuilder
+    private lateinit var taskExecutorBuilder: ThreadPoolTaskExecutorBuilder
 
     @Bean(APPLICATION_TASK_EXECUTOR_BEAN_NAME)
     override fun getAsyncExecutor() = DelegatingSecurityContextAsyncTaskExecutor(

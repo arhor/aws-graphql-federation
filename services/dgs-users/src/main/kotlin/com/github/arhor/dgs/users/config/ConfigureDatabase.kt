@@ -1,8 +1,8 @@
 package com.github.arhor.dgs.users.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.arhor.dgs.users.data.converter.JsonReadingConverter
 import com.github.arhor.dgs.users.data.converter.JsonWritingConverter
+import com.github.arhor.dgs.users.data.converter.JsonReadingConverter
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -22,8 +22,8 @@ import java.util.function.Supplier
 class ConfigureDatabase(private val objectMapper: ObjectMapper) : AbstractJdbcConfiguration() {
 
     override fun userConverters() = listOf(
-        JsonReadingConverter(objectMapper),
         JsonWritingConverter(objectMapper),
+        JsonReadingConverter(objectMapper),
     )
 
     @Bean

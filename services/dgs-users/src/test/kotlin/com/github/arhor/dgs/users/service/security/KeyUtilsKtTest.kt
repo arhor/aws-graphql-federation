@@ -1,35 +1,46 @@
 package com.github.arhor.dgs.users.service.security
 
+import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.SignatureAlgorithm.RS256
 import io.jsonwebtoken.SignatureAlgorithm.RS384
 import io.jsonwebtoken.SignatureAlgorithm.RS512
 import io.jsonwebtoken.security.Keys
-import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.datatest.withData
-import io.kotest.matchers.equals.shouldBeEqual
-import io.kotest.matchers.string.shouldEndWith
-import io.kotest.matchers.string.shouldStartWith
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.Arguments.arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
-internal class KeyUtilsKtTest : DescribeSpec({
+internal class KeyUtilsKtTest {
 
-    describe("composite conversion tests") {
-        withData(
-            nameFn = { "should convert $it public key to PEM string then convert it to the same public key" },
-            RS256,
-            RS384,
-            RS512,
-        ) {
-            // Given
-            val source = Keys.keyPairFor(it)
+    @MethodSource
+    @ParameterizedTest
+    fun `should convert public key to PEM string then convert it to the same public key`(algorithm: SignatureAlgorithm) {
+        // given
+        val source = Keys.keyPairFor(algorithm)
 
-            // When
-            val pemString = source.public.convertToPEMString()
-            val publicKey = pemString.convertToRsaPublicKey()
+        // when
+        val pemString = source.public.convertToPEMString()
+        val publicKey = pemString.convertToRsaPublicKey()
 
-            // Then
-            pemString shouldStartWith PUBLIC_KEY_START
-            pemString shouldEndWith PUBLIC_KEY_CLOSE
-            publicKey shouldBeEqual source.public
-        }
+        // then
+        assertThat(pemString)
+            .isNotNull()
+            .startsWith(PUBLIC_KEY_START)
+            .endsWith(PUBLIC_KEY_CLOSE)
+
+        assertThat(publicKey)
+            .isNotNull()
+            .isEqualTo(source.public)
     }
-})
+
+    companion object {
+        @JvmStatic
+        fun `should convert public key to PEM string then convert it to the same public key`(): Stream<Arguments> = Stream.of(
+            arguments(RS256),
+            arguments(RS384),
+            arguments(RS512),
+        )
+    }
+}
