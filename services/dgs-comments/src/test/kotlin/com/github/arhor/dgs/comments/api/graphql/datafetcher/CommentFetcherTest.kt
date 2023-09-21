@@ -14,15 +14,16 @@ import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
 import com.ninjasquad.springmockk.MockkBean
-import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.concurrent.CompletableFuture
 
 @SpringBootTest(
     classes = [
@@ -33,15 +34,24 @@ import java.util.concurrent.CompletableFuture
         GlobalDataFetchingExceptionHandler::class,
     ]
 )
-internal class CommentFetcherTest(
-    @MockkBean private val commentService: CommentService,
-    @MockkBean private val commentsLoaderForUser: CommentBatchLoader.ForUser,
-    @MockkBean private val commentsLoaderForPost: CommentBatchLoader.ForPost,
-    @Autowired private val dgsQueryExecutor: DgsQueryExecutor,
-) : DescribeSpec({
+internal class CommentFetcherTest {
 
-    describe("mutation { createComment }") {
-        it("should create new comment and return result object containing created data") {
+    @MockkBean
+    private lateinit var commentService: CommentService
+
+    @MockkBean
+    private lateinit var commentsLoaderForUser: CommentBatchLoader.ForUser
+
+    @MockkBean
+    private lateinit var commentsLoaderForPost: CommentBatchLoader.ForPost
+
+    @Autowired
+    private lateinit var dgsQueryExecutor: DgsQueryExecutor
+
+    @Nested
+    inner class `mutation { createComment }` {
+        @Test
+        fun `should create new comment and return result object containing created data`() {
             // Given
             val id = -1L
             val userId = -2L
@@ -83,8 +93,10 @@ internal class CommentFetcherTest(
         }
     }
 
-    describe("mutation { updateComment }") {
-        it("should update existing comment and return result object containing updated data") {
+    @Nested
+    inner class `mutation { updateComment }` {
+        @Test
+        fun `should update existing comment and return result object containing updated data`() {
             // Given
             val id = -1L
             val userId = -2L
@@ -125,7 +137,8 @@ internal class CommentFetcherTest(
         }
     }
 
-    afterTest {
+    @AfterEach
+    fun tearDown() {
         clearAllMocks()
     }
-})
+}

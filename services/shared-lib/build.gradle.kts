@@ -49,11 +49,6 @@ dependencies {
     implementation(platform(":shared-bom"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
-
-    testImplementation("io.kotest:kotest-assertions-core-jvm")
-    testImplementation("io.kotest:kotest-framework-datatest-jvm")
-    testImplementation("io.kotest:kotest-runner-junit5-jvm")
-    testImplementation("io.mockk:mockk")
 }
 
 tasks {
