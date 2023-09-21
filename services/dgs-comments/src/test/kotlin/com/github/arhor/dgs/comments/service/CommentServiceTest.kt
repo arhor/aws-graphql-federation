@@ -13,7 +13,9 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.ComponentScan.Filter
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 
+@SpringJUnitConfig
 internal class CommentServiceTest {
 
     @MockkBean
