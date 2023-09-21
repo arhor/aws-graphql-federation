@@ -15,7 +15,5 @@ dependencies {
         api("io.kotest.extensions:kotest-extensions-spring:${libs.versions.kotest.extension.spring.get()}")
         api("io.kotest.extensions:kotest-extensions-testcontainers:${libs.versions.kotest.extension.testcontainers.get()}")
         api("io.mockk:mockk:${libs.versions.mockk.get()}")
-        api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.versions.kotlin.coroutines.get()}")
-
     }
 }

@@ -7,7 +7,7 @@ plugins {
     `java-library`
 }
 
-extra["kotlin.version"] = libs.versions.kotlin.asProvider().get()
+extra["kotlin.version"] = libs.versions.kotlin.get()
 val javaVersion: String = libs.versions.java.get()
 
 java {
@@ -53,7 +53,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core-jvm")
     testImplementation("io.kotest:kotest-framework-datatest-jvm")
     testImplementation("io.kotest:kotest-runner-junit5-jvm")
-    testImplementation("io.mockk:mockk:1.13.7")
+    testImplementation("io.mockk:mockk")
 }
 
 tasks {

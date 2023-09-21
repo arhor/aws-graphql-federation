@@ -9,7 +9,7 @@ plugins {
     jacoco
 }
 
-extra["kotlin.version"] = libs.versions.kotlin.asProvider().get()
+extra["kotlin.version"] = libs.versions.kotlin.get()
 val javaVersion: String = libs.versions.java.get()
 
 java {

@@ -9,7 +9,7 @@ plugins {
     jacoco
 }
 
-extra["kotlin.version"] = libs.versions.kotlin.asProvider().get()
+extra["kotlin.version"] = libs.versions.kotlin.get()
 val javaVersion: String = libs.versions.java.get()
 
 java {
@@ -93,7 +93,6 @@ dependencyManagement {
     imports {
         mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${libs.versions.graphql.dgs.bom.get()}")
         mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${libs.versions.spring.cloud.aws.get()}")
-        mavenBom("org.testcontainers:testcontainers-bom:${libs.versions.testcontainers.get()}")
     }
 }
 
