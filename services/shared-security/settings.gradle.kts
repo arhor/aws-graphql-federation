@@ -14,7 +14,5 @@ dependencyResolutionManagement {
 }
 
 includeBuild("../shared-bom")
-includeBuild("../shared-lib")
-includeBuild("../shared-security")
 
-rootProject.name = "dgs-users"
+rootProject.name = "shared-security"

@@ -1,7 +1,9 @@
-package com.github.arhor.dgs.users.config
+package com.github.arhor.dgs.security.config
 
-import com.github.arhor.dgs.users.config.security.PreAuthenticatedUserAuthenticationProcessingFilter
-import com.github.arhor.dgs.users.config.security.PreAuthenticatedUserAuthenticationProcessingFilter.Companion.PRE_AUTHENTICATED_USER_HEADER
+import com.github.arhor.dgs.security.PreAuthenticatedUserAuthenticationProcessingFilter
+import com.github.arhor.dgs.security.PreAuthenticatedUserAuthenticationProcessingFilter.Companion.PRE_AUTHENTICATED_USER_HEADER
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
@@ -14,13 +16,14 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
 
+@AutoConfiguration
 @EnableWebSecurity
 @EnableMethodSecurity
-@Configuration(proxyBeanMethods = false)
 class ConfigureSecurity {
 
     @Bean
-    fun securityFilterChain(
+    @ConditionalOnMissingBean
+    fun defaultSecurityFilterChain(
         http: HttpSecurity,
         authConfig: AuthenticationConfiguration,
     ): SecurityFilterChain {

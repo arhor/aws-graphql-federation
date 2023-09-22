@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: dgs-users
+  threads:
+    virtual:
+      enabled: true
   aop:
     proxy-target-class: false
   profiles:

@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.config.security
+package com.github.arhor.dgs.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue

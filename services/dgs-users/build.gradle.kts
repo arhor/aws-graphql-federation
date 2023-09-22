@@ -55,6 +55,7 @@ dependencies {
 
     implementation(platform(":shared-bom"))
     implementation(":shared-lib")
+    implementation(":shared-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
