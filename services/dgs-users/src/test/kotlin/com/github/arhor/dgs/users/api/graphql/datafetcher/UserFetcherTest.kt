@@ -102,13 +102,13 @@ internal class UserFetcherTest {
             // When
             val result = dgsQueryExecutor.execute(
                 """
-            query (${'$'}id: Long!) {
-                user(id: ${'$'}id) {
-                    id
-                    username
+                query (${'$'}id: Long!) {
+                    user(id: ${'$'}id) {
+                        id
+                        username
+                    }
                 }
-            }
-            """,
+                """,
                 mapOf(USER.Id to id)
             )
 
@@ -181,11 +181,11 @@ internal class UserFetcherTest {
             assertThat(result.getData<Map<Any, Any>>())
                 .containsEntry(
                     QUERY.Users, listOf(
-                        mapOf(
-                            USER.Id to user.id,
-                            USER.Username to user.username,
-                        )
+                    mapOf(
+                        USER.Id to user.id,
+                        USER.Username to user.username,
                     )
+                )
                 )
         }
     }
