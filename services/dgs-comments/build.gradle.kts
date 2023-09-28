@@ -117,6 +117,12 @@ tasks {
         )
     }
 
+    processResources {
+        filesMatching("application.yml") {
+            expand(project.properties)
+        }
+    }
+
     generateJava {
         language = "kotlin"
         packageName = "com.github.arhor.dgs.comments.generated.graphql"
