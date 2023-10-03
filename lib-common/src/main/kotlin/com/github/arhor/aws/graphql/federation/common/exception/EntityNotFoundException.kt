@@ -1,6 +1,6 @@
-package com.github.arhor.dgs.lib.exception
+package com.github.arhor.aws.graphql.federation.common.exception
 
-class EntityDuplicateException(
+class EntityNotFoundException(
     entity: String,
     condition: String,
     operation: Operation = Operation.UNKNOWN,

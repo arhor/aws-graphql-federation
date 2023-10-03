@@ -1,7 +1,7 @@
 package com.github.arhor.dgs.comments.api.graphql
 
-import com.github.arhor.dgs.lib.exception.EntityDuplicateException
-import com.github.arhor.dgs.lib.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import graphql.execution.DataFetcherExceptionHandler
 import graphql.execution.DataFetcherExceptionHandlerParameters
 import graphql.schema.DataFetchingEnvironment

@@ -1,6 +1,6 @@
 package com.github.arhor.dgs.posts.service.events
 
-import com.github.arhor.dgs.lib.event.PostEvent
+import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 
 interface PostEventEmitter {
 

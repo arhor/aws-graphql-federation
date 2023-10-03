@@ -1,6 +1,6 @@
 package com.github.arhor.dgs.posts.api.listener
 
-import com.github.arhor.dgs.lib.event.UserEvent
+import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.dgs.posts.service.PostService
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory

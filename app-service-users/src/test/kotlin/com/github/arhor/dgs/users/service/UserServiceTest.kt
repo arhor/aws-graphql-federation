@@ -2,8 +2,8 @@
 
 package com.github.arhor.dgs.users.service
 
-import com.github.arhor.dgs.lib.exception.EntityDuplicateException
-import com.github.arhor.dgs.lib.exception.Operation
+import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
+import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER

@@ -10,8 +10,8 @@ import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentInput
 import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentResult
 import com.github.arhor.dgs.comments.service.CommentService
 import com.github.arhor.dgs.comments.service.mapper.CommentMapper
-import com.github.arhor.dgs.lib.exception.EntityNotFoundException
-import com.github.arhor.dgs.lib.exception.Operation
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable

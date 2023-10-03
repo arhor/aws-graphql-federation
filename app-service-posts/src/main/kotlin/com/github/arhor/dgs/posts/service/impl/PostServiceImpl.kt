@@ -1,8 +1,8 @@
 package com.github.arhor.dgs.posts.service.impl
 
-import com.github.arhor.dgs.lib.event.PostEvent
-import com.github.arhor.dgs.lib.exception.EntityNotFoundException
-import com.github.arhor.dgs.lib.exception.Operation
+import com.github.arhor.aws.graphql.federation.common.event.PostEvent
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.dgs.posts.data.entity.TagEntity
 import com.github.arhor.dgs.posts.data.entity.TagRef
 import com.github.arhor.dgs.posts.data.repository.BannerImageRepository

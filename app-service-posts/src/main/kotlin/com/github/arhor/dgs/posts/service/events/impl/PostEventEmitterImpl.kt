@@ -1,6 +1,6 @@
 package com.github.arhor.dgs.posts.service.events.impl
 
-import com.github.arhor.dgs.lib.event.PostEvent
+import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.dgs.posts.config.props.AppProps
 import com.github.arhor.dgs.posts.service.events.PostEventEmitter
 import io.awspring.cloud.sns.core.SnsNotification

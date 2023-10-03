@@ -1,7 +1,7 @@
 package com.github.arhor.dgs.comments.api.listener
 
 import com.github.arhor.dgs.comments.service.CommentService
-import com.github.arhor.dgs.lib.event.PostEvent
+import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

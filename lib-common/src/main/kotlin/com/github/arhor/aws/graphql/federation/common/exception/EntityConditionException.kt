@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.lib.exception
+package com.github.arhor.aws.graphql.federation.common.exception
 
 /**
  * Any Exception related to the operation with domain entity.

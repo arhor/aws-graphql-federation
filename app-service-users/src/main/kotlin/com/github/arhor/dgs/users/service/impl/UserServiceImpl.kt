@@ -1,9 +1,9 @@
 package com.github.arhor.dgs.users.service.impl
 
-import com.github.arhor.dgs.lib.event.UserEvent
-import com.github.arhor.dgs.lib.exception.EntityDuplicateException
-import com.github.arhor.dgs.lib.exception.EntityNotFoundException
-import com.github.arhor.dgs.lib.exception.Operation
+import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput

@@ -4,7 +4,7 @@ import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.POST
 import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.comments.generated.graphql.types.Post
 import com.github.arhor.dgs.comments.generated.graphql.types.User
-import com.github.arhor.dgs.lib.getLong
+import com.github.arhor.aws.graphql.federation.common.getLong
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsEntityFetcher
 

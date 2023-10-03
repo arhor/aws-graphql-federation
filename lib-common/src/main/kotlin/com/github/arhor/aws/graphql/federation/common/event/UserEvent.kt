@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.lib.event
+package com.github.arhor.aws.graphql.federation.common.event
 
 sealed interface UserEvent : DomainEvent {
 

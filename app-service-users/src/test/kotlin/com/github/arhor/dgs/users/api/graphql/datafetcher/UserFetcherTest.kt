@@ -2,8 +2,8 @@
 
 package com.github.arhor.dgs.users.api.graphql.datafetcher
 
-import com.github.arhor.dgs.lib.exception.EntityNotFoundException
-import com.github.arhor.dgs.lib.exception.Operation
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.dgs.users.api.graphql.GlobalDataFetchingExceptionHandler
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
