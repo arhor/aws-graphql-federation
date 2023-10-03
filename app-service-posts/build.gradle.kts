@@ -55,6 +55,7 @@ dependencies {
 
     implementation(platform(":lib-platform"))
     implementation(":lib-common")
+    implementation(":lib-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
