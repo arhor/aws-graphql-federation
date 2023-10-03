@@ -17,10 +17,6 @@ on:
       - 'lib-common/**'
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: './app-service-comments'
-
 jobs:
   build:
     name: Build
