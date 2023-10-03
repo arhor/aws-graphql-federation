@@ -59,6 +59,7 @@ spring:
       on-profile: dev
     import:
       - optional:file:${project.rootDir}/.env[.properties]
+      - optional:file:${project.rootDir}/../.env[.properties]
   cache:
     caffeine:
       spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s,recordStats'

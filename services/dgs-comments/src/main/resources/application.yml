@@ -48,8 +48,8 @@ app-props:
   retry-attempts: 5
   aws:
     sqs:
-      user-deleted-events: ${AWS_SQS_USER_DELETED_EVENTS}
-      post-deleted-events: ${AWS_SQS_POST_DELETED_EVENTS}
+      user-deleted-events: ${AWS_SQS_USER_DELETED_EVENTS_FOR_COMMENTS}
+      post-deleted-events: ${AWS_SQS_POST_DELETED_EVENTS_FOR_COMMENTS}
 
 ---
 
@@ -59,6 +59,7 @@ spring:
       on-profile: dev
     import:
       - optional:file:${project.rootDir}/.env[.properties]
+      - optional:file:${project.rootDir}/../.env[.properties]
   cache:
     caffeine:
       spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s,recordStats'

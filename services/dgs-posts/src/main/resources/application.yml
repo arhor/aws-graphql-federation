@@ -49,7 +49,7 @@ app-props:
     sns:
       post-events: \${AWS_SNS_POST_EVENTS}
     sqs:
-      user-deleted-events: \${AWS_SQS_USER_DELETED_EVENTS}
+      user-deleted-events: \${AWS_SQS_USER_DELETED_EVENTS_FOR_POSTS}
     s3:
       banners-bucket-name: STUB
 
@@ -61,6 +61,7 @@ spring:
       on-profile: dev
     import:
       - optional:file:${project.rootDir}/.env[.properties]
+      - optional:file:${project.rootDir}/../.env[.properties]
   cache:
     caffeine:
       spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s,recordStats'
