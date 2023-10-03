@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.security
+package com.github.arhor.aws.graphql.federation.security
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
