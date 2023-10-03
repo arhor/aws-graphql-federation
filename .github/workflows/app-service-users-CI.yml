@@ -1,18 +1,18 @@
-name: DGS Posts service CI
+name: Users service CI
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - 'app-service-posts/**'
+      - 'app-service-users/**'
       - 'lib-platform/**'
       - 'lib-common/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - 'app-service-posts/**'
+      - 'app-service-users/**'
       - 'lib-platform/**'
       - 'lib-common/**'
   workflow_dispatch:
@@ -34,5 +34,5 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Build DGS Posts service
-        run: 'gradle :app-service-posts:build'
+      - name: Build Users service
+        run: 'gradle :app-service-users:build'
