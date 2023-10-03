@@ -17,10 +17,6 @@ on:
       - 'lib-common/**'
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: './app-service-users'
-
 jobs:
   build:
     name: Build
@@ -37,8 +33,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 8.4-rc-1
 
       - name: Build DGS Users service
-        run: 'gradle :build'
+        run: 'gradle :app-service-users:build'
