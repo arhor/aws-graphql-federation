@@ -5,21 +5,21 @@ on:
     branches:
       - 'master'
     paths:
-      - 'services/dgs-posts/**'
-      - 'services/shared-bom/**'
-      - 'services/shared-lib/**'
+      - 'app-service-posts/**'
+      - 'lib-platform/**'
+      - 'lib-common/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - 'services/dgs-posts/**'
-      - 'services/shared-bom/**'
-      - 'services/shared-lib/**'
+      - 'app-service-posts/**'
+      - 'lib-platform/**'
+      - 'lib-common/**'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: './services/dgs-posts'
+    working-directory: './app-service-posts'
 
 jobs:
   build:

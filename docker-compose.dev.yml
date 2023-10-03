@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-
   localstack:
     image: localstack/localstack:latest
     ports:
@@ -16,24 +15,25 @@ services:
       - "./scripts/localstack:/etc/localstack/init/ready.d/"
       - "./cloudformation:/cloudformation"
 
-  dgs-users-db:
+  app-service-users-db:
     image: postgres:12-alpine
     ports:
       - "5501:5432"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - "./services/dgs-users/.env"
+      - "./app-service-users/.env"
 
-  dgs-users-app:
-    image: dgs-users-app:latest
+  app-service-users:
+    image: app-service-users:latest
     build:
-      context: dgs-users
+      context: app-service-users
     depends_on:
-      - dgs-users-db
+      - app-service-users-db
       - localstack
     env_file:
-      - "./services/dgs-users/.env"
+      - "./app-service-users/.env"
+      - ".env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5001/actuator/health | grep UP || exit 1"
@@ -42,24 +42,25 @@ services:
       retries: 5
       start_period: 10s
 
-  dgs-posts-db:
+  app-service-posts-db:
     image: postgres:12-alpine
     ports:
       - "5502:5432"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - "./services/dgs-posts/.env"
+      - "./app-service-posts/.env"
 
-  dgs-posts-app:
-    image: dgs-posts-app:latest
+  app-service-posts:
+    image: app-service-posts:latest
     build:
-      context: dgs-posts
+      context: app-service-posts
     depends_on:
-      - dgs-posts-db
+      - app-service-posts-db
       - localstack
     env_file:
-      - "./services/dgs-posts/.env"
+      - "./app-service-posts/.env"
+      - ".env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5002/actuator/health | grep UP || exit 1"
@@ -68,24 +69,25 @@ services:
       retries: 5
       start_period: 10s
 
-  dgs-comments-db:
+  app-service-comments-db:
     image: postgres:12-alpine
     ports:
       - "5503:5432"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
-      - "./services/dgs-comments/.env"
+      - "./app-service-comments/.env"
 
-  dgs-comments-app:
-    image: dgs-comments-app:latest
+  app-service-comments:
+    image: app-service-comments:latest
     build:
-      context: dgs-comments
+      context: app-service-comments
     depends_on:
-      - dgs-comments-db
+      - app-service-comments-db
       - localstack
     env_file:
-      - "./services/dgs-comments/.env"
+      - "./app-service-comments/.env"
+      - ".env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5003/actuator/health | grep UP || exit 1"
@@ -94,12 +96,12 @@ services:
       retries: 5
       start_period: 10s
 
-  apollo-server:
-    image: apollo-server:latest
+  app-gateway:
+    image: app-gateway:latest
     build:
-      context: apollo-server
+      context: app-gateway
     depends_on:
-      - dgs-users-app
-      - dgs-posts-app
-      - dgs-comments-app
+      - app-service-users
+      - app-service-posts
+      - app-service-comments
     network_mode: host
