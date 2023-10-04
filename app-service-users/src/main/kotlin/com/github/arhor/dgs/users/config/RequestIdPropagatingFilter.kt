@@ -31,7 +31,7 @@ class RequestIdPropagatingFilter : OrderedRequestContextFilter() {
     }
 
     companion object {
-        private const val REQUEST_ID_HEADER = "x-request-id"
+        private const val REQUEST_ID_HEADER = "X-Request-ID"
         private const val REQUEST_ID_MDC_PROP = "request-id"
     }
 }

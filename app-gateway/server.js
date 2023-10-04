@@ -41,7 +41,7 @@ app.use(
     expressMiddleware(apolloServer, {
         context: ({ req }) => ({
             currentUser: req.auth ? { id: req.auth.id, authorities: req.auth.authorities } : null,
-            requestId: uuid.v4(),
+            requestUuid: uuid.v4(),
         }),
     }),
 );

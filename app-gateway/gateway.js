@@ -28,12 +28,16 @@ export const gateway = new ApolloGateway({
         }),
         willSendRequest: ({ request, context }) => {
             const {
-                requestId,
+                requestUuid,
                 currentUser,
             } = context;
 
-            request.http.headers.set('x-request-id', requestId ?? uuid.v4());
-            request.http.headers.set('x-current-user', currentUser ? JSON.stringify(currentUser) : null);
+            if (requestUuid) {
+                request.http.headers.set('X-Request-ID', requestUuid);
+            }
+            if (currentUser) {
+                request.http.headers.set('X-Current-User', JSON.stringify(currentUser));
+            }
         },
     }),
 });
