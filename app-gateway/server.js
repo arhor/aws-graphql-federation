@@ -9,7 +9,7 @@ import bodyParser from 'body-parser';
 import * as uuid from 'uuid';
 import { gateway } from './gateway.js';
 import crypto from 'crypto';
-import { usersServiceUrl } from "./variables.js";
+import { gatewayPort, usersServiceUrl } from "./variables.js";
 
 const publicKey =
     await fetch(`${usersServiceUrl}/public-key`)
@@ -21,13 +21,13 @@ const publicKey =
         });
 
 const app = express();
-const httpServer = http.createServer(app);
-const apolloServer = new ApolloServer({
+const server = http.createServer(app);
+const apollo = new ApolloServer({
     gateway,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer: server })],
 });
 
-await apolloServer.start();
+await apollo.start();
 
 app.use(
     '/',
@@ -38,7 +38,7 @@ app.use(
         algorithms: ['RS512'],
         credentialsRequired: false,
     }),
-    expressMiddleware(apolloServer, {
+    expressMiddleware(apollo, {
         context: ({ req }) => ({
             currentUser: req.auth ? { id: req.auth.id, authorities: req.auth.authorities } : null,
             requestUuid: uuid.v4(),
@@ -46,6 +46,9 @@ app.use(
     }),
 );
 
-await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
+server.listen({ port: gatewayPort }, () => {
+    const { port } = server.address();
+    const localUrl = `http://localhost:${port}`;
 
-console.log(`🚀 Server ready at http://localhost:4000`);
+    console.log('🚀 Server ready at', localUrl);
+});

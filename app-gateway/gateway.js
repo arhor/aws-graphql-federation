@@ -1,6 +1,5 @@
 import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
 import fetcher from 'make-fetch-happen';
-import * as uuid from 'uuid';
 import { commsServiceUrl, postsServiceUrl, usersServiceUrl } from './variables.js';
 
 export const gateway = new ApolloGateway({
@@ -22,11 +21,11 @@ export const gateway = new ApolloGateway({
                 maxTimeout: 60 * 1000,
                 randomize: true,
             },
-            onRetry: (cause) => {
+            onRetry(cause) {
                 console.log('Retrying...', cause);
             }
         }),
-        willSendRequest: ({ request, context }) => {
+        willSendRequest({ request, context }) {
             const {
                 requestUuid,
                 currentUser,
