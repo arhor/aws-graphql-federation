@@ -1,6 +1,7 @@
-import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
 import fetcher from 'make-fetch-happen';
-import { commsServiceUrl, postsServiceUrl, usersServiceUrl } from './variables.js';
+import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
+import { commsServiceUrl, postsServiceUrl, usersServiceUrl } from '#server/utils/env.js';
+import { headers } from '#server/utils/constants.js';
 
 export const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
@@ -25,17 +26,17 @@ export const gateway = new ApolloGateway({
                 console.log('Retrying...', cause);
             }
         }),
-        willSendRequest({ request, context }) {
+        willSendRequest({ request, context, kind, incomingRequestContext }) {
             const {
                 requestUuid,
                 currentUser,
             } = context;
 
             if (requestUuid) {
-                request.http.headers.set('X-Request-ID', requestUuid);
+                request.http.headers.set(headers.X_REQUEST_ID, requestUuid);
             }
             if (currentUser) {
-                request.http.headers.set('X-Current-User', JSON.stringify(currentUser));
+                request.http.headers.set(headers.X_CURRENT_USER, JSON.stringify(currentUser));
             }
         },
     }),

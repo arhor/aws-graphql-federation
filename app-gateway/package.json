@@ -1,6 +1,7 @@
 {
     "name": "apollo-server",
     "type": "module",
+    "main": "server",
     "version": "0.0.1",
     "private": true,
     "author": {
@@ -8,8 +9,11 @@
         "email": "arhor18@gmail.com"
     },
     "scripts": {
-        "start": "node server.js",
-        "serve": "node -r dotenv/config server.js"
+        "start": "node .",
+        "serve": "node -r dotenv/config ."
+    },
+    "imports": {
+        "#server/*": "./server/*"
     },
     "dependencies": {
         "@apollo/gateway": "^2.4.7",

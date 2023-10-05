@@ -7,9 +7,11 @@ import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import * as uuid from 'uuid';
-import { gateway } from './gateway.js';
+import { gateway } from '#server/gateway.js';
 import crypto from 'crypto';
-import { gatewayPort, usersServiceUrl } from "./variables.js";
+import { gatewayPort, usersServiceUrl } from "#server/utils/env.js";
+
+const { json } = bodyParser;
 
 const publicKey =
     await fetch(`${usersServiceUrl}/public-key`)
@@ -32,7 +34,7 @@ await apollo.start();
 app.use(
     '/',
     cors(),
-    bodyParser.json(),
+    json(),
     expressjwt({
         secret: publicKey,
         algorithms: ['RS512'],
