@@ -4,6 +4,7 @@ import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
+import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
@@ -14,9 +15,10 @@ import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserResult
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
+import com.github.arhor.dgs.users.service.UserService
+import com.github.arhor.dgs.users.service.dto.CurrentUserRequest
 import com.github.arhor.dgs.users.service.events.UserEventEmitter
 import com.github.arhor.dgs.users.service.mapping.UserMapper
-import com.github.arhor.dgs.users.service.UserService
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -49,6 +51,24 @@ class UserServiceImpl(
             .findAll(PageRequest.of(input.page, input.size))
             .map(userMapper::mapToResult)
             .toList()
+    }
+
+    // replace with com.github.arhor.dgs.users.service.impl.AuthServiceImpl.authenticate
+    @Transactional(readOnly = true)
+    override fun currentUser(request: CurrentUserRequest): CurrentUser {
+        val (username, password) = request
+        return userRepository.findByUsername(username)
+            ?.takeIf { passwordEncoder.matches(password, it.password) }
+            ?.let {
+                CurrentUser(
+                    id = it.id!!,
+                    authorities = listOf("ROLE_USER")
+                )
+            } ?: throw EntityNotFoundException(
+            entity = USER.TYPE_NAME,
+            condition = "username = $username, password = $password",
+            operation = Operation.READ,
+        )
     }
 
     @Transactional

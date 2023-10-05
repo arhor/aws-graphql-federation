@@ -10,6 +10,7 @@ import io.jsonwebtoken.Claims
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AuthServiceImpl(
@@ -18,6 +19,7 @@ class AuthServiceImpl(
     private val passwordEncoder: PasswordEncoder,
 ) : AuthService {
 
+    @Transactional(readOnly = true)
     override fun authenticate(input: AuthenticationInput): AuthenticationResult {
         val user = userRepository.findByUsername(input.username)
         if (user != null) {

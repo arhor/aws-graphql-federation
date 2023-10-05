@@ -16,7 +16,7 @@ class PreAuthenticatedUserAuthenticationProvider(
 
     override fun authenticate(authentication: Authentication): Authentication {
         return try {
-            objectMapper.readValue<User>(authentication.principal as String).let {
+            objectMapper.readValue<CurrentUser>(authentication.principal as String).let {
                 PreAuthenticatedAuthenticationToken(
                     it.id,
                     null,
@@ -31,6 +31,4 @@ class PreAuthenticatedUserAuthenticationProvider(
     override fun supports(authentication: Class<*>): Boolean {
         return PreAuthenticatedAuthenticationToken::class.java.isAssignableFrom(authentication)
     }
-
-    data class User(val id: Long, val authorities: List<String>)
 }
