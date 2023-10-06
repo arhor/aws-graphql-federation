@@ -7,9 +7,9 @@ import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import * as uuid from 'uuid';
-import { gateway } from '#server/gateway.js';
 import crypto from 'crypto';
-import { gatewayPort, usersServiceUrl } from "#server/utils/env.js";
+import { gateway } from '#server/graphql/gateway.js';
+import { gatewayPort, usersServiceUrl } from '#server/utils/env.js';
 
 const { json } = bodyParser;
 

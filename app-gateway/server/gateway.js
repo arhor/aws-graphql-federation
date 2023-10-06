@@ -1,17 +1,60 @@
+import gql from 'graphql-tag';
 import fetcher from 'make-fetch-happen';
-import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
+import { ApolloGateway, IntrospectAndCompose, LocalGraphQLDataSource, RemoteGraphQLDataSource } from '@apollo/gateway';
+import { buildSubgraphSchema } from '@apollo/subgraph';
 import { commsServiceUrl, postsServiceUrl, usersServiceUrl } from '#server/utils/env.js';
 import { headers } from '#server/utils/constants.js';
 
 export const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
         subgraphs: [
+            { name: 'auth', url: 'auth' },
             { url: `${usersServiceUrl}/graphql`, name: 'users' },
             { url: `${postsServiceUrl}/graphql`, name: 'posts' },
             { url: `${commsServiceUrl}/graphql`, name: 'comments' },
-        ],
+         ],
     }),
-    buildService: ({ url, name }) => new RemoteGraphQLDataSource({
+    buildService({ url, name }) {
+        return name === 'auth'
+            ? createLocalDataSource()
+            : createRemoteDatasource({ url, name });
+    },
+});
+
+function createLocalDataSource() {
+    return new LocalGraphQLDataSource(
+        buildSubgraphSchema({
+            typeDefs: gql`
+                type Mutation {
+                    signIn(input: SignInInput!): SignInResult
+                    test(username: String, password: String): String
+                }
+
+                input SignInInput {
+                    username: String!
+                    password: String!
+                }
+
+                type SignInResult {
+                    accessToken: String
+                }
+            `,
+            resolvers: {
+                Mutation: {
+                    signIn: async (source, args, context, info) => {
+                        const { username, password } = args.input;
+                        return {
+                            accessToken: `${username}-${password}`,
+                        };
+                    },
+                },
+            },
+        }),
+    );
+}
+
+function createRemoteDatasource({ url, name }) {
+    return new RemoteGraphQLDataSource({
         url,
         name,
         fetcher: fetcher.defaults({
@@ -39,5 +82,5 @@ export const gateway = new ApolloGateway({
                 request.http.headers.set(headers.X_CURRENT_USER, JSON.stringify(currentUser));
             }
         },
-    }),
-});
+    });
+}
