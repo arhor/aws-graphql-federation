@@ -15,7 +15,7 @@ const apollo = new ApolloServer({
 await apollo.start();
 
 await server.register(fastifyJwt, {
-    secret: 'supersecret',
+    secret: uuid.v4(),
 });
 await server.register(fastifyApollo(apollo), {
     context: (req) => ({
