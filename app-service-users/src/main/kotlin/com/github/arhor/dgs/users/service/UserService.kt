@@ -14,7 +14,7 @@ import com.github.arhor.dgs.users.service.dto.CurrentUserRequest
 interface UserService {
     fun getUserById(id: Long): User
     fun getAllUsers(input: UsersLookupInput): List<User>
-    fun currentUser(request: CurrentUserRequest): CurrentUser
+    fun verifyUser(request: CurrentUserRequest): CurrentUser
     fun createUser(input: CreateUserInput): CreateUserResult
     fun updateUser(input: UpdateUserInput): UpdateUserResult
     fun deleteUser(input: DeleteUserInput): DeleteUserResult

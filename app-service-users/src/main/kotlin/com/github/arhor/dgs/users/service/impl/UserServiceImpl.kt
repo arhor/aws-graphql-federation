@@ -19,6 +19,8 @@ import com.github.arhor.dgs.users.service.UserService
 import com.github.arhor.dgs.users.service.dto.CurrentUserRequest
 import com.github.arhor.dgs.users.service.events.UserEventEmitter
 import com.github.arhor.dgs.users.service.mapping.UserMapper
+import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
+import org.slf4j.LoggerFactory
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -53,22 +55,24 @@ class UserServiceImpl(
             .toList()
     }
 
-    // replace with com.github.arhor.dgs.users.service.impl.AuthServiceImpl.authenticate
     @Transactional(readOnly = true)
-    override fun currentUser(request: CurrentUserRequest): CurrentUser {
+    override fun verifyUser(request: CurrentUserRequest): CurrentUser {
         val (username, password) = request
-        return userRepository.findByUsername(username)
-            ?.takeIf { passwordEncoder.matches(password, it.password) }
-            ?.let {
-                CurrentUser(
-                    id = it.id!!,
-                    authorities = listOf("ROLE_USER")
+        val user = userRepository.findByUsername(username)
+
+        if (user != null) {
+            if (passwordEncoder.matches(password, user.password)) {
+                return CurrentUser(
+                    id = user.id!!,
+                    authorities = listOf(ROLE_USER)
                 )
-            } ?: throw EntityNotFoundException(
-            entity = USER.TYPE_NAME,
-            condition = "username = $username, password = $password",
-            operation = Operation.READ,
-        )
+            } else {
+                logger.error("Provided incorrect password for the user with id: {}", user.id)
+            }
+        } else {
+            logger.error("Provided incorrect username: {}", username)
+        }
+        throw DgsBadRequestException(message = "Bad Credentials")
     }
 
     @Transactional
@@ -120,5 +124,11 @@ class UserServiceImpl(
                 }
             }
         )
+    }
+
+    companion object {
+        const val ROLE_USER = "ROLE_USER"
+
+        private val logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
     }
 }
