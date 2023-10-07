@@ -17,11 +17,15 @@ class RequestIdPropagatingFilter : OrderedRequestContextFilter() {
 
     private fun withContextExtension(filterChain: FilterChain) = FilterChain { req, res ->
         if ((req is HttpServletRequest) && (res is HttpServletResponse)) {
-            val requestId = req.getHeader(REQUEST_ID_HEADER)?.takeIf(String::isNotEmpty)
-                ?: UUID.randomUUID().toString()
+            fun propagate(header: String, mdcProp: String) {
+                val id = req.getHeader(header)?.takeIf(String::isNotEmpty)
+                    ?: UUID.randomUUID().toString()
 
-            MDC.put(REQUEST_ID_MDC_PROP, requestId)
-            res.addHeader(REQUEST_ID_HEADER, requestId)
+                MDC.put(mdcProp, id)
+                res.addHeader(header, id)
+            }
+            propagate(TRACING_ID_HEADER, TRACING_ID_MDC_PROP)
+            propagate(REQUEST_ID_HEADER, REQUEST_ID_MDC_PROP)
         }
         try {
             filterChain.doFilter(req, res)
@@ -33,5 +37,8 @@ class RequestIdPropagatingFilter : OrderedRequestContextFilter() {
     companion object {
         private const val REQUEST_ID_HEADER = "X-Request-ID"
         private const val REQUEST_ID_MDC_PROP = "request-id"
+
+        private const val TRACING_ID_HEADER = "X-Tracing-ID"
+        private const val TRACING_ID_MDC_PROP = "tracing-id"
     }
 }
