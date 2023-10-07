@@ -5,6 +5,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateE
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
+import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
@@ -16,7 +17,6 @@ import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserResult
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.dgs.users.service.UserService
-import com.github.arhor.dgs.users.service.dto.CurrentUserRequest
 import com.github.arhor.dgs.users.service.events.UserEventEmitter
 import com.github.arhor.dgs.users.service.mapping.UserMapper
 import com.netflix.graphql.dgs.exceptions.DgsBadRequestException

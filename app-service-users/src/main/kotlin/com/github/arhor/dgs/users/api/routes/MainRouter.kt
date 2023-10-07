@@ -2,9 +2,8 @@ package com.github.arhor.dgs.users.api.routes
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
-import com.github.arhor.dgs.users.service.TokenProvider
+import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.dgs.users.service.UserService
-import com.github.arhor.dgs.users.service.dto.CurrentUserRequest
 import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.function.router
 
 @Component
 class MainRouter(
-    private val tokenProvider: TokenProvider,
     private val userService: UserService,
 ) : RouterFunction<ServerResponse> by router({
 
@@ -29,18 +27,14 @@ class MainRouter(
         status(NO_CONTENT)
             .build()
     }
-    GET("public-key") {
-        val publicKey = tokenProvider.activePublicKey()
+    "/api".nest {
+        POST("/users/verify") {
+            val userRequest = it.body<CurrentUserRequest>()
+            val currentUser = userService.verifyUser(userRequest)
 
-        status(OK)
-            .body(publicKey)
-    }
-    POST("verify-user") {
-        val userRequest = it.body<CurrentUserRequest>()
-        val currentUser = userService.verifyUser(userRequest)
-
-        status(OK)
-            .body(currentUser)
+            status(OK)
+                .body(currentUser)
+        }
     }
 
     /* ---------- Exception Handlers ---------- */

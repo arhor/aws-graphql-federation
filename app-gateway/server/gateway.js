@@ -3,31 +3,31 @@ import fetcher from 'make-fetch-happen';
 import { ApolloGateway, IntrospectAndCompose, LocalGraphQLDataSource, RemoteGraphQLDataSource } from '@apollo/gateway';
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import { commsServiceUrl, postsServiceUrl, usersServiceUrl } from '#server/utils/env.js';
-import { headers } from '#server/utils/constants.js';
 
-export const gateway = new ApolloGateway({
-    supergraphSdl: new IntrospectAndCompose({
-        subgraphs: [
-            { name: 'auth', url: 'auth' },
-            { url: `${usersServiceUrl}/graphql`, name: 'users' },
-            { url: `${postsServiceUrl}/graphql`, name: 'posts' },
-            { url: `${commsServiceUrl}/graphql`, name: 'comments' },
-        ],
-    }),
-    buildService({ url, name }) {
-        return name === 'auth'
-            ? createLocalDataSource()
-            : createRemoteDatasource({ url, name });
-    },
-});
+export function createGateway(server) {
+    return new ApolloGateway({
+        supergraphSdl: new IntrospectAndCompose({
+            subgraphs: [
+                { name: 'auth', url: 'auth' },
+                { url: `${usersServiceUrl}/graphql`, name: 'users' },
+                { url: `${postsServiceUrl}/graphql`, name: 'posts' },
+                { url: `${commsServiceUrl}/graphql`, name: 'comms' },
+            ],
+        }),
+        buildService({ url, name }) {
+            return name === 'auth'
+                ? createLocalDataSource({ server })
+                : createRemoteDatasource({ url, name });
+        },
+    });
+}
 
-function createLocalDataSource() {
+function createLocalDataSource({ server }) {
     return new LocalGraphQLDataSource(
         buildSubgraphSchema({
             typeDefs: gql`
                 type Mutation {
                     signIn(input: SignInInput!): SignInResult
-                    test(username: String, password: String): String
                 }
 
                 input SignInInput {
@@ -41,17 +41,17 @@ function createLocalDataSource() {
             `,
             resolvers: {
                 Mutation: {
-                    signIn: async (source, args, context, info) => {
-                        const currentUser =
-                            await fetch(`${usersServiceUrl}/verify-user`, {
+                    signIn: async (source, args) => {
+                        const accessToken =
+                            await fetch(`${usersServiceUrl}/api/users/verify`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(args.input),
-                            }).then(it => it.json());
+                            })
+                                .then(it => it.json())
+                                .then(it => server.jwt.sign({ payload: it }));
 
-                        return {
-                            accessToken: `${currentUser}`,
-                        };
+                        return { accessToken };
                     },
                 },
             },
@@ -75,17 +75,17 @@ function createRemoteDatasource({ url, name }) {
                 console.log('Retrying...', cause);
             }
         }),
-        willSendRequest({ request, context, kind, incomingRequestContext }) {
+        willSendRequest({ request, context }) {
             const {
                 requestUuid,
                 currentUser,
             } = context;
 
             if (requestUuid) {
-                request.http.headers.set(headers.X_REQUEST_ID, requestUuid);
+                request.http.headers.set('X-Request-ID', requestUuid);
             }
             if (currentUser) {
-                request.http.headers.set(headers.X_CURRENT_USER, JSON.stringify(currentUser));
+                request.http.headers.set('X-Current-User', JSON.stringify(currentUser));
             }
         },
     });

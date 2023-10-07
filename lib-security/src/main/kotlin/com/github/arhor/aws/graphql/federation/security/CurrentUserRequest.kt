@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.service.dto
+package com.github.arhor.aws.graphql.federation.security
 
 data class CurrentUserRequest(
     val username: String,
