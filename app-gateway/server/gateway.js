@@ -12,7 +12,7 @@ export const gateway = new ApolloGateway({
             { url: `${usersServiceUrl}/graphql`, name: 'users' },
             { url: `${postsServiceUrl}/graphql`, name: 'posts' },
             { url: `${commsServiceUrl}/graphql`, name: 'comments' },
-         ],
+        ],
     }),
     buildService({ url, name }) {
         return name === 'auth'
@@ -42,9 +42,15 @@ function createLocalDataSource() {
             resolvers: {
                 Mutation: {
                     signIn: async (source, args, context, info) => {
-                        const { username, password } = args.input;
+                        const currentUser =
+                            await fetch(`${usersServiceUrl}/verify-user`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(args.input),
+                            }).then(it => it.json());
+
                         return {
-                            accessToken: `${username}-${password}`,
+                            accessToken: `${currentUser}`,
                         };
                     },
                 },
