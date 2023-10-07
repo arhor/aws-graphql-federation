@@ -25,10 +25,8 @@ await server.register(fastifyApollo(apollo), {
 });
 
 server.addHook('onRequest', async (req) => {
-    try {
+    if (req.headers.authorization) {
         await req.jwtVerify();
-    } catch (err) {
-        /* nothing to do with it */
     }
 });
 
