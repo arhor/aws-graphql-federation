@@ -6,7 +6,30 @@ import { ApolloServer } from '@apollo/server';
 import { createGateway } from '#server/gateway.js';
 import { gatewayPort } from '#server/utils/env.js';
 
-const server = fastify({ logger: true });
+const server = fastify({
+    logger: process.env.NODE_ENV === 'production' ? {
+        level: 'info',
+        redact: [
+            'req.headers.authorization',
+        ],
+        transport: {
+            options: {
+                ignore: 'pid,hostname',
+            },
+        },
+    } : process.env.NODE_ENV === 'development' ? {
+        level: 'debug',
+        transport: {
+            target: 'pino-pretty',
+            options: {
+                ignore: 'pid,hostname',
+            }
+        }
+    } : false,
+    requestIdHeader: 'X-Tracing-ID',
+    requestIdLogLabel: 'tracing-id',
+    genReqId: () => uuid.v4(),
+});
 const apollo = new ApolloServer({
     gateway: createGateway(server),
     plugins: [fastifyApolloDrainPlugin(server)],
@@ -19,8 +42,8 @@ await server.register(fastifyJwt, {
 });
 await server.register(fastifyApollo(apollo), {
     context: (req) => ({
+        tracingUuid: req.id,
         currentUser: req.user?.payload,
-        requestUuid: uuid.v4(),
     }),
 });
 

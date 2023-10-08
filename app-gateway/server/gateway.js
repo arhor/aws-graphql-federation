@@ -77,12 +77,12 @@ function createRemoteDatasource({ url, name }) {
         }),
         willSendRequest({ request, context }) {
             const {
-                requestUuid,
+                tracingUuid,
                 currentUser,
             } = context;
 
-            if (requestUuid) {
-                request.http.headers.set('X-Request-ID', requestUuid);
+            if (tracingUuid) {
+                request.http.headers.set('X-Tracing-ID', tracingUuid);
             }
             if (currentUser) {
                 request.http.headers.set('X-Current-User', JSON.stringify(currentUser));
