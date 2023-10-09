@@ -14,8 +14,5 @@ dependencyResolutionManagement {
 }
 
 includeBuild("../lib-platform")
-includeBuild("../lib-common")
-includeBuild("../lib-security")
-includeBuild("../lib-tracing")
 
-rootProject.name = "app-service-users"
+rootProject.name = "lib-tracing"

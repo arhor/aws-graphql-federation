@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.users.config
+package com.github.arhor.aws.graphql.federation.tracing
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

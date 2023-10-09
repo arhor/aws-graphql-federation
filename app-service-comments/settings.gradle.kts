@@ -13,7 +13,9 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "app-service-comments"
-
 includeBuild("../lib-platform")
 includeBuild("../lib-common")
+includeBuild("../lib-security")
+includeBuild("../lib-tracing")
+
+rootProject.name = "app-service-comments"

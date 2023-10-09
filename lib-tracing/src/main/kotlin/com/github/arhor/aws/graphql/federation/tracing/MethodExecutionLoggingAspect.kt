@@ -1,7 +1,7 @@
-package com.github.arhor.dgs.comments
+package com.github.arhor.aws.graphql.federation.tracing
 
-import com.github.arhor.dgs.comments.MethodExecutionLoggingAspect.Companion.PROP_NAME
-import com.github.arhor.dgs.comments.MethodExecutionLoggingAspect.Companion.PROP_VALUE
+import com.github.arhor.aws.graphql.federation.tracing.MethodExecutionLoggingAspect.Companion.PROP_NAME
+import com.github.arhor.aws.graphql.federation.tracing.MethodExecutionLoggingAspect.Companion.PROP_VALUE
 import jakarta.annotation.PostConstruct
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around

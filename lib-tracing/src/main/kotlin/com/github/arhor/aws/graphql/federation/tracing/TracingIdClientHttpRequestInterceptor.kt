@@ -1,4 +1,4 @@
-package com.github.arhor.dgs.comments.config
+package com.github.arhor.aws.graphql.federation.tracing
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.web.client.RestTemplateRequestCustomizer
