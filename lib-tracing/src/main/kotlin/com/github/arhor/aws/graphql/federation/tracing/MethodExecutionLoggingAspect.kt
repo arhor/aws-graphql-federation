@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletionStage
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 @Aspect
 @Component
@@ -57,11 +55,6 @@ class MethodExecutionLoggingAspect {
     private inline fun Any?.formattedWith(method: MethodSignature): String = when (method.returnType) {
         Void.TYPE -> VOID
         else -> toString()
-    }
-
-    @JvmInline
-    private value class Timer(private val start: Long = System.currentTimeMillis()) {
-        val elapsedTime get() = (System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)
     }
 
     companion object {
