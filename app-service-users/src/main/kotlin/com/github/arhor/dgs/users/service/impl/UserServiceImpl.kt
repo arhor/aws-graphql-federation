@@ -6,6 +6,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.dgs.users.data.repository.UserRepository
 import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
@@ -29,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+@Trace
 @Service
 class UserServiceImpl(
     private val userMapper: UserMapper,

@@ -1,5 +1,6 @@
 package com.github.arhor.dgs.users.service.impl
 
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.dgs.users.service.TokenProvider
 import com.github.arhor.dgs.users.service.security.convertToPEMString
 import io.jsonwebtoken.JwtBuilder
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 import kotlin.time.Duration
 
+@Trace
 @Component
 class JwtTokenProviderImpl(@Value("\${app-props.jwt.expire:#{null}}") expire: String) : TokenProvider {
 

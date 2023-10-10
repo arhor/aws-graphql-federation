@@ -1,11 +1,13 @@
 package com.github.arhor.dgs.users.service.mapping.impl
 
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.dgs.users.data.entity.UserEntity
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.User
 import com.github.arhor.dgs.users.service.mapping.UserMapper
 import org.springframework.stereotype.Component
 
+@Trace
 @Component
 class UserMapperImpl : UserMapper {
 

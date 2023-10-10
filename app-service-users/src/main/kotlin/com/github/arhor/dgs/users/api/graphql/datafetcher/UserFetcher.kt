@@ -1,5 +1,6 @@
 package com.github.arhor.dgs.users.api.graphql.datafetcher
 
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.dgs.users.generated.graphql.types.CreateUserResult
 import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserInput
@@ -14,6 +15,7 @@ import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 
+@Trace
 @DgsComponent
 class UserFetcher(
     private val userService: UserService,
