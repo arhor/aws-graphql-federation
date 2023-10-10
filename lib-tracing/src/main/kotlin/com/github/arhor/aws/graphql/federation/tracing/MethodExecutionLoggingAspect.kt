@@ -16,33 +16,40 @@ import kotlin.time.toDuration
 @ConditionalOnProperty(name = ["log-method-execution"], havingValue = "true")
 class MethodExecutionLoggingAspect {
 
+    // consider the following cases:
+    //     1. return type is CompletionStage and joinPoint.proceed() was executed without exception and future contains success
+    //     2. return type is CompletionStage and joinPoint.proceed() was executed without exception and future contains failure
+    //     3. return type is CompletionStage and joinPoint.proceed() was executed with exception
+    //     4. return type is something else and joinPoint.proceed() was executed without exception
+    //     5. return type is something else and joinPoint.proceed() was executed with exception
     @Around("@annotation(Trace) || @within(Trace)")
-    fun logMethodExecution(joinPoint: ProceedingJoinPoint): Any? {
-        val method = joinPoint.signature as MethodSignature
+    fun logMethodExecution(jPoint: ProceedingJoinPoint): Any? {
+        val method = jPoint.signature as MethodSignature
         val logger = LoggerFactory.getLogger(method.declaringTypeName)
 
         return if (logger.isDebugEnabled) {
             val methodName = method.name
-            val methodArgs = joinPoint.args.contentToString()
+            val methodArgs = jPoint.args.contentToString()
 
             logger.debug(EXECUTION_START, methodName, methodArgs)
 
             with(Timer()) {
-                when (val result = joinPoint.proceed()) {
+                when (val result = jPoint.proceed()) {
                     is CompletionStage<*> -> result.whenComplete { success, failure ->
                         if (failure != null) {
-                            logger.debug(EXECUTION_ERROR, methodName, failure.formattedWith(method), elapsedTime)
+                            logger.debug(EXECUTION_ERROR, methodName, failure, elapsedTime)
                         } else {
-                            logger.debug(EXECUTION_CLOSE, methodName, success.formattedWith(method), elapsedTime)
+                            logger.debug(EXECUTION_CLOSE, methodName, success, elapsedTime)
                         }
                     }
+
                     else -> result.also {
-                        logger.debug(EXECUTION_CLOSE, methodName, it.formattedWith(method), elapsedTime)
+                        logger.debug(EXECUTION_CLOSE, methodName, it, elapsedTime)
                     }
                 }
             }
         } else {
-            joinPoint.proceed()
+            jPoint.proceed()
         }
     }
 
