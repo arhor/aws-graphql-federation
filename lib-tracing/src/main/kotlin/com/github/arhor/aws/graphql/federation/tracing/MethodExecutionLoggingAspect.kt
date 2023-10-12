@@ -31,7 +31,7 @@ class MethodExecutionLoggingAspect {
 
             logger.debug(EXECUTION_START, methodName, methodArgs)
 
-            with(Timer()) {
+            Timer.start {
                 when (val result = jPoint.proceed()) {
                     is CompletionStage<*> -> result.whenComplete { success, failure ->
                         if (failure != null) {
@@ -49,12 +49,6 @@ class MethodExecutionLoggingAspect {
         } else {
             jPoint.proceed()
         }
-    }
-
-    @Suppress("NOTHING_TO_INLINE")
-    private inline fun Any?.formattedWith(method: MethodSignature): String = when (method.returnType) {
-        Void.TYPE -> VOID
-        else -> toString()
     }
 
     companion object {
