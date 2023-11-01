@@ -16,9 +16,9 @@
         "#server/*": "./server/*"
     },
     "dependencies": {
-        "@apollo/gateway": "^2.5.5",
-        "@apollo/server": "^4.9.4",
-        "@apollo/subgraph": "^2.5.5",
+        "@apollo/gateway": "^2.5.6",
+        "@apollo/server": "^4.9.5",
+        "@apollo/subgraph": "^2.5.6",
         "@as-integrations/fastify": "^2.1.1",
         "@fastify/jwt": "^7.2.1",
         "fastify": "^4.23.2",
