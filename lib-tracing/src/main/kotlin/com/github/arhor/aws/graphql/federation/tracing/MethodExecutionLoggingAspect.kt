@@ -55,6 +55,5 @@ class MethodExecutionLoggingAspect {
         private const val EXECUTION_START = "Method [START]: {}() >>> args: {}"
         private const val EXECUTION_CLOSE = "Method [CLOSE]: {}() <<< exit: {}, time: {}"
         private const val EXECUTION_ERROR = "Method [ERROR]: {}() <<< exit: {}, time: {}"
-        private const val VOID = "void"
     }
 }
