@@ -46,7 +46,7 @@ internal class MainRouterTest {
     }
 
     @Test
-    fun `should handle user verification requesto`() {
+    fun `should handle user verification request`() {
         // Given
         val requestURI = URI.create("/api/users/verify")
         val httpMethod = HttpMethod.POST
