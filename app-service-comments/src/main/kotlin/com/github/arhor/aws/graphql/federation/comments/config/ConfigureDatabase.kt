@@ -14,7 +14,7 @@ import java.util.function.Supplier
 
 @Configuration(proxyBeanMethods = false)
 @EnableJdbcAuditing(modifyOnCreate = false, dateTimeProviderRef = "currentDateTimeProvider")
-@EnableJdbcRepositories(basePackages = ["com.github.arhor.dgs.comments.data.repository"])
+@EnableJdbcRepositories(basePackages = ["com.github.arhor.aws.graphql.federation.comments.data.repository"])
 @EnableTransactionManagement
 class ConfigureDatabase : AbstractJdbcConfiguration() {
 

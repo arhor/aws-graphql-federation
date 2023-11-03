@@ -3,14 +3,12 @@ package com.github.arhor.aws.graphql.federation.users.data.repository
 import com.github.arhor.aws.graphql.federation.users.config.ConfigureAdditionalBeans
 import com.github.arhor.aws.graphql.federation.users.config.ConfigureDatabase
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
-import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.test.TestObjectMapperConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
-import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -34,9 +32,6 @@ internal class UserEntityRepositoryIntegrationTest {
 
     @Autowired
     private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var jdbcTemplate: JdbcTemplate
 
     @Test
     fun `should return true for the email of an existing user`() {

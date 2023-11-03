@@ -49,7 +49,6 @@ data class PostEntity(
     @MappedCollection(idColumn = TagRef.COL_POST_ID)
     val tags: Set<TagRef> = emptySet()
 ) {
-    // FIXME: move to external
     /**
      * Wrapper class over EnumSet is required to make it available for custom conversions.
      */

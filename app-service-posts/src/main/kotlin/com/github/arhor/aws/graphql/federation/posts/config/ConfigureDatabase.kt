@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.config
 
-import com.github.arhor.aws.graphql.federation.posts.data.converter.EnumSetReadingConverter
-import com.github.arhor.aws.graphql.federation.posts.data.converter.EnumSetWritingConverter
+import com.github.arhor.aws.graphql.federation.posts.data.converter.OptionsReadingConverter
+import com.github.arhor.aws.graphql.federation.posts.data.converter.OptionsWritingConverter
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,13 +16,13 @@ import java.util.function.Supplier
 
 @Configuration(proxyBeanMethods = false)
 @EnableJdbcAuditing(modifyOnCreate = false, dateTimeProviderRef = "currentDateTimeProvider")
-@EnableJdbcRepositories(basePackages = ["com.github.arhor.dgs.posts.data.repository"])
+@EnableJdbcRepositories(basePackages = ["com.github.arhor.aws.graphql.federation.posts.data.repository"])
 @EnableTransactionManagement
 class ConfigureDatabase : AbstractJdbcConfiguration() {
 
     override fun userConverters() = listOf(
-        EnumSetReadingConverter,
-        EnumSetWritingConverter,
+        OptionsReadingConverter,
+        OptionsWritingConverter,
     )
 
     @Bean

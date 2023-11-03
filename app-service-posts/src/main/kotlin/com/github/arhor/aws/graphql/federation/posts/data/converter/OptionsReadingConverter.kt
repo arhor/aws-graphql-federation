@@ -7,7 +7,7 @@ import org.springframework.data.convert.ReadingConverter
 import java.util.EnumSet
 
 @ReadingConverter
-object EnumSetReadingConverter : Converter<Long, PostEntity.Options> {
+object OptionsReadingConverter : Converter<Long, PostEntity.Options> {
 
     override fun convert(source: Long): PostEntity.Options =
         PostEntity.Options(
