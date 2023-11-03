@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.data.converter
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
-import com.github.arhor.dgs.posts.generated.graphql.types.Option
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Option
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.convert.ReadingConverter
 import java.util.EnumSet

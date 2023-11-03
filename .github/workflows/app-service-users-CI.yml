@@ -6,15 +6,19 @@ on:
       - 'master'
     paths:
       - 'app-service-users/**'
-      - 'lib-platform/**'
       - 'lib-common/**'
+      - 'lib-platform/**'
+      - 'lib-security/**'
+      - 'lib-tracing/**'
   pull_request:
     branches:
       - 'master'
     paths:
       - 'app-service-users/**'
-      - 'lib-platform/**'
       - 'lib-common/**'
+      - 'lib-platform/**'
+      - 'lib-security/**'
+      - 'lib-tracing/**'
   workflow_dispatch:
 
 jobs:

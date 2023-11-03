@@ -124,7 +124,7 @@ tasks {
 
     generateJava {
         language = "kotlin"
-        packageName = "com.github.arhor.aws.graphql.federation.posts.generated.graphql"
+        packageName = "com.github.arhor.aws.graphql.federation.books.generated.graphql"
     }
 
     test {
@@ -163,10 +163,10 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/aws/graphql/federation/posts/**/Main*.class",
-                        "com/github/arhor/aws/graphql/federation/posts/**/aop/",
-                        "com/github/arhor/aws/graphql/federation/posts/**/config/",
-                        "com/github/arhor/aws/graphql/federation/posts/**/generated/",
+                        "com/github/arhor/aws/graphql/federation/books/**/Main*.class",
+                        "com/github/arhor/aws/graphql/federation/books/**/aop/",
+                        "com/github/arhor/aws/graphql/federation/books/**/config/",
+                        "com/github/arhor/aws/graphql/federation/books/**/generated/",
                     )
                 }
             }

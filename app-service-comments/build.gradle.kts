@@ -128,7 +128,7 @@ tasks {
 
     generateJava {
         language = "kotlin"
-        packageName = "com.github.arhor.dgs.comments.generated.graphql"
+        packageName = "com.github.arhor.aws.graphql.federation.comments.generated.graphql"
     }
 
     test {
@@ -167,10 +167,10 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/dgs/comments/**/Main*.class",
-                        "com/github/arhor/dgs/comments/**/aop/",
-                        "com/github/arhor/dgs/comments/**/config/",
-                        "com/github/arhor/dgs/comments/**/generated/",
+                        "com/github/arhor/aws/graphql/federation/comments/**/Main*.class",
+                        "com/github/arhor/aws/graphql/federation/comments/**/aop/",
+                        "com/github/arhor/aws/graphql/federation/comments/**/config/",
+                        "com/github/arhor/aws/graphql/federation/comments/**/generated/",
                     )
                 }
             }

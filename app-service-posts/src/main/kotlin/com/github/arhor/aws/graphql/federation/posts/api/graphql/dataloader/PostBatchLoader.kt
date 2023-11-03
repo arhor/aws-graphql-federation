@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader
 
-import com.github.arhor.dgs.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.netflix.graphql.dgs.DgsDataLoader
 import org.dataloader.MappedBatchLoader

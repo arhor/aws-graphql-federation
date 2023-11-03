@@ -8,11 +8,11 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.repository.BannerImageRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
-import com.github.arhor.dgs.posts.generated.graphql.DgsConstants.POST
-import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.dgs.posts.generated.graphql.types.Post
-import com.github.arhor.dgs.posts.generated.graphql.types.PostsLookupInput
-import com.github.arhor.dgs.posts.generated.graphql.types.UpdatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmitter
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper

@@ -1,9 +1,9 @@
 package com.github.arhor.aws.graphql.federation.posts.service
 
-import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.dgs.posts.generated.graphql.types.Post
-import com.github.arhor.dgs.posts.generated.graphql.types.PostsLookupInput
-import com.github.arhor.dgs.posts.generated.graphql.types.UpdatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 
 interface PostService {
     fun getPostById(id: Long): Post

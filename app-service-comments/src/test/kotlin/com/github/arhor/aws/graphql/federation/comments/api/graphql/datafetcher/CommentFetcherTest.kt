@@ -2,15 +2,13 @@
 
 package com.github.arhor.aws.graphql.federation.comments.api.graphql.datafetcher
 
-import com.github.arhor.aws.graphql.federation.comments.api.graphql.datafetcher.CommentFetcher
-import com.github.arhor.aws.graphql.federation.comments.api.graphql.datafetcher.FederatedEntityFetchers
 import com.github.arhor.aws.graphql.federation.comments.api.graphql.GlobalDataFetchingExceptionHandler
 import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.CommentBatchLoader
-import com.github.arhor.dgs.comments.generated.graphql.types.Comment
-import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentInput
-import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentResult
-import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentInput
-import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentResult
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
@@ -36,16 +34,17 @@ import org.springframework.boot.test.context.SpringBootTest
         GlobalDataFetchingExceptionHandler::class,
     ]
 )
+@MockkBean(
+    classes = [
+        CommentService::class,
+        CommentBatchLoader.ForUser::class,
+        CommentBatchLoader.ForPost::class,
+    ]
+)
 internal class CommentFetcherTest {
 
-    @MockkBean
+    @Autowired
     private lateinit var commentService: CommentService
-
-    @MockkBean
-    private lateinit var commentsLoaderForUser: CommentBatchLoader.ForUser
-
-    @MockkBean
-    private lateinit var commentsLoaderForPost: CommentBatchLoader.ForPost
 
     @Autowired
     private lateinit var dgsQueryExecutor: DgsQueryExecutor

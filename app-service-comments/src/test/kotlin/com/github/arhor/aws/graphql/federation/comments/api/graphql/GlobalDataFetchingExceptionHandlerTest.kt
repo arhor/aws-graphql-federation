@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.comments.api.graphql
 
-import com.github.arhor.aws.graphql.federation.comments.api.graphql.GlobalDataFetchingExceptionHandler
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import graphql.execution.DataFetcherExceptionHandler

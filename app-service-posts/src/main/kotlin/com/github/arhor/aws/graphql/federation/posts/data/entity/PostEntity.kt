@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.data.entity
 
-import com.github.arhor.dgs.posts.generated.graphql.types.Option
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Option
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
@@ -49,6 +49,7 @@ data class PostEntity(
     @MappedCollection(idColumn = TagRef.COL_POST_ID)
     val tags: Set<TagRef> = emptySet()
 ) {
+    // FIXME: move to external
     /**
      * Wrapper class over EnumSet is required to make it available for custom conversions.
      */

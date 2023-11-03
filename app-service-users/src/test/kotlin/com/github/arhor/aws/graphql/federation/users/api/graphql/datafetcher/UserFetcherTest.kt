@@ -4,18 +4,17 @@ package com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher.UserFetcher
 import com.github.arhor.aws.graphql.federation.users.api.graphql.GlobalDataFetchingExceptionHandler
-import com.github.arhor.dgs.users.generated.graphql.DgsConstants.QUERY
-import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
-import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.dgs.users.generated.graphql.types.CreateUserResult
-import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserInput
-import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserResult
-import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
-import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserResult
-import com.github.arhor.dgs.users.generated.graphql.types.User
-import com.github.arhor.dgs.users.generated.graphql.types.UsersLookupInput
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserResult
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserResult
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserResult
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
@@ -182,11 +181,11 @@ internal class UserFetcherTest {
             assertThat(result.getData<Map<Any, Any>>())
                 .containsEntry(
                     QUERY.Users, listOf(
-                    mapOf(
-                        USER.Id to user.id,
-                        USER.Username to user.username,
+                        mapOf(
+                            USER.Id to user.id,
+                            USER.Username to user.username,
+                        )
                     )
-                )
                 )
         }
     }

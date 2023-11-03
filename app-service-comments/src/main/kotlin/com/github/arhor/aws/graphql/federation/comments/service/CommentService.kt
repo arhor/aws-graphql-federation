@@ -1,10 +1,10 @@
 package com.github.arhor.aws.graphql.federation.comments.service
 
-import com.github.arhor.dgs.comments.generated.graphql.types.Comment
-import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentInput
-import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentResult
-import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentInput
-import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentResult
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult
 
 interface CommentService {
     fun getCommentsByUserIds(userIds: Collection<Long>): Map<Long, List<Comment>>

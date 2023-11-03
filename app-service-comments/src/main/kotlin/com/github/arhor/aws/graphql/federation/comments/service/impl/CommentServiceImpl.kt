@@ -2,12 +2,12 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository
-import com.github.arhor.dgs.comments.generated.graphql.DgsConstants.COMMENT
-import com.github.arhor.dgs.comments.generated.graphql.types.Comment
-import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentInput
-import com.github.arhor.dgs.comments.generated.graphql.types.CreateCommentResult
-import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentInput
-import com.github.arhor.dgs.comments.generated.graphql.types.UpdateCommentResult
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException

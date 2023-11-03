@@ -6,12 +6,11 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateE
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
-import com.github.arhor.aws.graphql.federation.users.service.UserService
-import com.github.arhor.dgs.users.generated.graphql.DgsConstants.USER
-import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.dgs.users.generated.graphql.types.DeleteUserInput
-import com.github.arhor.dgs.users.generated.graphql.types.UpdateUserInput
-import com.github.arhor.dgs.users.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.service.events.UserEventEmitter
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
 import com.ninjasquad.springmockk.MockkBean

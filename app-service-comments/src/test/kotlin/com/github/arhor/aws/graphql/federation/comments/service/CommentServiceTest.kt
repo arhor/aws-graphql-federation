@@ -1,13 +1,10 @@
 package com.github.arhor.aws.graphql.federation.comments.service
 
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository
-import com.github.arhor.aws.graphql.federation.comments.service.CommentService
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper
 import com.ninjasquad.springmockk.MockkBean
-import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.ComponentScan
@@ -18,6 +15,13 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 
 @SpringJUnitConfig
 internal class CommentServiceTest {
+
+    @Configuration
+    @ComponentScan(
+        includeFilters = [Filter(type = ASSIGNABLE_TYPE, classes = [CommentService::class])],
+        useDefaultFilters = false,
+    )
+    class Config
 
     @MockkBean
     private lateinit var commentRepository: CommentRepository
@@ -43,16 +47,4 @@ internal class CommentServiceTest {
 
         confirmVerified(commentRepository, commentMapper)
     }
-
-    @AfterEach
-    fun tearDown() {
-        clearAllMocks()
-    }
-
-    @Configuration
-    @ComponentScan(
-        includeFilters = [Filter(type = ASSIGNABLE_TYPE, classes = [CommentService::class])],
-        useDefaultFilters = false,
-    )
-    class Config
 }

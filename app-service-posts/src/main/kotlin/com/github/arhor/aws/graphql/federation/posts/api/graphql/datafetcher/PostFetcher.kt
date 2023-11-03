@@ -1,12 +1,12 @@
 package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.PostBatchLoader
-import com.github.arhor.dgs.posts.generated.graphql.DgsConstants.USER
-import com.github.arhor.dgs.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.dgs.posts.generated.graphql.types.Post
-import com.github.arhor.dgs.posts.generated.graphql.types.PostsLookupInput
-import com.github.arhor.dgs.posts.generated.graphql.types.UpdatePostInput
-import com.github.arhor.dgs.posts.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData

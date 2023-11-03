@@ -1,8 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service.mapping
 
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
-import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
-import com.github.arhor.dgs.users.generated.graphql.types.CreateUserInput
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat

@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader
 
-import com.github.arhor.dgs.comments.generated.graphql.types.Comment
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService
 import com.netflix.graphql.dgs.DgsDataLoader
 import org.dataloader.MappedBatchLoader
