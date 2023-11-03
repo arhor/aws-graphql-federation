@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import fetcher from 'make-fetch-happen';
 import { ApolloGateway, IntrospectAndCompose, LocalGraphQLDataSource, RemoteGraphQLDataSource } from '@apollo/gateway';
 import { buildSubgraphSchema } from '@apollo/subgraph';
-import { commsServiceUrl, postsServiceUrl, usersServiceUrl } from '#server/utils/env.js';
+import { booksServiceUrl, commsServiceUrl, postsServiceUrl, usersServiceUrl } from '#server/utils/env.js';
 
 export function createGateway(server) {
     return new ApolloGateway({
@@ -12,6 +12,7 @@ export function createGateway(server) {
                 { url: `${usersServiceUrl}/graphql`, name: 'users' },
                 { url: `${postsServiceUrl}/graphql`, name: 'posts' },
                 { url: `${commsServiceUrl}/graphql`, name: 'comms' },
+                { url: `${booksServiceUrl}/graphql`, name: 'books' },
             ],
         }),
         buildService({ url, name }) {
