@@ -1,7 +1,6 @@
 val dgsProjects = setOf(
     "app-service-users",
     "app-service-posts",
-    "app-service-books",
     "app-service-comments",
 )
 

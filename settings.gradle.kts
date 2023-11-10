@@ -5,5 +5,4 @@ includeBuild("lib-tracing")
 
 includeBuild("app-service-users")
 includeBuild("app-service-posts")
-includeBuild("app-service-books")
 includeBuild("app-service-comments")
