@@ -1,5 +1,5 @@
 [versions]
-java = "20"
+java = "17"
 kotlin = "1.9.20"
 spring-boot = "3.2.0-RC2"
 spring-cloud-aws = "3.0.1"
