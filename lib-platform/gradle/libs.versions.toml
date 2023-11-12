@@ -9,7 +9,6 @@ findbugs-jsr305 = "3.0.2"
 graphql-dgs-bom = "7.0.0"
 graphql-dgs-codegen = "5.8.1"
 gradle-test-logger = "3.2.0"
-jjwt = "0.11.5"
 mockk = "1.13.3"
 
 [plugins]
