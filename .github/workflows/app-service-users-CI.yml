@@ -8,8 +8,9 @@ on:
       - 'app-service-users/**'
       - 'lib-common/**'
       - 'lib-platform/**'
-      - 'lib-security/**'
-      - 'lib-tracing/**'
+      - 'lib-spring-webmvc-config/**'
+      - 'lib-spring-webmvc-security/**'
+      - 'lib-spring-webmvc-tracing/**'
   pull_request:
     branches:
       - 'master'
@@ -17,8 +18,9 @@ on:
       - 'app-service-users/**'
       - 'lib-common/**'
       - 'lib-platform/**'
-      - 'lib-security/**'
-      - 'lib-tracing/**'
+      - 'lib-spring-webmvc-config/**'
+      - 'lib-spring-webmvc-security/**'
+      - 'lib-spring-webmvc-tracing/**'
   workflow_dispatch:
 
 jobs:

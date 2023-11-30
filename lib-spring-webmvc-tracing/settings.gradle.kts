@@ -14,9 +14,5 @@ dependencyResolutionManagement {
 }
 
 includeBuild("../lib-platform")
-includeBuild("../lib-common")
-includeBuild("../lib-spring-webmvc-config")
-includeBuild("../lib-spring-webmvc-security")
-includeBuild("../lib-spring-webmvc-tracing")
 
-rootProject.name = "app-service-users"
+rootProject.name = "lib-spring-webmvc-tracing"

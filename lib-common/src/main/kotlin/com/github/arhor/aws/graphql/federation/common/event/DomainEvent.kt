@@ -4,8 +4,8 @@ interface DomainEvent {
 
     fun type(): String
 
-    fun attributes(): Map<String, Any> {
-        return mapOf(HEADER_PAYLOAD_TYPE to type())
+    fun attributes(vararg values: Pair<String, Any> = emptyArray()): Map<String, Any> {
+        return mapOf(HEADER_PAYLOAD_TYPE to type(), *values)
     }
 
     companion object {

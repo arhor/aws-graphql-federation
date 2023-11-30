@@ -5,6 +5,7 @@ import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.messaging.Message
 import org.springframework.stereotype.Component
 
 @Component
@@ -13,8 +14,8 @@ class UserEventSqsListener @Autowired constructor(
 ) {
 
     @SqsListener("\${app-props.aws.sqs.user-deleted-events}")
-    fun handleUserDeletedEvents(event: UserEvent.Deleted) {
-        val deletedUserId = event.id
+    fun handleUserDeletedEvents(message: Message<UserEvent.Deleted>) {
+        val deletedUserId = message.payload.id
 
         logger.debug("Processing user deleted event with id: {}", deletedUserId)
         postService.unlinkPostsFromUser(userId = deletedUserId)
