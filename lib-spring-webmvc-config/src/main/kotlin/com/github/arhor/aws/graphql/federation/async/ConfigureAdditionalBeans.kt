@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.async
 
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.web.context.WebServerApplicationContext
 import org.springframework.context.annotation.Bean
@@ -27,13 +28,15 @@ class ConfigureAdditionalBeans {
 
     @Bean
     @Profile("dev")
-    fun <T> displayApplicationInfo(context: T)
+    fun <T> displayApplicationInfo(context: ObjectProvider<T>)
         where T : WebApplicationContext,
               T : WebServerApplicationContext = ApplicationRunner {
 
-        val port = context.webServer.port
-        val path = context.servletContext?.contextPath ?: ""
+        context.ifAvailable {
+            val port = it.webServer.port
+            val path = it.servletContext?.contextPath ?: ""
 
-        logger.info("Local access URL: http://localhost:{}{}", port, path)
+            logger.info("Local access URL: http://localhost:{}{}", port, path)
+        }
     }
 }
