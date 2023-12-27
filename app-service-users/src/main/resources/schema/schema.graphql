@@ -48,4 +48,5 @@ type DeleteUserResult {
 type User @key(fields: "id") {
     id: Long!
     username: String!
+    authorities: [String!]
 }
