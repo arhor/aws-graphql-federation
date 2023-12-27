@@ -163,6 +163,7 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
                         "com/github/arhor/aws/graphql/federation/users/**/Main*.class",
                         "com/github/arhor/aws/graphql/federation/users/**/aop/",
                         "com/github/arhor/aws/graphql/federation/users/**/config/",
+                        "com/github/arhor/aws/graphql/federation/users/**/data/entity/",
                         "com/github/arhor/aws/graphql/federation/users/**/generated/",
                     )
                 }
