@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserServiceImpl(
     private val userMapper: UserMapper,
+    private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val userEventEmitter: UserEventEmitter,
     private val passwordEncoder: PasswordEncoder,
@@ -64,6 +66,7 @@ class UserServiceImpl(
 
         if (user != null) {
             if (passwordEncoder.matches(password, user.password)) {
+                authRepository.findAllById(user.authorities.map { it.authId.id })
                 return CurrentUser(
                     id = user.id!!,
                     authorities = listOf(ROLE_USER)

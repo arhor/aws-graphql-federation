@@ -14,7 +14,7 @@ data class AuthorityRef(
     val id: Long? = null,
 
     @Column(COL_AUTH_ID)
-    val tagId: AggregateReference<AuthorityEntity, Long>,
+    val authId: AggregateReference<AuthorityEntity, Long>,
 ) {
     companion object {
         const val TABLE_NAME = "users_has_authorities"
@@ -24,7 +24,7 @@ data class AuthorityRef(
         const val COL_AUTH_ID = "auth_id"
 
         fun create(entity: AuthorityEntity) = AuthorityRef(
-            tagId = AggregateReference.to(
+            authId = AggregateReference.to(
                 entity.id ?: throw IllegalStateException("Referenced entity must be persisted")
             )
         )

@@ -12,7 +12,7 @@ class TagServiceImpl @Autowired constructor(
 
     override fun getTagsByPostIds(postIds: Set<Long>): Map<Long, List<String>> = when {
         postIds.isNotEmpty() -> {
-            tagRepository.findAllByArticleIdIn(postIds)
+            tagRepository.findAllByPostIdIn(postIds)
         }
 
         else -> {
