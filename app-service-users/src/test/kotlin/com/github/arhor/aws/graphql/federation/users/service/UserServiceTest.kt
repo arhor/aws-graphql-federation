@@ -5,6 +5,7 @@ package com.github.arhor.aws.graphql.federation.users.service
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
+import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
@@ -51,6 +52,9 @@ internal class UserServiceTest {
 
     @MockkBean
     private lateinit var mockUserMapper: UserMapper
+
+    @MockkBean
+    private lateinit var mockAuthRepository: AuthRepository
 
     @MockkBean
     private lateinit var mockUserRepository: UserRepository
