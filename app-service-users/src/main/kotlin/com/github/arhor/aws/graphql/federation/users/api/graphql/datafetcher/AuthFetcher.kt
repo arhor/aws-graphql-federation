@@ -14,7 +14,7 @@ class AuthFetcher {
     /* Queries */
 
     @DgsData(parentType = DgsConstants.USER.TYPE_NAME)
-    fun tags(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
+    fun authorities(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
         val loader = dfe.getDataLoader<Long, List<String>>(AuthBatchLoader::class.java)
         val source = dfe.getSource<User>()
 
