@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class UserEventsSqsListener @Autowired constructor(
+class UserEventsListener @Autowired constructor(
     private val commentService: CommentService,
 ) {
 
@@ -21,6 +21,6 @@ class UserEventsSqsListener @Autowired constructor(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(UserEventsSqsListener::class.java)
+        private val logger = LoggerFactory.getLogger(UserEventsListener::class.java)
     }
 }
