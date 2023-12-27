@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.api.graphql
+package com.github.arhor.aws.graphql.federation.dgs
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
@@ -23,8 +23,8 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DFEHandler) : DFE
     @Autowired
     constructor() : this(delegate = DefaultDataFetcherExceptionHandler())
 
-    override fun handleException(params: DFEHParams): CompletableFuture<DFEHResult> = with(params) {
-        when (val throwable = exception.unwrap()) {
+    override fun handleException(params: DFEHParams): CompletableFuture<DFEHResult> =
+        when (val throwable = params.exception.unwrap()) {
             is EntityNotFoundException -> {
                 handleEntityNotFoundException(throwable, params)
             }
@@ -34,10 +34,9 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DFEHandler) : DFE
             }
 
             else -> {
-                delegate.handleException(this)
+                delegate.handleException(params)
             }
         }
-    }
 
     private fun Throwable.unwrap(): Throwable =
         when {
@@ -46,13 +45,11 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DFEHandler) : DFE
         }
 
     private fun handleEntityNotFoundException(exception: EntityNotFoundException, params: DFEHParams) =
-        TypedGraphQLError
-            .newNotFoundBuilder()
+        TypedGraphQLError.newNotFoundBuilder()
             .createResult(exception, params)
 
     private fun handleEntityDuplicateException(exception: EntityDuplicateException, params: DFEHParams) =
-        TypedGraphQLError
-            .newConflictBuilder()
+        TypedGraphQLError.newConflictBuilder()
             .createResult(exception, params)
 
     private fun TypedGraphQLError.Builder.createResult(throwable: Throwable, params: DFEHParams) =
@@ -60,6 +57,6 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DFEHandler) : DFE
             .extensions(mapOf(DgsException.EXTENSION_CLASS_KEY to throwable::class.java.name))
             .also { params.path?.also(::path) }
             .build()
-            .let { DFEHResult.newResult(it).build() }
+            .let { DataFetcherExceptionHandlerResult.newResult(it).build() }
             .let { CompletableFuture.completedFuture(it) }
 }

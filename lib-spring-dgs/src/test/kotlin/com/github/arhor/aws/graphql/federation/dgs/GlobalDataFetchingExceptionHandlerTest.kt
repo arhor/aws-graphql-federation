@@ -1,8 +1,7 @@
-package com.github.arhor.aws.graphql.federation.users.api.graphql
+package com.github.arhor.aws.graphql.federation.dgs
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
-import com.github.arhor.aws.graphql.federation.users.api.graphql.GlobalDataFetchingExceptionHandler
 import graphql.execution.DataFetcherExceptionHandler
 import graphql.execution.DataFetcherExceptionHandlerParameters
 import graphql.schema.DataFetchingEnvironment

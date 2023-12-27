@@ -2,7 +2,7 @@
 
 package com.github.arhor.aws.graphql.federation.comments.api.graphql.datafetcher
 
-import com.github.arhor.aws.graphql.federation.comments.api.graphql.GlobalDataFetchingExceptionHandler
+import com.github.arhor.aws.graphql.federation.dgs.GlobalDataFetchingExceptionHandler
 import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.CommentBatchLoader
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput

@@ -14,10 +14,5 @@ dependencyResolutionManagement {
 }
 
 includeBuild("../lib-platform")
-includeBuild("../lib-common")
-includeBuild("../lib-spring-dgs")
-includeBuild("../lib-spring-webmvc-config")
-includeBuild("../lib-spring-webmvc-security")
-includeBuild("../lib-spring-webmvc-tracing")
 
-rootProject.name = "app-service-comments"
+rootProject.name = "lib-spring-dgs"

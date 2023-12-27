@@ -59,6 +59,7 @@ dependencies {
 
     implementation(platform(":lib-platform"))
     implementation(":lib-common")
+    implementation(":lib-spring-dgs")
     implementation(":lib-spring-webmvc-config")
     implementation(":lib-spring-webmvc-security")
     implementation(":lib-spring-webmvc-tracing")
