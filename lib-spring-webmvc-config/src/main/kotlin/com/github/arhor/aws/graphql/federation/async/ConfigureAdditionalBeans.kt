@@ -32,7 +32,7 @@ class ConfigureAdditionalBeans {
         where T : WebApplicationContext,
               T : WebServerApplicationContext = ApplicationRunner {
 
-        context.ifAvailable {
+        context.orderedStream().findFirst().ifPresent {
             val port = it.webServer.port
             val path = it.servletContext?.contextPath ?: ""
 
