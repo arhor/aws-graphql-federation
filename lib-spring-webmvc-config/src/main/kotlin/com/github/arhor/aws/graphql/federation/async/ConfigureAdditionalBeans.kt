@@ -27,16 +27,14 @@ class ConfigureAdditionalBeans {
     }
 
     @Bean
-    @Profile("dev")
-    fun <T> displayApplicationInfo(context: ObjectProvider<T>)
+    @Profile("dev", "!test")
+    fun <T> displayApplicationInfo(context: T)
         where T : WebApplicationContext,
               T : WebServerApplicationContext = ApplicationRunner {
 
-        context.orderedStream().findFirst().ifPresent {
-            val port = it.webServer.port
-            val path = it.servletContext?.contextPath ?: ""
+        val port = context.webServer.port
+        val path = context.servletContext?.contextPath ?: ""
 
-            logger.info("Local access URL: http://localhost:{}{}", port, path)
-        }
+        logger.info("Local access URL: http://localhost:{}{}", port, path)
     }
 }
