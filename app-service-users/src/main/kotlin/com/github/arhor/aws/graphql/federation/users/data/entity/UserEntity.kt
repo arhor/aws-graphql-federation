@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Immutable
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.annotation.Version
 import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.MappedCollection
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 
@@ -33,6 +34,9 @@ data class UserEntity(
     @LastModifiedDate
     @Column("updated_date_time")
     val updatedDateTime: LocalDateTime? = null,
+
+    @MappedCollection(idColumn = AuthorityRef.COL_USER_ID)
+    val authorities: Set<AuthorityRef> = emptySet()
 ) {
     companion object {
         const val TABLE_NAME = "users"
