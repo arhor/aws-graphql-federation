@@ -28,10 +28,10 @@ import org.testcontainers.junit.jupiter.Testcontainers
     ]
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-internal class UserEntityRepositoryIntegrationTest {
-
+internal class UserEntityRepositoryIntegrationTest(
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private val userRepository: UserRepository,
+) {
 
     @Test
     fun `should return true for the email of an existing user`() {
