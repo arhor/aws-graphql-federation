@@ -13,12 +13,14 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Del
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.service.events.UserEventEmitter
+import com.github.arhor.aws.graphql.federation.users.service.impl.UserServiceImpl
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
-import com.ninjasquad.springmockk.MockkBean
 import io.mockk.Call
 import io.mockk.MockKAnswerScope
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
@@ -30,43 +32,25 @@ import org.assertj.core.api.Assertions.from
 import org.assertj.core.api.InstanceOfAssertFactories.throwable
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.ComponentScan.Filter
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 
-@SpringJUnitConfig
-internal class UserServiceTest {
-
-    @Configuration
-    @ComponentScan(
-        useDefaultFilters = false, includeFilters = [
-            Filter(type = ASSIGNABLE_TYPE, classes = [UserService::class])
-        ]
+@ExtendWith(MockKExtension::class)
+internal class UserServiceTest(
+    @MockK private val userMapper: UserMapper,
+    @MockK private val authRepository: AuthRepository,
+    @MockK private val userRepository: UserRepository,
+    @MockK private val userEventEmitter: UserEventEmitter,
+    @MockK private val passwordEncoder: PasswordEncoder,
+) {
+    private val userService = UserServiceImpl(
+        userMapper,
+        authRepository,
+        userRepository,
+        userEventEmitter,
+        passwordEncoder,
     )
-    class Config
-
-    @MockkBean
-    private lateinit var mockUserMapper: UserMapper
-
-    @MockkBean
-    private lateinit var mockAuthRepository: AuthRepository
-
-    @MockkBean
-    private lateinit var mockUserRepository: UserRepository
-
-    @MockkBean
-    private lateinit var mockUserEventEmitter: UserEventEmitter
-
-    @MockkBean
-    private lateinit var mockPasswordEncoder: PasswordEncoder
-
-    @Autowired
-    private lateinit var userService: UserService
 
     @Nested
     inner class `UserService # createUser` {
@@ -82,11 +66,11 @@ internal class UserServiceTest {
                 password = expectedPassword,
             )
 
-            every { mockUserRepository.existsByUsername(any()) } returns false
-            every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
-            every { mockUserMapper.mapToEntity(any()) } answers convertingDtoToUser
-            every { mockUserRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
-            every { mockUserMapper.mapToResult(any()) } answers convertingUserToDto
+            every { userRepository.existsByUsername(any()) } returns false
+            every { passwordEncoder.encode(any()) } answers { firstArg() }
+            every { userMapper.mapToEntity(any()) } answers convertingDtoToUser
+            every { userRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
+            every { userMapper.mapToResult(any()) } answers convertingUserToDto
 
             // When
             val result = userService.createUser(input)
@@ -96,10 +80,10 @@ internal class UserServiceTest {
                 .returns(expectedId, from { it.id })
                 .returns(expectedUsername, from { it.username })
 
-            verify(exactly = 1) { mockUserRepository.existsByUsername(any()) }
-            verify(exactly = 1) { mockUserMapper.mapToEntity(any()) }
-            verify(exactly = 1) { mockUserRepository.save(any()) }
-            verify(exactly = 1) { mockUserMapper.mapToResult(any()) }
+            verify(exactly = 1) { userRepository.existsByUsername(any()) }
+            verify(exactly = 1) { userMapper.mapToEntity(any()) }
+            verify(exactly = 1) { userRepository.save(any()) }
+            verify(exactly = 1) { userMapper.mapToResult(any()) }
         }
 
         @Test
@@ -117,7 +101,7 @@ internal class UserServiceTest {
 
             val username = slot<String>()
 
-            every { mockUserRepository.existsByUsername(capture(username)) } returns true
+            every { userRepository.existsByUsername(capture(username)) } returns true
 
             // When
             val result = catchException { userService.createUser(input) }
@@ -149,10 +133,10 @@ internal class UserServiceTest {
                 password = "test-password",
             )
 
-            every { mockUserRepository.findByIdOrNull(any()) } returns user
-            every { mockUserRepository.save(any()) } answers { firstArg() }
-            every { mockUserMapper.mapToResult(any()) } answers convertingUserToDto
-            every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
+            every { userRepository.findByIdOrNull(any()) } returns user
+            every { userRepository.save(any()) } answers { firstArg() }
+            every { userMapper.mapToResult(any()) } answers convertingUserToDto
+            every { passwordEncoder.encode(any()) } answers { firstArg() }
 
             // When
             userService.updateUser(
@@ -163,7 +147,7 @@ internal class UserServiceTest {
             )
 
             // Then
-            verify(exactly = 1) { mockUserRepository.save(any()) }
+            verify(exactly = 1) { userRepository.save(any()) }
         }
 
         @Test
@@ -175,10 +159,10 @@ internal class UserServiceTest {
                 password = "test-password",
             )
 
-            every { mockUserRepository.findByIdOrNull(any()) } returns user
-            every { mockUserRepository.save(any()) } answers { firstArg() }
-            every { mockUserMapper.mapToResult(any()) } answers convertingUserToDto
-            every { mockPasswordEncoder.encode(any()) } answers { firstArg() }
+            every { userRepository.findByIdOrNull(any()) } returns user
+            every { userRepository.save(any()) } answers { firstArg() }
+            every { userMapper.mapToResult(any()) } answers convertingUserToDto
+            every { passwordEncoder.encode(any()) } answers { firstArg() }
 
             // When
             userService.updateUser(
@@ -189,7 +173,7 @@ internal class UserServiceTest {
             )
 
             // Then
-            verify(exactly = 0) { mockUserRepository.save(any()) }
+            verify(exactly = 0) { userRepository.save(any()) }
         }
     }
 
@@ -201,19 +185,19 @@ internal class UserServiceTest {
             // Given
             val expectedId = 1L
 
-            every { mockUserRepository.findByIdOrNull(any()) } returns mockk { every { id } returns expectedId }
-            every { mockUserRepository.delete(any()) } just runs
-            every { mockUserEventEmitter.emit(any()) } just runs
+            every { userRepository.findByIdOrNull(any()) } returns mockk { every { id } returns expectedId }
+            every { userRepository.delete(any()) } just runs
+            every { userEventEmitter.emit(any()) } just runs
 
             // When
             userService.deleteUser(DeleteUserInput(expectedId))
 
             // Then
-            verify(exactly = 1) { mockUserRepository.findByIdOrNull(any()) }
-            verify(exactly = 1) { mockUserRepository.delete(any()) }
-            verify(exactly = 1) { mockUserEventEmitter.emit(any()) }
+            verify(exactly = 1) { userRepository.findByIdOrNull(any()) }
+            verify(exactly = 1) { userRepository.delete(any()) }
+            verify(exactly = 1) { userEventEmitter.emit(any()) }
 
-            confirmVerified(mockUserMapper, mockUserRepository, mockUserEventEmitter, mockPasswordEncoder)
+            confirmVerified(userMapper, userRepository, userEventEmitter, passwordEncoder)
         }
     }
 
