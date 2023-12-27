@@ -35,8 +35,8 @@ data class UserEntity(
     @Column("updated_date_time")
     val updatedDateTime: LocalDateTime? = null,
 
-    @MappedCollection(idColumn = AuthorityRef.COL_USER_ID)
-    val authorities: Set<AuthorityRef> = emptySet()
+    @MappedCollection(idColumn = AuthRef.COL_USER_ID)
+    val authorities: Set<AuthRef> = emptySet()
 ) {
     companion object {
         const val TABLE_NAME = "users"

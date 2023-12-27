@@ -6,15 +6,15 @@ import org.springframework.data.jdbc.core.mapping.AggregateReference
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 
-@Table(AuthorityRef.TABLE_NAME)
+@Table(AuthRef.TABLE_NAME)
 @Immutable
-data class AuthorityRef(
+data class AuthRef(
     @Id
     @Column(COL_ID)
     val id: Long? = null,
 
     @Column(COL_AUTH_ID)
-    val authId: AggregateReference<AuthorityEntity, Long>,
+    val authId: AggregateReference<AuthEntity, Long>,
 ) {
     companion object {
         const val TABLE_NAME = "users_has_authorities"
@@ -23,7 +23,7 @@ data class AuthorityRef(
         const val COL_USER_ID = "user_id"
         const val COL_AUTH_ID = "auth_id"
 
-        fun create(entity: AuthorityEntity) = AuthorityRef(
+        fun create(entity: AuthEntity) = AuthRef(
             authId = AggregateReference.to(
                 entity.id ?: throw IllegalStateException("Referenced entity must be persisted")
             )

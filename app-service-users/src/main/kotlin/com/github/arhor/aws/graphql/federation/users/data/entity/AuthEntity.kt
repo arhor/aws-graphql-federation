@@ -5,9 +5,9 @@ import org.springframework.data.annotation.Immutable
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 
-@Table(AuthorityEntity.TABLE_NAME)
+@Table(AuthEntity.TABLE_NAME)
 @Immutable
-data class AuthorityEntity(
+data class AuthEntity(
     @Id
     @Column("id")
     val id: Long? = null,

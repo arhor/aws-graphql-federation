@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 
 @DgsDataLoader(maxBatchSize = 50)
-class AuthorityBatchLoader(
+class AuthBatchLoader(
     private val asyncExecutor: Executor,
     private val authService: AuthService,
 ) : MappedBatchLoader<Long, List<String>> {
