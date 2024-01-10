@@ -3,7 +3,7 @@ package com.github.arhor.aws.graphql.federation.users.data.repository
 import com.github.arhor.aws.graphql.federation.async.ConfigureAdditionalBeans
 import com.github.arhor.aws.graphql.federation.users.config.ConfigureDatabase
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
-import com.github.arhor.aws.graphql.federation.users.test.TestObjectMapperConfig
+import com.github.arhor.aws.graphql.federation.users.test.ConfigureTestObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
     classes = [
         ConfigureDatabase::class,
         ConfigureAdditionalBeans::class,
-        TestObjectMapperConfig::class,
+        ConfigureTestObjectMapper::class,
     ]
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

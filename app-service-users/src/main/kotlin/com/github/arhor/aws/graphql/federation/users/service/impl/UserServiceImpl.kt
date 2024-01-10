@@ -133,7 +133,6 @@ class UserServiceImpl(
 
     companion object {
         const val ROLE_USER = "ROLE_USER"
-
-        private val logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
+        private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 }

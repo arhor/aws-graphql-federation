@@ -1,7 +1,6 @@
 package com.github.arhor.aws.graphql.federation.async
 
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.web.context.WebServerApplicationContext
 import org.springframework.context.annotation.Bean
@@ -16,13 +15,14 @@ import java.util.function.Supplier
 @Configuration(proxyBeanMethods = false)
 class ConfigureAdditionalBeans {
 
-    private val logger = LoggerFactory.getLogger(javaClass)
-
     @Bean
     fun currentDateTimeSupplier() = Supplier {
+        logger.info(">>> TEST")
+
         val systemUTC = Clock.systemUTC()
         val timestamp = LocalDateTime.now(systemUTC)
 
+        logger.info("<<< TEST")
         timestamp.truncatedTo(ChronoUnit.MILLIS)
     }
 
@@ -36,5 +36,9 @@ class ConfigureAdditionalBeans {
         val path = context.servletContext?.contextPath ?: ""
 
         logger.info("Local access URL: http://localhost:{}{}", port, path)
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 }

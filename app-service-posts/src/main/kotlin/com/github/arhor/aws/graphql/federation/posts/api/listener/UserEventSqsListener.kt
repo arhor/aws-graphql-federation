@@ -22,6 +22,6 @@ class UserEventSqsListener @Autowired constructor(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(UserEventSqsListener::class.java)
+        private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 }

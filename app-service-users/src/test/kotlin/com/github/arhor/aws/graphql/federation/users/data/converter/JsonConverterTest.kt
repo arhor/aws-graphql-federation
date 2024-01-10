@@ -1,8 +1,6 @@
 package com.github.arhor.aws.graphql.federation.users.data.converter
 
-import com.github.arhor.aws.graphql.federation.users.data.converter.JsonReadingConverter
-import com.github.arhor.aws.graphql.federation.users.data.converter.JsonWritingConverter
-import com.github.arhor.aws.graphql.federation.users.test.TestObjectMapperConfig
+import com.github.arhor.aws.graphql.federation.users.test.ConfigureTestObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
     classes = [
         JsonWritingConverter::class,
         JsonReadingConverter::class,
-        TestObjectMapperConfig::class,
+        ConfigureTestObjectMapper::class,
     ]
 )
 class JsonConverterTest {
