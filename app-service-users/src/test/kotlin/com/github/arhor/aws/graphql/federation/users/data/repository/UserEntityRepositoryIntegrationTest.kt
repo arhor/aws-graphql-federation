@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
-import com.github.arhor.aws.graphql.federation.async.ConfigureAdditionalBeans
+import com.github.arhor.aws.graphql.federation.config.ConfigureAdditionalBeans
 import com.github.arhor.aws.graphql.federation.users.config.ConfigureDatabase
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.users.test.ConfigureTestObjectMapper
