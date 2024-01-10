@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.async
+package com.github.arhor.aws.graphql.federation.config
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.ApplicationRunner

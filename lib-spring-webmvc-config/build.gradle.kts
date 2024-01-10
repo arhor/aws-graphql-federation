@@ -76,16 +76,7 @@ tasks {
         }
     }
 
-    withType<JavaCompile> {
-        options.compilerArgs = listOf(
-            "-Xlint:unchecked",
-            "-Xlint:deprecation",
-            "-Xlint:preview",
-            "-parameters"
-        )
-    }
-
-    test {
+    withType<Test> {
         useJUnitPlatform()
     }
 }
