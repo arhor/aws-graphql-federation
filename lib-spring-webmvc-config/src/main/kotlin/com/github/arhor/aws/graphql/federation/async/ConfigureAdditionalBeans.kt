@@ -17,12 +17,9 @@ class ConfigureAdditionalBeans {
 
     @Bean
     fun currentDateTimeSupplier() = Supplier {
-        logger.info(">>> TEST")
-
         val systemUTC = Clock.systemUTC()
         val timestamp = LocalDateTime.now(systemUTC)
 
-        logger.info("<<< TEST")
         timestamp.truncatedTo(ChronoUnit.MILLIS)
     }
 
