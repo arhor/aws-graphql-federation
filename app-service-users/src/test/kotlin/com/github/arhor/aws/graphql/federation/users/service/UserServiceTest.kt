@@ -19,8 +19,6 @@ import io.mockk.Call
 import io.mockk.MockKAnswerScope
 import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
@@ -32,18 +30,17 @@ import org.assertj.core.api.Assertions.from
 import org.assertj.core.api.InstanceOfAssertFactories.throwable
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 
-@ExtendWith(MockKExtension::class)
-internal class UserServiceTest(
-    @MockK private val userMapper: UserMapper,
-    @MockK private val authRepository: AuthRepository,
-    @MockK private val userRepository: UserRepository,
-    @MockK private val userEventEmitter: UserEventEmitter,
-    @MockK private val passwordEncoder: PasswordEncoder,
-) {
+internal class UserServiceTest {
+
+    private val userMapper: UserMapper = mockk()
+    private val authRepository: AuthRepository = mockk()
+    private val userRepository: UserRepository = mockk()
+    private val userEventEmitter: UserEventEmitter = mockk()
+    private val passwordEncoder: PasswordEncoder = mockk()
+
     private val userService = UserServiceImpl(
         userMapper,
         authRepository,
