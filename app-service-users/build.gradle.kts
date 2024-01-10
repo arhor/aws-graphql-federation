@@ -104,13 +104,8 @@ tasks {
         }
     }
 
-    withType<JavaCompile> {
-        options.compilerArgs = listOf(
-            "-Xlint:unchecked",
-            "-Xlint:deprecation",
-            "-Xlint:preview",
-            "-parameters"
-        )
+    withType<Test> {
+        useJUnitPlatform()
     }
 
     processResources {
@@ -122,10 +117,6 @@ tasks {
     generateJava {
         language = "kotlin"
         packageName = "com.github.arhor.aws.graphql.federation.users.generated.graphql"
-    }
-
-    test {
-        useJUnitPlatform()
     }
 
     jacocoTestReport {
