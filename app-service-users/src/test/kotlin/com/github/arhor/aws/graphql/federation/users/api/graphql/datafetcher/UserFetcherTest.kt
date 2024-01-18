@@ -95,7 +95,7 @@ internal class UserFetcherTest {
                 throw EntityNotFoundException(
                     entity = USER.TYPE_NAME,
                     condition = "${USER.Id} = ${firstArg<Long>()}",
-                    operation = Operation.READ,
+                    operation = Operation.LOOKUP,
                 )
             }
 

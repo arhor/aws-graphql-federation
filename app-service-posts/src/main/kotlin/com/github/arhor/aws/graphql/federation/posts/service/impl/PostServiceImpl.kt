@@ -41,7 +41,7 @@ class PostServiceImpl @Autowired constructor(
             ?: throw EntityNotFoundException(
                 entity = POST.TYPE_NAME,
                 condition = "${POST.Id} = $id",
-                operation = Operation.READ,
+                operation = Operation.LOOKUP,
             )
     }
 

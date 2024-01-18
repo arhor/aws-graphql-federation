@@ -47,7 +47,7 @@ class UserServiceImpl(
             ?: throw EntityNotFoundException(
                 entity = USER.TYPE_NAME,
                 condition = "${USER.Id} = $id",
-                operation = Operation.READ,
+                operation = Operation.LOOKUP,
             )
     }
 
