@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.common.exception
 
-class EntityNotFoundException(
+class EntityNotFoundException @JvmOverloads constructor(
     entity: String,
     condition: String,
     operation: Operation = Operation.UNKNOWN,

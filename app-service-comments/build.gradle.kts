@@ -125,7 +125,7 @@ tasks {
     }
 
     generateJava {
-        language = "kotlin"
+        language = "java"
         packageName = "com.github.arhor.aws.graphql.federation.comments.generated.graphql"
     }
 
