@@ -62,7 +62,7 @@ dependencies {
     implementation(":lib-spring-dgs")
     implementation(":lib-spring-webmvc-config")
     implementation(":lib-spring-webmvc-security")
-    implementation(":lib-spring-webmvc-tracing")
+    implementation(":lib-spring-starter-tracing")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")

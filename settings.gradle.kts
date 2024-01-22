@@ -3,7 +3,7 @@ includeBuild("lib-common")
 includeBuild("lib-spring-dgs")
 includeBuild("lib-spring-webmvc-config")
 includeBuild("lib-spring-webmvc-security")
-includeBuild("lib-spring-webmvc-tracing")
+includeBuild("lib-spring-starter-tracing")
 
 includeBuild("app-service-users")
 includeBuild("app-service-posts")
