@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 includeBuild("../lib-platform")
 
-rootProject.name = "lib-spring-webmvc-config"
+rootProject.name = "lib-spring-starter-config"

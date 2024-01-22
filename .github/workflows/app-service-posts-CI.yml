@@ -9,7 +9,7 @@ on:
       - 'lib-common/**'
       - 'lib-platform/**'
       - 'lib-spring-dgs/**'
-      - 'lib-spring-webmvc-config/**'
+      - 'lib-spring-starter-config/**'
       - 'lib-spring-webmvc-security/**'
       - 'lib-spring-starter-tracing/**'
   pull_request:
@@ -20,7 +20,7 @@ on:
       - 'lib-common/**'
       - 'lib-platform/**'
       - 'lib-spring-dgs/**'
-      - 'lib-spring-webmvc-config/**'
+      - 'lib-spring-starter-config/**'
       - 'lib-spring-webmvc-security/**'
       - 'lib-spring-starter-tracing/**'
   workflow_dispatch:
