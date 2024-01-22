@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 includeBuild("../lib-platform")
 
-rootProject.name = "lib-spring-dgs"
+rootProject.name = "lib-spring-starter-dgs"

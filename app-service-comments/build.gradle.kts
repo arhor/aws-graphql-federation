@@ -59,8 +59,8 @@ dependencies {
 
     implementation(platform(":lib-platform"))
     implementation(":lib-common")
-    implementation(":lib-spring-dgs")
     implementation(":lib-spring-starter-config")
+    implementation(":lib-spring-starter-dgs")
     implementation(":lib-spring-starter-security")
     implementation(":lib-spring-starter-tracing")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

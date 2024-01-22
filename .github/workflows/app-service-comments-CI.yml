@@ -8,8 +8,8 @@ on:
       - 'app-service-comments/**'
       - 'lib-common/**'
       - 'lib-platform/**'
-      - 'lib-spring-dgs/**'
       - 'lib-spring-starter-config/**'
+      - 'lib-spring-starter-dgs/**'
       - 'lib-spring-starter-security/**'
       - 'lib-spring-starter-tracing/**'
   pull_request:
@@ -19,8 +19,8 @@ on:
       - 'app-service-comments/**'
       - 'lib-common/**'
       - 'lib-platform/**'
-      - 'lib-spring-dgs/**'
       - 'lib-spring-starter-config/**'
+      - 'lib-spring-starter-dgs/**'
       - 'lib-spring-starter-security/**'
       - 'lib-spring-starter-tracing/**'
   workflow_dispatch:
