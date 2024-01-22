@@ -10,7 +10,7 @@ on:
       - 'lib-platform/**'
       - 'lib-spring-dgs/**'
       - 'lib-spring-starter-config/**'
-      - 'lib-spring-webmvc-security/**'
+      - 'lib-spring-starter-security/**'
       - 'lib-spring-starter-tracing/**'
   pull_request:
     branches:
@@ -21,7 +21,7 @@ on:
       - 'lib-platform/**'
       - 'lib-spring-dgs/**'
       - 'lib-spring-starter-config/**'
-      - 'lib-spring-webmvc-security/**'
+      - 'lib-spring-starter-security/**'
       - 'lib-spring-starter-tracing/**'
   workflow_dispatch:
 

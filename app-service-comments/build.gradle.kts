@@ -61,7 +61,7 @@ dependencies {
     implementation(":lib-common")
     implementation(":lib-spring-dgs")
     implementation(":lib-spring-starter-config")
-    implementation(":lib-spring-webmvc-security")
+    implementation(":lib-spring-starter-security")
     implementation(":lib-spring-starter-tracing")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")

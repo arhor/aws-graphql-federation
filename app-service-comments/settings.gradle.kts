@@ -17,7 +17,7 @@ includeBuild("../lib-platform")
 includeBuild("../lib-common")
 includeBuild("../lib-spring-dgs")
 includeBuild("../lib-spring-starter-config")
-includeBuild("../lib-spring-webmvc-security")
+includeBuild("../lib-spring-starter-security")
 includeBuild("../lib-spring-starter-tracing")
 
 rootProject.name = "app-service-comments"
