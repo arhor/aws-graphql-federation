@@ -43,6 +43,7 @@ configurations {
 
 dependencies {
     annotationProcessor(platform(":lib-platform"))
+    annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.springframework:spring-context-indexer")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -66,6 +67,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.retry:spring-retry")
 
+    compileOnly("org.projectlombok:lombok")
+
     runtimeOnly("org.postgresql:postgresql")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -86,6 +89,17 @@ dependencyManagement {
 }
 
 tasks {
+    withType<JavaCompile> {
+        options.compilerArgs.addAll(
+            listOf(
+                "-Xlint:unchecked",
+                "-Xlint:deprecation",
+                "-Xlint:preview",
+                "-parameters",
+            )
+        )
+    }
+
     withType<Test> {
         jvmArgs = listOf("-XX:+EnableDynamicAgentLoading")
         useJUnitPlatform()

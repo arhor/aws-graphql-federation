@@ -24,6 +24,6 @@ public class UserEventsListener {
         var deletedUserId = event.getId();
 
         logger.debug("Processing user deleted event with id: {}", deletedUserId);
-        commentService.unlinkCommentsFromUser(deletedUserId);
+        commentService.unlinkUserComments(deletedUserId);
     }
 }

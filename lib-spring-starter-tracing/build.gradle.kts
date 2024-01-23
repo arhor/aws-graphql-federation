@@ -78,11 +78,13 @@ tasks {
     }
 
     withType<JavaCompile> {
-        options.compilerArgs = listOf(
-            "-Xlint:unchecked",
-            "-Xlint:deprecation",
-            "-Xlint:preview",
-            "-parameters"
+        options.compilerArgs.addAll(
+            listOf(
+                "-Xlint:unchecked",
+                "-Xlint:deprecation",
+                "-Xlint:preview",
+                "-parameters",
+            )
         )
     }
 

@@ -122,4 +122,66 @@ public class CommentRepositoryTest {
             .containsExactlyElementsOf(expectedComments)
             .doesNotContainAnyElementsOf(post3Comments);
     }
+
+    @Test
+    void should_nullify_user_id_for_the_given_list_of_comments() {
+        // given
+        final var userId = 1L;
+        final var postId = 1L;
+        final var comments = commentRepository.saveAll(
+            List.of(
+                new CommentEntity(userId, postId, "user-" + userId + " / post-" + postId + " / comment-1"),
+                new CommentEntity(userId, postId, "user-" + userId + " / post-" + postId + " / comment-2")
+            )
+        );
+
+        // when
+        commentRepository.unlinkAllFromUser(1L);
+
+        final var commentsByUserId = commentRepository.findAllByUserIdIn(List.of(1L));
+        final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(1L));
+
+        // then
+        assertThat(commentsByUserId)
+            .isNotNull()
+            .isEmpty();
+
+        assertThat(commentsByPostId)
+            .isNotNull()
+            .hasSameSizeAs(comments)
+            .allMatch(it -> it.userId() == null, CommentEntity.Fields.userId + " should be null");
+    }
+
+    @Test
+    void should_delete_all_comments_with_a_given_post_id() {
+        // given
+        final var userId = 1L;
+        final var postId = 1L;
+        final var comments = commentRepository.saveAll(
+            List.of(
+                new CommentEntity(userId, postId, "user-" + userId + " / post-" + postId + " / comment-1"),
+                new CommentEntity(userId, postId, "user-" + userId + " / post-" + postId + " / comment-2")
+            )
+        );
+
+        // when
+        commentRepository.deleteAllFromPost(userId);
+
+        final var commentsById = commentRepository.findAllById(comments.stream().map(CommentEntity::id).toList());
+        final var commentsByUserId = commentRepository.findAllByUserIdIn(List.of(userId));
+        final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(postId));
+
+        // then
+        assertThat(commentsById)
+            .isNotNull()
+            .isEmpty();
+
+        assertThat(commentsByUserId)
+            .isNotNull()
+            .isEmpty();
+
+        assertThat(commentsByPostId)
+            .isNotNull()
+            .isEmpty();
+    }
 }

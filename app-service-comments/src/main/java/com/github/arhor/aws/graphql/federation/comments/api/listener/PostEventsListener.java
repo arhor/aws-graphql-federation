@@ -21,9 +21,9 @@ public class PostEventsListener {
 
     @SqsListener("${app-props.aws.sqs.post-deleted-events}")
     public void handlePostDeletedEvent(final PostEvent.Deleted event) {
-        var deletedUserId = event.getId();
+        var deletedPostId = event.getId();
 
-        logger.debug("Processing post deleted event with id: {}", deletedUserId);
-        commentService.deleteCommentsFromPost(deletedUserId);
+        logger.debug("Processing post deleted event with id: {}", deletedPostId);
+        commentService.deletePostComments(deletedPostId);
     }
 }

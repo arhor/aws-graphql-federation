@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
+import lombok.experimental.FieldNameConstants;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Table("comments")
 @Immutable
+@FieldNameConstants(asEnum = true)
 public record CommentEntity(
     @Id
     @Column("id")

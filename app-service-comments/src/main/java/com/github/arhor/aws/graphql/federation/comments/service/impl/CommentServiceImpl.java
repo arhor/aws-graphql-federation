@@ -113,13 +113,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void unlinkCommentsFromUser(final long userId) {
+    public void unlinkUserComments(final long userId) {
         commentRepository.unlinkAllFromUser(userId);
     }
 
     @Override
     @Transactional
-    public void deleteCommentsFromPost(final long postId) {
+    public void deletePostComments(final long postId) {
         commentRepository.deleteAllFromPost(postId);
     }
 
