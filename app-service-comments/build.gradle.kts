@@ -1,15 +1,12 @@
 plugins {
     alias(libs.plugins.test.logger)
     alias(libs.plugins.dgs.codegen)
-    alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
     jacoco
+    java
 }
 
-extra["kotlin.version"] = libs.versions.kotlin.get()
 val javaVersion: String = libs.versions.java.get()
 
 java {
@@ -18,12 +15,6 @@ java {
         targetCompatibility = it
     }
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(javaVersion))
-    }
-}
-
-kotlin {
-    jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
@@ -51,9 +42,9 @@ configurations {
 }
 
 dependencies {
-    kapt(platform(":lib-platform"))
-    kapt("org.springframework:spring-context-indexer")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor(platform(":lib-platform"))
+    annotationProcessor("org.springframework:spring-context-indexer")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     implementation(platform(":lib-platform"))
     implementation(":lib-common")
@@ -61,15 +52,12 @@ dependencies {
     implementation(":lib-spring-starter-dgs")
     implementation(":lib-spring-starter-security")
     implementation(":lib-spring-starter-tracing")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
     implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
     implementation("org.flywaydb:flyway-core")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-cache")
@@ -98,18 +86,6 @@ dependencyManagement {
 }
 
 tasks {
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = javaVersion
-            javaParameters = true
-            freeCompilerArgs = listOf(
-                "-Xjsr305=strict",
-                "-Xjvm-default=all",
-                "-Xcontext-receivers",
-            )
-        }
-    }
-
     withType<Test> {
         jvmArgs = listOf("-XX:+EnableDynamicAgentLoading")
         useJUnitPlatform()
