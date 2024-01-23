@@ -114,9 +114,6 @@ tasks {
     generateJava {
         language = "java"
         packageName = "com.github.arhor.aws.graphql.federation.comments.generated.graphql"
-        generateClient = true
-        generateKotlinNullableClasses = true
-        generateKotlinClosureProjections = true
     }
 
     jacocoTestReport {
