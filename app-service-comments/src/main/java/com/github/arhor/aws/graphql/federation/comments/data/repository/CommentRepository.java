@@ -4,11 +4,12 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntit
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.Collection;
 import java.util.stream.Stream;
 
-public interface CommentRepository extends CrudRepository<CommentEntity, Long> {
+public interface CommentRepository extends ListCrudRepository<CommentEntity, Long> {
 
     Stream<CommentEntity> findAllByUserIdIn(Collection<Long> userIds);
 
