@@ -12,23 +12,21 @@ import java.util.Map;
 import static com.github.arhor.aws.graphql.federation.common.MapExtKt.getLong;
 
 @DgsComponent
-class FederatedEntityFetchers {
+public class FederatedEntityFetcher {
 
     /* Entity Fetchers */
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
     public User resolveUser(final Map<String, ?> values) {
-        return new User(
-            /* id = */ getLong(values, USER.Id),
-            /* comments = */ null
-        );
+        return User.newBuilder()
+            .id(getLong(values, USER.Id))
+            .build();
     }
 
     @DgsEntityFetcher(name = POST.TYPE_NAME)
     public Post resolvePost(final Map<String, ?> values) {
-        return new Post(
-            /* id = */ getLong(values, POST.Id),
-            /* comments = */ null
-        );
+        return Post.newBuilder()
+            .id(getLong(values, POST.Id))
+            .build();
     }
 }

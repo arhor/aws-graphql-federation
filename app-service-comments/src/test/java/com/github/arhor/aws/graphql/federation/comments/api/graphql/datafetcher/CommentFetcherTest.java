@@ -38,7 +38,7 @@ import static org.mockito.BDDMockito.then;
         CommentFetcher.class,
         DgsAutoConfiguration.class,
         DgsExtendedScalarsAutoConfiguration.class,
-        FederatedEntityFetchers.class,
+        FederatedEntityFetcher.class,
         GlobalDataFetchingExceptionHandler.class,
     }
 )
