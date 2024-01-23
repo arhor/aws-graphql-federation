@@ -119,7 +119,6 @@ tasks {
         language = "kotlin"
         packageName = "com.github.arhor.aws.graphql.federation.users.generated.graphql"
         generateClient = true
-//        generateKotlinNullableClasses = true
         generateKotlinClosureProjections = true
     }
 
