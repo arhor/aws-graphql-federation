@@ -16,19 +16,17 @@ import com.netflix.graphql.dgs.DgsData;
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @DgsComponent
+@RequiredArgsConstructor
 public class CommentFetcher {
 
     private final CommentService commentService;
-
-    public CommentFetcher(final CommentService commentService) {
-        this.commentService = commentService;
-    }
 
     /* Queries */
 
@@ -57,13 +55,13 @@ public class CommentFetcher {
 
     /* Internal implementation */
 
-    private <T extends CommentBatchLoader<D>, D> CompletableFuture<List<Comment>> loadCommentsUsing(
-        final Class<T> clazz,
+    private <T, L extends CommentBatchLoader<T>> CompletableFuture<List<Comment>> loadCommentsUsing(
+        final Class<L> loaderType,
         final DgsDataFetchingEnvironment dfe,
-        final Function<D, Long> id
+        final Function<T, Long> id
     ) {
-        var loader = dfe.<Long, List<Comment>>getDataLoader(clazz);
-        var source = dfe.<D>getSource();
+        var loader = dfe.<Long, List<Comment>>getDataLoader(loaderType);
+        var source = dfe.<T>getSource();
 
         return loader.load(id.apply(source));
     }
