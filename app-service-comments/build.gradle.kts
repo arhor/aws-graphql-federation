@@ -43,8 +43,6 @@ configurations {
     }
     testImplementation {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-        exclude(group = "org.mockito", module = "mockito-core")
-        exclude(group = "org.mockito", module = "mockito-junit-jupiter")
     }
     all {
         exclude(group = "org.apache.logging.log4j", module = "log4j-to-slf4j")
@@ -84,7 +82,6 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    testImplementation("com.ninja-squad:springmockk")
     testImplementation("io.awspring.cloud:spring-cloud-aws-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
