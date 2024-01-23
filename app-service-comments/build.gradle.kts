@@ -134,9 +134,10 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/aws/graphql/federation/comments/**/Main*.class",
+                        "com/github/arhor/aws/graphql/federation/comments/**/CommentsServiceRunner*.class",
                         "com/github/arhor/aws/graphql/federation/comments/**/aop/",
                         "com/github/arhor/aws/graphql/federation/comments/**/config/",
+                        "com/github/arhor/aws/graphql/federation/comments/**/data/entity/",
                         "com/github/arhor/aws/graphql/federation/comments/**/generated/",
                     )
                 }
