@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @DataJdbcTest
 @DirtiesContext
@@ -142,14 +143,16 @@ public class CommentRepositoryTest {
         final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(1L));
 
         // then
-        assertThat(commentsByUserId)
-            .isNotNull()
-            .isEmpty();
+        assertSoftly(soft -> {
+            soft.assertThat(commentsByUserId)
+                .isNotNull()
+                .isEmpty();
 
-        assertThat(commentsByPostId)
-            .isNotNull()
-            .hasSameSizeAs(comments)
-            .allMatch(it -> it.userId() == null, CommentEntity.Fields.userId + " should be null");
+            soft.assertThat(commentsByPostId)
+                .isNotNull()
+                .hasSameSizeAs(comments)
+                .allMatch(it -> it.userId() == null, CommentEntity.Fields.userId + " should be null");
+        });
     }
 
     @Test
@@ -172,16 +175,18 @@ public class CommentRepositoryTest {
         final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(postId));
 
         // then
-        assertThat(commentsById)
-            .isNotNull()
-            .isEmpty();
+        assertSoftly(soft -> {
+            soft.assertThat(commentsById)
+                .isNotNull()
+                .isEmpty();
 
-        assertThat(commentsByUserId)
-            .isNotNull()
-            .isEmpty();
+            soft.assertThat(commentsByUserId)
+                .isNotNull()
+                .isEmpty();
 
-        assertThat(commentsByPostId)
-            .isNotNull()
-            .isEmpty();
+            soft.assertThat(commentsByPostId)
+                .isNotNull()
+                .isEmpty();
+        });
     }
 }
