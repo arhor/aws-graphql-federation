@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.api.graphql.datafetcher;
 
-import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.CommentBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.PostCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.UserCommentsBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
@@ -29,8 +30,8 @@ import static org.mockito.BDDMockito.then;
 @MockBean(
     classes = {
         CommentService.class,
-        CommentBatchLoader.ForUser.class,
-        CommentBatchLoader.ForPost.class,
+        UserCommentsBatchLoader.class,
+        PostCommentsBatchLoader.class,
     }
 )
 @SpringBootTest(

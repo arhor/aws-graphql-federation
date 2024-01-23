@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.api.graphql.datafetcher;
 
-import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.CommentBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.PostCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.UserCommentsBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
@@ -17,6 +18,7 @@ import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
 import lombok.RequiredArgsConstructor;
+import org.dataloader.MappedBatchLoader;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -32,13 +34,13 @@ public class CommentFetcher {
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Comments)
     public CompletableFuture<List<Comment>> userComments(final DgsDataFetchingEnvironment dfe) {
-        return loadCommentsUsing(CommentBatchLoader.ForUser.class, dfe, User::getId);
+        return loadWith(UserCommentsBatchLoader.class, dfe, User::getId);
     }
 
 
     @DgsData(parentType = POST.TYPE_NAME, field = POST.Comments)
     public CompletableFuture<List<Comment>> postComments(final DgsDataFetchingEnvironment dfe) {
-        return loadCommentsUsing(CommentBatchLoader.ForPost.class, dfe, Post::getId);
+        return loadWith(PostCommentsBatchLoader.class, dfe, Post::getId);
     }
 
     /* Mutations */
@@ -55,14 +57,23 @@ public class CommentFetcher {
 
     /* Internal implementation */
 
-    private <T, L extends CommentBatchLoader<T>> CompletableFuture<List<Comment>> loadCommentsUsing(
-        final Class<L> loaderType,
+    /**
+     * @param loaderType concrete class of the data loader to use
+     * @param dfe        data fetching environment
+     * @param extractKey function allowing to extract key from a given entity
+     * @param <T>        entity type
+     * @param <K>        key type
+     * @param <V>        expected result of the data loading
+     * @return delayed result of the data loader invocation
+     */
+    private <T, K, V> CompletableFuture<V> loadWith(
+        final Class<? extends MappedBatchLoader<K, V>> loaderType,
         final DgsDataFetchingEnvironment dfe,
-        final Function<T, Long> id
+        final Function<T, K> extractKey
     ) {
-        var loader = dfe.<Long, List<Comment>>getDataLoader(loaderType);
-        var source = dfe.<T>getSource();
+        var loader = dfe.<K, V>getDataLoader(loaderType);
+        var entity = dfe.<T>getSource();
 
-        return loader.load(id.apply(source));
+        return loader.load(extractKey.apply(entity));
     }
 }
