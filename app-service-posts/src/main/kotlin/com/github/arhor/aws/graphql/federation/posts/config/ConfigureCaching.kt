@@ -4,6 +4,8 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import graphql.ExecutionInput
 import graphql.execution.preparsed.PreparsedDocumentEntry
 import graphql.execution.preparsed.PreparsedDocumentProvider
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,12 +21,14 @@ class ConfigureCaching {
 
     @Bean
     @Suppress("OVERRIDE_DEPRECATION")
-    fun asyncCachePreParsedDocumentProvider(asyncExecutor: Executor): PreparsedDocumentProvider =
+    fun asyncCachePreParsedDocumentProvider(
+        @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME) executor: Executor
+    ): PreparsedDocumentProvider =
         object : PreparsedDocumentProvider {
             private val cache = buildAsyncCache<String, PreparsedDocumentEntry> {
                 maximumSize(250)
                 expireAfterAccess(Duration.ofMinutes(10))
-                executor(asyncExecutor)
+                executor(executor)
             }
 
             override fun getDocument(execInput: ExecutionInput, validator: ParsingValidator) =

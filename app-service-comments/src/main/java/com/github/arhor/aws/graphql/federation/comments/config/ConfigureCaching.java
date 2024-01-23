@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import graphql.ExecutionInput;
 import graphql.execution.preparsed.PreparsedDocumentEntry;
 import graphql.execution.preparsed.PreparsedDocumentProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +15,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 
+import static org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME;
+
 @EnableCaching
 @Configuration(proxyBeanMethods = false)
 public class ConfigureCaching {
 
     @Bean
-    public PreparsedDocumentProvider asyncCachePreParsedDocumentProvider(final Executor executor) {
+    public PreparsedDocumentProvider asyncCachePreParsedDocumentProvider(
+        @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME) final Executor executor
+    ) {
         return new PreparsedDocumentProvider() {
             private final AsyncCache<String, PreparsedDocumentEntry> cache = Caffeine
                 .newBuilder()
