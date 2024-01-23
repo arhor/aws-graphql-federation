@@ -1,7 +1,35 @@
 package com.github.arhor.aws.graphql.federation.comments.api.listener;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
+import com.github.arhor.aws.graphql.federation.common.event.PostEvent;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import static org.mockito.BDDMockito.then;
+
+@SpringJUnitConfig(PostEventsListener.class)
 class PostEventsListenerTest {
 
+    @MockBean
+    private CommentService commentService;
+
+    @Autowired
+    private PostEventsListener postEventsListener;
+
+    @Test
+    void should_call_deletePostComments_method_on_post_deleted_event() {
+        // given
+        final var postId = 1L;
+        final var event = new PostEvent.Deleted(postId);
+
+        // when
+        postEventsListener.handlePostDeletedEvent(event);
+
+        // then
+        then(commentService)
+            .should()
+            .deletePostComments(postId);
+    }
 }
