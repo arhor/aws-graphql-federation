@@ -1,21 +1,36 @@
-package com.github.arhor.aws.graphql.federation.comments.service.mapper.impl;
+package com.github.arhor.aws.graphql.federation.comments.service.mapper;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 import static org.assertj.core.api.Assertions.from;
+import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 
+@SpringJUnitConfig
 @SuppressWarnings("ConstantValue")
 class CommentMapperImplTest {
 
-    private final CommentMapper commentMapper = new CommentMapperImpl();
+    @Configuration
+    @ComponentScan(
+        includeFilters = {@Filter(type = ASSIGNABLE_TYPE, classes = CommentMapper.class)},
+        useDefaultFilters = false
+    )
+    static class Config {
+    }
+
+    @Autowired
+    private CommentMapper commentMapper;
 
     @Nested
     @DisplayName("method mapToEntity")
