@@ -8,7 +8,6 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
-import com.github.arhor.aws.graphql.federation.dgs.GlobalDataFetchingExceptionHandler;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration;
@@ -39,8 +38,6 @@ import static org.mockito.BDDMockito.then;
         CommentFetcher.class,
         DgsAutoConfiguration.class,
         DgsExtendedScalarsAutoConfiguration.class,
-        FederatedEntityFetcher.class,
-        GlobalDataFetchingExceptionHandler.class,
     }
 )
 class CommentFetcherTest {

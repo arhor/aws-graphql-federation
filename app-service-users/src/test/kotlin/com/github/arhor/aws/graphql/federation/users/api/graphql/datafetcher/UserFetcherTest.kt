@@ -5,6 +5,7 @@ package com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.dgs.GlobalDataFetchingExceptionHandler
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsClient
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
@@ -51,32 +52,29 @@ internal class UserFetcherTest {
         @Test
         fun `should return expected user by username without any exceptions`() {
             // Given
-            val id = 1L
-            val username = "test-username"
+            val expectedId = 1L
+            val expectedUsername = "test-username"
 
             val expectedErrors = emptyList<GraphQLError>()
             val expectedPresent = true
             val expectedData =
                 mapOf(
                     QUERY.User to mapOf(
-                        USER.Id to id,
-                        USER.Username to username
+                        USER.Id to expectedId,
+                        USER.Username to expectedUsername
                     )
                 )
 
-            every { userService.getUserById(any()) } answers { User(id = firstArg(), username = username) }
+            every { userService.getUserById(any()) } answers { User(id = firstArg(), username = expectedUsername) }
 
             // When
             val result = dgsQueryExecutor.execute(
-                """
-            query (${'$'}id: Long!) {
-                user(id: ${'$'}id) {
-                    id
-                    username
+                DgsClient.buildQuery {
+                    user(id = expectedId) {
+                        id
+                        username
+                    }
                 }
-            }
-            """,
-                mapOf(USER.Id to id)
             )
 
             // Then

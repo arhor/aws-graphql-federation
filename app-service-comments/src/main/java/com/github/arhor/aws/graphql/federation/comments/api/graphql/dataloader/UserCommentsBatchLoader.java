@@ -1,22 +1,28 @@
 package com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader;
 
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.netflix.graphql.dgs.DgsDataLoader;
+import lombok.RequiredArgsConstructor;
+import org.dataloader.MappedBatchLoader;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import static org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME;
-
 @DgsDataLoader(maxBatchSize = 50)
-public class UserCommentsBatchLoader extends CommentBatchLoader<User> {
+@RequiredArgsConstructor
+public class UserCommentsBatchLoader implements MappedBatchLoader<Long, List<Comment>> {
 
-    public UserCommentsBatchLoader(
-        @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME)
-        final Executor executor,
-        final CommentService commentService
-    ) {
-        super(executor, commentService::getCommentsByUserIds);
+    @Qualifier("dgsAsyncTaskExecutor")
+    private final Executor executor;
+    private final CommentService commentService;
+
+    @Override
+    public CompletableFuture<Map<Long, List<Comment>>> load(final Set<Long> keys) {
+        return CompletableFuture.supplyAsync(() -> commentService.getCommentsByUserIds(keys), executor);
     }
 }
