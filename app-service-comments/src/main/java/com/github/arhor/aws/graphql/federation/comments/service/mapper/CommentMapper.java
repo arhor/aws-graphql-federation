@@ -8,5 +8,5 @@ public interface CommentMapper {
 
     CommentEntity mapToEntity(CreateCommentInput input);
 
-    Comment mapToDTO(CommentEntity entity);
+    Comment mapToDto(CommentEntity entity);
 }

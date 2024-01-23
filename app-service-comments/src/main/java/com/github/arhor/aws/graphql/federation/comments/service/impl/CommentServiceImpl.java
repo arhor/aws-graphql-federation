@@ -12,6 +12,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
@@ -27,18 +28,11 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.groupingBy;
 
 @Service
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
-
-    public CommentServiceImpl(
-        final CommentRepository commentRepository,
-        final CommentMapper commentMapper
-    ) {
-        this.commentRepository = commentRepository;
-        this.commentMapper = commentMapper;
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -65,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
     public CreateCommentResult createComment(final CreateCommentInput input) {
         var entity = commentMapper.mapToEntity(input);
         var create = commentRepository.save(entity);
-        var result = commentMapper.mapToDTO(create);
+        var result = commentMapper.mapToDto(create);
 
         return new CreateCommentResult(result);
     }
@@ -85,17 +79,16 @@ public class CommentServiceImpl implements CommentService {
         var currentState = initialState;
 
         if (input.getContent() != null) {
-            currentState =
-                currentState.copy()
-                    .withContent(input.getContent())
-                    .build();
+            currentState = currentState.toBuilder()
+                .content(input.getContent())
+                .build();
         }
         var entity =
             (currentState != initialState)
                 ? commentRepository.save(currentState)
                 : initialState;
 
-        var comment = commentMapper.mapToDTO(entity);
+        var comment = commentMapper.mapToDto(entity);
 
         return new UpdateCommentResult(comment);
     }
@@ -138,7 +131,7 @@ public class CommentServiceImpl implements CommentService {
         }
         try (var data = dataSource.apply(ids)) {
             return data
-                .map(commentMapper::mapToDTO)
+                .map(commentMapper::mapToDto)
                 .collect(groupingBy(classifier));
         }
     }

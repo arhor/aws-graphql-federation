@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
+import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 
 @Table("comments")
 @Immutable
+@Builder(toBuilder = true)
 @FieldNameConstants(asEnum = true)
 public record CommentEntity(
     @Id
@@ -48,68 +50,5 @@ public record CommentEntity(
 ) {
     public CommentEntity(final Long userId, final Long postId, final String content) {
         this(null, userId, postId, content, null, null, null);
-    }
-
-    public CopyBuilder copy() {
-        return new CopyBuilder(this);
-    }
-
-    public static class CopyBuilder {
-        private Long id;
-        private Long userId;
-        private Long postId;
-        private String content;
-        private Long version;
-        private LocalDateTime createdDateTime;
-        private LocalDateTime updatedDateTime;
-
-        public CopyBuilder(final CommentEntity that) {
-            this.id = that.id;
-            this.userId = that.userId;
-            this.postId = that.postId;
-            this.content = that.content;
-            this.version = that.version;
-            this.createdDateTime = that.createdDateTime;
-            this.updatedDateTime = that.updatedDateTime;
-        }
-
-        public CommentEntity build() {
-            return new CommentEntity(id, userId, postId, content, version, createdDateTime, updatedDateTime);
-        }
-
-        public CopyBuilder withId(final Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public CopyBuilder withUserId(final Long userId) {
-            this.userId = userId;
-            return this;
-        }
-
-        public CopyBuilder withPostId(final Long postId) {
-            this.postId = postId;
-            return this;
-        }
-
-        public CopyBuilder withContent(final String content) {
-            this.content = content;
-            return this;
-        }
-
-        public CopyBuilder withVersion(final Long version) {
-            this.version = version;
-            return this;
-        }
-
-        public CopyBuilder withCreatedDateTime(final LocalDateTime createdDateTime) {
-            this.createdDateTime = createdDateTime;
-            return this;
-        }
-
-        public CopyBuilder withUpdatedDateTime(final LocalDateTime updatedDateTime) {
-            this.updatedDateTime = updatedDateTime;
-            return this;
-        }
     }
 }

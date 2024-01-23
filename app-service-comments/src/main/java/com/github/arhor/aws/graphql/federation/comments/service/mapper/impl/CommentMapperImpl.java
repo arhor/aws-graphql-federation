@@ -13,20 +13,20 @@ public class CommentMapperImpl implements CommentMapper {
 
     @Override
     public CommentEntity mapToEntity(final CreateCommentInput input) {
-        return new CommentEntity(
-            input.getUserId(),
-            input.getPostId(),
-            input.getContent()
-        );
+        return (input == null) ? null : CommentEntity.builder()
+            .userId(input.getUserId())
+            .postId(input.getPostId())
+            .content(input.getContent())
+            .build();
     }
 
     @Override
-    public Comment mapToDTO(final CommentEntity entity) {
-        return new Comment(
-            Objects.requireNonNull(entity.id(), "Entity must be persisted with assigned id!"),
-            entity.userId(),
-            entity.postId(),
-            entity.content()
-        );
+    public Comment mapToDto(final CommentEntity entity) {
+        return (entity == null) ? null : Comment.newBuilder()
+            .id(Objects.requireNonNull(entity.id(), "Entity must be persisted with assigned id!"))
+            .userId(entity.userId())
+            .postId(entity.postId())
+            .content(entity.content())
+            .build();
     }
 }
