@@ -1,37 +1,31 @@
 package com.github.arhor.aws.graphql.federation.users.service.events.impl
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.convertValue
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
+import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxEventEntity
+import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxEventRepository
 import com.github.arhor.aws.graphql.federation.users.service.events.UserEventEmitter
-import io.awspring.cloud.sns.core.SnsNotification
-import io.awspring.cloud.sns.core.SnsOperations
-import org.springframework.messaging.MessagingException
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Propagation.MANDATORY
+import org.springframework.transaction.annotation.Transactional
 
 @Trace
 @Component
 class UserEventEmitterImpl(
-    private val appProps: AppProps,
-    private val sns: SnsOperations,
+    private val outboxEventRepository: OutboxEventRepository,
+    private val objectMapper: ObjectMapper
 ) : UserEventEmitter {
 
-    @Retryable(
-        include = [
-            MessagingException::class,
-        ],
-        backoff = Backoff(
-            delayExpression = "\${app-props.retry.delay:1000}",
-            multiplierExpression = "\${app-props.retry.multiplier:0}",
-        ),
-        maxAttemptsExpression = "\${app-props.retry.max-attempts:3}",
-    )
+    @Transactional(propagation = MANDATORY)
     override fun emit(event: UserEvent) {
-        val snsTopicName = appProps.aws.sns.userEvents
-        val notification = SnsNotification(event, event.attributes())
-
-        sns.sendNotification(snsTopicName, notification)
+        outboxEventRepository.save(
+            OutboxEventEntity(
+                type = event.type(),
+                payload = objectMapper.convertValue(event),
+                headers = event.attributes(),
+            )
+        )
     }
 }
