@@ -5,6 +5,7 @@ on:
     branches:
       - 'master'
     paths:
+      - '.github/workflows/app-service-posts-CI.yml'
       - 'app-service-posts/**'
       - 'lib-common/**'
       - 'lib-platform/**'
@@ -16,6 +17,7 @@ on:
     branches:
       - 'master'
     paths:
+      - '.github/workflows/app-service-posts-CI.yml'
       - 'app-service-posts/**'
       - 'lib-common/**'
       - 'lib-platform/**'

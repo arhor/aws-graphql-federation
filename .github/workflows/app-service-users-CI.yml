@@ -5,6 +5,7 @@ on:
     branches:
       - 'master'
     paths:
+      - '.github/workflows/app-service-users-CI.yml'
       - 'app-service-users/**'
       - 'lib-common/**'
       - 'lib-platform/**'
@@ -16,6 +17,7 @@ on:
     branches:
       - 'master'
     paths:
+      - '.github/workflows/app-service-users-CI.yml'
       - 'app-service-users/**'
       - 'lib-common/**'
       - 'lib-platform/**'
