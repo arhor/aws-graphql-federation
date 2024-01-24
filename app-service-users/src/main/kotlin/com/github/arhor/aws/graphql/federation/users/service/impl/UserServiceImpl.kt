@@ -60,13 +60,12 @@ class UserServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun verifyUser(request: CurrentUserRequest): CurrentUser {
+    override fun getUserByUsernameAndPassword(request: CurrentUserRequest): CurrentUser {
         val (username, password) = request
         val user = userRepository.findByUsername(username)
 
         if (user != null) {
             if (passwordEncoder.matches(password, user.password)) {
-                authRepository.findAllById(user.authorities.map { it.authId.id })
                 return CurrentUser(
                     id = user.id!!,
                     authorities = listOf(ROLE_USER)

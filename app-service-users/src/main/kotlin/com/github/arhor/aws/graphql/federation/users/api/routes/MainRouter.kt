@@ -30,7 +30,7 @@ class MainRouter(
     "/api".nest {
         POST("/users/verify") {
             val userRequest = it.body<CurrentUserRequest>()
-            val currentUser = userService.verifyUser(userRequest)
+            val currentUser = userService.getUserByUsernameAndPassword(userRequest)
 
             status(OK)
                 .body(currentUser)

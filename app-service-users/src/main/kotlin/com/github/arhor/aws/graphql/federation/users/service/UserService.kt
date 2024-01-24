@@ -14,7 +14,7 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Use
 interface UserService {
     fun getUserById(id: Long): User
     fun getAllUsers(input: UsersLookupInput): List<User>
-    fun verifyUser(request: CurrentUserRequest): CurrentUser
+    fun getUserByUsernameAndPassword(request: CurrentUserRequest): CurrentUser
     fun createUser(input: CreateUserInput): CreateUserResult
     fun updateUser(input: UpdateUserInput): UpdateUserResult
     fun deleteUser(input: DeleteUserInput): DeleteUserResult

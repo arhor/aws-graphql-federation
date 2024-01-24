@@ -5,7 +5,7 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Cre
 import io.mockk.every
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.catchException
+import org.assertj.core.api.Assertions.catchThrowable
 import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -77,7 +77,7 @@ internal class UserMapperTest {
         every { entity.id } returns null
 
         // When
-        val result = catchException { userMapperUnderTest.mapToResult(entity) }
+        val result = catchThrowable { userMapperUnderTest.mapToResult(entity) }
 
         // Then
         assertThat(result)

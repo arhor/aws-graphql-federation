@@ -63,7 +63,7 @@ internal class MainRouterTest {
             """.trimIndent()
         )
 
-        every { userService.verifyUser(any()) } returns CurrentUser(id = -1L, authorities = listOf("ROLE_TEST"))
+        every { userService.getUserByUsernameAndPassword(any()) } returns CurrentUser(id = -1L, authorities = listOf("ROLE_TEST"))
 
         // When
         val response = mainRouter.route(request).map { it.handle(request) }

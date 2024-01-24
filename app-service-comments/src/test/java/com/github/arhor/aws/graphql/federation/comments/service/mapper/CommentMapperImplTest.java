@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchException;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.from;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 
@@ -122,7 +122,7 @@ class CommentMapperImplTest {
                     .build();
 
             // when
-            final var exception = catchException(() -> commentMapper.mapToDto(entity));
+            final var exception = catchThrowable(() -> commentMapper.mapToDto(entity));
 
             // then
             assertThat(exception)
