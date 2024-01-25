@@ -7,6 +7,6 @@ sealed interface UserEvent : DomainEvent {
     }
 
     companion object {
-        private const val USER_EVENT_DELETED = "UserEvent::Deleted"
+        const val USER_EVENT_DELETED = "UserEvent::Deleted"
     }
 }

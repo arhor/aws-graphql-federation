@@ -7,6 +7,6 @@ sealed interface PostEvent : DomainEvent {
     }
 
     companion object {
-        private const val POST_EVENT_DELETED = "PostEvent::Deleted"
+        const val POST_EVENT_DELETED = "PostEvent::Deleted"
     }
 }

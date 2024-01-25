@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 @Trace
 @Component
 class UserEventEmitterImpl(
-    private val outboxEventRepository: OutboxEventRepository,
     private val objectMapper: ObjectMapper,
+    private val outboxEventRepository: OutboxEventRepository,
 ) : UserEventEmitter {
 
     @Transactional(propagation = MANDATORY)
