@@ -125,6 +125,10 @@ tasks {
     jacocoTestReport {
         shouldRunAfter(test)
         shouldApplyExclusionsTo(classDirectories)
+
+        reports {
+            xml.required.set(true)
+        }
     }
 
     jacocoTestCoverageVerification {
