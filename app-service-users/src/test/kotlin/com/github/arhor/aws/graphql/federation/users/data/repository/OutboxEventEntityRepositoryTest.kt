@@ -14,7 +14,7 @@ internal class OutboxEventEntityRepositoryTest : RepositoryTestBase() {
     private lateinit var outboxEventRepository: OutboxEventRepository
 
     @Test
-    fun `should return true for the email of an existing user`() {
+    fun `should deque existing outbox events removing them from the DB`() {
         // given
         val expectedSizeOfBatch = 5
         val expectedEventsAtAll = expectedSizeOfBatch * 2
