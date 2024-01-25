@@ -1,14 +1,17 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
 import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxEventEntity
+import com.github.arhor.aws.graphql.federation.users.data.entity.callback.OutboxEventEntityCallback
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ContextConfiguration
 
-internal class OutboxEventEntityRepositoryTest(
+@ContextConfiguration(classes = [OutboxEventEntityCallback::class])
+internal class OutboxEventEntityRepositoryTest : RepositoryTestBase() {
+
     @Autowired
-    private val outboxEventRepository: OutboxEventRepository,
-) : RepositoryTestBase() {
+    private lateinit var outboxEventRepository: OutboxEventRepository
 
     @Test
     fun `should return true for the email of an existing user`() {

@@ -5,10 +5,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-internal class UserEntityRepositoryTest(
+internal class UserEntityRepositoryTest : RepositoryTestBase() {
+
     @Autowired
-    private val userRepository: UserRepository,
-) : RepositoryTestBase() {
+    private lateinit var userRepository: UserRepository
 
     @Test
     fun `should return true for the email of an existing user`() {
