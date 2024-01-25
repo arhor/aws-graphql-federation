@@ -2,11 +2,8 @@ package com.github.arhor.aws.graphql.federation.users.data.repository
 
 import com.github.arhor.aws.graphql.federation.config.ConfigureAdditionalBeans
 import com.github.arhor.aws.graphql.federation.users.config.ConfigureDatabase
-import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.users.test.ConfigureTestObjectMapper
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
+import org.junit.jupiter.api.Tag
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.test.annotation.DirtiesContext
@@ -17,6 +14,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
+@Tag("integration")
 @DataJdbcTest
 @DirtiesContext
 @Testcontainers(disabledWithoutDocker = true)
@@ -28,44 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
     ]
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-internal class UserEntityRepositoryIntegrationTest(
-    @Autowired
-    private val userRepository: UserRepository,
-) {
-
-    @Test
-    fun `should return true for the email of an existing user`() {
-        // Given
-        val createdUser = createPersistedUser()
-
-        // When
-        val result = userRepository.existsByUsername(createdUser.username)
-
-        // Then
-        assertThat(result)
-            .isTrue()
-    }
-
-    @Test
-    fun `should return false for the email of a non-existing user`() {
-        // Given
-        val deletedUser = createPersistedUser().also { userRepository.delete(it) }
-
-        // When
-        val result = userRepository.existsByUsername(deletedUser.username)
-
-        // Then
-        assertThat(result)
-            .isFalse()
-    }
-
-    private fun createPersistedUser(): UserEntity =
-        userRepository.save(
-            UserEntity(
-                username = "test-username",
-                password = "test-password",
-            )
-        )
+internal abstract class RepositoryTestBase {
 
     companion object {
         @JvmStatic
@@ -75,11 +36,9 @@ internal class UserEntityRepositoryIntegrationTest(
         @JvmStatic
         @DynamicPropertySource
         fun registerDynamicProperties(registry: DynamicPropertyRegistry) {
-            with(registry) {
-                add("spring.datasource.url", db::getJdbcUrl)
-                add("spring.datasource.username", db::getUsername)
-                add("spring.datasource.password", db::getPassword)
-            }
+            registry.add("spring.datasource.url", db::getJdbcUrl)
+            registry.add("spring.datasource.username", db::getUsername)
+            registry.add("spring.datasource.password", db::getPassword)
         }
     }
 }
