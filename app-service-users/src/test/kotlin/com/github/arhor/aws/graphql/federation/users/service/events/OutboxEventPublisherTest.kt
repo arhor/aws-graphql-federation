@@ -79,7 +79,7 @@ internal class OutboxEventPublisherTest {
     }
 
     @Test
-    fun `should retry facing MessagingException sending notification to SNS`() {
+    fun `should retry on MessagingException sending notification to SNS`() {
         // given
         val outboxEvent = OutboxEventEntity(
             type = UserEvent.USER_EVENT_DELETED,
