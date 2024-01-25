@@ -47,4 +47,4 @@ jobs:
           gradle-version: wrapper
 
       - name: Build Users service
-        run: 'gradle :app-service-users:build'
+        run: 'gradle :app-service-users:build --scan'
