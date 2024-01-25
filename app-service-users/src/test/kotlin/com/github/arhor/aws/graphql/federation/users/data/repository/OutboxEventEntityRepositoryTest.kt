@@ -17,8 +17,10 @@ internal class OutboxEventEntityRepositoryTest : RepositoryTestBase() {
     fun `should return true for the email of an existing user`() {
         // given
         val expectedSizeOfBatch = 5
+        val expectedEventsAtAll = expectedSizeOfBatch * 2
+
         val outboxEvents = outboxEventRepository.saveAll(
-            (1..(expectedSizeOfBatch * 2)).map {
+            (1..expectedEventsAtAll).map {
                 OutboxEventEntity(
                     type = "test-event-$it",
                     payload = emptyMap(),
