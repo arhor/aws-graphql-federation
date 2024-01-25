@@ -13,9 +13,11 @@ internal class OutboxEventEntityRepositoryTest(
     @Test
     fun `should return true for the email of an existing user`() {
         // given
+        val expectedSizeOfBatch = 5
+
         outboxEventRepository.saveAll(
             sequence {
-                repeat(10) {
+                repeat(times = expectedSizeOfBatch * 2) {
                     yield(
                         OutboxEventEntity(
                             type = "test-event-$it",
@@ -28,17 +30,17 @@ internal class OutboxEventEntityRepositoryTest(
         )
 
         // when
-        val outboxEvents1 = outboxEventRepository.dequeueOldest(5)
-        val outboxEvents2 = outboxEventRepository.dequeueOldest(5)
+        val outboxEvents1 = outboxEventRepository.dequeueOldest(expectedSizeOfBatch)
+        val outboxEvents2 = outboxEventRepository.dequeueOldest(expectedSizeOfBatch)
 
         // then
         assertThat(outboxEvents1)
             .isNotNull()
-            .hasSize(5)
+            .hasSize(expectedSizeOfBatch)
 
         assertThat(outboxEvents2)
             .isNotNull()
-            .hasSize(5)
+            .hasSize(expectedSizeOfBatch)
 
         assertThat(outboxEvents1)
             .doesNotContainAnyElementsOf(outboxEvents2)
