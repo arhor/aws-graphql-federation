@@ -29,14 +29,14 @@ class OutboxEventProcessorImpl(
             MessagingException::class,
         ],
         backoff = Backoff(
-            delayExpression = "\${app-props.retry.delay:1000}",
-            multiplierExpression = "\${app-props.retry.multiplier:0}",
+            delayExpression = "\${app-props.retry.delay}",
+            multiplierExpression = "\${app-props.retry.multiplier}",
         ),
-        maxAttemptsExpression = "\${app-props.retry.max-attempts:3}",
+        maxAttemptsExpression = "\${app-props.retry.max-attempts}",
     )
     @Transactional
     override fun processOutboxEvents() {
-        for (outboxEvent in outboxEventRepository.findAll()) {
+        for (outboxEvent in outboxEventRepository.dequeueOldest(eventsNum = 50)) {
             val snsTopicName = appProps.aws.sns.userEvents
             val notification = SnsNotification(outboxEvent.payload, outboxEvent.headers)
 

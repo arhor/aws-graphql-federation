@@ -36,11 +36,3 @@ CREATE TABLE IF NOT EXISTS "users_has_authorities"
             ON UPDATE CASCADE
             ON DELETE CASCADE
 ) WITH (OIDS = FALSE);
-
-CREATE TABLE IF NOT EXISTS "outbox_events"
-(
-    "id"      BIGSERIAL    NOT NULL PRIMARY KEY,
-    "type"    VARCHAR(128) NOT NULL,
-    "payload" JSONB        NOT NULL,
-    "headers" JSONB        NOT NULL
-) WITH (OIDS = FALSE);

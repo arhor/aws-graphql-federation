@@ -55,6 +55,10 @@ app-props:
       user-events: \${AWS_SNS_USER_EVENTS}
   jwt:
     expire: \${JWT_EXPIRE}
+  retry:
+    delay: \${RETRY_DELAY:1000}
+    multiplier: \${RETRY_MULTIPLIER:0}
+    max-attempts: \${RETRY_MAX_ATTEMPTS:3}
 
 ---
 

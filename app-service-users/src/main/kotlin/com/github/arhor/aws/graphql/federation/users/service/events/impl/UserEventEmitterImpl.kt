@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class UserEventEmitterImpl(
     private val outboxEventRepository: OutboxEventRepository,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
 ) : UserEventEmitter {
 
     @Transactional(propagation = MANDATORY)
