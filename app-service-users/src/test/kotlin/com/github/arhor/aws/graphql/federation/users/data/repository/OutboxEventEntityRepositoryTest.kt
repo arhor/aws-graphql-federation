@@ -18,7 +18,7 @@ internal class OutboxEventEntityRepositoryTest(
                 repeat(10) {
                     yield(
                         OutboxEventEntity(
-                            type = "test-event",
+                            type = "test-event-$it",
                             payload = emptyMap(),
                             headers = emptyMap(),
                         )
