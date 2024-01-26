@@ -57,7 +57,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 80
-          title: Code Coverage
+          title: Users service code coverage
           update-comment: true
 
       - name: Get the Coverage info
