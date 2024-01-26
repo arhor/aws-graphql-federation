@@ -62,5 +62,5 @@ jobs:
 
       - name: Get the Coverage info
         run: |
-          echo "Coverage total: ${{ steps.jacoco.outputs.coverage-overall }}, |
-                       changed: ${{ steps.jacoco.outputs.coverage-changed-files }}"
+          echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
+          echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
