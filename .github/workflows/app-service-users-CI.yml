@@ -62,7 +62,7 @@ jobs:
           pass-emoji: ✔️
           fail-emoji: ❌
 
-      - name: Get the Coverage info
+      - name: Add the code coverage info to build summary
         run: |
           echo "### JaCoCo Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
           echo "|     Type      |   Coverage   |" >> $GITHUB_STEP_SUMMARY
