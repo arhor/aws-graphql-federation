@@ -59,6 +59,8 @@ jobs:
           min-coverage-changed-files: 80
           title: Comments service code coverage
           update-comment: true
+          pass-emoji: ✔️
+          fail-emoji: ❌
 
       - name: Get the Coverage info
         run: |
