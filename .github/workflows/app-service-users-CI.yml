@@ -65,5 +65,5 @@ jobs:
       - name: Get the Coverage info
         run: |
           echo "## JaCoCo Test Coverage Summary" >> $GITHUB_STEP_SUMMARY
-          echo "* __Coverage:__ ${{ steps.jacoco.outputs.coverage-overall }}" >> $GITHUB_STEP_SUMMARY
-          echo "* __Changed files:__ ${{ steps.jacoco.outputs.coverage-changed-files }}" >> $GITHUB_STEP_SUMMARY
+          echo "* __Overall files:__ ${{ steps.jacoco.outputs.coverage-overall }}%" >> $GITHUB_STEP_SUMMARY
+          echo "* __Changed files:__ ${{ steps.jacoco.outputs.coverage-changed-files }}%" >> $GITHUB_STEP_SUMMARY
