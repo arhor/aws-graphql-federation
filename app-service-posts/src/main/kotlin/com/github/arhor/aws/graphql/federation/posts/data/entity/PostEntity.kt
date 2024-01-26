@@ -49,7 +49,7 @@ data class PostEntity(
     /**
      * Wrapper class over EnumSet is required to make it available for custom conversions.
      */
-    data class Options(val items: EnumSet<Option> = EnumSet.noneOf(Option::class.java))
+    data class Options(val items: Set<Option> = EnumSet.noneOf(Option::class.java))
 
     companion object {
         const val TABLE_NAME = "posts"
