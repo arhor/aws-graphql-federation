@@ -49,16 +49,6 @@ jobs:
       - name: Build Users service
         run: 'gradle :app-service-users:build'
 
-#      - name: Add coverage to PR
-#        uses: madrapps/jacoco-report@v1.6.1
-#        with:
-#          paths: |
-#            ${{ github.workspace }}/**/build/reports/jacoco/prodNormalDebugCoverage/prodNormalDebugCoverage.xml,
-#            ${{ github.workspace }}/**/build/reports/jacoco/**/debugCoverage.xml
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          min-coverage-overall: 40
-#          min-coverage-changed-files: 60
-
       - name: Upload Report
         uses: 'actions/upload-artifact@v4'
         with:
