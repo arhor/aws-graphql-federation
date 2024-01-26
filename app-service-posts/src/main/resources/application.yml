@@ -55,8 +55,6 @@ app-props:
       post-events: \${AWS_SNS_POST_EVENTS}
     sqs:
       user-deleted-events: \${AWS_SQS_USER_DELETED_EVENTS_FOR_POSTS}
-    s3:
-      banners-bucket-name: STUB
 
 ---
 

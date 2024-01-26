@@ -3,9 +3,8 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
+import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
-import com.github.arhor.aws.graphql.federation.posts.data.repository.BannerImageRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
@@ -13,24 +12,24 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Cre
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
-import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmitter
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
+import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmitter
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
+import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @Service
 class PostServiceImpl @Autowired constructor(
     private val postMapper: PostMapper,
     private val postRepository: PostRepository,
     private val postEventEmitter: PostEventEmitter,
-    private val bannerImageRepository: BannerImageRepository,
+    private val tagMapper: TagMapper,
     private val tagRepository: TagRepository,
     private val optionsMapper: OptionsMapper,
 ) : PostService {
@@ -66,18 +65,9 @@ class PostServiceImpl @Autowired constructor(
 
     @Transactional
     override fun createPost(input: CreatePostInput): Post {
-        val tagRefs = materialize(input.tags)
-        val bannerFilename = input.banner?.let { "${input.userId}__${UUID.randomUUID()}__${it.name}" }
-
-        val post =
-            postMapper.map(input = input, banner = bannerFilename, tags = tagRefs)
-                .let(postRepository::save)
-                .let(postMapper::map)
-
-        if (bannerFilename != null) {
-            bannerImageRepository.upload(filename = bannerFilename, data = input.banner.inputStream)
-        }
-        return post
+        return postMapper.map(input = input, tags = materialize(input.tags))
+            .let(postRepository::save)
+            .let(postMapper::map)
     }
 
     @Transactional
@@ -92,7 +82,7 @@ class PostServiceImpl @Autowired constructor(
             header = input.header ?: initialState.header,
             content = input.content ?: initialState.content,
             options = input.options?.let(optionsMapper::map) ?: initialState.options,
-            tags = input.tags?.let(::materialize) ?: initialState.tags
+            tags = input.tags?.let(::materialize)?.let(tagMapper::mapToRefs) ?: initialState.tags
         )
 
         return postMapper.map(
@@ -109,7 +99,6 @@ class PostServiceImpl @Autowired constructor(
             null -> false
             else -> {
                 postRepository.delete(post)
-                post.banner?.let { bannerImageRepository.delete(it) }
                 postEventEmitter.emit(PostEvent.Deleted(id = id))
                 true
             }
@@ -121,22 +110,15 @@ class PostServiceImpl @Autowired constructor(
         postRepository.unlinkAllFromUser(userId)
     }
 
-    /**
-     * Persists missing tags to the database, returning tag references.
-     */
-    private fun materialize(tags: List<String>?): Set<TagRef> = when {
+    private fun materialize(tags: List<String>?): Set<TagEntity> = when {
         tags != null -> {
             val presentTags = tagRepository.findAllByNameIn(tags)
-            val missingTags = (tags - presentTags.mapTo(HashSet()) { it.name }).map(TagEntity::create)
+            val missingTags = (tags - presentTags.toSet { it.name }).map { TagEntity(name = it) }
             val createdTags = tagRepository.saveAll(missingTags)
 
-            HashSet<TagRef>(presentTags.size + createdTags.size).also {
-                for (tag in presentTags) {
-                    it += TagRef.create(tag)
-                }
-                for (tag in createdTags) {
-                    it += TagRef.create(tag)
-                }
+            HashSet<TagEntity>(presentTags.size + createdTags.size).apply {
+                addAll(presentTags)
+                addAll(createdTags)
             }
         }
 

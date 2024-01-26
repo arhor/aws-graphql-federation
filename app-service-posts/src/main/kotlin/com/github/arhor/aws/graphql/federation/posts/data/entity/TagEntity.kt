@@ -20,7 +20,5 @@ data class TagEntity(
 
         const val COL_ID = "id"
         const val COL_NAME = "name"
-
-        fun create(name: String) = TagEntity(name = name)
     }
 }

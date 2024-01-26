@@ -7,7 +7,7 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsEntityFetcher
 
 @DgsComponent
-class FederatedEntityFetchers {
+class FederatedEntityFetcher {
 
     /* Entity Fetchers */
 

@@ -1,27 +1,26 @@
 CREATE TABLE IF NOT EXISTS "posts"
 (
-    "id"                   BIGSERIAL       NOT NULL PRIMARY KEY,
-    "user_id"              BIGINT          NULL,
-    "header"               VARCHAR(512)    NOT NULL,
-    "banner"               VARCHAR(512)    NULL,
-    "content"              TEXT            NOT NULL,
-    "options"              BIGINT          NOT NULL,
-    "version"              BIGINT          NOT NULL,
-    "created_date_time"    TIMESTAMP       NOT NULL,
-    "updated_date_time"    TIMESTAMP       NULL
+    "id"                BIGSERIAL    NOT NULL PRIMARY KEY,
+    "user_id"           BIGINT       NULL,
+    "header"            VARCHAR(512) NOT NULL,
+    "content"           TEXT         NOT NULL,
+    "options"           BIGINT       NOT NULL,
+    "version"           BIGINT       NOT NULL,
+    "created_date_time" TIMESTAMP    NOT NULL,
+    "updated_date_time" TIMESTAMP    NULL
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "tags"
 (
-    "id"         BIGSERIAL      NOT NULL PRIMARY KEY,
-    "name"       VARCHAR(50)    NOT NULL UNIQUE
+    "id"   BIGSERIAL   NOT NULL PRIMARY KEY,
+    "name" VARCHAR(50) NOT NULL UNIQUE
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "posts_has_tags"
 (
-    "id"         BIGSERIAL      NOT NULL PRIMARY KEY,
-    "post_id"    BIGINT         NOT NULL,
-    "tag_id"     BIGINT         NOT NULL,
+    "id"      BIGSERIAL NOT NULL PRIMARY KEY,
+    "post_id" BIGINT    NOT NULL,
+    "tag_id"  BIGINT    NOT NULL,
 
     CONSTRAINT "UQ__posts_has_tags__post_id__tag_id"
         UNIQUE ("post_id", "tag_id"),

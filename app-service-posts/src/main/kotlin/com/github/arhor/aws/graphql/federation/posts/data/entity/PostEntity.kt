@@ -25,9 +25,6 @@ data class PostEntity(
     @Column(COL_HEADER)
     val header: String,
 
-    @Column(COL_BANNER)
-    val banner: String?,
-
     @Column(COL_CONTENT)
     val content: String,
 
@@ -60,7 +57,6 @@ data class PostEntity(
         const val COL_ID = "id"
         const val COL_USER_ID = "user_id"
         const val COL_HEADER = "header"
-        const val COL_BANNER = "banner"
         const val COL_CONTENT = "content"
         const val COL_VERSION = "version"
         const val COL_CREATED_DATE_TIME = "created_date_time"

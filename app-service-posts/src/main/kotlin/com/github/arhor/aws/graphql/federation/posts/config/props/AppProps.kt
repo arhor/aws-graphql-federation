@@ -10,7 +10,6 @@ data class AppProps(
     data class Aws(
         val sns: Sns,
         val sqs: Sns,
-        val s3: S3,
     ) {
         data class Sns(
             val postEvents: String,
@@ -18,10 +17,6 @@ data class AppProps(
 
         data class Sqs(
             val userDeletedEvents: String,
-        )
-
-        data class S3(
-            val bannersBucketName: String,
         )
     }
 }

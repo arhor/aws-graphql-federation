@@ -9,7 +9,6 @@ const CREATE_POST = gql`
             id
             userId
             header
-            banner
             content
             options
             tags

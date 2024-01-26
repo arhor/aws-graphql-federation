@@ -24,7 +24,6 @@ input PostsLookupInput {
 input CreatePostInput {
     userId: Long!
     header: String!
-    banner: Upload
     content: String!
     options: [Option!]
     tags: [String!]
@@ -42,7 +41,6 @@ type Post @key(fields: "id") {
     id: Long!
     userId: Long
     header: String!
-    banner: String
     content: String!
     options: [Option!]
     tags: [String!]
