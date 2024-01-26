@@ -60,16 +60,16 @@ jobs:
 #          min-coverage-changed-files: 60
 
       - name: Upload Report
-        uses: 'actions/upload-artifact@v2'
+        uses: 'actions/upload-artifact@v4'
         with:
           name: report.xml
-          path: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          path: ${{ github.workspace }}/app-service-users/build/reports/jacoco/test/jacocoTestReport.xml
 
       - name: Jacoco Report to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
-          path: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
+          paths: ${{ github.workspace }}/app-service-users/build/reports/jacoco/test/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
