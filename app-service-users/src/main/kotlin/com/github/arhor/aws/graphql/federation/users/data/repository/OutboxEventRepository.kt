@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository
 interface OutboxEventRepository : CrudRepository<OutboxEventEntity, Long> {
 
     @Query(name = "OutboxEventEntity.dequeueOldest")
-    fun dequeueOldest(eventsNum: Int): List<OutboxEventEntity>
+    fun dequeueOldest(eventType: String, eventsNum: Int): List<OutboxEventEntity>
 }

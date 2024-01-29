@@ -16,13 +16,14 @@ internal class OutboxEventRepositoryTest : RepositoryTestBase() {
     @Test
     fun `should deque existing outbox events removing them from the DB`() {
         // given
+        val expectedEventType = "test-event"
         val expectedSizeOfBatch = 5
         val expectedEventsAtAll = expectedSizeOfBatch * 2
 
         val outboxEvents = outboxEventRepository.saveAll(
             (1..expectedEventsAtAll).map {
                 OutboxEventEntity(
-                    type = "test-event-$it",
+                    type = "test-event",
                     payload = emptyMap(),
                     headers = emptyMap(),
                 )
@@ -31,8 +32,8 @@ internal class OutboxEventRepositoryTest : RepositoryTestBase() {
 
         // when
         val allOutboxEventsBefore = outboxEventRepository.findAll()
-        val outboxEvents1 = outboxEventRepository.dequeueOldest(expectedSizeOfBatch)
-        val outboxEvents2 = outboxEventRepository.dequeueOldest(expectedSizeOfBatch)
+        val outboxEvents1 = outboxEventRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
+        val outboxEvents2 = outboxEventRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
         val allOutboxEventsAfter = outboxEventRepository.findAll()
 
         // then
