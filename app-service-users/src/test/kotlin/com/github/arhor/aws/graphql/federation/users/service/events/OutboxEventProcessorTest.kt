@@ -42,11 +42,11 @@ internal class OutboxEventProcessorTest {
         val outboxEvent = OutboxEventEntity(
             type = UserEvent.USER_EVENT_DELETED,
             payload = mapOf("id" to 1),
-            headers = mapOf("type" to "test-event"),
+            headers = mapOf("type" to UserEvent.USER_EVENT_DELETED),
         )
 
         // given
-        every { outboxEventRepository.dequeueOldest(any()) } returns listOf(outboxEvent)
+        every { outboxEventRepository.dequeueOldest(any(), any()) } returns listOf(outboxEvent)
         every { outboxEventPublisher.publish(any()) } just runs
         every { outboxEventRepository.delete(any()) } just runs
 
@@ -54,7 +54,7 @@ internal class OutboxEventProcessorTest {
         outboxEventProcessor.processOutboxEvents()
 
         // then
-        verify(exactly = 1) { outboxEventRepository.dequeueOldest(50) }
+        verify(exactly = 1) { outboxEventRepository.dequeueOldest(UserEvent.USER_EVENT_DELETED, 10) }
         verify(exactly = 1) { outboxEventPublisher.publish(outboxEvent) }
         verify(exactly = 1) { outboxEventRepository.delete(outboxEvent) }
     }

@@ -15,7 +15,7 @@ class OutboxEventProcessorImpl(
     private val outboxEventPublisher: OutboxEventPublisher,
 ) : OutboxEventProcessor {
 
-    @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
     @Transactional
     override fun processOutboxEvents() {
         val events =
@@ -30,6 +30,6 @@ class OutboxEventProcessorImpl(
     }
 
     companion object {
-        private const val DEFAULT_EVENTS_BATCH_SIZE = 50
+        private const val DEFAULT_EVENTS_BATCH_SIZE = 10
     }
 }
