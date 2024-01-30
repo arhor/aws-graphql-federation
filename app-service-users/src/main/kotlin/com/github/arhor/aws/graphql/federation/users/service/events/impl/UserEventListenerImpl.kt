@@ -19,8 +19,8 @@ class UserEventListenerImpl(
     private val outboxMessageRepository: OutboxMessageRepository,
 ) : UserEventListener {
 
-    @Transactional(propagation = MANDATORY)
     @EventListener(UserEvent::class)
+    @Transactional(propagation = MANDATORY)
     override fun onUserEvent(event: UserEvent) {
         outboxMessageRepository.save(
             OutboxMessageEntity(
