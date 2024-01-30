@@ -12,6 +12,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
+import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Retryable;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
+@Trace
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -106,8 +108,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void unlinkUserComments(final long userId) {
-        commentRepository.unlinkAllFromUser(userId);
+    public void unlinkUsersComments(final Collection<Long> userIds) {
+        if (!userIds.isEmpty()) {
+            commentRepository.unlinkAllFromUsers(userIds);
+        }
     }
 
     @Override

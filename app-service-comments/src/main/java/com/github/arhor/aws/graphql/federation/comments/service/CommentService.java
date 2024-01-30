@@ -22,7 +22,7 @@ public interface CommentService {
 
     boolean deleteComment(long id);
 
-    void unlinkUserComments(long userId);
+    void unlinkUsersComments(Collection<Long> userIds);
 
     void deletePostComments(long postId);
 }

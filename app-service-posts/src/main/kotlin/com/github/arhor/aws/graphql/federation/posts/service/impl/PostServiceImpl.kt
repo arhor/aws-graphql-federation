@@ -17,6 +17,7 @@ import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmi
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
@@ -24,6 +25,7 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
+@Trace
 @Service
 class PostServiceImpl @Autowired constructor(
     private val postMapper: PostMapper,
@@ -106,8 +108,10 @@ class PostServiceImpl @Autowired constructor(
     }
 
     @Transactional
-    override fun unlinkPostsFromUser(userId: Long) {
-        postRepository.unlinkAllFromUser(userId)
+    override fun unlinkPostsFromUsers(userIds: Collection<Long>) {
+        if (userIds.isNotEmpty()) {
+            postRepository.unlinkAllFromUsers(userIds)
+        }
     }
 
     private fun materialize(tags: List<String>?): Set<TagEntity> = when {

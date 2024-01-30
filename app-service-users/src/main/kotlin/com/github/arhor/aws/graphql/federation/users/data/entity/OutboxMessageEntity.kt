@@ -8,9 +8,9 @@ import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import java.util.UUID
 
-@Table(OutboxEventEntity.TABLE_NAME)
+@Table(OutboxMessageEntity.TABLE_NAME)
 @Immutable
-data class OutboxEventEntity(
+data class OutboxMessageEntity(
     @Id
     @Column("id")
     val id: UUID? = null,
@@ -18,17 +18,14 @@ data class OutboxEventEntity(
     @Column("type")
     val type: String,
 
-    @Column("payload")
-    val payload: Map<String, Any?>,
-
-    @Column("headers")
-    val headers: Map<String, Any?>,
+    @Column("data")
+    val data: Map<String, Any?>,
 
     @CreatedDate
     @Column("created_date_time")
     val createdDateTime: LocalDateTime? = null,
 ) {
     companion object {
-        const val TABLE_NAME = "outbox_events"
+        const val TABLE_NAME = "outbox_messages"
     }
 }

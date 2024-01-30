@@ -2,8 +2,7 @@ package com.github.arhor.aws.graphql.federation.users.service.events.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
-import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxEventEntity
-import com.github.arhor.aws.graphql.federation.users.service.events.OutboxEventPublisher
+import com.github.arhor.aws.graphql.federation.users.service.events.UserEventPublisher
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import org.springframework.messaging.MessagingException
@@ -12,10 +11,10 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
 @Component
-class OutboxEventPublisherImpl(
+class UserEventPublisherImpl(
     private val appProps: AppProps,
     private val sns: SnsOperations,
-) : OutboxEventPublisher {
+) : UserEventPublisher {
 
     @Retryable(
         include = [
@@ -27,22 +26,10 @@ class OutboxEventPublisherImpl(
         ),
         maxAttemptsExpression = "\${app-props.retry.max-attempts}",
     )
-    override fun publish(outboxEvent: OutboxEventEntity) {
-        val snsTopicName = determineSnsTopicName(outboxEvent.type)
-        val notification = SnsNotification(outboxEvent.payload, outboxEvent.headers)
+    override fun publish(userEvent: UserEvent) {
+        val snsTopicName = appProps.aws.sns.userEvents
+        val notification = SnsNotification(userEvent, userEvent.attributes())
 
         sns.sendNotification(snsTopicName, notification)
-    }
-
-    private fun determineSnsTopicName(outboxEventType: String): String = when (outboxEventType) {
-        UserEvent.USER_EVENT_DELETED -> {
-            appProps.aws.sns.userEvents
-        }
-
-        else -> {
-            throw UnsupportedOperationException(
-                "Unsupported outbox event type: [$outboxEventType]"
-            )
-        }
     }
 }

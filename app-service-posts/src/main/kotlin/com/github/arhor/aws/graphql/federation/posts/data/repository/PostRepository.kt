@@ -15,6 +15,6 @@ interface PostRepository : ListCrudRepository<PostEntity, Long> {
     fun findAllByUserIdIn(userIds: Collection<Long>): List<PostProjection>
 
     @Modifying
-    @Query(name = "PostEntity.unlinkAllFromUser")
-    fun unlinkAllFromUser(userId: Long)
+    @Query(name = "PostEntity.unlinkAllFromUsers")
+    fun unlinkAllFromUsers(userIds: Collection<Long>)
 }

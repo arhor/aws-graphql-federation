@@ -4,27 +4,28 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxEventEntity
-import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxEventRepository
-import com.github.arhor.aws.graphql.federation.users.service.events.UserEventEmitter
+import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository
+import com.github.arhor.aws.graphql.federation.users.service.events.UserEventListener
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation.MANDATORY
 import org.springframework.transaction.annotation.Transactional
 
 @Trace
 @Component
-class UserEventEmitterImpl(
+class UserEventListenerImpl(
     private val objectMapper: ObjectMapper,
-    private val outboxEventRepository: OutboxEventRepository,
-) : UserEventEmitter {
+    private val outboxMessageRepository: OutboxMessageRepository,
+) : UserEventListener {
 
     @Transactional(propagation = MANDATORY)
-    override fun emit(event: UserEvent) {
-        outboxEventRepository.save(
-            OutboxEventEntity(
+    @EventListener(UserEvent::class)
+    override fun onUserEvent(event: UserEvent) {
+        outboxMessageRepository.save(
+            OutboxMessageEntity(
                 type = event.type(),
-                payload = objectMapper.convertValue(event),
-                headers = event.attributes(),
+                data = objectMapper.convertValue(event),
             )
         )
     }
