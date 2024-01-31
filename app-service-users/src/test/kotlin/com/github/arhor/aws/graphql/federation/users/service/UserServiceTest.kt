@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
+import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
@@ -43,12 +44,14 @@ internal class UserServiceTest {
 
     private val userMapper: UserMapper = mockk()
     private val userRepository: UserRepository = mockk()
+    private val authRepository: AuthRepository = mockk()
     private val eventPublisher: ApplicationEventPublisher = mockk()
     private val passwordEncoder: PasswordEncoder = mockk()
 
     private val userService = UserServiceImpl(
         userMapper,
         userRepository,
+        authRepository,
         eventPublisher,
         passwordEncoder,
     )
@@ -173,6 +176,7 @@ internal class UserServiceTest {
             every { entity.id } returns userId
             every { entity.username } returns request.username
             every { entity.password } returns request.password
+            every { entity.authorities } returns emptySet()
             every { userRepository.findByUsername(any()) } returns entity
             every { passwordEncoder.matches(any(), any()) } returns true
 

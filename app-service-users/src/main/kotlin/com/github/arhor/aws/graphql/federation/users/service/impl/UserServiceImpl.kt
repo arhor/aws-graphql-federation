@@ -69,12 +69,14 @@ class UserServiceImpl(
                 val authNames = buildSet {
                     // TODO: move to the DB
                     add(ROLE_USER)
-                    addAll(
-                        user.authorities
-                            .map { it.authId.id }
-                            .let { authRepository.findAllById(it) }
-                            .map { it.name }
-                    )
+                    if (user.authorities.isNotEmpty()) {
+                        addAll(
+                            user.authorities
+                                .map { it.authId.id }
+                                .let { authRepository.findAllById(it) }
+                                .map { it.name }
+                        )
+                    }
                 }
 
                 return CurrentUser(
