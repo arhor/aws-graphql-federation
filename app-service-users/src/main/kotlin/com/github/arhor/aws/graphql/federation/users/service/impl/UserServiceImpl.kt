@@ -7,7 +7,6 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
@@ -19,10 +18,10 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Upd
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
-import com.github.arhor.aws.graphql.federation.users.service.events.UserEventEmitter
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
 import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
 import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -35,9 +34,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UserServiceImpl(
     private val userMapper: UserMapper,
-    private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val userEventEmitter: UserEventEmitter,
+    private val eventPublisher: ApplicationEventPublisher,
     private val passwordEncoder: PasswordEncoder,
 ) : UserService {
 
@@ -123,7 +121,7 @@ class UserServiceImpl(
                 null -> false
                 else -> {
                     userRepository.delete(user)
-                    userEventEmitter.emit(UserEvent.Deleted(id = user.id!!))
+                    eventPublisher.publishEvent(UserEvent.Deleted(ids = setOf(user.id!!)))
                     true
                 }
             }

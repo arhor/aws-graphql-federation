@@ -15,7 +15,10 @@ class PostBatchLoader(
     private val postService: PostService,
 ) : MappedBatchLoader<Long, List<Post>> {
 
-    override fun load(keys: Set<Long>): CompletableFuture<Map<Long, List<Post>>> {
-        return CompletableFuture.supplyAsync({ postService.getPostsByUserIds(keys) }, executor)
-    }
+    override fun load(keys: Set<Long>): CompletableFuture<Map<Long, List<Post>>> =
+        if (keys.isEmpty()) {
+            CompletableFuture.completedFuture(emptyMap())
+        } else {
+            CompletableFuture.supplyAsync({ postService.getPostsByUserIds(keys) }, executor)
+        }
 }

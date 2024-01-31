@@ -17,6 +17,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,7 +138,7 @@ public class CommentRepositoryTest {
         );
 
         // when
-        commentRepository.unlinkAllFromUser(1L);
+        commentRepository.unlinkAllFromUsers(Set.of(1L));
 
         final var commentsByUserId = commentRepository.findAllByUserIdIn(List.of(1L));
         final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(1L));

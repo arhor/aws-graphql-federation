@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.users.service.events
 
-interface OutboxEventProcessor {
+interface UserEventProcessor {
 
-    fun processOutboxEvents()
+    fun processUserDeletedEvents()
 }

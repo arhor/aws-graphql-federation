@@ -12,6 +12,8 @@ import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
+import com.github.arhor.aws.graphql.federation.tracing.Trace;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Retryable;
@@ -27,6 +29,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
+@Trace
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -34,24 +37,33 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
 
-    @Override
-    @Transactional(readOnly = true)
-    public Map<Long, List<Comment>> getCommentsByUserIds(final Collection<Long> userIds) {
-        return findCommentsThenGroupBy(
-            userIds,
+    private GrouppingLoader<CommentEntity, Comment, Long> usersCommentsLoader;
+    private GrouppingLoader<CommentEntity, Comment, Long> postsCommentsLoader;
+
+    @PostConstruct
+    public void init() {
+        usersCommentsLoader = new GrouppingLoader<>(
             commentRepository::findAllByUserIdIn,
+            commentMapper::mapToDto,
             Comment::getUserId
+        );
+        postsCommentsLoader = new GrouppingLoader<>(
+            commentRepository::findAllByPostIdIn,
+            commentMapper::mapToDto,
+            Comment::getPostId
         );
     }
 
     @Override
     @Transactional(readOnly = true)
+    public Map<Long, List<Comment>> getCommentsByUserIds(final Collection<Long> userIds) {
+        return usersCommentsLoader.loadBy(userIds);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Map<Long, List<Comment>> getCommentsByPostIds(final Collection<Long> postIds) {
-        return findCommentsThenGroupBy(
-            postIds,
-            commentRepository::findAllByPostIdIn,
-            Comment::getPostId
-        );
+        return postsCommentsLoader.loadBy(postIds);
     }
 
     @Override
@@ -106,8 +118,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public void unlinkUserComments(final long userId) {
-        commentRepository.unlinkAllFromUser(userId);
+    public void unlinkUsersComments(final Collection<Long> userIds) {
+        if (!userIds.isEmpty()) {
+            commentRepository.unlinkAllFromUsers(userIds);
+        }
     }
 
     @Override
@@ -117,22 +131,27 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * @param ids        ids of the comments
      * @param dataSource function that will be used to load comments in case ids collection is not empty
+     * @param dataMapper function that converts entities of type T to type D
      * @param classifier function that will be used to classify object for grouping operation
+     * @param <T>        entity type loaded by datasource
+     * @param <D>        type of output objects
+     * @param <K>        type of key
      */
-    private <K> Map<K, List<Comment>> findCommentsThenGroupBy(
-        final Collection<K> ids,
-        final Function<Collection<K>, Stream<CommentEntity>> dataSource,
-        final Function<Comment, K> classifier
+    private record GrouppingLoader<T, D, K>(
+        Function<Collection<K>, Stream<T>> dataSource,
+        Function<T, D> dataMapper,
+        Function<D, K> classifier
     ) {
-        if (ids.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        try (var data = dataSource.apply(ids)) {
-            return data
-                .map(commentMapper::mapToDto)
-                .collect(groupingBy(classifier));
+        Map<K, List<D>> loadBy(final Collection<K> ids) {
+            if (ids.isEmpty()) {
+                return Collections.emptyMap();
+            }
+            try (var data = dataSource.apply(ids)) {
+                return data
+                    .map(dataMapper)
+                    .collect(groupingBy(classifier));
+            }
         }
     }
 }

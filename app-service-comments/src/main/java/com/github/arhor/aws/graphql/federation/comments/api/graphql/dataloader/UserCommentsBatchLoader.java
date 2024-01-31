@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.dataloader.MappedBatchLoader;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +24,8 @@ public class UserCommentsBatchLoader implements MappedBatchLoader<Long, List<Com
 
     @Override
     public CompletableFuture<Map<Long, List<Comment>>> load(final Set<Long> keys) {
-        return CompletableFuture.supplyAsync(() -> commentService.getCommentsByUserIds(keys), executor);
+        return keys.isEmpty()
+            ? CompletableFuture.completedFuture(Collections.emptyMap())
+            : CompletableFuture.supplyAsync(() -> commentService.getCommentsByUserIds(keys), executor);
     }
 }

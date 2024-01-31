@@ -1,17 +1,17 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
-import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxEventEntity
-import com.github.arhor.aws.graphql.federation.users.data.entity.callback.OutboxEventEntityCallback
+import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.users.data.entity.callback.OutboxMessageEntityCallback
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
-@ContextConfiguration(classes = [OutboxEventEntityCallback::class])
-internal class OutboxEventRepositoryTest : RepositoryTestBase() {
+@ContextConfiguration(classes = [OutboxMessageEntityCallback::class])
+internal class OutboxMessageRepositoryTest : RepositoryTestBase() {
 
     @Autowired
-    private lateinit var outboxEventRepository: OutboxEventRepository
+    private lateinit var outboxMessageRepository: OutboxMessageRepository
 
     @Test
     fun `should deque existing outbox events removing them from the DB`() {
@@ -20,21 +20,20 @@ internal class OutboxEventRepositoryTest : RepositoryTestBase() {
         val expectedSizeOfBatch = 5
         val expectedEventsAtAll = expectedSizeOfBatch * 2
 
-        val outboxEvents = outboxEventRepository.saveAll(
+        val outboxEvents = outboxMessageRepository.saveAll(
             (1..expectedEventsAtAll).map {
-                OutboxEventEntity(
+                OutboxMessageEntity(
                     type = "test-event",
-                    payload = emptyMap(),
-                    headers = emptyMap(),
+                    data = emptyMap(),
                 )
             }
         )
 
         // when
-        val allOutboxEventsBefore = outboxEventRepository.findAll()
-        val outboxEvents1 = outboxEventRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
-        val outboxEvents2 = outboxEventRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
-        val allOutboxEventsAfter = outboxEventRepository.findAll()
+        val allOutboxEventsBefore = outboxMessageRepository.findAll()
+        val outboxEvents1 = outboxMessageRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
+        val outboxEvents2 = outboxMessageRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
+        val allOutboxEventsAfter = outboxMessageRepository.findAll()
 
         // then
         assertThat(allOutboxEventsBefore)

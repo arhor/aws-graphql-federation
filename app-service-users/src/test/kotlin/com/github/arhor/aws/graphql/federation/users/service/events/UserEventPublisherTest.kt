@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.users.service.events
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
-import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxEventEntity
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
@@ -28,12 +27,12 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.time.Duration.Companion.seconds
 
 @SpringJUnitConfig
-internal class OutboxEventPublisherTest {
+internal class UserEventPublisherTest {
 
     @EnableRetry
     @Configuration
     @ComponentScan(
-        includeFilters = [Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [OutboxEventPublisher::class])],
+        includeFilters = [Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [UserEventPublisher::class])],
         useDefaultFilters = false,
     )
     class Config
@@ -45,17 +44,13 @@ internal class OutboxEventPublisherTest {
     private lateinit var sns: SnsOperations
 
     @Autowired
-    private lateinit var outboxEventPublisher: OutboxEventPublisher
+    private lateinit var outboxEventPublisher: UserEventPublisher
 
 
     @Test
     fun `should send outbox event as notifications to the SNS with correct payload and headers`() {
         // given
-        val outboxEvent = OutboxEventEntity(
-            type = UserEvent.USER_EVENT_DELETED,
-            payload = emptyMap(),
-            headers = emptyMap(),
-        )
+        val userEvent = UserEvent.Deleted(ids = setOf(1))
 
         val actualSnsTopicName = slot<String>()
         val actualNotification = slot<SnsNotification<*>>()
@@ -65,7 +60,7 @@ internal class OutboxEventPublisherTest {
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // when
-        outboxEventPublisher.publish(outboxEvent)
+        outboxEventPublisher.publish(userEvent)
 
         // then
         assertThat(actualSnsTopicName.captured)
@@ -73,19 +68,15 @@ internal class OutboxEventPublisherTest {
 
         assertThat(actualNotification.captured)
             .satisfies(
-                { assertThat(it.payload).isEqualTo(outboxEvent.payload) },
-                { assertThat(it.headers).isEqualTo(outboxEvent.headers) },
+                { assertThat(it.payload).isEqualTo(userEvent) },
+                { assertThat(it.headers).isEqualTo(userEvent.attributes()) },
             )
     }
 
     @Test
     fun `should retry on MessagingException sending notification to SNS`() {
         // given
-        val outboxEvent = OutboxEventEntity(
-            type = UserEvent.USER_EVENT_DELETED,
-            payload = emptyMap(),
-            headers = emptyMap(),
-        )
+        val userEvent = UserEvent.Deleted(ids = setOf(1))
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
 
@@ -93,7 +84,7 @@ internal class OutboxEventPublisherTest {
         every { sns.sendNotification(any(), any()) } throwsMany errors andThenJust runs
 
         // when
-        outboxEventPublisher.publish(outboxEvent)
+        outboxEventPublisher.publish(userEvent)
 
         // then
         verify(exactly = 3) { appProps.aws.sns.userEvents }

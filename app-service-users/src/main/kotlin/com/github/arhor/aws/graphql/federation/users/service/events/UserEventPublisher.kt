@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.users.service.events
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 
-interface UserEventEmitter {
+interface UserEventPublisher {
 
-    fun emit(event: UserEvent)
+    fun publish(userEvent: UserEvent)
 }

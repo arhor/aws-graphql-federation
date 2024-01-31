@@ -7,7 +7,6 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
-import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
@@ -15,7 +14,6 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Del
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
-import com.github.arhor.aws.graphql.federation.users.service.events.UserEventEmitter
 import com.github.arhor.aws.graphql.federation.users.service.impl.UserServiceImpl
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
 import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
@@ -34,26 +32,24 @@ import org.assertj.core.api.Assertions.from
 import org.assertj.core.api.InstanceOfAssertFactories.throwable
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
-import java.util.Optional
 
 internal class UserServiceTest {
 
     private val userMapper: UserMapper = mockk()
-    private val authRepository: AuthRepository = mockk()
     private val userRepository: UserRepository = mockk()
-    private val userEventEmitter: UserEventEmitter = mockk()
+    private val eventPublisher: ApplicationEventPublisher = mockk()
     private val passwordEncoder: PasswordEncoder = mockk()
 
     private val userService = UserServiceImpl(
         userMapper,
-        authRepository,
         userRepository,
-        userEventEmitter,
+        eventPublisher,
         passwordEncoder,
     )
 
@@ -380,7 +376,7 @@ internal class UserServiceTest {
 
             every { userRepository.findByIdOrNull(any()) } returns mockk { every { id } returns expectedId }
             every { userRepository.delete(any()) } just runs
-            every { userEventEmitter.emit(any()) } just runs
+            every { eventPublisher.publishEvent(any<Any>()) } just runs
 
             // when
             userService.deleteUser(DeleteUserInput(expectedId))
@@ -388,9 +384,9 @@ internal class UserServiceTest {
             // then
             verify(exactly = 1) { userRepository.findByIdOrNull(any()) }
             verify(exactly = 1) { userRepository.delete(any()) }
-            verify(exactly = 1) { userEventEmitter.emit(any()) }
+            verify(exactly = 1) { eventPublisher.publishEvent(any<Any>()) }
 
-            confirmVerified(userMapper, userRepository, userEventEmitter, passwordEncoder)
+            confirmVerified(userMapper, userRepository, eventPublisher, passwordEncoder)
         }
     }
 

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.Set;
+
 import static org.mockito.BDDMockito.then;
 
 @SpringJUnitConfig(UserEventsListener.class)
@@ -21,8 +23,8 @@ class UserEventsListenerTest {
     @Test
     void should_call_unlinkUserComments_method_on_user_deleted_event() {
         // given
-        final var userId = 1L;
-        final var event = new UserEvent.Deleted(userId);
+        final var userIds = Set.of(1L);
+        final var event = new UserEvent.Deleted(userIds);
 
         // when
         userEventsListener.handleUserDeletedEvent(event);
@@ -30,6 +32,6 @@ class UserEventsListenerTest {
         // then
         then(commentService)
             .should()
-            .unlinkUserComments(userId);
+            .unlinkUsersComments(userIds);
     }
 }
