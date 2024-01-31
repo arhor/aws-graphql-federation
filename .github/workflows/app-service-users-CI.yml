@@ -85,8 +85,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3-beta
-        with:
-          gradle-version: wrapper
 
       - name: Generate JaCoCo Report
-        run: 'gradle :app-service-users:jacocoTestReport'
+        run: './gradlew :app-service-users:jacocoTestReport'
