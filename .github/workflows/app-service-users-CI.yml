@@ -47,7 +47,7 @@ jobs:
           gradle-version: wrapper
 
       - name: Build Users service
-        run: 'gradle :app-service-users:build'
+        run: './gradlew :app-service-users:build'
 
       - name: Add JaCoCo report to PR
         id: jacoco
