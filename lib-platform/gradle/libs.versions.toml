@@ -1,6 +1,6 @@
 [versions]
 java = "21"
-kotlin = "1.9.21"
+kotlin = "1.9.22"
 spring-boot = "3.2.1"
 spring-cloud-aws = "3.0.1"
 spring-dependency-management = "1.1.4"
