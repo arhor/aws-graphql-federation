@@ -14,7 +14,10 @@ class TagBatchLoader(
     private val tagService: TagService,
 ) : MappedBatchLoader<Long, List<String>> {
 
-    override fun load(keys: Set<Long>): CompletableFuture<Map<Long, List<String>>> {
-        return CompletableFuture.supplyAsync({ tagService.getTagsByPostIds(keys) }, executor)
-    }
+    override fun load(keys: Set<Long>): CompletableFuture<Map<Long, List<String>>> =
+        if (keys.isEmpty()) {
+            CompletableFuture.completedFuture(emptyMap())
+        } else {
+            CompletableFuture.supplyAsync({ tagService.getTagsByPostIds(keys) }, executor)
+        }
 }

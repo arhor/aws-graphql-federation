@@ -14,7 +14,10 @@ class AuthBatchLoader(
     private val authService: AuthService,
 ) : MappedBatchLoader<Long, List<String>> {
 
-    override fun load(keys: Set<Long>): CompletableFuture<Map<Long, List<String>>> {
-        return CompletableFuture.supplyAsync({ authService.getAuthoritiesByUserIds(keys) }, executor)
-    }
+    override fun load(keys: Set<Long>): CompletableFuture<Map<Long, List<String>>> =
+        if (keys.isEmpty()) {
+            CompletableFuture.completedFuture(emptyMap())
+        } else {
+            CompletableFuture.supplyAsync({ authService.getAuthoritiesByUserIds(keys) }, executor)
+        }
 }
