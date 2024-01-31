@@ -54,28 +54,6 @@ jobs:
           path: ${{ github.workspace }}/app-service-users/build/jacoco/test.exec
           retention-days: 1
 
-      - name: Add JaCoCo report to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.6.1
-        with:
-          paths: ${{ github.workspace }}/app-service-users/build/reports/jacoco/test/jacocoTestReport.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 40
-          min-coverage-changed-files: 80
-          title: app-service-users code coverage
-          update-comment: true
-          pass-emoji: ✔️
-          fail-emoji: ❌
-
-      - name: Add the code coverage info to build summary
-        run: |
-          echo "### JaCoCo Test Coverage Summary"                                        >> $GITHUB_STEP_SUMMARY
-          echo "|     Type      |                      Coverage                       |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------------|-----------------------------------------------------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Overall files | ${{ steps.jacoco.outputs.coverage-overall }}%       |" >> $GITHUB_STEP_SUMMARY
-          echo "| Changed files | ${{ steps.jacoco.outputs.coverage-changed-files }}% |" >> $GITHUB_STEP_SUMMARY
-          echo "---"                                                                     >> $GITHUB_STEP_SUMMARY
-
   code-coverage:
     name: Code Coverage Verification
     runs-on: ubuntu-latest
@@ -97,3 +75,25 @@ jobs:
 
       - name: Generate JaCoCo Report
         run: './gradlew :app-service-users:jacocoTestReport'
+
+      - name: Add JaCoCo report to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: ${{ github.workspace }}/app-service-users/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 40
+          min-coverage-changed-files: 80
+          title: app-service-users code coverage
+          update-comment: true
+          pass-emoji: ✔️
+          fail-emoji: ❌
+
+      - name: Add the code coverage info to build summary
+        run: |
+          echo "### JaCoCo Test Coverage Summary"                                        >> $GITHUB_STEP_SUMMARY
+          echo "|     Type      |                      Coverage                       |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------------|-----------------------------------------------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Overall files | ${{ steps.jacoco.outputs.coverage-overall }}%       |" >> $GITHUB_STEP_SUMMARY
+          echo "| Changed files | ${{ steps.jacoco.outputs.coverage-changed-files }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "---"                                                                     >> $GITHUB_STEP_SUMMARY
