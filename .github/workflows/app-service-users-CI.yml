@@ -7,24 +7,14 @@ on:
     paths:
       - '.github/workflows/app-service-users-CI.yml'
       - 'app-service-users/**'
-      - 'lib-common/**'
-      - 'lib-platform/**'
-      - 'lib-spring-starter-config/**'
-      - 'lib-spring-starter-dgs/**'
-      - 'lib-spring-starter-security/**'
-      - 'lib-spring-starter-tracing/**'
+      - 'lib-*/**'
   pull_request:
     branches:
       - 'master'
     paths:
       - '.github/workflows/app-service-users-CI.yml'
       - 'app-service-users/**'
-      - 'lib-common/**'
-      - 'lib-platform/**'
-      - 'lib-spring-starter-config/**'
-      - 'lib-spring-starter-dgs/**'
-      - 'lib-spring-starter-security/**'
-      - 'lib-spring-starter-tracing/**'
+      - 'lib-*/**'
   workflow_dispatch:
 
 jobs:
@@ -73,12 +63,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3-beta
 
-      - uses: actions/download-artifact@v4
+      - name: Download compiled classes and JaCoCo exec
+        uses: actions/download-artifact@v4
         with:
           name: build
           path: ${{ github.workspace }}/app-service-users/build
 
-      - name: Generate JaCoCo report and verify coverage
+      - name: Generate JaCoCo reports and verify code coverage
         run: './gradlew :app-service-users:jacocoTestReport :app-service-users:jacocoTestCoverageVerification'
 
       - name: Upload JaCoCo html report
@@ -87,9 +78,11 @@ jobs:
         with:
           name: jacoco-report
           path: ${{ github.workspace }}/app-service-users/build/reports/jacoco/test/html
+          retention-days: 1
 
       - name: Add JaCoCo report to PR
         id: jacoco
+        if: github.event_name != 'workflow_dispatch'
         uses: madrapps/jacoco-report@v1.6.1
         with:
           paths: ${{ github.workspace }}/app-service-users/build/reports/jacoco/test/jacocoTestReport.xml
@@ -102,6 +95,7 @@ jobs:
           fail-emoji: ❌
 
       - name: Add the code coverage info to build summary
+        if: github.event_name != 'workflow_dispatch'
         run: |
           echo "### JaCoCo Test Coverage Summary"                                        >> $GITHUB_STEP_SUMMARY
           echo "|     Type      |                      Coverage                       |" >> $GITHUB_STEP_SUMMARY
