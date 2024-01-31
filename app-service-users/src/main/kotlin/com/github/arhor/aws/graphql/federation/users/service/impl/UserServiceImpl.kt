@@ -67,6 +67,7 @@ class UserServiceImpl(
         if (user != null) {
             if (passwordEncoder.matches(password, user.password)) {
                 val authNames = buildSet {
+                    // TODO: move to the DB
                     add(ROLE_USER)
                     addAll(
                         user.authorities
