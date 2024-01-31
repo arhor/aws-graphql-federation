@@ -13,6 +13,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMa
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Retryable;
@@ -36,24 +37,33 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
 
-    @Override
-    @Transactional(readOnly = true)
-    public Map<Long, List<Comment>> getCommentsByUserIds(final Collection<Long> userIds) {
-        return findCommentsThenGroupBy(
-            userIds,
+    private GrouppingLoader<CommentEntity, Comment, Long> usersCommentsLoader;
+    private GrouppingLoader<CommentEntity, Comment, Long> postsCommentsLoader;
+
+    @PostConstruct
+    public void init() {
+        usersCommentsLoader = new GrouppingLoader<>(
             commentRepository::findAllByUserIdIn,
+            commentMapper::mapToDto,
             Comment::getUserId
+        );
+        postsCommentsLoader = new GrouppingLoader<>(
+            commentRepository::findAllByPostIdIn,
+            commentMapper::mapToDto,
+            Comment::getPostId
         );
     }
 
     @Override
     @Transactional(readOnly = true)
+    public Map<Long, List<Comment>> getCommentsByUserIds(final Collection<Long> userIds) {
+        return usersCommentsLoader.loadBy(userIds);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Map<Long, List<Comment>> getCommentsByPostIds(final Collection<Long> postIds) {
-        return findCommentsThenGroupBy(
-            postIds,
-            commentRepository::findAllByPostIdIn,
-            Comment::getPostId
-        );
+        return postsCommentsLoader.loadBy(postIds);
     }
 
     @Override
@@ -137,6 +147,23 @@ public class CommentServiceImpl implements CommentService {
             return data
                 .map(commentMapper::mapToDto)
                 .collect(groupingBy(classifier));
+        }
+    }
+
+    private record GrouppingLoader<T, D, K>(
+        Function<Collection<K>, Stream<T>> dataSource,
+        Function<T, D> converter,
+        Function<D, K> classifier
+    ) {
+        Map<K, List<D>> loadBy(final Collection<K> ids) {
+            if (ids.isEmpty()) {
+                return Collections.emptyMap();
+            }
+            try (var data = dataSource.apply(ids)) {
+                return data
+                    .map(converter)
+                    .collect(groupingBy(classifier));
+            }
         }
     }
 }

@@ -37,12 +37,28 @@ class CommentServiceTest {
     private CommentService commentService;
 
     @Test
-    void getCommentsByUserIds_should_not_interact_with_repository_if_userIds_argument_is_empty_list() {
+    void getCommentsByUserIds_should_not_interact_with_repository_if_userIds_is_empty() {
         // given
         var userIds = Collections.<Long>emptyList();
 
         // when
         var result = commentService.getCommentsByUserIds(userIds);
+
+        // then
+        verifyNoInteractions(commentRepository, commentMapper);
+
+        assertThat(result)
+            .isNotNull()
+            .isEmpty();
+    }
+
+    @Test
+    void getCommentsByPostIds_should_not_interact_with_repository_if_postIds_is_empty() {
+        // given
+        var postIds = Collections.<Long>emptyList();
+
+        // when
+        var result = commentService.getCommentsByPostIds(postIds);
 
         // then
         verifyNoInteractions(commentRepository, commentMapper);
