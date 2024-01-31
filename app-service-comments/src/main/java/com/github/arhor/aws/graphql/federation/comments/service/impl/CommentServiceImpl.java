@@ -131,28 +131,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * @param ids        ids of the comments
      * @param dataSource function that will be used to load comments in case ids collection is not empty
+     * @param dataMapper function that converts entities of type T to type D
      * @param classifier function that will be used to classify object for grouping operation
+     * @param <T>        entity type loaded by datasource
+     * @param <D>        type of output objects
+     * @param <K>        type of key
      */
-    private <K> Map<K, List<Comment>> findCommentsThenGroupBy(
-        final Collection<K> ids,
-        final Function<Collection<K>, Stream<CommentEntity>> dataSource,
-        final Function<Comment, K> classifier
-    ) {
-        if (ids.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        try (var data = dataSource.apply(ids)) {
-            return data
-                .map(commentMapper::mapToDto)
-                .collect(groupingBy(classifier));
-        }
-    }
-
     private record GrouppingLoader<T, D, K>(
         Function<Collection<K>, Stream<T>> dataSource,
-        Function<T, D> converter,
+        Function<T, D> dataMapper,
         Function<D, K> classifier
     ) {
         Map<K, List<D>> loadBy(final Collection<K> ids) {
@@ -161,7 +149,7 @@ public class CommentServiceImpl implements CommentService {
             }
             try (var data = dataSource.apply(ids)) {
                 return data
-                    .map(converter)
+                    .map(dataMapper)
                     .collect(groupingBy(classifier));
             }
         }
