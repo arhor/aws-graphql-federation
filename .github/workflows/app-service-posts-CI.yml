@@ -57,7 +57,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 40
           min-coverage-changed-files: 80
-          title: Posts service code coverage
+          title: `app-service-posts` code coverage
           update-comment: true
           pass-emoji: ✔️
           fail-emoji: ❌
