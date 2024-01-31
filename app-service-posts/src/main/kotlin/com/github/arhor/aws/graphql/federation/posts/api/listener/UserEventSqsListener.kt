@@ -13,7 +13,7 @@ class UserEventSqsListener(
     private val postService: PostService,
 ) {
 
-    @SqsListener("\${app-props.aws.sqs.user-deleted-events}")
+    @SqsListener("\${app-props.aws.sqs.user-deleted-events:}")
     fun handleUserDeletedEvents(message: Message<UserEvent.Deleted>) {
         postService.unlinkPostsFromUsers(userIds = message.payload.ids)
     }

@@ -9,7 +9,7 @@ data class AppProps(
 ) {
     data class Aws(
         val sns: Sns,
-        val sqs: Sns,
+        val sqs: Sqs,
     ) {
         data class Sns(
             val postEvents: String,
