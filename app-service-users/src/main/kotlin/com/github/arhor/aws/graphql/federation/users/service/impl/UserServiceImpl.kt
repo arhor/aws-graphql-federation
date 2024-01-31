@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserServiceImpl(
     private val userMapper: UserMapper,
     private val userRepository: UserRepository,
+    private val authRepository: AuthRepository,
     private val eventPublisher: ApplicationEventPublisher,
     private val passwordEncoder: PasswordEncoder,
 ) : UserService {
@@ -64,9 +66,19 @@ class UserServiceImpl(
 
         if (user != null) {
             if (passwordEncoder.matches(password, user.password)) {
+                val authNames = buildSet {
+                    add(ROLE_USER)
+                    addAll(
+                        user.authorities
+                            .map { it.authId.id }
+                            .let { authRepository.findAllById(it) }
+                            .map { it.name }
+                    )
+                }
+
                 return CurrentUser(
                     id = user.id!!,
-                    authorities = listOf(ROLE_USER)
+                    authorities = authNames.toList()
                 )
             } else {
                 logger.error("Provided incorrect password for the user with id: {}", user.id)
