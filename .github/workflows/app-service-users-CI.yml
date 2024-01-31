@@ -47,6 +47,13 @@ jobs:
       - name: Build Users service
         run: './gradlew :app-service-users:build'
 
+      - name: Upload JaCoCo exec results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test.exec
+          path: ${{ github.workspace }}/app-service-users/build/jacoco/test.exec
+          retention-days: 1
+
       - name: Add JaCoCo report to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
@@ -83,8 +90,10 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3-beta
+      - uses: actions/download-artifact@v4
+        with:
+          name: test.exec
+          path: ${{ github.workspace }}/app-service-users/build/jacoco/
 
       - name: Generate JaCoCo Report
         run: './gradlew :app-service-users:jacocoTestReport'
