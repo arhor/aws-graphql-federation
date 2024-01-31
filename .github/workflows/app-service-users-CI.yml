@@ -68,6 +68,9 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3-beta
+
       - uses: actions/download-artifact@v4
         with:
           name: build
