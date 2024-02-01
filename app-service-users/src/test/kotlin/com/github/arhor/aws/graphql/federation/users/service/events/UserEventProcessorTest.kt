@@ -59,7 +59,7 @@ internal class UserEventProcessorTest {
         userEventProcessor.processUserDeletedEvents()
 
         // then
-        verify(exactly = 1) { outboxMessageRepository.dequeueOldest(UserEvent.USER_EVENT_DELETED, 10) }
+        verify(exactly = 1) { outboxMessageRepository.dequeueOldest(UserEvent.USER_EVENT_DELETED, 50) }
         verify(exactly = 1) { outboxEventPublisher.publish(userEvent) }
         verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxEvents) }
     }

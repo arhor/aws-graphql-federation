@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import java.util.concurrent.TimeUnit
 
 @Component
 class UserEventProcessorImpl(
@@ -20,7 +19,7 @@ class UserEventProcessorImpl(
     private val outboxEventPublisher: UserEventPublisher,
 ) : UserEventProcessor {
 
-    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(cron = "*/5 * * * * *")
     @Transactional(propagation = Propagation.REQUIRED)
     override fun processUserDeletedEvents() {
         val outboxMessages =
@@ -47,6 +46,6 @@ class UserEventProcessorImpl(
             .let { UserEvent.Deleted(ids = it) }
 
     companion object {
-        private const val DEFAULT_EVENTS_BATCH_SIZE = 10
+        private const val DEFAULT_EVENTS_BATCH_SIZE = 50
     }
 }
