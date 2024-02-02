@@ -14,7 +14,7 @@ internal class UserRepositoryTest : RepositoryTestBase() {
         // given
         val createdUser = userRepository.createAndSaveTestUser()
 
-        // when
+        // When
         val result = userRepository.existsByUsername(createdUser.username)
 
         // then
@@ -27,7 +27,7 @@ internal class UserRepositoryTest : RepositoryTestBase() {
         // given
         val createdUser = userRepository.createAndSaveTestUser()
 
-        // when
+        // When
         userRepository.delete(createdUser)
         val result = userRepository.existsByUsername(createdUser.username)
 

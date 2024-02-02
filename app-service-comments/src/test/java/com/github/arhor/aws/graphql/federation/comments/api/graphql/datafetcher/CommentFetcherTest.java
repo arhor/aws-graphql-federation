@@ -63,7 +63,7 @@ class CommentFetcherTest {
             given(commentService.createComment(any()))
                 .willReturn(new CreateCommentResult(expectedComment));
 
-            // when
+            // When
             var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 """
                     mutation($userId: Long!, $postId: Long!, $content: String!) {
@@ -112,7 +112,7 @@ class CommentFetcherTest {
             given(commentService.updateComment(any()))
                 .willReturn(new UpdateCommentResult(expectedComment));
 
-            // when
+            // When
             var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 """
                     mutation($id: Long!, $content: String!) {

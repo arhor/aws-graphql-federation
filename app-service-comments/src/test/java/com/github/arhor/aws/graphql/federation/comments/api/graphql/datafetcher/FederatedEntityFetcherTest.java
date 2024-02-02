@@ -34,7 +34,7 @@ class FederatedEntityFetcherTest {
         // given
         final var userId = 1L;
 
-        // when
+        // When
         var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
             """
                 query ($representations: [_Any!]!) {
@@ -59,7 +59,7 @@ class FederatedEntityFetcherTest {
         // given
         final var postId = 1L;
 
-        // when
+        // When
         var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
             """
                 query ($representations: [_Any!]!) {

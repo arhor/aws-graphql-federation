@@ -28,7 +28,7 @@ class FederatedEntityFetcherTest {
         // given
         val userId = 1L;
 
-        // when
+        // When
         val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
             """
                 query (${'$'}representations: [_Any!]!) {

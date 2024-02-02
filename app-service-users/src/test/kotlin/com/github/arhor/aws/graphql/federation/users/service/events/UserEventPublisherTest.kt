@@ -59,7 +59,7 @@ internal class UserEventPublisherTest {
         every { appProps.aws.sns.userEvents } returns TEST_USER_EVENTS
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
-        // when
+        // When
         outboxEventPublisher.publish(userEvent)
 
         // then
@@ -83,7 +83,7 @@ internal class UserEventPublisherTest {
         every { appProps.aws.sns.userEvents } returns TEST_USER_EVENTS
         every { sns.sendNotification(any(), any()) } throwsMany errors andThenJust runs
 
-        // when
+        // When
         outboxEventPublisher.publish(userEvent)
 
         // then

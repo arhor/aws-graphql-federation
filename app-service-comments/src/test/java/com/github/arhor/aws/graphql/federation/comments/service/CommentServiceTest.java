@@ -69,7 +69,7 @@ class CommentServiceTest {
                 .willAnswer((call) -> commentDtos.get(0))
                 .willAnswer((call) -> commentDtos.get(1));
 
-            // when
+            // When
             var result = commentService.getCommentsByUserIds(userIds);
 
             // then
@@ -99,7 +99,7 @@ class CommentServiceTest {
             // given
             var userIds = Collections.<Long>emptyList();
 
-            // when
+            // When
             var result = commentService.getCommentsByUserIds(userIds);
 
             // then
@@ -136,7 +136,7 @@ class CommentServiceTest {
                 .willAnswer((call) -> commentDtos.get(0))
                 .willAnswer((call) -> commentDtos.get(1));
 
-            // when
+            // When
             var result = commentService.getCommentsByPostIds(postIds);
 
             // then
@@ -166,7 +166,7 @@ class CommentServiceTest {
             // given
             var postIds = Collections.<Long>emptyList();
 
-            // when
+            // When
             var result = commentService.getCommentsByPostIds(postIds);
 
             // then

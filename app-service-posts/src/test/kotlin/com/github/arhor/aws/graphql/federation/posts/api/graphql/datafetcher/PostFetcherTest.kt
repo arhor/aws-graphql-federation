@@ -69,7 +69,7 @@ internal class PostFetcherTest {
                 )
             }
 
-            // when
+            // When
             val result = dgsQueryExecutor.execute(
                 """
                 query (${'$'}id: Long!) {
@@ -105,7 +105,7 @@ internal class PostFetcherTest {
                 )
             }
 
-            // when
+            // When
             val result = dgsQueryExecutor.execute(
                 """
                 query (${'$'}id: Long!) {

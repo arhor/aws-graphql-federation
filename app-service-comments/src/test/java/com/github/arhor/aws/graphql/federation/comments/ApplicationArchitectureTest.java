@@ -31,7 +31,7 @@ class ApplicationArchitectureTest {
         // given
         final var applicationPackage = CommentsServiceRunner.class.getPackage().getName();
 
-        // when
+        // When
         final var architecture =
             layeredArchitecture()
                 .consideringOnlyDependenciesInLayers()

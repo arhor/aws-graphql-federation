@@ -29,7 +29,7 @@ class PostCommentsBatchLoaderTest {
         // given
         final var postIds = Collections.<Long>emptySet();
 
-        // when
+        // When
         final var result = postCommentsBatchLoader.load(postIds);
 
         // then

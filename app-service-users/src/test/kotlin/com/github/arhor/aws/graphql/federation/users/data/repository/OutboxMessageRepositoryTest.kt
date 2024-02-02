@@ -29,7 +29,7 @@ internal class OutboxMessageRepositoryTest : RepositoryTestBase() {
             }
         )
 
-        // when
+        // When
         val allOutboxEventsBefore = outboxMessageRepository.findAll()
         val outboxEvents1 = outboxMessageRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
         val outboxEvents2 = outboxMessageRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)

@@ -22,7 +22,7 @@ internal class ApplicationArchitectureTest {
         // given
         val applicationPackage = PostsServiceRunner::class.java.getPackage().name
 
-        // when
+        // When
         val architecture =
             layeredArchitecture()
                 .consideringOnlyDependenciesInLayers()

@@ -47,7 +47,7 @@ internal class UserEventListenerTest {
         every { objectMapper.convertValue(any(), any<OutboxEventData>()) } returns mockk()
         every { outboxMessageRepository.save(any()) } returns mockk()
 
-        // when
+        // When
         userEventEmitter.onUserEvent(event)
 
         // then

@@ -25,7 +25,7 @@ class UserCommentsBatchLoaderTest {
         // given
         final var userIds = Collections.<Long>emptySet();
 
-        // when
+        // When
         final var result = userCommentsBatchLoader.load(userIds);
 
         // then

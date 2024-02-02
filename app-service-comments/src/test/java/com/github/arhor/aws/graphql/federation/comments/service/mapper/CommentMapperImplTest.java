@@ -45,7 +45,7 @@ class CommentMapperImplTest {
                     .content("user-1 / post-2 / test-comment")
                     .build();
 
-            // when
+            // When
             final var entity = commentMapper.mapToEntity(input);
 
             // then
@@ -65,7 +65,7 @@ class CommentMapperImplTest {
             // given
             final var input = (CreateCommentInput) null;
 
-            // when
+            // When
             final var entity = commentMapper.mapToEntity(input);
 
             // then
@@ -88,7 +88,7 @@ class CommentMapperImplTest {
                     .content("user-1 / post-2 / test-comment")
                     .build();
 
-            // when
+            // When
             final var dto = commentMapper.mapToDto(entity);
 
             // then
@@ -105,7 +105,7 @@ class CommentMapperImplTest {
             // given
             final var input = (CommentEntity) null;
 
-            // when
+            // When
             final var entity = commentMapper.mapToDto(input);
 
             // then
@@ -121,7 +121,7 @@ class CommentMapperImplTest {
                     .id(null)
                     .build();
 
-            // when
+            // When
             final var exception = catchThrowable(() -> commentMapper.mapToDto(entity));
 
             // then

@@ -30,7 +30,7 @@ class JsonConverterTest {
             put("tags", listOf("tag-1", "tag-2", "tag-1"))
         }
 
-        // when
+        // When
         val result = source
             .let(writingConverter::convert)
             .let(readingConverter::convert)

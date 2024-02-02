@@ -24,7 +24,7 @@ class PostEventsListenerTest {
         final var postId = 1L;
         final var event = new PostEvent.Deleted(postId);
 
-        // when
+        // When
         postEventsListener.handlePostDeletedEvent(event);
 
         // then

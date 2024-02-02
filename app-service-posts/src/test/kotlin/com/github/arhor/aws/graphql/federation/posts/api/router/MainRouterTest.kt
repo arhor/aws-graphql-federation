@@ -25,7 +25,7 @@ class MainRouterTest {
 
         val request = createMockServerRequest(requestURI, httpMethod)
 
-        // when
+        // When
         val response = mainRouter.route(request).map { it.handle(request) }
 
         // then

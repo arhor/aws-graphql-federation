@@ -45,7 +45,7 @@ internal class AuthServiceTest {
     ) {
         every { authRepository.findAllByUserIdIn(any()) } returns emptyMap()
 
-        // when
+        // When
         authService.getAuthoritiesByUserIds(expectedUserIds)
 
         // then

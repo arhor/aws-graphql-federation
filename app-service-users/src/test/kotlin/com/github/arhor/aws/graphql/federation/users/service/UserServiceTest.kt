@@ -69,7 +69,7 @@ internal class UserServiceTest {
             every { userRepository.findByIdOrNull(any()) } returns userEntity
             every { userMapper.mapToResult(any()) } returns userResult
 
-            // when
+            // When
             val result = userService.getUserById(userId)
 
             // then
@@ -95,7 +95,7 @@ internal class UserServiceTest {
 
             every { userRepository.findByIdOrNull(any()) } returns null
 
-            // when
+            // When
             val result = catchThrowable { userService.getUserById(userId) }
 
             // then
@@ -127,7 +127,7 @@ internal class UserServiceTest {
             every { userRepository.findAll(any<Pageable>()) } returns PageImpl(resultList)
             every { userMapper.mapToResult(any()) } returns mockk()
 
-            // when
+            // When
             val result = userService.getAllUsers(input)
 
             // then
@@ -149,7 +149,7 @@ internal class UserServiceTest {
 
             every { userRepository.findAll(any<Pageable>()) } returns Page.empty(paged)
 
-            // when
+            // When
             val result = userService.getAllUsers(input)
 
             // then
@@ -180,7 +180,7 @@ internal class UserServiceTest {
             every { userRepository.findByUsername(any()) } returns entity
             every { passwordEncoder.matches(any(), any()) } returns true
 
-            // when
+            // When
             val user = userService.getUserByUsernameAndPassword(request)
 
             verify(exactly = 1) { userRepository.findByUsername(request.username) }
@@ -202,7 +202,7 @@ internal class UserServiceTest {
 
             every { userRepository.findByUsername(any()) } returns null
 
-            // when
+            // When
             val result = catchThrowable { userService.getUserByUsernameAndPassword(request) }
 
             verify(exactly = 1) { userRepository.findByUsername(request.username) }
@@ -229,7 +229,7 @@ internal class UserServiceTest {
             every { userRepository.findByUsername(any()) } returns entity
             every { passwordEncoder.matches(any(), any()) } returns false
 
-            // when
+            // When
             val result = catchThrowable { userService.getUserByUsernameAndPassword(request) }
 
             verify(exactly = 1) { userRepository.findByUsername(request.username) }
@@ -265,7 +265,7 @@ internal class UserServiceTest {
             every { userRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
             every { userMapper.mapToResult(any()) } answers convertingUserToDto
 
-            // when
+            // When
             val result = userService.createUser(input)
 
             // then
@@ -296,7 +296,7 @@ internal class UserServiceTest {
 
             every { userRepository.existsByUsername(capture(username)) } returns true
 
-            // when
+            // When
             val result = catchThrowable { userService.createUser(input) }
 
             // then
@@ -331,7 +331,7 @@ internal class UserServiceTest {
             every { userMapper.mapToResult(any()) } answers convertingUserToDto
             every { passwordEncoder.encode(any()) } answers { firstArg() }
 
-            // when
+            // When
             userService.updateUser(
                 input = UpdateUserInput(
                     id = user.id!!,
@@ -357,7 +357,7 @@ internal class UserServiceTest {
             every { userMapper.mapToResult(any()) } answers convertingUserToDto
             every { passwordEncoder.encode(any()) } answers { firstArg() }
 
-            // when
+            // When
             userService.updateUser(
                 input = UpdateUserInput(
                     id = user.id!!,
@@ -382,7 +382,7 @@ internal class UserServiceTest {
             every { userRepository.delete(any()) } just runs
             every { eventPublisher.publishEvent(any<Any>()) } just runs
 
-            // when
+            // When
             userService.deleteUser(DeleteUserInput(expectedId))
 
             // then

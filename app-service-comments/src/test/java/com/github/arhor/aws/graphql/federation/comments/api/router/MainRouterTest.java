@@ -33,7 +33,7 @@ class MainRouterTest {
 
         var request = createMockServerRequest(requestURI, httpMethod);
 
-        // when
+        // When
         var response =
             mainRouter.route(request)
                 .get()

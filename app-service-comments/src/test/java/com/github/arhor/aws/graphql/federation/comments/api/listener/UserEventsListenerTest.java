@@ -26,7 +26,7 @@ class UserEventsListenerTest {
         final var userIds = Set.of(1L);
         final var event = new UserEvent.Deleted(userIds);
 
-        // when
+        // When
         userEventsListener.handleUserDeletedEvent(event);
 
         // then

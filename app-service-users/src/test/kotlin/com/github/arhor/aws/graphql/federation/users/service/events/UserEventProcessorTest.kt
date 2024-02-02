@@ -42,6 +42,7 @@ internal class UserEventProcessorTest {
 
     @Test
     fun `should publish outbox events using OutboxEventPublisher instance`() {
+        // Given
         val outboxEvents = listOf(
             OutboxMessageEntity(
                 type = UserEvent.USER_EVENT_DELETED,
@@ -50,15 +51,14 @@ internal class UserEventProcessorTest {
         )
         val userEvent = UserEvent.Deleted(ids = setOf(1))
 
-        // given
         every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
         every { outboxEventPublisher.publish(any()) } just runs
         every { outboxMessageRepository.deleteAll(any()) } just runs
 
-        // when
+        // When
         userEventProcessor.processUserDeletedEvents()
 
-        // then
+        // Then
         verify(exactly = 1) { outboxMessageRepository.dequeueOldest(UserEvent.USER_EVENT_DELETED, 50) }
         verify(exactly = 1) { outboxEventPublisher.publish(userEvent) }
         verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxEvents) }

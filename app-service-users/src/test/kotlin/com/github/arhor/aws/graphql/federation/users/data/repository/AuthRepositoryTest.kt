@@ -33,7 +33,7 @@ internal class AuthRepositoryTest : RepositoryTestBase() {
                 .toSet()
         )
 
-        // when
+        // When
         val result = authRepository.findAllByUserIdIn(listOf(createdUser.id!!))
 
         // then

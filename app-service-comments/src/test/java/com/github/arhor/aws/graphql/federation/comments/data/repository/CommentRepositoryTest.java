@@ -72,7 +72,7 @@ public class CommentRepositoryTest {
         );
         final var expectedComments = Stream.concat(user1Comments.stream(), user2Comments.stream()).toList();
 
-        // when
+        // When
         final var result = commentRepository.findAllByUserIdIn(
             expectedComments
                 .stream()
@@ -110,7 +110,7 @@ public class CommentRepositoryTest {
         );
         final var expectedComments = Stream.concat(post1Comments.stream(), post2Comments.stream()).toList();
 
-        // when
+        // When
         final var result = commentRepository.findAllByPostIdIn(
             expectedComments
                 .stream()
@@ -137,7 +137,7 @@ public class CommentRepositoryTest {
             )
         );
 
-        // when
+        // When
         commentRepository.unlinkAllFromUsers(Set.of(1L));
 
         final var commentsByUserId = commentRepository.findAllByUserIdIn(List.of(1L));
@@ -168,7 +168,7 @@ public class CommentRepositoryTest {
             )
         );
 
-        // when
+        // When
         commentRepository.deleteAllFromPost(userId);
 
         final var commentsById = commentRepository.findAllById(comments.stream().map(CommentEntity::id).toList());
