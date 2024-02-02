@@ -48,7 +48,4 @@ public record CommentEntity(
     @Nullable
     LocalDateTime updatedDateTime
 ) {
-    public CommentEntity(final Long userId, final Long postId, final String content) {
-        this(null, userId, postId, content, null, null, null);
-    }
 }

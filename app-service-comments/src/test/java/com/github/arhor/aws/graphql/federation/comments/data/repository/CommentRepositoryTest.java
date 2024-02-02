@@ -54,20 +54,20 @@ public class CommentRepositoryTest {
         // given
         final var user1Comments = commentRepository.saveAll(
             List.of(
-                new CommentEntity(1L, 1L, "user-1 / post-1 / comment-1"),
-                new CommentEntity(1L, 1L, "user-1 / post-1 / comment-2")
+                createComment(1L, 1L, "user-1 / post-1 / comment-1"),
+                createComment(1L, 1L, "user-1 / post-1 / comment-2")
             )
         );
         final var user2Comments = commentRepository.saveAll(
             List.of(
-                new CommentEntity(2L, 1L, "user-2 / post-1 / comment-1"),
-                new CommentEntity(2L, 1L, "user-2 / post-1 / comment-2")
+                createComment(2L, 1L, "user-2 / post-1 / comment-1"),
+                createComment(2L, 1L, "user-2 / post-1 / comment-2")
             )
         );
         final var user3Comments = commentRepository.saveAll(
             List.of(
-                new CommentEntity(3L, 1L, "user-3 / post-1 / comment-1"),
-                new CommentEntity(3L, 1L, "user-3 / post-1 / comment-2")
+                createComment(3L, 1L, "user-3 / post-1 / comment-1"),
+                createComment(3L, 1L, "user-3 / post-1 / comment-2")
             )
         );
         final var expectedComments = Stream.concat(user1Comments.stream(), user2Comments.stream()).toList();
@@ -92,20 +92,20 @@ public class CommentRepositoryTest {
         // given
         final var post1Comments = commentRepository.saveAll(
             List.of(
-                new CommentEntity(1L, 1L, "user-1 / post-1 / comment-1"),
-                new CommentEntity(1L, 1L, "user-1 / post-1 / comment-2")
+                createComment(1L, 1L, "user-1 / post-1 / comment-1"),
+                createComment(1L, 1L, "user-1 / post-1 / comment-2")
             )
         );
         final var post2Comments = commentRepository.saveAll(
             List.of(
-                new CommentEntity(1L, 2L, "user-1 / post-2 / comment-1"),
-                new CommentEntity(1L, 2L, "user-1 / post-2 / comment-2")
+                createComment(1L, 2L, "user-1 / post-2 / comment-1"),
+                createComment(1L, 2L, "user-1 / post-2 / comment-2")
             )
         );
         final var post3Comments = commentRepository.saveAll(
             List.of(
-                new CommentEntity(1L, 3L, "user-1 / post-3 / comment-1"),
-                new CommentEntity(1L, 3L, "user-1 / post-3 / comment-2")
+                createComment(1L, 3L, "user-1 / post-3 / comment-1"),
+                createComment(1L, 3L, "user-1 / post-3 / comment-2")
             )
         );
         final var expectedComments = Stream.concat(post1Comments.stream(), post2Comments.stream()).toList();
@@ -132,8 +132,8 @@ public class CommentRepositoryTest {
         final var postId = 1L;
         final var comments = commentRepository.saveAll(
             List.of(
-                new CommentEntity(userId, postId, "user-" + userId + " / post-" + postId + " / comment-1"),
-                new CommentEntity(userId, postId, "user-" + userId + " / post-" + postId + " / comment-2")
+                createComment(userId, postId, "user-" + userId + " / post-" + postId + " / comment-1"),
+                createComment(userId, postId, "user-" + userId + " / post-" + postId + " / comment-2")
             )
         );
 
@@ -163,8 +163,8 @@ public class CommentRepositoryTest {
         final var postId = 1L;
         final var comments = commentRepository.saveAll(
             List.of(
-                new CommentEntity(userId, postId, "user-" + userId + " / post-" + postId + " / comment-1"),
-                new CommentEntity(userId, postId, "user-" + userId + " / post-" + postId + " / comment-2")
+                createComment(userId, postId, "user-" + userId + " / post-" + postId + " / comment-1"),
+                createComment(userId, postId, "user-" + userId + " / post-" + postId + " / comment-2")
             )
         );
 
@@ -189,5 +189,13 @@ public class CommentRepositoryTest {
                 .isNotNull()
                 .isEmpty();
         });
+    }
+
+    private CommentEntity createComment(final Long userId, final Long postId, final String content) {
+        return CommentEntity.builder()
+            .userId(userId)
+            .postId(postId)
+            .content(content)
+            .build();
     }
 }
