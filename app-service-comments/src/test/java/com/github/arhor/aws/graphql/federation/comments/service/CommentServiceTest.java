@@ -3,6 +3,8 @@ package com.github.arhor.aws.graphql.federation.comments.service;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -178,6 +180,45 @@ class CommentServiceTest {
             assertThat(result)
                 .isNotNull()
                 .isEmpty();
+        }
+    }
+
+    @Nested
+    @DisplayName("CommentService # createComment")
+    class CreateCommentMethodTest {
+        @Test
+        void should_create_comment_and_return_it_in_the_result() {
+            // Given
+            final var input = CreateCommentInput.newBuilder().build();
+            final var entity = CommentEntity.builder().build();
+            final var dto = Comment.newBuilder().build();
+
+            given(commentMapper.mapToEntity(any()))
+                .willReturn(entity);
+            given(commentRepository.save(any()))
+                .willReturn(entity);
+            given(commentMapper.mapToDto(any()))
+                .willReturn(dto);
+
+            // When
+            final var createCommentResult = commentService.createComment(input);
+
+            // Then
+            then(commentMapper)
+                .should()
+                .mapToEntity(input);
+            then(commentRepository)
+                .should()
+                .save(entity);
+            then(commentMapper)
+                .should()
+                .mapToDto(entity);
+
+            assertThat(createCommentResult)
+                .isNotNull()
+                .extracting(CreateCommentResult::getComment)
+                .isNotNull()
+                .isEqualTo(dto);
         }
     }
 }
