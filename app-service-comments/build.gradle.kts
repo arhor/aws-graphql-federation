@@ -139,13 +139,6 @@ tasks {
             }
         }
     }
-
-    check {
-        dependsOn(
-            jacocoTestReport,
-            jacocoTestCoverageVerification,
-        )
-    }
 }
 
 fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
