@@ -15,6 +15,13 @@ services:
       - "./scripts/localstack:/etc/localstack/init/ready.d/"
       - "./cloudformation:/cloudformation"
 
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - "ollama:/root/.ollama"
+
   app-service-users-db:
     image: postgres:12-alpine
     ports:
@@ -105,3 +112,7 @@ services:
       - app-service-posts
       - app-service-comments
     network_mode: host
+
+volumes:
+  ollama:
+    driver: local

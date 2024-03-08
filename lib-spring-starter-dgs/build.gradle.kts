@@ -94,7 +94,9 @@ tasks {
         )
     }
 
-    test {
+    withType<Test> {
+        jvmArgs = listOf("-XX:+EnableDynamicAgentLoading")
+        systemProperty("spring.profiles.active", "test")
         useJUnitPlatform()
     }
 }
