@@ -1,29 +1,26 @@
-package com.github.arhor.aws.graphql.federation.dgs
+package com.github.arhor.aws.graphql.federation.spring.dgs
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.netflix.graphql.dgs.exceptions.DefaultDataFetcherExceptionHandler
 import com.netflix.graphql.dgs.exceptions.DgsException
 import com.netflix.graphql.types.errors.TypedGraphQLError
-import graphql.execution.DataFetcherExceptionHandler
-import graphql.execution.DataFetcherExceptionHandlerParameters
-import graphql.execution.DataFetcherExceptionHandlerResult
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
-
-private typealias DFEHandler = DataFetcherExceptionHandler
-private typealias DFEHParams = DataFetcherExceptionHandlerParameters
-private typealias DFEHResult = DataFetcherExceptionHandlerResult
+import graphql.execution.DataFetcherExceptionHandler as DfeHandler
+import graphql.execution.DataFetcherExceptionHandlerParameters as DfeHandlerParams
+import graphql.execution.DataFetcherExceptionHandlerResult as DfeHandlerResult
 
 @Component
-class GlobalDataFetchingExceptionHandler(private val delegate: DFEHandler) : DFEHandler by delegate {
+class GlobalDataFetchingExceptionHandler(private val delegate: DfeHandler) : DfeHandler by delegate {
 
     @Autowired
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     constructor() : this(delegate = DefaultDataFetcherExceptionHandler())
 
-    override fun handleException(params: DFEHParams): CompletableFuture<DFEHResult> =
+    override fun handleException(params: DfeHandlerParams): CompletableFuture<DfeHandlerResult> =
         when (val throwable = params.exception.unwrap()) {
             is EntityNotFoundException -> {
                 handleEntityNotFoundException(throwable, params)
@@ -44,19 +41,19 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DFEHandler) : DFE
             else -> this
         }
 
-    private fun handleEntityNotFoundException(exception: EntityNotFoundException, params: DFEHParams) =
+    private fun handleEntityNotFoundException(exception: EntityNotFoundException, params: DfeHandlerParams) =
         TypedGraphQLError.newNotFoundBuilder()
             .createResult(exception, params)
 
-    private fun handleEntityDuplicateException(exception: EntityDuplicateException, params: DFEHParams) =
+    private fun handleEntityDuplicateException(exception: EntityDuplicateException, params: DfeHandlerParams) =
         TypedGraphQLError.newConflictBuilder()
             .createResult(exception, params)
 
-    private fun TypedGraphQLError.Builder.createResult(throwable: Throwable, params: DFEHParams) =
+    private fun TypedGraphQLError.Builder.createResult(throwable: Throwable, params: DfeHandlerParams) =
         this.message(throwable.message)
             .extensions(mapOf(DgsException.EXTENSION_CLASS_KEY to throwable::class.java.name))
             .also { params.path?.also(::path) }
             .build()
-            .let { DataFetcherExceptionHandlerResult.newResult(it).build() }
+            .let { DfeHandlerResult.newResult(it).build() }
             .let { CompletableFuture.completedFuture(it) }
 }

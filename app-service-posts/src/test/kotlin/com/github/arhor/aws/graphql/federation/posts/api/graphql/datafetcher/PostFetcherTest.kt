@@ -4,7 +4,7 @@ package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.dgs.GlobalDataFetchingExceptionHandler
+import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Option

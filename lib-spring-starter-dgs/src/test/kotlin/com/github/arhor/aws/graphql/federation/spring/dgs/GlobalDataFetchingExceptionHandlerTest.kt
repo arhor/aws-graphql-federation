@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.dgs
+package com.github.arhor.aws.graphql.federation.spring.dgs
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
