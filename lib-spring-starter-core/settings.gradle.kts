@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 includeBuild("../lib-platform")
 
-rootProject.name = "lib-spring-starter-config"
+rootProject.name = "lib-spring-starter-core"

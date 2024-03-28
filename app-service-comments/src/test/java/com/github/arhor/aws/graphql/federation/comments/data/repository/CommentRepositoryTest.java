@@ -3,7 +3,7 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 import com.github.arhor.aws.graphql.federation.comments.config.ConfigureDatabase;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.test.ConfigureTestObjectMapper;
-import com.github.arhor.aws.graphql.federation.config.ConfigureAdditionalBeans;
+import com.github.arhor.aws.graphql.federation.spring.core.ConfigureCoreApplicationComponents;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;
@@ -28,8 +28,8 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 @Testcontainers(disabledWithoutDocker = true)
 @ContextConfiguration(
     classes = {
+        ConfigureCoreApplicationComponents.class,
         ConfigureDatabase.class,
-        ConfigureAdditionalBeans.class,
         ConfigureTestObjectMapper.class,
     }
 )
