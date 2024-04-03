@@ -1,6 +1,5 @@
-package com.github.arhor.aws.graphql.federation.posts.api.router
+package com.github.arhor.aws.graphql.federation.posts.api.routes
 
-import com.github.arhor.aws.graphql.federation.posts.api.routes.MainRouter
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

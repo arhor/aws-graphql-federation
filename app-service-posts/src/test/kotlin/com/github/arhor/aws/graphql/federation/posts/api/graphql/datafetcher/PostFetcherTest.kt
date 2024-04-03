@@ -1,15 +1,13 @@
-@file:Suppress("ClassName")
-
 package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Option
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
+import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
@@ -18,6 +16,7 @@ import graphql.GraphQLError
 import io.mockk.every
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,7 +39,8 @@ internal class PostFetcherTest {
     private lateinit var dgsQueryExecutor: DgsQueryExecutor
 
     @Nested
-    inner class `query { post }` {
+    @DisplayName("query { post }")
+    inner class PostQueryTest {
         @Test
         fun `should return expected post by id without any exceptions`() {
             // given
