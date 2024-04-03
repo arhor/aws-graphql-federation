@@ -1,7 +1,6 @@
-package com.github.arhor.aws.graphql.federation.users.api.router
+package com.github.arhor.aws.graphql.federation.users.api.routes
 
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
-import com.github.arhor.aws.graphql.federation.users.api.routes.MainRouter
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import io.mockk.every
 import io.mockk.mockk

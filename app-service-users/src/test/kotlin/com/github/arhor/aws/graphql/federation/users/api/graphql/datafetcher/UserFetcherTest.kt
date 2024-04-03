@@ -1,5 +1,3 @@
-@file:Suppress("ClassName")
-
 package com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
@@ -25,6 +23,7 @@ import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,7 +46,8 @@ internal class UserFetcherTest {
     private lateinit var dgsQueryExecutor: DgsQueryExecutor
 
     @Nested
-    inner class `query { user }` {
+    @DisplayName("query { user }")
+    inner class UserQueryTest {
         @Test
         fun `should return expected user by username without any exceptions`() {
             // Given
@@ -120,7 +120,8 @@ internal class UserFetcherTest {
     }
 
     @Nested
-    inner class `query { users }` {
+    @DisplayName("query { users }")
+    inner class UsersQueryTest {
         @Test
         fun `should return successful result containing empty list of users`() {
             // Given
@@ -191,7 +192,8 @@ internal class UserFetcherTest {
     }
 
     @Nested
-    inner class `mutation { createUser }` {
+    @DisplayName("mutation { createUser }")
+    inner class CreateUserMutationTest {
 
         @Test
         fun `should create new user and return result object containing created user data`() {
@@ -233,7 +235,8 @@ internal class UserFetcherTest {
     }
 
     @Nested
-    inner class `mutation { updateUser }` {
+    @DisplayName("mutation { updateUser }")
+    inner class UpdateUserMutationTest {
         @Test
         fun `should update existing user and return result object containing updated user data`() {
             // Given
@@ -274,7 +277,8 @@ internal class UserFetcherTest {
     }
 
     @Nested
-    inner class `mutation { deleteUser }` {
+    @DisplayName("mutation { deleteUser }")
+    inner class DeleteUserMutationTest {
         @Test
         fun `should delete existing user and return result object containing success field with value true`() {
             // Given
