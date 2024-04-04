@@ -21,7 +21,7 @@ class PostIdToTagNamesResultSetExtractor : ResultSetExtractor<Map<Long, List<Str
     companion object {
         const val BEAN_NAME = "postIdToTagNamesResultSetExtractor"
 
-        private const val SELECT_COL_POST_ID = "post_id"
-        private const val SELECT_COL_TAGS = "tags"
+        const val SELECT_COL_POST_ID = "post_id"
+        const val SELECT_COL_TAGS = "tags"
     }
 }
