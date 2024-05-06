@@ -1,4 +1,4 @@
-@file:Suppress("ClassName", "SameParameterValue")
+@file:Suppress("SameParameterValue")
 
 package com.github.arhor.aws.graphql.federation.users.service
 
@@ -31,6 +31,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.assertj.core.api.Assertions.from
 import org.assertj.core.api.InstanceOfAssertFactories.throwable
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
@@ -57,7 +58,8 @@ internal class UserServiceTest {
     )
 
     @Nested
-    inner class `UserService # getUserById` {
+    @DisplayName("UserService :: getUserById")
+    inner class GetUserByIdTest {
 
         @Test
         fun `should return an existing user by id`() {
@@ -114,7 +116,8 @@ internal class UserServiceTest {
     }
 
     @Nested
-    inner class `UserService # getAllUsers` {
+    @DisplayName("UserService :: getAllUsers")
+    inner class GetAllUsersTest {
 
         @Test
         fun `should return an expected list of users`() {
@@ -164,7 +167,8 @@ internal class UserServiceTest {
     }
 
     @Nested
-    inner class `UserService # getUserByUsernameAndPassword` {
+    @DisplayName("UserService :: getUserByUsernameAndPassword")
+    inner class GetUserByUsernameAndPasswordTest {
 
         @Test
         fun `should return current user for a valid pair of username and password`() {
@@ -246,7 +250,8 @@ internal class UserServiceTest {
     }
 
     @Nested
-    inner class `UserService # createUser` {
+    @DisplayName("UserService :: createUser")
+    inner class CreateUserTest {
         @Test
         fun `should correctly create new user entity and return DTO with assigned id`() {
             // given
@@ -315,7 +320,8 @@ internal class UserServiceTest {
     }
 
     @Nested
-    inner class `UserService # updateUser` {
+    @DisplayName("UserService :: updateUser")
+    inner class UpdateUserTest {
 
         @Test
         fun `should save updated user state to repository when there are actual changes`() {
@@ -371,7 +377,8 @@ internal class UserServiceTest {
     }
 
     @Nested
-    inner class `UserService # deleteUser` {
+    @DisplayName("UserService :: deleteUser")
+    inner class DeleteUserTest {
 
         @Test
         fun `should return expected result deleting user`() {

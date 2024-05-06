@@ -47,7 +47,7 @@ class CommentServiceTest {
     private CommentService commentService;
 
     @Nested
-    @DisplayName("CommentService # getCommentsByUserIds")
+    @DisplayName("CommentService :: getCommentsByUserIds")
     class GetCommentsByUserIdsMethodTest {
         @Test
         void should_return_comments_grouped_by_user_id() {
@@ -114,7 +114,7 @@ class CommentServiceTest {
     }
 
     @Nested
-    @DisplayName("CommentService # getCommentsByPostIds")
+    @DisplayName("CommentService :: getCommentsByPostIds")
     class GetCommentsByPostIdsMethodTest {
         @Test
         void should_return_comments_grouped_by_post_id() {
@@ -184,7 +184,7 @@ class CommentServiceTest {
     }
 
     @Nested
-    @DisplayName("CommentService # createComment")
+    @DisplayName("CommentService :: createComment")
     class CreateCommentMethodTest {
         @Test
         void should_create_comment_and_return_it_in_the_result() {

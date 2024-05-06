@@ -14,7 +14,7 @@ internal class PostRepositoryTest : RepositoryTestBase() {
     private lateinit var postRepository: PostRepository
 
     @Nested
-    @DisplayName("PostRepository # findAll")
+    @DisplayName("PostRepository :: findAll")
     inner class FindAllTest {
         @Test
         fun `should return list containing expected posts data`() {
@@ -61,7 +61,7 @@ internal class PostRepositoryTest : RepositoryTestBase() {
     }
 
     @Nested
-    @DisplayName("PostRepository # findAllByUserIdIn")
+    @DisplayName("PostRepository :: findAllByUserIdIn")
     inner class FindAllByUserIdInTest {
         @Test
         fun `should return list containing expected posts data`() {
@@ -110,7 +110,7 @@ internal class PostRepositoryTest : RepositoryTestBase() {
     }
 
     @Nested
-    @DisplayName("PostRepository # unlinkAllFromUsers")
+    @DisplayName("PostRepository :: unlinkAllFromUsers")
     inner class UnlinkAllFromUsersTest {
         @Test
         fun `should updated all posts with passed user ids to set null to userId`() {
