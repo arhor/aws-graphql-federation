@@ -19,13 +19,15 @@ data class TagRef(
     companion object {
         const val TABLE_NAME = "posts_has_tags"
 
-        const val COL_ID = "id"
+        // @formatter:off
+        const val COL_ID      = "id"
         const val COL_POST_ID = "post_id"
-        const val COL_TAG_ID = "tag_id"
+        const val COL_TAG_ID  = "tag_id"
+        // @formatter:on
 
         fun from(entity: TagEntity) = TagRef(
             tagId = AggregateReference.to(
-                entity.id ?: throw IllegalStateException("Referenced entity must be persisted")
+                entity.id ?: throw IllegalArgumentException("Referenced entity must be persisted")
             )
         )
     }

@@ -54,12 +54,14 @@ data class PostEntity(
     companion object {
         const val TABLE_NAME = "posts"
 
-        const val COL_ID = "id"
-        const val COL_USER_ID = "user_id"
-        const val COL_HEADER = "header"
-        const val COL_CONTENT = "content"
-        const val COL_VERSION = "version"
+        // @formatter:off
+        const val COL_ID                = "id"
+        const val COL_USER_ID           = "user_id"
+        const val COL_HEADER            = "header"
+        const val COL_CONTENT           = "content"
+        const val COL_VERSION           = "version"
         const val COL_CREATED_DATE_TIME = "created_date_time"
         const val COL_UPDATED_DATE_TIME = "updated_date_time"
+        // @formatter:on
     }
 }

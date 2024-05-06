@@ -18,7 +18,9 @@ data class TagEntity(
     companion object {
         const val TABLE_NAME = "tags"
 
-        const val COL_ID = "id"
+        // @formatter:off
+        const val COL_ID   = "id"
         const val COL_NAME = "name"
+        // @formatter:on
     }
 }
