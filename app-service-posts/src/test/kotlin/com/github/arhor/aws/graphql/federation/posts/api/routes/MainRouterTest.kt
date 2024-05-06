@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.api.routes
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -32,7 +32,7 @@ class MainRouterTest {
             .isNotNull
             .isNotEmpty
             .get()
-            .returns(httpStatus, Assertions.from { it.statusCode() })
+            .returns(httpStatus, from { it.statusCode() })
     }
 
     private fun createMockServerRequest(uri: URI, method: HttpMethod, content: String? = null): ServerRequest =

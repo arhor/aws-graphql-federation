@@ -83,7 +83,7 @@ class PostServiceImpl @Autowired constructor(
         val currentState = initialState.copy(
             header = input.header ?: initialState.header,
             content = input.content ?: initialState.content,
-            options = input.options?.let(optionsMapper::map) ?: initialState.options,
+            options = input.options?.let(optionsMapper::mapFromList) ?: initialState.options,
             tags = input.tags?.let(::materialize)?.let(tagMapper::mapToRefs) ?: initialState.tags
         )
 

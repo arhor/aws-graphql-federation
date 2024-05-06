@@ -9,11 +9,11 @@ import java.util.EnumSet
 @Component
 class OptionsMapperImpl : OptionsMapper {
 
-    override fun map(options: PostEntity.Options): List<Option> {
+    override fun mapIntoList(options: PostEntity.Options): List<Option> {
         return options.items.toList()
     }
 
-    override fun map(options: List<Option>?): PostEntity.Options {
+    override fun mapFromList(options: List<Option>?): PostEntity.Options {
         return PostEntity.Options(
             items = EnumSet.noneOf(Option::class.java).apply {
                 if (options != null) {

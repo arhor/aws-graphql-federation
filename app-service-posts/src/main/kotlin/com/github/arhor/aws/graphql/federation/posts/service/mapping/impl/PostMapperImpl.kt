@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.posts.service.mapping.impl
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
@@ -23,7 +22,7 @@ class PostMapperImpl @Autowired constructor(
             userId = input.userId,
             header = input.header,
             content = input.content,
-            options = optionsMapper.map(input.options),
+            options = optionsMapper.mapFromList(input.options),
             tags = tagMapper.mapToRefs(tags)
         )
     }
@@ -44,7 +43,7 @@ class PostMapperImpl @Autowired constructor(
             userId = projection.userId,
             header = projection.header,
             content = projection.content,
-            options = optionsMapper.map(projection.options),
+            options = optionsMapper.mapIntoList(projection.options),
         )
     }
 }
