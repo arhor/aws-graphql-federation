@@ -8,9 +8,6 @@ spring:
     proxy-target-class: false
   profiles:
     active: \${SPRING_ACTIVE_PROFILES:dev}
-  threads:
-    virtual:
-      enabled: true
   sql:
     init:
       platform: postgres
@@ -46,8 +43,6 @@ dgs:
   graphql:
     graphiql:
       enabled: false
-    virtualthreads:
-      enabled: true
 
 app-props:
   aws:

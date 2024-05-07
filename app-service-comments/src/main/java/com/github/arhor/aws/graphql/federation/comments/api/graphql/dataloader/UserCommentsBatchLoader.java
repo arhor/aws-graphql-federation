@@ -7,25 +7,27 @@ import lombok.RequiredArgsConstructor;
 import org.dataloader.MappedBatchLoader;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import static java.util.Collections.emptyMap;
+import static org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME;
+
 @DgsDataLoader(maxBatchSize = 50)
 @RequiredArgsConstructor
 public class UserCommentsBatchLoader implements MappedBatchLoader<Long, List<Comment>> {
 
-    @Qualifier("dgsAsyncTaskExecutor")
+    @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME)
     private final Executor executor;
     private final CommentService commentService;
 
     @Override
     public CompletableFuture<Map<Long, List<Comment>>> load(final Set<Long> keys) {
         return keys.isEmpty()
-            ? CompletableFuture.completedFuture(Collections.emptyMap())
+            ? CompletableFuture.completedFuture(emptyMap())
             : CompletableFuture.supplyAsync(() -> commentService.getCommentsByUserIds(keys), executor);
     }
 }

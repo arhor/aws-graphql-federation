@@ -14,11 +14,13 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import static org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME;
+
 @DgsDataLoader(maxBatchSize = 50)
 @RequiredArgsConstructor
 public class PostCommentsBatchLoader implements MappedBatchLoader<Long, List<Comment>> {
 
-    @Qualifier("dgsAsyncTaskExecutor")
+    @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME)
     private final Executor executor;
     private final CommentService commentService;
 
