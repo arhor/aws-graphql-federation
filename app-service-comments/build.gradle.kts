@@ -135,9 +135,18 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = 0.00.toBigDecimal()
+                    minimum = 0.50.toBigDecimal()
                 }
             }
+        }
+    }
+
+    if (providers.environmentVariable("CI").getOrNull() != "true") {
+        test {
+            finalizedBy(
+                jacocoTestReport,
+                jacocoTestCoverageVerification,
+            )
         }
     }
 }

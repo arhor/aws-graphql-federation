@@ -145,17 +145,17 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = 0.0.toBigDecimal()
+                    minimum = 0.50.toBigDecimal()
                 }
             }
         }
     }
 
     if (providers.environmentVariable("CI").getOrNull() != "true") {
-        build {
-            dependsOn(
+        test {
+            finalizedBy(
                 jacocoTestReport,
-                jacocoTestCoverageVerification
+                jacocoTestCoverageVerification,
             )
         }
     }

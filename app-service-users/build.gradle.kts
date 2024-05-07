@@ -145,6 +145,15 @@ tasks {
             }
         }
     }
+
+    if (providers.environmentVariable("CI").getOrNull() != "true") {
+        test {
+            finalizedBy(
+                jacocoTestReport,
+                jacocoTestCoverageVerification,
+            )
+        }
+    }
 }
 
 fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
