@@ -91,10 +91,6 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
 }
 
-println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-println("CI: ${providers.environmentVariable("CI").orNull}")
-println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-
 dependencyManagement {
     imports {
         mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${libs.versions.graphql.dgs.bom.get()}")
@@ -152,6 +148,15 @@ tasks {
                     minimum = 0.0.toBigDecimal()
                 }
             }
+        }
+    }
+
+    if (providers.environmentVariable("CI").getOrNull() != "true") {
+        build {
+            dependsOn(
+                jacocoTestReport,
+                jacocoTestCoverageVerification
+            )
         }
     }
 }
