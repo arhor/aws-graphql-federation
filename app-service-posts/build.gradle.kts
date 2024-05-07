@@ -115,6 +115,12 @@ tasks {
         jvmArgs = listOf("-XX:+EnableDynamicAgentLoading")
         systemProperty("spring.profiles.active", "test")
         useJUnitPlatform()
+
+        beforeEvaluate {
+            println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            println("CI: ${providers.environmentVariable("CI")}")
+            println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        }
     }
 
     processResources {
