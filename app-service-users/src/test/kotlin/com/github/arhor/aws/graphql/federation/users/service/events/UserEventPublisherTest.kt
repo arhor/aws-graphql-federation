@@ -49,20 +49,19 @@ internal class UserEventPublisherTest {
 
     @Test
     fun `should send outbox event as notifications to the SNS with correct payload and headers`() {
-        // given
+        // Given
         val userEvent = UserEvent.Deleted(ids = setOf(1))
 
         val actualSnsTopicName = slot<String>()
         val actualNotification = slot<SnsNotification<*>>()
 
-        // given
         every { appProps.aws.sns.userEvents } returns TEST_USER_EVENTS
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // When
         outboxEventPublisher.publish(userEvent)
 
-        // then
+        // Then
         assertThat(actualSnsTopicName.captured)
             .isEqualTo(TEST_USER_EVENTS)
 
@@ -75,7 +74,7 @@ internal class UserEventPublisherTest {
 
     @Test
     fun `should retry on MessagingException sending notification to SNS`() {
-        // given
+        // Given
         val userEvent = UserEvent.Deleted(ids = setOf(1))
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
@@ -86,7 +85,7 @@ internal class UserEventPublisherTest {
         // When
         outboxEventPublisher.publish(userEvent)
 
-        // then
+        // Then
         verify(exactly = 3) { appProps.aws.sns.userEvents }
         verify(exactly = 3) { sns.sendNotification(any(), any()) }
 

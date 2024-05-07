@@ -11,27 +11,27 @@ internal class UserRepositoryTest : RepositoryTestBase() {
 
     @Test
     fun `should return true for the email of an existing user`() {
-        // given
+        // Given
         val createdUser = userRepository.createAndSaveTestUser()
 
         // When
         val result = userRepository.existsByUsername(createdUser.username)
 
-        // then
+        // Then
         assertThat(result)
             .isTrue()
     }
 
     @Test
     fun `should return false for the email of a non-existing user`() {
-        // given
+        // Given
         val createdUser = userRepository.createAndSaveTestUser()
 
         // When
         userRepository.delete(createdUser)
         val result = userRepository.existsByUsername(createdUser.username)
 
-        // then
+        // Then
         assertThat(result)
             .isFalse()
     }

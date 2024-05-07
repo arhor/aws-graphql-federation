@@ -37,7 +37,7 @@ class CommentMapperImplTest {
     class MapToEntityTest {
         @Test
         void should_correctly_map_create_comment_input_dto_to_entity() {
-            // given
+            // Given
             final var input =
                 CreateCommentInput.newBuilder()
                     .userId(1L)
@@ -48,7 +48,7 @@ class CommentMapperImplTest {
             // When
             final var entity = commentMapper.mapToEntity(input);
 
-            // then
+            // Then
             assertThat(entity)
                 .isNotNull()
                 .returns(input.getUserId(), from(CommentEntity::userId))
@@ -62,13 +62,13 @@ class CommentMapperImplTest {
 
         @Test
         void should_return_null_when_incoming_dto_is_null() {
-            // given
+            // Given
             final var input = (CreateCommentInput) null;
 
             // When
             final var entity = commentMapper.mapToEntity(input);
 
-            // then
+            // Then
             assertThat(entity)
                 .isNull();
         }
@@ -79,7 +79,7 @@ class CommentMapperImplTest {
     class MapToDtoTest {
         @Test
         void should_correctly_map_comment_entity_to_dto() {
-            // given
+            // Given
             final var entity =
                 CommentEntity.builder()
                     .id(0L)
@@ -91,7 +91,7 @@ class CommentMapperImplTest {
             // When
             final var dto = commentMapper.mapToDto(entity);
 
-            // then
+            // Then
             assertThat(dto)
                 .isNotNull()
                 .returns(entity.id(), from(Comment::getId))
@@ -102,20 +102,20 @@ class CommentMapperImplTest {
 
         @Test
         void should_return_null_when_incoming_entity_is_null() {
-            // given
+            // Given
             final var input = (CommentEntity) null;
 
             // When
             final var entity = commentMapper.mapToDto(input);
 
-            // then
+            // Then
             assertThat(entity)
                 .isNull();
         }
 
         @Test
         void should_throw_exception_trying_to_map_entity_without_id() {
-            // given
+            // Given
             final var entity =
                 CommentEntity.builder()
                     .id(null)
@@ -124,7 +124,7 @@ class CommentMapperImplTest {
             // When
             final var exception = catchThrowable(() -> commentMapper.mapToDto(entity));
 
-            // then
+            // Then
             assertThat(exception)
                 .isNotNull()
                 .isInstanceOf(NullPointerException.class)

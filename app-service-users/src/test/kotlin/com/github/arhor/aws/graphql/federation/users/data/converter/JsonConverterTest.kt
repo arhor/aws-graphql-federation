@@ -23,7 +23,7 @@ class JsonConverterTest {
 
     @Test
     fun `should return the result equal to initial object using writing then reading converter`() {
-        // given
+        // Given
         val source = buildMap {
             put("id", 1)
             put("name", "test-date")
@@ -35,7 +35,7 @@ class JsonConverterTest {
             .let(writingConverter::convert)
             .let(readingConverter::convert)
 
-        // then
+        // Then
         assertThat(result)
             .isNotNull
             .isEqualTo(source)

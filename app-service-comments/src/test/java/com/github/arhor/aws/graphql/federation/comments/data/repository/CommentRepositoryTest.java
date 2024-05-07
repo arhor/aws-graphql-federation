@@ -51,7 +51,7 @@ public class CommentRepositoryTest {
 
     @Test
     void should_return_expected_list_of_comments_by_user_ids() {
-        // given
+        // Given
         final var user1Comments = commentRepository.saveAll(
             List.of(
                 createComment(1L, 1L, "user-1 / post-1 / comment-1"),
@@ -80,7 +80,7 @@ public class CommentRepositoryTest {
                 .toList()
         );
 
-        // then
+        // Then
         assertThat(result)
             .isNotNull()
             .containsExactlyElementsOf(expectedComments)
@@ -89,7 +89,7 @@ public class CommentRepositoryTest {
 
     @Test
     void should_return_expected_list_of_comments_by_post_ids() {
-        // given
+        // Given
         final var post1Comments = commentRepository.saveAll(
             List.of(
                 createComment(1L, 1L, "user-1 / post-1 / comment-1"),
@@ -118,7 +118,7 @@ public class CommentRepositoryTest {
                 .toList()
         );
 
-        // then
+        // Then
         assertThat(result)
             .isNotNull()
             .containsExactlyElementsOf(expectedComments)
@@ -127,7 +127,7 @@ public class CommentRepositoryTest {
 
     @Test
     void should_nullify_user_id_for_the_given_list_of_comments() {
-        // given
+        // Given
         final var userId = 1L;
         final var postId = 1L;
         final var comments = commentRepository.saveAll(
@@ -143,7 +143,7 @@ public class CommentRepositoryTest {
         final var commentsByUserId = commentRepository.findAllByUserIdIn(List.of(1L));
         final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(1L));
 
-        // then
+        // Then
         assertSoftly(soft -> {
             soft.assertThat(commentsByUserId)
                 .isNotNull()
@@ -158,7 +158,7 @@ public class CommentRepositoryTest {
 
     @Test
     void should_delete_all_comments_with_a_given_post_id() {
-        // given
+        // Given
         final var userId = 1L;
         final var postId = 1L;
         final var comments = commentRepository.saveAll(
@@ -175,7 +175,7 @@ public class CommentRepositoryTest {
         final var commentsByUserId = commentRepository.findAllByUserIdIn(List.of(userId));
         final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(postId));
 
-        // then
+        // Then
         assertSoftly(soft -> {
             soft.assertThat(commentsById)
                 .isNotNull()

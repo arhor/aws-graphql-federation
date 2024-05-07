@@ -22,13 +22,13 @@ class UserCommentsBatchLoaderTest {
 
     @Test
     void should_return_empty_map_when_empty_keys_set_provided() {
-        // given
+        // Given
         final var userIds = Collections.<Long>emptySet();
 
         // When
         final var result = userCommentsBatchLoader.load(userIds);
 
-        // then
+        // Then
         then(executor)
             .shouldHaveNoInteractions();
 

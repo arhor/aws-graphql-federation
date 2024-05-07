@@ -53,7 +53,7 @@ class CommentFetcherTest {
     class CreateCommentMutationTest {
         @Test
         void should_create_new_comment_and_return_result_object_containing_created_data() {
-            // given
+            // Given
             var id = -1L;
             var userId = -2L;
             var postId = -3L;
@@ -87,7 +87,7 @@ class CommentFetcherTest {
                 CreateCommentResult.class
             );
 
-            // then
+            // Then
             then(commentService)
                 .should()
                 .createComment(new CreateCommentInput(userId, postId, content));
@@ -102,7 +102,7 @@ class CommentFetcherTest {
     class UpdateCommentMutationTest {
         @Test
         void should_update_existing_comment_and_return_result_object_containing_updated_data() {
-            // given
+            // Given
             var id = -1L;
             var userId = -2L;
             var postId = -3L;
@@ -136,7 +136,7 @@ class CommentFetcherTest {
                 UpdateCommentResult.class
             );
 
-            // then
+            // Then
             then(commentService)
                 .should()
                 .updateComment(new UpdateCommentInput(id, content));

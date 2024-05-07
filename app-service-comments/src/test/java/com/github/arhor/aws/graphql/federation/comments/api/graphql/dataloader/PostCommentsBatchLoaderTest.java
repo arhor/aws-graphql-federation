@@ -26,13 +26,13 @@ class PostCommentsBatchLoaderTest {
 
     @Test
     void should_return_empty_map_when_empty_keys_set_provided() {
-        // given
+        // Given
         final var postIds = Collections.<Long>emptySet();
 
         // When
         final var result = postCommentsBatchLoader.load(postIds);
 
-        // then
+        // Then
         then(executor)
             .shouldHaveNoInteractions();
 

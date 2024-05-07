@@ -20,14 +20,14 @@ class PostEventsListenerTest {
 
     @Test
     void should_call_deletePostComments_method_on_post_deleted_event() {
-        // given
+        // Given
         final var postId = 1L;
         final var event = new PostEvent.Deleted(postId);
 
         // When
         postEventsListener.handlePostDeletedEvent(event);
 
-        // then
+        // Then
         then(commentService)
             .should()
             .deletePostComments(postId);

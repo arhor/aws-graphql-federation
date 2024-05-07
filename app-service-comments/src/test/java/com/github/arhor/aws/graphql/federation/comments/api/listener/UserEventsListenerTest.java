@@ -22,14 +22,14 @@ class UserEventsListenerTest {
 
     @Test
     void should_call_unlinkUserComments_method_on_user_deleted_event() {
-        // given
+        // Given
         final var userIds = Set.of(1L);
         final var event = new UserEvent.Deleted(userIds);
 
         // When
         userEventsListener.handleUserDeletedEvent(event);
 
-        // then
+        // Then
         then(commentService)
             .should()
             .unlinkUsersComments(userIds);

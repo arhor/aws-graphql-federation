@@ -17,7 +17,7 @@ class MainRouterTest {
 
     @Test
     fun `should return empty response with NO_CONTENT status trying to get favicon`() {
-        // given
+        // Given
         val requestURI = URI.create("/favicon.ico")
         val httpMethod = HttpMethod.GET
         val httpStatus = HttpStatus.NO_CONTENT
@@ -27,7 +27,7 @@ class MainRouterTest {
         // When
         val response = mainRouter.route(request).map { it.handle(request) }
 
-        // then
+        // Then
         assertThat(response)
             .isNotNull
             .isNotEmpty

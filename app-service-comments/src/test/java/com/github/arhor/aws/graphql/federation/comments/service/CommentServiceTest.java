@@ -51,7 +51,7 @@ class CommentServiceTest {
     class GetCommentsByUserIdsMethodTest {
         @Test
         void should_return_comments_grouped_by_user_id() {
-            // given
+            // Given
             final var userId = 1L;
             final var userIds = List.of(userId);
 
@@ -74,7 +74,7 @@ class CommentServiceTest {
             // When
             var result = commentService.getCommentsByUserIds(userIds);
 
-            // then
+            // Then
             then(commentRepository)
                 .should()
                 .findAllByUserIdIn(userIds);
@@ -98,13 +98,13 @@ class CommentServiceTest {
 
         @Test
         void should_not_interact_with_repository_if_userIds_is_empty() {
-            // given
+            // Given
             var userIds = Collections.<Long>emptyList();
 
             // When
             var result = commentService.getCommentsByUserIds(userIds);
 
-            // then
+            // Then
             verifyNoInteractions(commentRepository, commentMapper);
 
             assertThat(result)
@@ -118,7 +118,7 @@ class CommentServiceTest {
     class GetCommentsByPostIdsMethodTest {
         @Test
         void should_return_comments_grouped_by_post_id() {
-            // given
+            // Given
             final var postId = 1L;
             final var postIds = List.of(postId);
 
@@ -141,7 +141,7 @@ class CommentServiceTest {
             // When
             var result = commentService.getCommentsByPostIds(postIds);
 
-            // then
+            // Then
             then(commentRepository)
                 .should()
                 .findAllByPostIdIn(postIds);
@@ -165,13 +165,13 @@ class CommentServiceTest {
 
         @Test
         void should_not_interact_with_repository_if_postIds_is_empty() {
-            // given
+            // Given
             var postIds = Collections.<Long>emptyList();
 
             // When
             var result = commentService.getCommentsByPostIds(postIds);
 
-            // then
+            // Then
             then(commentRepository)
                 .shouldHaveNoInteractions();
             then(commentMapper)

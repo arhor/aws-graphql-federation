@@ -27,8 +27,10 @@ class ApplicationArchitectureTest {
     // @formatter:on
 
     @ArchTest
-    void should_check_that_correct_layered_architecture_is_observed(final JavaClasses appClasses) {
-        // given
+    void should_check_that_correct_layered_architecture_is_observed(
+        // Given
+        final JavaClasses appClasses
+    ) {
         final var applicationPackage = CommentsServiceRunner.class.getPackage().getName();
 
         // When
@@ -43,19 +45,22 @@ class ApplicationArchitectureTest {
                 .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(API, CONFIGURATION)
                 .whereLayer(DATA_ACCESS).mayOnlyBeAccessedByLayers(SERVICE, CONFIGURATION);
 
-        // then
+        // Then
         architecture.check(appClasses);
     }
 
     @ArchTest
-    void should_check_that_only_TimeUtils_class_calls_now_method_on_temporal_objects(final JavaClasses appClasses) {
-        // given
+    void should_check_that_only_TimeUtils_class_calls_now_method_on_temporal_objects(
+        // Given
+        final JavaClasses appClasses
+    ) {
+        // When
         final var restrictions =
             noClasses()
                 .should()
                 .callMethodWhere(target(name("now")).and(target(owner(implement(Temporal.class)))));
 
-        // then
+        // Then
         restrictions.check(appClasses);
     }
 }

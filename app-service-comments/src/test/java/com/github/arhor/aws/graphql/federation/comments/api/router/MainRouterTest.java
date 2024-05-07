@@ -26,7 +26,7 @@ class MainRouterTest {
     @Test
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     void should_return_empty_response_with_NO_CONTENT_status_trying_to_get_favicon() throws Exception {
-        // given
+        // Given
         var requestURI = URI.create("/favicon.ico");
         var httpMethod = HttpMethod.GET;
         var httpStatus = HttpStatus.NO_CONTENT;
@@ -39,7 +39,7 @@ class MainRouterTest {
                 .get()
                 .handle(request);
 
-        // then
+        // Then
         assertThat(response)
             .isNotNull()
             .returns(httpStatus, from(ServerResponse::statusCode));

@@ -15,7 +15,7 @@ internal class OutboxMessageRepositoryTest : RepositoryTestBase() {
 
     @Test
     fun `should deque existing outbox events removing them from the DB`() {
-        // given
+        // Given
         val expectedEventType = "test-event"
         val expectedSizeOfBatch = 5
         val expectedEventsAtAll = expectedSizeOfBatch * 2
@@ -35,7 +35,7 @@ internal class OutboxMessageRepositoryTest : RepositoryTestBase() {
         val outboxEvents2 = outboxMessageRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
         val allOutboxEventsAfter = outboxMessageRepository.findAll()
 
-        // then
+        // Then
         assertThat(allOutboxEventsBefore)
             .containsExactlyElementsOf(outboxEvents)
 

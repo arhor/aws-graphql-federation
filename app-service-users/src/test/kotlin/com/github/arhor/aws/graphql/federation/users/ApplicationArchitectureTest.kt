@@ -18,8 +18,10 @@ import java.time.temporal.Temporal
 internal class ApplicationArchitectureTest {
 
     @ArchTest
-    fun `should check that correct layered architecture is observed`(appClasses: JavaClasses) {
-        // given
+    fun `should check that correct layered architecture is observed`(
+        // Given
+        appClasses: JavaClasses,
+    ) {
         val applicationPackage = UsersServiceRunner::class.java.getPackage().name
 
         // When
@@ -34,18 +36,21 @@ internal class ApplicationArchitectureTest {
                 .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(API, CONFIGURATION)
                 .whereLayer(DATA_ACCESS).mayOnlyBeAccessedByLayers(SERVICE, CONFIGURATION)
 
-        // then
+        // Then
         architecture.check(appClasses)
     }
 
     @ArchTest
-    fun `should check that only TimeUtils class calls now method on temporal objects`(appClasses: JavaClasses) {
-        // given
+    fun `should check that only TimeUtils class calls now method on temporal objects`(
+        // Given
+        appClasses: JavaClasses,
+    ) {
+        // When
         val restrictions = noClasses()
             .should()
             .callMethodWhere(target(name("now")).and(target(owner(implement(Temporal::class.java)))))
 
-        // then
+        // Then
         restrictions.check(appClasses)
     }
 

@@ -31,7 +31,7 @@ class FederatedEntityFetcherTest {
 
     @Test
     void should_create_new_user_representation_for_the_given_id() {
-        // given
+        // Given
         final var userId = 1L;
 
         // When
@@ -49,14 +49,14 @@ class FederatedEntityFetcherTest {
             User.class
         );
 
-        // then
+        // Then
         assertThat(result)
             .returns(userId, from(User::getId));
     }
 
     @Test
     void should_create_new_post_representation_for_the_given_id() {
-        // given
+        // Given
         final var postId = 1L;
 
         // When
@@ -74,7 +74,7 @@ class FederatedEntityFetcherTest {
             Post.class
         );
 
-        // then
+        // Then
         assertThat(result)
             .returns(postId, from(Post::getId));
     }

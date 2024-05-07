@@ -63,7 +63,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should return an existing user by id`() {
-            // given
+            // Given
             val userId = 1L
             val userEntity = mockk<UserEntity>()
             val userResult = mockk<User>()
@@ -74,7 +74,7 @@ internal class UserServiceTest {
             // When
             val result = userService.getUserById(userId)
 
-            // then
+            // Then
             verify(exactly = 1) { userRepository.findById(userId) }
             verify(exactly = 1) { userMapper.mapToResult(userEntity) }
 
@@ -87,7 +87,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should throw EntityNotFoundException trying to get non-existing user by id`() {
-            // given
+            // Given
             val userId = 1L
 
             val expectedEntity = USER.TYPE_NAME
@@ -100,7 +100,7 @@ internal class UserServiceTest {
             // When
             val result = catchThrowable { userService.getUserById(userId) }
 
-            // then
+            // Then
             verify(exactly = 1) { userRepository.findById(userId) }
 
             confirmVerified(userRepository, userMapper)
@@ -121,7 +121,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should return an expected list of users`() {
-            // given
+            // Given
             val input = UsersLookupInput(page = 1, size = 3)
             val paged = Pageable.ofSize(input.size).withPage(input.page)
             val userEntity = mockk<UserEntity>()
@@ -133,7 +133,7 @@ internal class UserServiceTest {
             // When
             val result = userService.getAllUsers(input)
 
-            // then
+            // Then
             verify(exactly = 1) { userRepository.findAll(paged) }
             verify(exactly = 3) { userMapper.mapToResult(userEntity) }
 
@@ -146,7 +146,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should return an empty list when there are no users found`() {
-            // given
+            // Given
             val input = UsersLookupInput(page = 1, size = 3)
             val paged = Pageable.ofSize(input.size).withPage(input.page)
 
@@ -155,7 +155,7 @@ internal class UserServiceTest {
             // When
             val result = userService.getAllUsers(input)
 
-            // then
+            // Then
             verify(exactly = 1) { userRepository.findAll(paged) }
 
             confirmVerified(userRepository, userMapper)
@@ -172,7 +172,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should return current user for a valid pair of username and password`() {
-            // given
+            // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
             val userId = 1L
             val entity = mockk<UserEntity>()
@@ -192,7 +192,7 @@ internal class UserServiceTest {
 
             confirmVerified(userRepository, passwordEncoder)
 
-            // then
+            // Then
             assertThat(user)
                 .isNotNull()
                 .returns(userId, from { it.id })
@@ -201,7 +201,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should throw DgsBadRequestException exception trying to get current user with invalid username`() {
-            // given
+            // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
 
             every { userRepository.findByUsername(any()) } returns null
@@ -213,7 +213,7 @@ internal class UserServiceTest {
 
             confirmVerified(userRepository, passwordEncoder)
 
-            // then
+            // Then
             assertThat(result)
                 .isNotNull()
                 .asInstanceOf(throwable(DgsBadRequestException::class.java))
@@ -222,7 +222,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should throw DgsBadRequestException exception trying to get current user with invalid password`() {
-            // given
+            // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
             val userId = 1L
             val entity = mockk<UserEntity>()
@@ -241,7 +241,7 @@ internal class UserServiceTest {
 
             confirmVerified(userRepository, passwordEncoder)
 
-            // then
+            // Then
             assertThat(result)
                 .isNotNull()
                 .asInstanceOf(throwable(DgsBadRequestException::class.java))
@@ -254,7 +254,7 @@ internal class UserServiceTest {
     inner class CreateUserTest {
         @Test
         fun `should correctly create new user entity and return DTO with assigned id`() {
-            // given
+            // Given
             val expectedId = 1L
             val expectedUsername = "test@email.com"
             val expectedPassword = "TestPassword123"
@@ -273,7 +273,7 @@ internal class UserServiceTest {
             // When
             val result = userService.createUser(input)
 
-            // then
+            // Then
             assertThat(result.user)
                 .returns(expectedId, from { it.id })
                 .returns(expectedUsername, from { it.username })
@@ -286,7 +286,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should throw EntityDuplicateException creating user with already taken username`() {
-            // given
+            // Given
             val input = CreateUserInput(
                 username = "test-username",
                 password = "test-password",
@@ -304,7 +304,7 @@ internal class UserServiceTest {
             // When
             val result = catchThrowable { userService.createUser(input) }
 
-            // then
+            // Then
             assertThat(username)
                 .returns(true, from { it.isCaptured })
                 .returns(input.username, from { it.captured })
@@ -325,7 +325,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should save updated user state to repository when there are actual changes`() {
-            // given
+            // Given
             val user = UserEntity(
                 id = 1,
                 username = "test-username",
@@ -345,13 +345,13 @@ internal class UserServiceTest {
                 )
             )
 
-            // then
+            // Then
             verify(exactly = 1) { userRepository.save(any()) }
         }
 
         @Test
         fun `should not call save method on repository when there are no changes in user state`() {
-            // given
+            // Given
             val user = UserEntity(
                 id = 1,
                 username = "test-username",
@@ -371,7 +371,7 @@ internal class UserServiceTest {
                 )
             )
 
-            // then
+            // Then
             verify(exactly = 0) { userRepository.save(any()) }
         }
     }
@@ -382,7 +382,7 @@ internal class UserServiceTest {
 
         @Test
         fun `should return expected result deleting user`() {
-            // given
+            // Given
             val expectedId = 1L
 
             every { userRepository.findByIdOrNull(any()) } returns mockk { every { id } returns expectedId }
@@ -392,7 +392,7 @@ internal class UserServiceTest {
             // When
             userService.deleteUser(DeleteUserInput(expectedId))
 
-            // then
+            // Then
             verify(exactly = 1) { userRepository.findByIdOrNull(any()) }
             verify(exactly = 1) { userRepository.delete(any()) }
             verify(exactly = 1) { eventPublisher.publishEvent(any<Any>()) }

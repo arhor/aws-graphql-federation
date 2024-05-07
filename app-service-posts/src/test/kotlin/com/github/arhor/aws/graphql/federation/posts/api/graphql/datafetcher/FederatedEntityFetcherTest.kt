@@ -25,7 +25,7 @@ class FederatedEntityFetcherTest {
 
     @Test
     fun `should create new user representation for the given id`() {
-        // given
+        // Given
         val userId = 1L;
 
         // When
@@ -43,7 +43,7 @@ class FederatedEntityFetcherTest {
             User::class.java
         )
 
-        // then
+        // Then
         assertThat(result)
             .returns(userId, from(User::id));
     }

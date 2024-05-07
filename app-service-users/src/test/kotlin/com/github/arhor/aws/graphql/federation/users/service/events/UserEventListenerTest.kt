@@ -41,7 +41,7 @@ internal class UserEventListenerTest {
 
     @Test
     fun `should save UserEvent to the OutboxEventRepository`() {
-        // given
+        // Given
         val event = UserEvent.Deleted(ids = setOf(1L))
 
         every { objectMapper.convertValue(any(), any<OutboxEventData>()) } returns mockk()
@@ -50,7 +50,7 @@ internal class UserEventListenerTest {
         // When
         userEventEmitter.onUserEvent(event)
 
-        // then
+        // Then
         verify(exactly = 1) { objectMapper.convertValue(any(), any<OutboxEventData>()) }
         verify(exactly = 1) { outboxMessageRepository.save(any()) }
     }

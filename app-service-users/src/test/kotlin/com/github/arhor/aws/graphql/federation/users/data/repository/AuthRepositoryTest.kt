@@ -19,7 +19,7 @@ internal class AuthRepositoryTest : RepositoryTestBase() {
 
     @Test
     fun `should return an empty list fetching authorities for a new user`() {
-        // given
+        // Given
         val authorities = authRepository.saveAll(
             listOf(
                 AuthEntity(name = "test-create"),
@@ -36,7 +36,7 @@ internal class AuthRepositoryTest : RepositoryTestBase() {
         // When
         val result = authRepository.findAllByUserIdIn(listOf(createdUser.id!!))
 
-        // then
+        // Then
         assertThat(result)
             .isNotNull()
             .isNotEmpty()

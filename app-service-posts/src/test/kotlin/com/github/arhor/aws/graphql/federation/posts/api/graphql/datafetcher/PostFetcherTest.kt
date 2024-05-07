@@ -43,7 +43,7 @@ internal class PostFetcherTest {
     inner class PostQueryTest {
         @Test
         fun `should return expected post by id without any exceptions`() {
-            // given
+            // Given
             val expectedId = 1L
 
             val expectedErrors = emptyList<GraphQLError>()
@@ -85,7 +85,7 @@ internal class PostFetcherTest {
                 mapOf(POST.Id to expectedId)
             )
 
-            // then
+            // Then
             assertThat(result)
                 .returns(expectedErrors, from { it.errors })
                 .returns(expectedPresent, from { it.isDataPresent })
@@ -94,7 +94,7 @@ internal class PostFetcherTest {
 
         @Test
         fun `should return GQL error trying to find post by incorrect id`() {
-            // given
+            // Given
             val id = 1L
 
             every { postService.getPostById(any()) } answers {
@@ -121,7 +121,7 @@ internal class PostFetcherTest {
                 mapOf(POST.Id to id)
             )
 
-            // then
+            // Then
             assertThat(result.errors)
                 .singleElement()
                 .returns(listOf(QUERY.Post), from { it.path })

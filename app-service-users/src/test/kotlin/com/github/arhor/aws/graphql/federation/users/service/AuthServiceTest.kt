@@ -39,7 +39,7 @@ internal class AuthServiceTest {
     @MethodSource
     @ParameterizedTest
     fun `should invoke method getAuthoritiesByUserIds expected times`(
-        // given
+        // Given
         expectedUserIds: Set<Long>,
         expectedInvocations: Int,
     ) {
@@ -48,7 +48,7 @@ internal class AuthServiceTest {
         // When
         authService.getAuthoritiesByUserIds(expectedUserIds)
 
-        // then
+        // Then
         verify(exactly = expectedInvocations) { authRepository.findAllByUserIdIn(expectedUserIds) }
     }
 
