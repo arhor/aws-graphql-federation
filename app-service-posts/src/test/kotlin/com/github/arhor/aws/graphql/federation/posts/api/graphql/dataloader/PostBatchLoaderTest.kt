@@ -6,7 +6,8 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.time.Duration
@@ -36,7 +37,7 @@ internal class PostBatchLoaderTest {
         val result = postBatchLoader.load(keys)
 
         // Then
-        Assertions.assertThat(result)
+        assertThat(result)
             .isNotNull()
             .isCompletedWithValue(emptyMap())
     }
@@ -53,10 +54,10 @@ internal class PostBatchLoaderTest {
         val result = postBatchLoader.load(keys)
 
         // Then
-        Assertions.assertThat(result)
+        assertThat(result)
             .isNotNull()
             .succeedsWithin(Duration.ofSeconds(1))
-            .returns(expectedPayload, Assertions.from { it })
+            .returns(expectedPayload, from { it })
 
         verify(exactly = 1) { postService.getPostsByUserIds(keys) }
     }
