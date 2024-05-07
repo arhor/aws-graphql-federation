@@ -147,7 +147,7 @@ tasks {
     }
 
     if (providers.environmentVariable("CI").getOrNull() != "true") {
-        test {
+        check {
             finalizedBy(
                 jacocoTestReport,
                 jacocoTestCoverageVerification,

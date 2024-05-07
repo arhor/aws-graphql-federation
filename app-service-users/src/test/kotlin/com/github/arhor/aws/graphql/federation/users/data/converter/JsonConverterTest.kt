@@ -37,7 +37,7 @@ class JsonConverterTest {
 
         // Then
         assertThat(result)
-            .isNotNull
+            .isNotNull()
             .isEqualTo(source)
     }
 }

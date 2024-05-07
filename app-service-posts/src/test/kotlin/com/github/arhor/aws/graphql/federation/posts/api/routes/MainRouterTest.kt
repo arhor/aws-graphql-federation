@@ -29,8 +29,8 @@ class MainRouterTest {
 
         // Then
         assertThat(response)
-            .isNotNull
-            .isNotEmpty
+            .isNotNull()
+            .isNotEmpty()
             .get()
             .returns(httpStatus, from { it.statusCode() })
     }
