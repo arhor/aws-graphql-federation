@@ -80,27 +80,30 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Retryable(retryFor = OptimisticLockingFailureException.class)
     public UpdateCommentResult updateComment(final UpdateCommentInput input) {
-        var initialState = commentRepository
-            .findById(input.getId())
+        final var commentId = input.getId();
+        final var initialState = commentRepository
+            .findById(commentId)
             .orElseThrow(() -> new EntityNotFoundException(
                 COMMENT.TYPE_NAME,
-                COMMENT.Id + " = " + input.getId(),
+                COMMENT.Id + " = " + commentId,
                 Operation.UPDATE
             ));
 
-        var currentState = initialState;
-
-        if (input.getContent() != null) {
-            currentState = currentState.toBuilder()
-                .content(input.getContent())
-                .build();
+        final var currentStateBuilder = initialState.toBuilder();
+        {
+            final var content = input.getContent();
+            if (content != null) {
+                currentStateBuilder.content(content);
+            }
         }
-        var entity =
-            (currentState != initialState)
-                ? commentRepository.save(currentState)
-                : initialState;
+        final var currentState = currentStateBuilder.build();
 
-        var comment = commentMapper.mapToDto(entity);
+        final var entity =
+            initialState.equals(currentState)
+                ? initialState
+                : commentRepository.save(currentState);
+
+        final var comment = commentMapper.mapToDto(entity);
 
         return new UpdateCommentResult(comment);
     }
