@@ -2,6 +2,8 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.config.ConfigureDatabase;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserEntity;
 import com.github.arhor.aws.graphql.federation.comments.test.ConfigureTestObjectMapper;
 import com.github.arhor.aws.graphql.federation.spring.core.ConfigureCoreApplicationComponents;
 import org.junit.jupiter.api.Test;
@@ -17,11 +19,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @DataJdbcTest
 @DirtiesContext
@@ -42,6 +42,12 @@ public class CommentRepositoryTest {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
+
     @DynamicPropertySource
     public static void registerDynamicProperties(final DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", db::getJdbcUrl);
@@ -52,22 +58,30 @@ public class CommentRepositoryTest {
     @Test
     void should_return_expected_list_of_comments_by_user_ids() {
         // Given
+        final var user1 = userRepository.save(new UserEntity(null));
+        final var user2 = userRepository.save(new UserEntity(null));
+        final var user3 = userRepository.save(new UserEntity(null));
+
+        final var post1 = postRepository.save(new PostEntity(null));
+
+        var commentsCounter = 0;
+
         final var user1Comments = commentRepository.saveAll(
             List.of(
-                createComment(1L, 1L, "user-1 / post-1 / comment-1"),
-                createComment(1L, 1L, "user-1 / post-1 / comment-2")
+                createComment(user1, post1, ++commentsCounter),
+                createComment(user1, post1, ++commentsCounter)
             )
         );
         final var user2Comments = commentRepository.saveAll(
             List.of(
-                createComment(2L, 1L, "user-2 / post-1 / comment-1"),
-                createComment(2L, 1L, "user-2 / post-1 / comment-2")
+                createComment(user2, post1, ++commentsCounter),
+                createComment(user2, post1, ++commentsCounter)
             )
         );
         final var user3Comments = commentRepository.saveAll(
             List.of(
-                createComment(3L, 1L, "user-3 / post-1 / comment-1"),
-                createComment(3L, 1L, "user-3 / post-1 / comment-2")
+                createComment(user3, post1, ++commentsCounter),
+                createComment(user3, post1, ++commentsCounter)
             )
         );
         final var expectedComments = Stream.concat(user1Comments.stream(), user2Comments.stream()).toList();
@@ -90,22 +104,30 @@ public class CommentRepositoryTest {
     @Test
     void should_return_expected_list_of_comments_by_post_ids() {
         // Given
+        final var user1 = userRepository.save(new UserEntity(null));
+
+        final var post1 = postRepository.save(new PostEntity(null));
+        final var post2 = postRepository.save(new PostEntity(null));
+        final var post3 = postRepository.save(new PostEntity(null));
+
+        var commentsCounter = 0;
+
         final var post1Comments = commentRepository.saveAll(
             List.of(
-                createComment(1L, 1L, "user-1 / post-1 / comment-1"),
-                createComment(1L, 1L, "user-1 / post-1 / comment-2")
+                createComment(user1, post1, ++commentsCounter),
+                createComment(user1, post1, ++commentsCounter)
             )
         );
         final var post2Comments = commentRepository.saveAll(
             List.of(
-                createComment(1L, 2L, "user-1 / post-2 / comment-1"),
-                createComment(1L, 2L, "user-1 / post-2 / comment-2")
+                createComment(user1, post2, ++commentsCounter),
+                createComment(user1, post2, ++commentsCounter)
             )
         );
         final var post3Comments = commentRepository.saveAll(
             List.of(
-                createComment(1L, 3L, "user-1 / post-3 / comment-1"),
-                createComment(1L, 3L, "user-1 / post-3 / comment-2")
+                createComment(user1, post3, ++commentsCounter),
+                createComment(user1, post3, ++commentsCounter)
             )
         );
         final var expectedComments = Stream.concat(post1Comments.stream(), post2Comments.stream()).toList();
@@ -125,77 +147,11 @@ public class CommentRepositoryTest {
             .doesNotContainAnyElementsOf(post3Comments);
     }
 
-    @Test
-    void should_nullify_user_id_for_the_given_list_of_comments() {
-        // Given
-        final var userId = 1L;
-        final var postId = 1L;
-        final var comments = commentRepository.saveAll(
-            List.of(
-                createComment(userId, postId, "user-" + userId + " / post-" + postId + " / comment-1"),
-                createComment(userId, postId, "user-" + userId + " / post-" + postId + " / comment-2")
-            )
-        );
-
-        // When
-        commentRepository.unlinkAllFromUsers(Set.of(1L));
-
-        final var commentsByUserId = commentRepository.findAllByUserIdIn(List.of(1L));
-        final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(1L));
-
-        // Then
-        assertSoftly(soft -> {
-            soft.assertThat(commentsByUserId)
-                .isNotNull()
-                .isEmpty();
-
-            soft.assertThat(commentsByPostId)
-                .isNotNull()
-                .hasSameSizeAs(comments)
-                .allMatch(it -> it.userId() == null, CommentEntity.Fields.userId + " should be null");
-        });
-    }
-
-    @Test
-    void should_delete_all_comments_with_a_given_post_id() {
-        // Given
-        final var userId = 1L;
-        final var postId = 1L;
-        final var comments = commentRepository.saveAll(
-            List.of(
-                createComment(userId, postId, "user-" + userId + " / post-" + postId + " / comment-1"),
-                createComment(userId, postId, "user-" + userId + " / post-" + postId + " / comment-2")
-            )
-        );
-
-        // When
-        commentRepository.deleteAllFromPost(userId);
-
-        final var commentsById = commentRepository.findAllById(comments.stream().map(CommentEntity::id).toList());
-        final var commentsByUserId = commentRepository.findAllByUserIdIn(List.of(userId));
-        final var commentsByPostId = commentRepository.findAllByPostIdIn(List.of(postId));
-
-        // Then
-        assertSoftly(soft -> {
-            soft.assertThat(commentsById)
-                .isNotNull()
-                .isEmpty();
-
-            soft.assertThat(commentsByUserId)
-                .isNotNull()
-                .isEmpty();
-
-            soft.assertThat(commentsByPostId)
-                .isNotNull()
-                .isEmpty();
-        });
-    }
-
-    private CommentEntity createComment(final Long userId, final Long postId, final String content) {
+    private CommentEntity createComment(final UserEntity user, final PostEntity post, final int num) {
         return CommentEntity.builder()
-            .userId(userId)
-            .postId(postId)
-            .content(content)
+            .userId(user.id())
+            .postId(post.id())
+            .content("user-" + user.id() + " / post-" + post.id() + " / comment-" + num)
             .build();
     }
 }

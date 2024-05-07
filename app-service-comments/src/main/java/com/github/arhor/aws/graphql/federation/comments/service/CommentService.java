@@ -21,8 +21,4 @@ public interface CommentService {
     UpdateCommentResult updateComment(UpdateCommentInput input);
 
     boolean deleteComment(long id);
-
-    void unlinkUsersComments(Collection<Long> userIds);
-
-    void deletePostComments(long postId);
 }

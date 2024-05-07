@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.api.listener;
 
-import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
+import com.github.arhor.aws.graphql.federation.comments.service.UserService;
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import io.awspring.cloud.sqs.annotation.SqsListener;
@@ -12,10 +12,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserEventsListener {
 
-    private final CommentService commentService;
+    private final UserService userService;
 
-    @SqsListener("${app-props.aws.sqs.user-deleted-events}")
+    @SqsListener("${app-props.aws.sqs.user-created-events:}")
+    public void handleUserCreatedEvent(final UserEvent.Created event) {
+        userService.createInternalUserRepresentation(event.getIds());
+    }
+
+    @SqsListener("${app-props.aws.sqs.user-deleted-events:}")
     public void handleUserDeletedEvent(final UserEvent.Deleted event) {
-        commentService.unlinkUsersComments(event.getIds());
+        userService.deleteInternalUserRepresentation(event.getIds());
     }
 }

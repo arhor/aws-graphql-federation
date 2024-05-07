@@ -4,29 +4,32 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
+import com.github.arhor.aws.graphql.federation.comments.service.PostService;
+import com.github.arhor.aws.graphql.federation.comments.service.UserService;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsEntityFetcher;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
 import static com.github.arhor.aws.graphql.federation.common.MapExtKt.getLong;
 
 @DgsComponent
+@RequiredArgsConstructor
 public class FederatedEntityFetcher {
+
+    private final UserService userService;
+    private final PostService postService;
 
     /* Entity Fetchers */
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
     public User resolveUser(final Map<String, ?> values) {
-        return User.newBuilder()
-            .id(getLong(values, USER.Id))
-            .build();
+        return userService.findInternalUserRepresentation(getLong(values, USER.Id));
     }
 
     @DgsEntityFetcher(name = POST.TYPE_NAME)
     public Post resolvePost(final Map<String, ?> values) {
-        return Post.newBuilder()
-            .id(getLong(values, POST.Id))
-            .build();
+        return postService.findInternalPostRepresentation(getLong(values, POST.Id));
     }
 }

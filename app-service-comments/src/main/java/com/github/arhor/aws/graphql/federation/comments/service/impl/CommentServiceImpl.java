@@ -119,20 +119,6 @@ public class CommentServiceImpl implements CommentService {
             .orElse(false);
     }
 
-    @Override
-    @Transactional
-    public void unlinkUsersComments(final Collection<Long> userIds) {
-        if (!userIds.isEmpty()) {
-            commentRepository.unlinkAllFromUsers(userIds);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deletePostComments(final long postId) {
-        commentRepository.deleteAllFromPost(postId);
-    }
-
     /**
      * @param dataSource function that will be used to load comments in case ids collection is not empty
      * @param dataMapper function that converts entities of type T to type D

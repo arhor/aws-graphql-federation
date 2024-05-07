@@ -4,18 +4,22 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
+import com.github.arhor.aws.graphql.federation.comments.service.PostService;
+import com.github.arhor.aws.graphql.federation.comments.service.UserService;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(
     classes = {
@@ -26,6 +30,12 @@ import static org.assertj.core.api.Assertions.from;
 )
 class FederatedEntityFetcherTest {
 
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private PostService postService;
+
     @Autowired
     private DgsQueryExecutor dgsQueryExecutor;
 
@@ -33,6 +43,10 @@ class FederatedEntityFetcherTest {
     void should_create_new_user_representation_for_the_given_id() {
         // Given
         final var userId = 1L;
+        final var expectedUser = User.newBuilder().id(userId).build();
+
+        when(userService.findInternalUserRepresentation(any()))
+            .thenReturn(expectedUser);
 
         // When
         var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -51,13 +65,18 @@ class FederatedEntityFetcherTest {
 
         // Then
         assertThat(result)
-            .returns(userId, from(User::getId));
+            .isNotNull()
+            .isEqualTo(expectedUser);
     }
 
     @Test
     void should_create_new_post_representation_for_the_given_id() {
         // Given
         final var postId = 1L;
+        final var expectedPost = Post.newBuilder().id(postId).build();
+
+        when(postService.findInternalPostRepresentation(any()))
+            .thenReturn(expectedPost);
 
         // When
         var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -76,6 +95,7 @@ class FederatedEntityFetcherTest {
 
         // Then
         assertThat(result)
-            .returns(postId, from(Post::getId));
+            .isNotNull()
+            .isEqualTo(expectedPost);
     }
 }

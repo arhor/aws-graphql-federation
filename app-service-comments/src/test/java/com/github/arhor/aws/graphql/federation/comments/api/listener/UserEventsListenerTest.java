@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.api.listener;
 
-import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
+import com.github.arhor.aws.graphql.federation.comments.service.UserService;
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +15,28 @@ import static org.mockito.BDDMockito.then;
 class UserEventsListenerTest {
 
     @MockBean
-    private CommentService commentService;
+    private UserService userService;
 
     @Autowired
     private UserEventsListener userEventsListener;
 
     @Test
-    void should_call_unlinkUserComments_method_on_user_deleted_event() {
+    void should_call_createInternalUserRepresentation_method_on_user_created_event() {
+        // Given
+        final var userIds = Set.of(1L);
+        final var event = new UserEvent.Created(userIds);
+
+        // When
+        userEventsListener.handleUserCreatedEvent(event);
+
+        // Then
+        then(userService)
+            .should()
+            .createInternalUserRepresentation(userIds);
+    }
+
+    @Test
+    void should_call_deleteInternalUserRepresentation_method_on_user_deleted_event() {
         // Given
         final var userIds = Set.of(1L);
         final var event = new UserEvent.Deleted(userIds);
@@ -30,8 +45,8 @@ class UserEventsListenerTest {
         userEventsListener.handleUserDeletedEvent(event);
 
         // Then
-        then(commentService)
+        then(userService)
             .should()
-            .unlinkUsersComments(userIds);
+            .deleteInternalUserRepresentation(userIds);
     }
 }
