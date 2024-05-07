@@ -2,11 +2,10 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.service.TagService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class TagServiceImpl @Autowired constructor(
+class TagServiceImpl(
     private val tagRepository: TagRepository,
 ) : TagService {
 

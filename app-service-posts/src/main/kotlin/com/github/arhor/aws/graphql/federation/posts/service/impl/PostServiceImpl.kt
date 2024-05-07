@@ -18,7 +18,6 @@ import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapp
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
 import com.github.arhor.aws.graphql.federation.tracing.Trace
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable
@@ -27,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Trace
 @Service
-class PostServiceImpl @Autowired constructor(
+class PostServiceImpl(
     private val postMapper: PostMapper,
     private val postRepository: PostRepository,
     private val postEventEmitter: PostEventEmitter,

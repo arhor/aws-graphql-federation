@@ -5,13 +5,12 @@ import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmitter
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.MessagingException
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
 @Component
-class PostEventEmitterImpl @Autowired constructor(
+class PostEventEmitterImpl(
     private val snsOperations: SnsOperations,
     appProps: AppProps,
 ) : PostEventEmitter {

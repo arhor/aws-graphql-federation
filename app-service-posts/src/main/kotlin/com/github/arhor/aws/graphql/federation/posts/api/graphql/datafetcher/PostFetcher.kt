@@ -14,11 +14,10 @@ import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
-import org.springframework.beans.factory.annotation.Autowired
 import java.util.concurrent.CompletableFuture
 
 @DgsComponent
-class PostFetcher @Autowired constructor(
+class PostFetcher(
     private val postService: PostService,
 ) {
     /* Queries */
