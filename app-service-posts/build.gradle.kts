@@ -91,6 +91,10 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
 }
 
+println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+println("CI: ${providers.environmentVariable("CI").orNull}")
+println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+
 dependencyManagement {
     imports {
         mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${libs.versions.graphql.dgs.bom.get()}")
@@ -115,12 +119,6 @@ tasks {
         jvmArgs = listOf("-XX:+EnableDynamicAgentLoading")
         systemProperty("spring.profiles.active", "test")
         useJUnitPlatform()
-
-        beforeEvaluate {
-            println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-            println("CI: ${providers.environmentVariable("CI")}")
-            println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-        }
     }
 
     processResources {
