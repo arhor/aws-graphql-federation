@@ -3,14 +3,18 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmitter
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
+import com.github.arhor.aws.graphql.federation.posts.util.limit
+import com.github.arhor.aws.graphql.federation.posts.util.offset
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -112,6 +116,64 @@ internal class PostServiceImplTest {
                 .returns(expectedEntity, from { it.entity })
                 .returns(expectedCondition, from { it.condition })
                 .returns(expectedOperation, from { it.operation })
+        }
+    }
+
+    @Nested
+    @DisplayName("PostService :: getPosts")
+    inner class GetPostsTest {
+        @Test
+        fun `should expected list when posts exist calling PostMapper for each PostEntity`() {
+            // Given
+            val input = PostsLookupInput()
+
+            val expectedDataFromDB = listOf(
+                PostProjection(
+                    id = 1L,
+                    userId = 2L,
+                    header = "test-header",
+                    content = "test-content",
+                    options = PostEntity.Options(),
+                )
+            )
+            val expectedPosts = expectedDataFromDB.map {
+                Post(
+                    id = it.id,
+                    userId = it.userId,
+                    header = it.header,
+                    content = it.content,
+                )
+            }
+
+            every { postRepository.findAll(limit = any(), offset = any()) } returns expectedDataFromDB
+            every { postMapper.mapToPost(any<PostProjection>()) } returns expectedPosts.single()
+
+            // When
+            val result = postService.getPosts(input)
+
+            // Then
+            verify(exactly = 1) { postRepository.findAll(limit = input.limit, offset = input.offset) }
+            verify(exactly = 1) { postMapper.mapToPost(expectedDataFromDB.single()) }
+
+            assertThat(result)
+                .isEqualTo(expectedPosts)
+        }
+
+        @Test
+        fun `should return empty list when no posts found without calls to PostMapper`() {
+            // Given
+            val input = PostsLookupInput()
+
+            every { postRepository.findAll(limit = any(), offset = any()) } returns emptyList()
+
+            // When
+            val result = postService.getPosts(input)
+
+            // Then
+            verify(exactly = 1) { postRepository.findAll(limit = input.limit, offset = input.offset) }
+
+            assertThat(result)
+                .isEmpty()
         }
     }
 }

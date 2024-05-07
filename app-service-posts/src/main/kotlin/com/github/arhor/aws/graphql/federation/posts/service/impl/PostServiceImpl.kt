@@ -17,6 +17,8 @@ import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmi
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
+import com.github.arhor.aws.graphql.federation.posts.util.limit
+import com.github.arhor.aws.graphql.federation.posts.util.offset
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
@@ -48,9 +50,8 @@ class PostServiceImpl(
     @Transactional(readOnly = true)
     override fun getPosts(input: PostsLookupInput): List<Post> {
         return postRepository
-            .findAll(limit = input.size, offset = input.page * input.size)
+            .findAll(limit = input.limit, offset = input.offset)
             .map(postMapper::mapToPost)
-            .toList()
     }
 
     @Transactional(readOnly = true)
