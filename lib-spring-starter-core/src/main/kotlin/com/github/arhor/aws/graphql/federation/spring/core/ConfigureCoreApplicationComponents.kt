@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.spring.core
 
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
-import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.web.context.WebServerApplicationContext
@@ -31,16 +30,14 @@ class ConfigureCoreApplicationComponents {
 
     @Bean
     @Profile("dev", "!test")
-    fun <T> displayApplicationInfo(context: ObjectProvider<T>): ApplicationRunner
+    fun <T> displayApplicationInfo(context: T): ApplicationRunner
         where T : WebApplicationContext,
               T : WebServerApplicationContext = ApplicationRunner {
 
-        context.ifAvailable {
-            val port = it.webServer.port
-            val path = it.servletContext?.contextPath ?: ""
+        val port = context.webServer.port
+        val path = context.servletContext?.contextPath ?: ""
 
-            logger.info("Local access URL: http://localhost:{}{}", port, path)
-        }
+        logger.info("Local access URL: http://localhost:{}{}", port, path)
     }
 
 
