@@ -38,7 +38,7 @@ class PostServiceImpl @Autowired constructor(
 
     @Transactional(readOnly = true)
     override fun getPostById(id: Long): Post {
-        return postRepository.findByIdOrNull(id)?.let(postMapper::map)
+        return postRepository.findByIdOrNull(id)?.let(postMapper::mapToPost)
             ?: throw EntityNotFoundException(
                 entity = POST.TYPE_NAME,
                 condition = "${POST.Id} = $id",
@@ -50,7 +50,7 @@ class PostServiceImpl @Autowired constructor(
     override fun getPosts(input: PostsLookupInput): List<Post> {
         return postRepository
             .findAll(limit = input.size, offset = input.page * input.size)
-            .map(postMapper::map)
+            .map(postMapper::mapToPost)
             .toList()
     }
 
@@ -59,7 +59,7 @@ class PostServiceImpl @Autowired constructor(
         userIds.isNotEmpty() -> {
             postRepository
                 .findAllByUserIdIn(userIds)
-                .groupBy({ it.userId!! }, postMapper::map)
+                .groupBy({ it.userId!! }, postMapper::mapToPost)
         }
 
         else -> emptyMap()
@@ -67,9 +67,9 @@ class PostServiceImpl @Autowired constructor(
 
     @Transactional
     override fun createPost(input: CreatePostInput): Post {
-        return postMapper.map(input = input, tags = materialize(input.tags))
+        return postMapper.mapToEntity(input = input, tags = materialize(input.tags))
             .let(postRepository::save)
-            .let(postMapper::map)
+            .let(postMapper::mapToPost)
     }
 
     @Transactional
@@ -87,7 +87,7 @@ class PostServiceImpl @Autowired constructor(
             tags = input.tags?.let(::materialize)?.let(tagMapper::mapToRefs) ?: initialState.tags
         )
 
-        return postMapper.map(
+        return postMapper.mapToPost(
             entity = when (currentState != initialState) {
                 true -> postRepository.save(currentState)
                 else -> initialState

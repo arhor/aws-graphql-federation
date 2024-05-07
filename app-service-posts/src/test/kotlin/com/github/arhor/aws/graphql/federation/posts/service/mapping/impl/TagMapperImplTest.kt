@@ -15,7 +15,6 @@ class TagMapperImplTest {
     @Nested
     @DisplayName("TagMapper :: mapToRef")
     inner class MapToRefTest {
-
         @Test
         fun `should successfully map TagEntity to TagRef with the same ID`() {
             // Given

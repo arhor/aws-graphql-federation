@@ -7,7 +7,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Cre
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 
 interface PostMapper {
-    fun map(input: CreatePostInput, tags: Set<TagEntity>): PostEntity
-    fun map(entity: PostEntity): Post
-    fun map(projection: PostProjection): Post
+    fun mapToEntity(input: CreatePostInput, tags: Set<TagEntity>): PostEntity
+    fun mapToPost(entity: PostEntity): Post
+    fun mapToPost(projection: PostProjection): Post
 }

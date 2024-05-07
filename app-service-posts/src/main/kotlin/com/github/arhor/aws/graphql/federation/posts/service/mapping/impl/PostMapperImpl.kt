@@ -8,16 +8,15 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class PostMapperImpl @Autowired constructor(
+class PostMapperImpl(
     private val optionsMapper: OptionsMapper,
     private val tagMapper: TagMapper,
 ) : PostMapper {
 
-    override fun map(input: CreatePostInput, tags: Set<TagEntity>): PostEntity {
+    override fun mapToEntity(input: CreatePostInput, tags: Set<TagEntity>): PostEntity {
         return PostEntity(
             userId = input.userId,
             header = input.header,
@@ -27,17 +26,17 @@ class PostMapperImpl @Autowired constructor(
         )
     }
 
-    override fun map(entity: PostEntity): Post {
+    override fun mapToPost(entity: PostEntity): Post {
         return Post(
             id = entity.id!!,
             userId = entity.userId,
             header = entity.header,
             content = entity.content,
-            options = entity.options.items.toList(),
+            options = optionsMapper.mapIntoList(entity.options),
         )
     }
 
-    override fun map(projection: PostProjection): Post {
+    override fun mapToPost(projection: PostProjection): Post {
         return Post(
             id = projection.id,
             userId = projection.userId,
