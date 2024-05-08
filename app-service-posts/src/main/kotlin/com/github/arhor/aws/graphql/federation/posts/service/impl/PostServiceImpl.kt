@@ -108,13 +108,6 @@ class PostServiceImpl(
         }
     }
 
-    @Transactional
-    override fun unlinkPostsFromUsers(userIds: Collection<UUID>) {
-        if (userIds.isNotEmpty()) {
-            postRepository.unlinkAllFromUsers(userIds)
-        }
-    }
-
     private fun materialize(tags: List<String>?): Set<TagEntity> = when {
         tags != null -> {
             val presentTags = tagRepository.findAllByNameIn(tags)

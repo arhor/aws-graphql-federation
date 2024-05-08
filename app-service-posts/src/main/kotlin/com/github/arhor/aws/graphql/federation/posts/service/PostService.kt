@@ -13,5 +13,4 @@ interface PostService {
     fun createPost(input: CreatePostInput): Post
     fun updatePost(input: UpdatePostInput): Post
     fun deletePost(id: UUID): Boolean
-    fun unlinkPostsFromUsers(userIds: Collection<UUID>)
 }

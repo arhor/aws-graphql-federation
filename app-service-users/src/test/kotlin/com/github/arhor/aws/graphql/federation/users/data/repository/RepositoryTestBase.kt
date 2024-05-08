@@ -41,7 +41,7 @@ internal abstract class RepositoryTestBase {
     companion object {
         @JvmStatic
         @Container
-        private val db = PostgreSQLContainer("postgres:12")
+        private val db = PostgreSQLContainer("postgres:12-alpine")
 
         @JvmStatic
         @DynamicPropertySource

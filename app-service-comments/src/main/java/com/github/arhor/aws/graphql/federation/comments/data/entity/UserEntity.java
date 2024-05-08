@@ -29,6 +29,6 @@ public record UserEntity(
 
     @Override
     public boolean isNew() {
-        return false;
+        return true;
     }
 }

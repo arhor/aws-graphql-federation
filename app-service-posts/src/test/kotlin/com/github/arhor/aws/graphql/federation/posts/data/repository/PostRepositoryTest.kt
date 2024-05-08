@@ -1,18 +1,31 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.PostEntityCallback
+import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.TagEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ContextConfiguration
 import java.util.UUID
 
+@ContextConfiguration(
+    classes = [
+        PostEntityCallback::class,
+        TagEntityCallback::class,
+    ]
+)
 internal class PostRepositoryTest : RepositoryTestBase() {
 
     @Autowired
     private lateinit var postRepository: PostRepository
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
     @Nested
     @DisplayName("PostRepository :: findAll")
@@ -20,7 +33,8 @@ internal class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return list containing expected posts data`() {
             // Given
-            val expectedPosts = createPosts().map { it.toProjection() }
+            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val expectedPosts = createPosts(user).map { it.toProjection() }
 
             // When
             val result = postRepository.findAll(limit = 10, offset = 0)
@@ -35,7 +49,8 @@ internal class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when limit is zero`() {
             // Given
-            createPosts()
+            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            createPosts(user)
 
             // When
             val result = postRepository.findAll(limit = 0, offset = 0)
@@ -49,7 +64,8 @@ internal class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
-            val createdPosts = createPosts()
+            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val createdPosts = createPosts(user)
 
             // When
             val result = postRepository.findAll(limit = 10, offset = createdPosts.size)
@@ -67,7 +83,8 @@ internal class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return list containing expected posts data`() {
             // Given
-            val expectedPosts = createPosts().map { it.toProjection() }
+            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val expectedPosts = createPosts(user).map { it.toProjection() }
 
             // When
             val result = postRepository.findAllByUserIdIn(expectedPosts.map { it.userId!! })
@@ -82,7 +99,8 @@ internal class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when userIds passed as empty list`() {
             // Given
-            createPosts()
+            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            createPosts(user)
 
             // When
             val result = postRepository.findAllByUserIdIn(emptyList())
@@ -96,7 +114,8 @@ internal class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
-            createPosts()
+            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            createPosts(user)
             val incorrectUserIds = listOf(UUID.randomUUID())
 
             // When
@@ -109,33 +128,10 @@ internal class PostRepositoryTest : RepositoryTestBase() {
         }
     }
 
-    @Nested
-    @DisplayName("PostRepository :: unlinkAllFromUsers")
-    inner class UnlinkAllFromUsersTest {
-        @Test
-        fun `should updated all posts with passed user ids to set null to userId`() {
-            // Given
-            val createdPosts = createPosts()
-
-            // When
-            postRepository.unlinkAllFromUsers(createdPosts.map { it.userId!! })
-            val updatedPosts = postRepository.findAllById(createdPosts.map { it.id })
-
-            // Then
-            assertThat(createdPosts)
-                .isNotEmpty()
-                .allSatisfy { assertThat(it.userId).isNotNull() }
-
-            assertThat(updatedPosts)
-                .isNotEmpty()
-                .allSatisfy { assertThat(it.userId).isNull() }
-        }
-    }
-
-    private fun createPosts(num: Long = 3) = postRepository.saveAll(
+    private fun createPosts(user: UserEntity, num: Long = 3) = postRepository.saveAll(
         (1..num).map {
             PostEntity(
-                userId = UUID.randomUUID(),
+                userId = user.id,
                 header = "header-$it",
                 content = "content-$it",
             )

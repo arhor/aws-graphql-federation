@@ -12,7 +12,7 @@ import java.util.UUID
 data class AuthRef(
     @Id
     @Column(COL_ID)
-    val id: UUID? = null,
+    val id: Long? = null,
 
     @Column(COL_AUTH_ID)
     val authId: AggregateReference<AuthEntity, UUID>,
@@ -20,9 +20,11 @@ data class AuthRef(
     companion object {
         const val TABLE_NAME = "users_has_authorities"
 
-        const val COL_ID = "id"
+        // @formatter:off
+        const val COL_ID      = "id"
         const val COL_USER_ID = "user_id"
         const val COL_AUTH_ID = "auth_id"
+        // @formatter:on
 
         fun create(entity: AuthEntity) = AuthRef(
             authId = AggregateReference.to(

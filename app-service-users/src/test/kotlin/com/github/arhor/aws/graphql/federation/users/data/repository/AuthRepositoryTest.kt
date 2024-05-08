@@ -2,13 +2,21 @@ package com.github.arhor.aws.graphql.federation.users.data.repository
 
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthEntity
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
+import com.github.arhor.aws.graphql.federation.users.data.entity.callback.AuthEntityCallback
+import com.github.arhor.aws.graphql.federation.users.data.entity.callback.UserEntityCallback
 import com.github.arhor.aws.graphql.federation.users.data.repository.mapping.UserIdToAuthNamesResultSetExtractor
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
-@ContextConfiguration(classes = [UserIdToAuthNamesResultSetExtractor::class])
+@ContextConfiguration(
+    classes = [
+        AuthEntityCallback::class,
+        UserEntityCallback::class,
+        UserIdToAuthNamesResultSetExtractor::class,
+    ]
+)
 internal class AuthRepositoryTest : RepositoryTestBase() {
 
     @Autowired

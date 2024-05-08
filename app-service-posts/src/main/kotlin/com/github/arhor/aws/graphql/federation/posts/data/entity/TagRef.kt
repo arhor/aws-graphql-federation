@@ -12,7 +12,7 @@ import java.util.UUID
 data class TagRef(
     @Id
     @Column(COL_ID)
-    val id: UUID? = null,
+    val id: Long? = null,
 
     @Column(COL_TAG_ID)
     val tagId: AggregateReference<TagEntity, UUID>,
