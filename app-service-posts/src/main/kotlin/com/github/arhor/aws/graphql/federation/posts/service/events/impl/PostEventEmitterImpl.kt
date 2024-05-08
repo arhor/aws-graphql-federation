@@ -11,20 +11,15 @@ import org.springframework.stereotype.Component
 
 @Component
 class PostEventEmitterImpl(
-    private val snsOperations: SnsOperations,
-    appProps: AppProps,
+    private val sns: SnsOperations,
+    private val appProps: AppProps,
 ) : PostEventEmitter {
-
-    private val postEventsTopic = appProps.aws.sns.postEvents
 
     @Retryable(retryFor = [MessagingException::class])
     override fun emit(event: PostEvent) {
-        snsOperations.sendNotification(
-            postEventsTopic,
-            SnsNotification(
-                event,
-                event.attributes()
-            )
-        )
+        val snsTopicName = appProps.aws.sns.postEvents
+        val notification = SnsNotification(event, event.attributes())
+
+        sns.sendNotification(snsTopicName, notification)
     }
 }

@@ -70,6 +70,7 @@ class PostServiceImpl(
     override fun createPost(input: CreatePostInput): Post {
         return postMapper.mapToEntity(input = input, tags = materialize(input.tags))
             .let(postRepository::save)
+            .also { postEventEmitter.emit(PostEvent.Created(id = it.id!!)) }
             .let(postMapper::mapToPost)
     }
 
