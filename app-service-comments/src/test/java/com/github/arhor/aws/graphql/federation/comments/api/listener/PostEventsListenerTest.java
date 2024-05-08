@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.UUID;
+
 import static org.mockito.BDDMockito.then;
 
 @SpringJUnitConfig(PostEventsListener.class)
@@ -21,7 +23,7 @@ class PostEventsListenerTest {
     @Test
     void should_call_createInternalPostRepresentation_method_on_post_created_event() {
         // Given
-        final var postId = 1L;
+        final var postId = UUID.randomUUID();
         final var event = new PostEvent.Created(postId);
 
         // When
@@ -36,7 +38,7 @@ class PostEventsListenerTest {
     @Test
     void should_call_deleteInternalPostRepresentation_method_on_post_deleted_event() {
         // Given
-        final var postId = 1L;
+        final var postId = UUID.randomUUID();
         final var event = new PostEvent.Deleted(postId);
 
         // When

@@ -121,6 +121,9 @@ tasks {
     generateJava {
         language = "kotlin"
         packageName = "com.github.arhor.aws.graphql.federation.users.generated.graphql"
+        typeMapping = mutableMapOf(
+            "UUID" to "java.util.UUID"
+        )
     }
 
     jacocoTestReport {

@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
+import java.util.UUID
 
 private typealias OutboxEventData = TypeReference<Map<String, Any?>>
 
@@ -42,7 +43,7 @@ internal class UserEventListenerTest {
     @Test
     fun `should save UserEvent to the OutboxEventRepository`() {
         // Given
-        val event = UserEvent.Deleted(ids = setOf(1L))
+        val event = UserEvent.Deleted(ids = setOf(UUID.randomUUID()))
 
         every { objectMapper.convertValue(any(), any<OutboxEventData>()) } returns mockk()
         every { outboxMessageRepository.save(any()) } returns mockk()

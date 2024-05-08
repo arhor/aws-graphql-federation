@@ -12,6 +12,8 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.from;
@@ -40,8 +42,8 @@ class CommentMapperImplTest {
             // Given
             final var input =
                 CreateCommentInput.newBuilder()
-                    .userId(1L)
-                    .postId(2L)
+                    .userId(UUID.randomUUID())
+                    .postId(UUID.randomUUID())
                     .content("user-1 / post-2 / test-comment")
                     .build();
 
@@ -82,9 +84,9 @@ class CommentMapperImplTest {
             // Given
             final var entity =
                 CommentEntity.builder()
-                    .id(0L)
-                    .userId(1L)
-                    .postId(2L)
+                    .id(UUID.randomUUID())
+                    .userId(UUID.randomUUID())
+                    .postId(UUID.randomUUID())
                     .content("user-1 / post-2 / test-comment")
                     .build();
 

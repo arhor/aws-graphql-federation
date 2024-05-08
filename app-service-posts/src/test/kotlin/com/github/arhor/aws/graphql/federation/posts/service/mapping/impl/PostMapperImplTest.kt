@@ -18,6 +18,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class PostMapperImplTest {
 
@@ -41,7 +42,7 @@ class PostMapperImplTest {
         fun `should correctly map CreatePostInput to PostEntity calling options and tags mappers`() {
             // Given
             val createPostInput = CreatePostInput(
-                userId = 1L,
+                userId = UUID.randomUUID(),
                 header = "test-header",
                 content = "test-content",
             )
@@ -77,8 +78,8 @@ class PostMapperImplTest {
         fun `should correctly map PostEntity to Post calling options mapper`() {
             // Given
             val entity = PostEntity(
-                id = 1L,
-                userId = 2L,
+                id = UUID.randomUUID(),
+                userId = UUID.randomUUID(),
                 header = "test-header",
                 content = "test-content",
             )
@@ -105,8 +106,8 @@ class PostMapperImplTest {
         fun `should correctly map PostProjection to Post calling options mapper`() {
             // Given
             val projection = PostProjection(
-                id = 1L,
-                userId = 2L,
+                id = UUID.randomUUID(),
+                userId = UUID.randomUUID(),
                 header = "test-header",
                 content = "test-content",
                 options = PostEntity.Options()

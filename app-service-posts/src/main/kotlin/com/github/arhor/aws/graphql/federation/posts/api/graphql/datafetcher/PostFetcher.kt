@@ -14,6 +14,7 @@ import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 @DgsComponent
@@ -23,7 +24,7 @@ class PostFetcher(
     /* Queries */
 
     @DgsQuery
-    fun post(@InputArgument id: Long): Post =
+    fun post(@InputArgument id: UUID): Post =
         postService.getPostById(id)
 
     @DgsQuery
@@ -32,7 +33,7 @@ class PostFetcher(
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Posts)
     fun userPosts(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Post>> {
-        val loader = dfe.getDataLoader<Long, List<Post>>(PostBatchLoader::class.java)
+        val loader = dfe.getDataLoader<UUID, List<Post>>(PostBatchLoader::class.java)
         val source = dfe.getSource<User>()
 
         return loader.load(source.id)
@@ -49,6 +50,6 @@ class PostFetcher(
         postService.updatePost(input)
 
     @DgsMutation
-    fun deletePost(@InputArgument id: Long): Boolean =
+    fun deletePost(@InputArgument id: UUID): Boolean =
         postService.deletePost(id)
 }

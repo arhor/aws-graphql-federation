@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.time.Duration
+import java.util.UUID
 import java.util.concurrent.Executors
 
 internal class TagBatchLoaderTest {
@@ -30,7 +31,7 @@ internal class TagBatchLoaderTest {
     @Test
     fun `should return completed future with empty map when empty set of keys provided`() {
         // Given
-        val keys = emptySet<Long>()
+        val keys = emptySet<UUID>()
 
         // When
         val result = tagBatchLoader.load(keys)
@@ -44,7 +45,7 @@ internal class TagBatchLoaderTest {
     @Test
     fun `should return expected result calling getTagsByPostIds exactly once with expected keys`() {
         // Given
-        val keys = setOf<Long>(1, 2, 3)
+        val keys = (1..3).map { UUID.randomUUID() }.toSet()
         val expectedPayload = keys.associateWith { listOf("test-$it") }
 
         every { tagService.getTagsByPostIds(any()) } returns expectedPayload

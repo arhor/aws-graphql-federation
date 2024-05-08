@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.util.UUID
 
 internal class PostRepositoryTest : RepositoryTestBase() {
 
@@ -51,7 +52,7 @@ internal class PostRepositoryTest : RepositoryTestBase() {
             val createdPosts = createPosts()
 
             // When
-            val result = postRepository.findAll(limit = 10, offset = createdPosts.size.toLong())
+            val result = postRepository.findAll(limit = 10, offset = createdPosts.size)
 
             // Then
             assertThat(result)
@@ -95,9 +96,8 @@ internal class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
-            val createdPosts = createPosts()
-            val lastGeneratedUserId = createdPosts.maxOf { it.userId!! }
-            val incorrectUserIds = createdPosts.map { it.userId!! + lastGeneratedUserId + 1 }
+            createPosts()
+            val incorrectUserIds = listOf(UUID.randomUUID())
 
             // When
             val result = postRepository.findAllByUserIdIn(incorrectUserIds)
@@ -135,7 +135,7 @@ internal class PostRepositoryTest : RepositoryTestBase() {
     private fun createPosts(num: Long = 3) = postRepository.saveAll(
         (1..num).map {
             PostEntity(
-                userId = it,
+                userId = UUID.randomUUID(),
                 header = "header-$it",
                 content = "content-$it",
             )

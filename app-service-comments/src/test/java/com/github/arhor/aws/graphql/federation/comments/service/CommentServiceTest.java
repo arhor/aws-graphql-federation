@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,17 +53,16 @@ class CommentServiceTest {
         @Test
         void should_return_comments_grouped_by_user_id() {
             // Given
-            final var userId = 1L;
+            final var userId = UUID.randomUUID();
             final var userIds = List.of(userId);
 
             final var commentEntities = List.of(
-                CommentEntity.builder().id(1L).userId(userId).build(),
-                CommentEntity.builder().id(2L).userId(userId).build()
+                CommentEntity.builder().id(UUID.randomUUID()).userId(userId).build(),
+                CommentEntity.builder().id(UUID.randomUUID()).userId(userId).build()
             );
-            final var commentDtos = List.of(
-                Comment.newBuilder().id(1L).userId(userId).build(),
-                Comment.newBuilder().id(2L).userId(userId).build()
-            );
+            final var commentDtos = commentEntities.stream()
+                .map(it -> Comment.newBuilder().id(it.id()).userId(it.userId()).build())
+                .toList();
 
             given(commentRepository.findAllByUserIdIn(any()))
                 .willAnswer((call) -> commentEntities.stream());
@@ -99,7 +99,7 @@ class CommentServiceTest {
         @Test
         void should_not_interact_with_repository_if_userIds_is_empty() {
             // Given
-            var userIds = Collections.<Long>emptyList();
+            var userIds = Collections.<UUID>emptyList();
 
             // When
             var result = commentService.getCommentsByUserIds(userIds);
@@ -119,17 +119,16 @@ class CommentServiceTest {
         @Test
         void should_return_comments_grouped_by_post_id() {
             // Given
-            final var postId = 1L;
+            final var postId = UUID.randomUUID();
             final var postIds = List.of(postId);
 
             final var commentEntities = List.of(
-                CommentEntity.builder().id(1L).postId(postId).build(),
-                CommentEntity.builder().id(2L).postId(postId).build()
+                CommentEntity.builder().id(UUID.randomUUID()).postId(postId).build(),
+                CommentEntity.builder().id(UUID.randomUUID()).postId(postId).build()
             );
-            final var commentDtos = List.of(
-                Comment.newBuilder().id(1L).postId(postId).build(),
-                Comment.newBuilder().id(2L).postId(postId).build()
-            );
+            final var commentDtos = commentEntities.stream()
+                .map(it -> Comment.newBuilder().id(it.id()).postId(it.postId()).build())
+                .toList();
 
             given(commentRepository.findAllByPostIdIn(any()))
                 .willAnswer((call) -> commentEntities.stream());
@@ -166,7 +165,7 @@ class CommentServiceTest {
         @Test
         void should_not_interact_with_repository_if_postIds_is_empty() {
             // Given
-            var postIds = Collections.<Long>emptyList();
+            var postIds = Collections.<UUID>emptyList();
 
             // When
             var result = commentService.getCommentsByPostIds(postIds);

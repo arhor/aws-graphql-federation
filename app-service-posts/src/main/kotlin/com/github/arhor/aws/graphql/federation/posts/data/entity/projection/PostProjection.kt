@@ -1,10 +1,11 @@
 package com.github.arhor.aws.graphql.federation.posts.data.entity.projection
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
+import java.util.UUID
 
 data class PostProjection(
-    val id: Long,
-    val userId: Long?,
+    val id: UUID,
+    val userId: UUID?,
     val header: String,
     val content: String,
     val options: PostEntity.Options,

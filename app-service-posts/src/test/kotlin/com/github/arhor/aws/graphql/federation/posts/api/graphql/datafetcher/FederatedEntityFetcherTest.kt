@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.UUID
 
 @SpringBootTest(
     classes = [
@@ -26,7 +27,7 @@ class FederatedEntityFetcherTest {
     @Test
     fun `should create new user representation for the given id`() {
         // Given
-        val userId = 1L;
+        val userId = UUID.randomUUID()
 
         // When
         val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(

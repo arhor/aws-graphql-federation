@@ -6,6 +6,7 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Use
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 @DgsComponent
@@ -15,7 +16,7 @@ class AuthFetcher {
 
     @DgsData(parentType = DgsConstants.USER.TYPE_NAME)
     fun authorities(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
-        val loader = dfe.getDataLoader<Long, List<String>>(AuthBatchLoader::class.java)
+        val loader = dfe.getDataLoader<UUID, List<String>>(AuthBatchLoader::class.java)
         val source = dfe.getSource<User>()
 
         return loader.load(source.id)

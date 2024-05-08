@@ -12,6 +12,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Table("comments")
 @Immutable
@@ -21,14 +22,14 @@ public record CommentEntity(
     @Id
     @Column("id")
     @Nullable
-    Long id,
+    UUID id,
 
     @Column("user_id")
     @Nullable
-    Long userId,
+    UUID userId,
 
     @Column("post_id")
-    Long postId,
+    UUID postId,
 
     @Column("content")
     String content,

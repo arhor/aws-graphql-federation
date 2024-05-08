@@ -13,6 +13,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.function.ServerRequest
 import java.net.URI
+import java.util.UUID
 
 internal class MainRouterTest {
 
@@ -62,7 +63,10 @@ internal class MainRouterTest {
             """.trimIndent()
         )
 
-        every { userService.getUserByUsernameAndPassword(any()) } returns CurrentUser(id = -1L, authorities = listOf("ROLE_TEST"))
+        every { userService.getUserByUsernameAndPassword(any()) } returns CurrentUser(
+            id = UUID.randomUUID(),
+            authorities = listOf("ROLE_TEST"),
+        )
 
         // When
         val response = mainRouter.route(request).map { it.handle(request) }

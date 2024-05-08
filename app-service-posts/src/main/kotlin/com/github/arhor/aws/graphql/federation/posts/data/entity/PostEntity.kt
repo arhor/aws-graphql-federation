@@ -11,16 +11,17 @@ import org.springframework.data.relational.core.mapping.MappedCollection
 import org.springframework.data.relational.core.mapping.Table
 import java.time.LocalDateTime
 import java.util.EnumSet
+import java.util.UUID
 
 @Table(PostEntity.TABLE_NAME)
 @Immutable
 data class PostEntity(
     @Id
     @Column(COL_ID)
-    val id: Long? = null,
+    val id: UUID? = null,
 
     @Column(COL_USER_ID)
-    val userId: Long?,
+    val userId: UUID?,
 
     @Column(COL_HEADER)
     val header: String,

@@ -1,10 +1,10 @@
 # noinspection GraphQLTypeRedefinition
 # noinspection DgsEntityFetcherInspector
 
-scalar Long
+scalar UUID
 
 type Query {
-    user(id: Long!): User
+    user(id: UUID!): User
     users(input: UsersLookupInput! = {}): [User!]!
 }
 
@@ -25,12 +25,12 @@ input CreateUserInput {
 }
 
 input UpdateUserInput {
-    id: Long!
+    id: UUID!
     password: String
 }
 
 input DeleteUserInput {
-    id: Long!
+    id: UUID!
 }
 
 type CreateUserResult {
@@ -46,7 +46,7 @@ type DeleteUserResult {
 }
 
 type User @key(fields: "id") {
-    id: Long!
+    id: UUID!
     username: String!
     authorities: [String!]
 }

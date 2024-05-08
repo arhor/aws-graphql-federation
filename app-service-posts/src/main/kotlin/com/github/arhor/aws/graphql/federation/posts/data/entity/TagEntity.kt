@@ -4,13 +4,14 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.util.UUID
 
 @Table(TagEntity.TABLE_NAME)
 @Immutable
 data class TagEntity(
     @Id
     @Column(COL_ID)
-    val id: Long? = null,
+    val id: UUID? = null,
 
     @Column(COL_NAME)
     val name: String,

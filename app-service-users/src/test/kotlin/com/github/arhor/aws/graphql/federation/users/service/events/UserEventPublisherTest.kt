@@ -24,6 +24,7 @@ import org.springframework.retry.annotation.EnableRetry
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
+import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 @SpringJUnitConfig
@@ -50,7 +51,7 @@ internal class UserEventPublisherTest {
     @Test
     fun `should send outbox event as notifications to the SNS with correct payload and headers`() {
         // Given
-        val userEvent = UserEvent.Deleted(ids = setOf(1))
+        val userEvent = UserEvent.Deleted(ids = setOf(UUID.randomUUID()))
 
         val actualSnsTopicName = slot<String>()
         val actualNotification = slot<SnsNotification<*>>()
@@ -75,7 +76,7 @@ internal class UserEventPublisherTest {
     @Test
     fun `should retry on MessagingException sending notification to SNS`() {
         // Given
-        val userEvent = UserEvent.Deleted(ids = setOf(1))
+        val userEvent = UserEvent.Deleted(ids = setOf(UUID.randomUUID()))
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
 

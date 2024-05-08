@@ -9,16 +9,17 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface CommentService {
 
-    Map<Long, List<Comment>> getCommentsByUserIds(Collection<Long> userIds);
+    Map<UUID, List<Comment>> getCommentsByUserIds(Collection<UUID> userIds);
 
-    Map<Long, List<Comment>> getCommentsByPostIds(Collection<Long> postIds);
+    Map<UUID, List<Comment>> getCommentsByPostIds(Collection<UUID> postIds);
 
     CreateCommentResult createComment(CreateCommentInput input);
 
     UpdateCommentResult updateComment(UpdateCommentInput input);
 
-    boolean deleteComment(long id);
+    boolean deleteComment(UUID id);
 }

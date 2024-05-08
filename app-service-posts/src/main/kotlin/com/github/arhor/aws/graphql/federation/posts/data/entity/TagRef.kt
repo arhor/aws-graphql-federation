@@ -5,16 +5,17 @@ import org.springframework.data.annotation.Immutable
 import org.springframework.data.jdbc.core.mapping.AggregateReference
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.util.UUID
 
 @Table(TagRef.TABLE_NAME)
 @Immutable
 data class TagRef(
     @Id
     @Column(COL_ID)
-    val id: Long? = null,
+    val id: UUID? = null,
 
     @Column(COL_TAG_ID)
-    val tagId: AggregateReference<TagEntity, Long>,
+    val tagId: AggregateReference<TagEntity, UUID>,
 ) {
     companion object {
         const val TABLE_NAME = "posts_has_tags"

@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
+import java.util.UUID
 import java.util.stream.Stream
 
 @SpringJUnitConfig
@@ -40,7 +41,7 @@ internal class AuthServiceTest {
     @ParameterizedTest
     fun `should invoke method getAuthoritiesByUserIds expected times`(
         // Given
-        expectedUserIds: Set<Long>,
+        expectedUserIds: Set<UUID>,
         expectedInvocations: Int,
     ) {
         every { authRepository.findAllByUserIdIn(any()) } returns emptyMap()
@@ -56,9 +57,9 @@ internal class AuthServiceTest {
         @JvmStatic
         fun `should invoke method getAuthoritiesByUserIds expected times`(): Stream<Arguments> = Stream.of(
             // @formatter:off
-            arguments(setOf(1L)       , 1),
-            arguments(setOf(1L, 2L)   , 1),
-            arguments(emptySet<Long>(), 0),
+            arguments(setOf(UUID.randomUUID())                   , 1),
+            arguments(setOf(UUID.randomUUID(), UUID.randomUUID()), 1),
+            arguments(emptySet<UUID>()                           , 0),
             // @formatter:on
         )
     }

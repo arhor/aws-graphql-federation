@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class TagMapperImplTest {
 
@@ -18,7 +19,7 @@ class TagMapperImplTest {
         @Test
         fun `should successfully map TagEntity to TagRef with the same ID`() {
             // Given
-            val entity = TagEntity(id = 1L, name = "test-tag")
+            val entity = TagEntity(id = UUID.randomUUID(), name = "test-tag")
 
             // When
             val result = tagMapper.mapToRef(entity)
@@ -48,7 +49,7 @@ class TagMapperImplTest {
         @Test
         fun `should successfully map a list of TagEntity objects to set of TagRef objects`() {
             // Given
-            val entities = (1L..5L).map { TagEntity(id = it, name = "test-tag-$it") }
+            val entities = (1L..5L).map { TagEntity(id = UUID.randomUUID(), name = "test-tag-$it") }
 
             // When
             val result = tagMapper.mapToRefs(entities)

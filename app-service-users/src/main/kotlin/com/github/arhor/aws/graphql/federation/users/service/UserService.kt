@@ -10,9 +10,10 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Upd
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
+import java.util.UUID
 
 interface UserService {
-    fun getUserById(id: Long): User
+    fun getUserById(id: UUID): User
     fun getAllUsers(input: UsersLookupInput): List<User>
     fun getUserByUsernameAndPassword(request: CurrentUserRequest): CurrentUser
     fun createUser(input: CreateUserInput): CreateUserResult

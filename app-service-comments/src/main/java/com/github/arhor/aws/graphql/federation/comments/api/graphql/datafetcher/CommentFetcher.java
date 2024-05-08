@@ -46,12 +46,12 @@ public class CommentFetcher {
     /* Mutations */
 
     @DgsMutation
-    public CreateCommentResult createComment(@InputArgument CreateCommentInput input) {
+    public CreateCommentResult createComment(final @InputArgument CreateCommentInput input) {
         return commentService.createComment(input);
     }
 
     @DgsMutation
-    public UpdateCommentResult updateComment(@InputArgument UpdateCommentInput input) {
+    public UpdateCommentResult updateComment(final @InputArgument UpdateCommentInput input) {
         return commentService.updateComment(input);
     }
 

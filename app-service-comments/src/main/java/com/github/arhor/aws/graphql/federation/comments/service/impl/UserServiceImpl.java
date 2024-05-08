@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Trace
 @Service
@@ -21,7 +22,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public User findInternalUserRepresentation(final Long userId) {
+    public User findInternalUserRepresentation(final UUID userId) {
         return userRepository.findById(userId)
             .map(this::mapEntityToUser)
             .orElseThrow(() -> new EntityNotFoundException(
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createInternalUserRepresentation(final Set<? extends Long> userIds) {
+    public void createInternalUserRepresentation(final Set<? extends UUID> userIds) {
         final var entities = userIds.stream()
             .map(UserEntity::new)
             .toList();
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteInternalUserRepresentation(final Set<? extends Long> userIds) {
+    public void deleteInternalUserRepresentation(final Set<? extends UUID> userIds) {
         userRepository.deleteAllById(userIds);
     }
 

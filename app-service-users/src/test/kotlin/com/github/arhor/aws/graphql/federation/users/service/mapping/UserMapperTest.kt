@@ -13,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
+import java.util.UUID
 
 @SpringJUnitConfig
 internal class UserMapperTest {
@@ -52,7 +53,7 @@ internal class UserMapperTest {
     @Test
     fun `should map UserEntity instance to User without exceptions`() {
         // Given
-        val expectedId = -1L
+        val expectedId = UUID.randomUUID()
         val expectedUsername = "test-username"
 
         val entity = mockk<UserEntity>()

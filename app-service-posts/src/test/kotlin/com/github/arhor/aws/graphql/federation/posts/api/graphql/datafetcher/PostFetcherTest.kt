@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.UUID
 
 @SpringBootTest(
     classes = [
@@ -44,15 +45,16 @@ internal class PostFetcherTest {
         @Test
         fun `should return expected post by id without any exceptions`() {
             // Given
-            val expectedId = 1L
+            val expectedId = UUID.randomUUID()
+            val expectedUserId = UUID.randomUUID()
 
             val expectedErrors = emptyList<GraphQLError>()
             val expectedPresent = true
             val expectedData =
                 mapOf(
                     QUERY.Post to mapOf(
-                        POST.Id to expectedId,
-                        POST.UserId to 1L,
+                        POST.Id to expectedId.toString(),
+                        POST.UserId to expectedUserId.toString(),
                         POST.Header to "test-header",
                         POST.Content to "test-content",
                         POST.Options to listOf(Option.NSFW.name),
@@ -62,7 +64,7 @@ internal class PostFetcherTest {
             every { postService.getPostById(any()) } answers {
                 Post(
                     id = firstArg(),
-                    userId = 1L,
+                    userId = expectedUserId,
                     header = "test-header",
                     content = "test-content",
                     options = listOf(Option.NSFW),
@@ -72,7 +74,7 @@ internal class PostFetcherTest {
             // When
             val result = dgsQueryExecutor.execute(
                 """
-                query (${'$'}id: Long!) {
+                query (${'$'}id: UUID!) {
                     post(id: ${'$'}id) {
                         id
                         userId
@@ -95,7 +97,7 @@ internal class PostFetcherTest {
         @Test
         fun `should return GQL error trying to find post by incorrect id`() {
             // Given
-            val id = 1L
+            val id = UUID.randomUUID()
 
             every { postService.getPostById(any()) } answers {
                 throw EntityNotFoundException(
@@ -108,7 +110,7 @@ internal class PostFetcherTest {
             // When
             val result = dgsQueryExecutor.execute(
                 """
-                query (${'$'}id: Long!) {
+                query (${'$'}id: UUID!) {
                     post(id: ${'$'}id) {
                         id
                         userId

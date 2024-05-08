@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -18,14 +19,14 @@ import static org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfi
 
 @DgsDataLoader(maxBatchSize = 50)
 @RequiredArgsConstructor
-public class PostCommentsBatchLoader implements MappedBatchLoader<Long, List<Comment>> {
+public class PostCommentsBatchLoader implements MappedBatchLoader<UUID, List<Comment>> {
 
     @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME)
     private final Executor executor;
     private final CommentService commentService;
 
     @Override
-    public CompletableFuture<Map<Long, List<Comment>>> load(final Set<Long> keys) {
+    public CompletableFuture<Map<UUID, List<Comment>>> load(final Set<UUID> keys) {
         return keys.isEmpty()
             ? CompletableFuture.completedFuture(Collections.emptyMap())
             : CompletableFuture.supplyAsync(() -> commentService.getCommentsByPostIds(keys), executor);

@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS "posts"
 (
-    "id"                BIGSERIAL    NOT NULL PRIMARY KEY,
-    "user_id"           BIGINT       NULL,
+    "id"                UUID         NOT NULL PRIMARY KEY,
+    "user_id"           UUID         NULL,
     "header"            VARCHAR(512) NOT NULL,
     "content"           TEXT         NOT NULL,
     "options"           BIGINT       NOT NULL,
@@ -12,15 +12,15 @@ CREATE TABLE IF NOT EXISTS "posts"
 
 CREATE TABLE IF NOT EXISTS "tags"
 (
-    "id"   BIGSERIAL   NOT NULL PRIMARY KEY,
+    "id"   UUID        NOT NULL PRIMARY KEY,
     "name" VARCHAR(50) NOT NULL UNIQUE
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "posts_has_tags"
 (
-    "id"      BIGSERIAL NOT NULL PRIMARY KEY,
-    "post_id" BIGINT    NOT NULL,
-    "tag_id"  BIGINT    NOT NULL,
+    "id"      UUID NOT NULL PRIMARY KEY,
+    "post_id" UUID NOT NULL,
+    "tag_id"  UUID NOT NULL,
 
     CONSTRAINT "UQ__posts_has_tags__post_id__tag_id"
         UNIQUE ("post_id", "tag_id"),

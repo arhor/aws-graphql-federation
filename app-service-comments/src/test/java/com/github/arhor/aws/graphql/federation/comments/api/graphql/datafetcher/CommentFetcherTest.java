@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
@@ -54,9 +55,9 @@ class CommentFetcherTest {
         @Test
         void should_create_new_comment_and_return_result_object_containing_created_data() {
             // Given
-            var id = -1L;
-            var userId = -2L;
-            var postId = -3L;
+            var id = UUID.randomUUID();
+            var userId = UUID.randomUUID();
+            var postId = UUID.randomUUID();
             var content = "test-password";
             var expectedComment = new Comment(id, userId, postId, content);
 
@@ -66,7 +67,7 @@ class CommentFetcherTest {
             // When
             var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 """
-                    mutation($userId: Long!, $postId: Long!, $content: String!) {
+                    mutation($userId: UUID!, $postId: UUID!, $content: String!) {
                         createComment(
                             input: {
                                 userId: $userId
@@ -103,9 +104,9 @@ class CommentFetcherTest {
         @Test
         void should_update_existing_comment_and_return_result_object_containing_updated_data() {
             // Given
-            var id = -1L;
-            var userId = -2L;
-            var postId = -3L;
+            var id = UUID.randomUUID();
+            var userId = UUID.randomUUID();
+            var postId = UUID.randomUUID();
             var content = "test-password";
             var expectedComment = new Comment(id, userId, postId, content);
 
@@ -115,7 +116,7 @@ class CommentFetcherTest {
             // When
             var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 """
-                    mutation($id: Long!, $content: String!) {
+                    mutation($id: UUID!, $content: String!) {
                         updateComment(
                             input: {
                                 id: $id

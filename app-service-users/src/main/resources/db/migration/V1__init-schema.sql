@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "users"
 (
-    "id"                BIGSERIAL     NOT NULL PRIMARY KEY,
+    "id"                UUID          NOT NULL PRIMARY KEY,
     "username"          VARCHAR(128)  NOT NULL UNIQUE,
     "password"          VARCHAR(1024) NULL,
     "version"           BIGINT        NOT NULL,
@@ -10,16 +10,16 @@ CREATE TABLE IF NOT EXISTS "users"
 
 CREATE TABLE IF NOT EXISTS "authorities"
 (
-    "id"   BIGSERIAL    NOT NULL PRIMARY KEY,
+    "id"   UUID         NOT NULL PRIMARY KEY,
     "name" VARCHAR(128) NOT NULL UNIQUE
 
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "users_has_authorities"
 (
-    "id"      BIGSERIAL NOT NULL PRIMARY KEY,
-    "user_id" BIGINT    NOT NULL,
-    "auth_id" BIGINT    NOT NULL,
+    "id"      UUID NOT NULL PRIMARY KEY,
+    "user_id" UUID NOT NULL,
+    "auth_id" UUID NOT NULL,
 
     CONSTRAINT "UQ__users_has_authorities__user_id__auth_id"
         UNIQUE ("user_id", "auth_id"),

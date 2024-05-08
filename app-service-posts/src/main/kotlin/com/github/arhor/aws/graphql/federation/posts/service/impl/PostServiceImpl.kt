@@ -25,6 +25,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Trace
 @Service
@@ -38,7 +39,7 @@ class PostServiceImpl(
 ) : PostService {
 
     @Transactional(readOnly = true)
-    override fun getPostById(id: Long): Post {
+    override fun getPostById(id: UUID): Post {
         return postRepository.findByIdOrNull(id)?.let(postMapper::mapToPost)
             ?: throw EntityNotFoundException(
                 entity = POST.TYPE_NAME,
@@ -55,7 +56,7 @@ class PostServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getPostsByUserIds(userIds: Set<Long>): Map<Long, List<Post>> = when {
+    override fun getPostsByUserIds(userIds: Set<UUID>): Map<UUID, List<Post>> = when {
         userIds.isNotEmpty() -> {
             postRepository
                 .findAllByUserIdIn(userIds)
@@ -96,7 +97,7 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun deletePost(id: Long): Boolean {
+    override fun deletePost(id: UUID): Boolean {
         return when (val post = postRepository.findByIdOrNull(id)) {
             null -> false
             else -> {
@@ -108,7 +109,7 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun unlinkPostsFromUsers(userIds: Collection<Long>) {
+    override fun unlinkPostsFromUsers(userIds: Collection<UUID>) {
         if (userIds.isNotEmpty()) {
             postRepository.unlinkAllFromUsers(userIds)
         }

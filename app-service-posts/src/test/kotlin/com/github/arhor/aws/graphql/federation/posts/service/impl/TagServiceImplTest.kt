@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 internal class TagServiceImplTest {
 
@@ -30,7 +31,7 @@ internal class TagServiceImplTest {
         @Test
         fun `should return expected map when postIds is not empty calling TagRepository`() {
             // Given
-            val postIds = setOf<Long>(1, 2, 3)
+            val postIds = (1..3).map { UUID.randomUUID() }.toSet()
             val expectedResult = postIds.associateWith { listOf("test-tag-$it") }
 
             every { tagRepository.findAllByPostIdIn(any()) } returns expectedResult
@@ -48,7 +49,7 @@ internal class TagServiceImplTest {
         @Test
         fun `should return empty map when postIds is empty without calls to TagRepository`() {
             // Given
-            val postIds = emptySet<Long>()
+            val postIds = emptySet<UUID>()
 
             // When
             val result = tagService.getTagsByPostIds(postIds)

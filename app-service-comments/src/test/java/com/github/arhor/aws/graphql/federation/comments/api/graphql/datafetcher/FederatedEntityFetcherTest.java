@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,7 +43,7 @@ class FederatedEntityFetcherTest {
     @Test
     void should_create_new_user_representation_for_the_given_id() {
         // Given
-        final var userId = 1L;
+        final var userId = UUID.randomUUID();
         final var expectedUser = User.newBuilder().id(userId).build();
 
         when(userService.findInternalUserRepresentation(any()))
@@ -72,7 +73,7 @@ class FederatedEntityFetcherTest {
     @Test
     void should_create_new_post_representation_for_the_given_id() {
         // Given
-        final var postId = 1L;
+        final var postId = UUID.randomUUID();
         final var expectedPost = Post.newBuilder().id(postId).build();
 
         when(postService.findInternalPostRepresentation(any()))

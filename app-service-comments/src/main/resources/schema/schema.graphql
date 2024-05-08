@@ -3,6 +3,7 @@
 # noinspection DgsEntityFetcherInspector
 
 scalar Long
+scalar UUID
 
 type Mutation {
     createComment(input: CreateCommentInput!): CreateCommentResult
@@ -10,13 +11,13 @@ type Mutation {
 }
 
 input CreateCommentInput {
-    userId: Long!
-    postId: Long!
+    userId: UUID!
+    postId: UUID!
     content: String!
 }
 
 input UpdateCommentInput {
-    id: Long!
+    id: UUID!
     content: String
 }
 
@@ -29,18 +30,18 @@ type UpdateCommentResult {
 }
 
 type Comment {
-    id: Long!
-    userId: Long
-    postId: Long!
+    id: UUID!
+    userId: UUID
+    postId: UUID!
     content: String!
 }
 
 type Post @key(fields: "id") @extends {
-    id: Long! @external
+    id: UUID! @external
     comments: [Comment!]
 }
 
 type User @key(fields: "id") @extends {
-    id: Long! @external
+    id: UUID! @external
     comments: [Comment!]
 }

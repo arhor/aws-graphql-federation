@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -37,8 +38,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
 
-    private GrouppingLoader<CommentEntity, Comment, Long> usersCommentsLoader;
-    private GrouppingLoader<CommentEntity, Comment, Long> postsCommentsLoader;
+    private GrouppingLoader<CommentEntity, Comment, UUID> usersCommentsLoader;
+    private GrouppingLoader<CommentEntity, Comment, UUID> postsCommentsLoader;
 
     @PostConstruct
     public void init() {
@@ -56,13 +57,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<Long, List<Comment>> getCommentsByUserIds(final Collection<Long> userIds) {
+    public Map<UUID, List<Comment>> getCommentsByUserIds(final Collection<UUID> userIds) {
         return usersCommentsLoader.loadBy(userIds);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Map<Long, List<Comment>> getCommentsByPostIds(final Collection<Long> postIds) {
+    public Map<UUID, List<Comment>> getCommentsByPostIds(final Collection<UUID> postIds) {
         return postsCommentsLoader.loadBy(postIds);
     }
 
@@ -110,7 +111,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean deleteComment(final long id) {
+    public boolean deleteComment(final UUID id) {
         return commentRepository.findById(id)
             .map((comment) -> {
                 commentRepository.delete(comment);

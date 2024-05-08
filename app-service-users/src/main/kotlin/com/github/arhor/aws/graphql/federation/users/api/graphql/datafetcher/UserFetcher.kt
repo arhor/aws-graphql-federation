@@ -14,6 +14,7 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import java.util.UUID
 
 @Trace
 @DgsComponent
@@ -24,7 +25,7 @@ class UserFetcher(
     /* ---------- Queries ---------- */
 
     @DgsQuery
-    fun user(@InputArgument id: Long): User =
+    fun user(@InputArgument id: UUID): User =
         userService.getUserById(id)
 
     @DgsQuery

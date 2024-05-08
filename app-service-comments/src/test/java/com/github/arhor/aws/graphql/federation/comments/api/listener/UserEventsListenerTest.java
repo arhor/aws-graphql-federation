@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Set;
+import java.util.UUID;
 
 import static org.mockito.BDDMockito.then;
 
@@ -23,7 +24,7 @@ class UserEventsListenerTest {
     @Test
     void should_call_createInternalUserRepresentation_method_on_user_created_event() {
         // Given
-        final var userIds = Set.of(1L);
+        final var userIds = Set.of(UUID.randomUUID());
         final var event = new UserEvent.Created(userIds);
 
         // When
@@ -38,7 +39,7 @@ class UserEventsListenerTest {
     @Test
     void should_call_deleteInternalUserRepresentation_method_on_user_deleted_event() {
         // Given
-        final var userIds = Set.of(1L);
+        final var userIds = Set.of(UUID.randomUUID());
         final var event = new UserEvent.Deleted(userIds);
 
         // When

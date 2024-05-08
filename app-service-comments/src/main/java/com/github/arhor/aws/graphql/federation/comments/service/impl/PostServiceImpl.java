@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Trace
 @Service
@@ -21,7 +22,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
 
     @Override
-    public Post findInternalPostRepresentation(final Long postId) {
+    public Post findInternalPostRepresentation(final UUID postId) {
         return postRepository.findById(postId)
             .map(this::mapEntityToPost)
             .orElseThrow(() -> new EntityNotFoundException(
@@ -32,12 +33,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void createInternalPostRepresentation(final Long postId) {
+    public void createInternalPostRepresentation(final UUID postId) {
         createInternalPostRepresentation(Set.of(postId));
     }
 
     @Override
-    public void createInternalPostRepresentation(final Set<? extends Long> postIds) {
+    public void createInternalPostRepresentation(final Set<? extends UUID> postIds) {
         final var entities = postIds.stream()
             .map(PostEntity::new)
             .toList();
@@ -46,12 +47,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deleteInternalPostRepresentation(final Long postId) {
+    public void deleteInternalPostRepresentation(final UUID postId) {
         deleteInternalPostRepresentation(Set.of(postId));
     }
 
     @Override
-    public void deleteInternalPostRepresentation(final Set<? extends Long> postIds) {
+    public void deleteInternalPostRepresentation(final Set<? extends UUID> postIds) {
         postRepository.deleteAllById(postIds);
     }
 

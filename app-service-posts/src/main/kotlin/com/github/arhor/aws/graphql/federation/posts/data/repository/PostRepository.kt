@@ -5,16 +5,17 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.Post
 import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.ListCrudRepository
+import java.util.UUID
 
-interface PostRepository : ListCrudRepository<PostEntity, Long> {
+interface PostRepository : ListCrudRepository<PostEntity, UUID> {
 
     @Query(name = "PostProjection.findAll")
-    fun findAll(limit: Long, offset: Long): List<PostProjection>
+    fun findAll(limit: Int, offset: Int): List<PostProjection>
 
     @Query(name = "PostProjection.findAllByUserIdIn")
-    fun findAllByUserIdIn(userIds: Collection<Long>): List<PostProjection>
+    fun findAllByUserIdIn(userIds: Collection<UUID>): List<PostProjection>
 
     @Modifying
     @Query(name = "PostEntity.unlinkAllFromUsers")
-    fun unlinkAllFromUsers(userIds: Collection<Long>)
+    fun unlinkAllFromUsers(userIds: Collection<UUID>)
 }

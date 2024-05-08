@@ -5,16 +5,17 @@ import org.springframework.data.annotation.Immutable
 import org.springframework.data.jdbc.core.mapping.AggregateReference
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
+import java.util.UUID
 
 @Table(AuthRef.TABLE_NAME)
 @Immutable
 data class AuthRef(
     @Id
     @Column(COL_ID)
-    val id: Long? = null,
+    val id: UUID? = null,
 
     @Column(COL_AUTH_ID)
-    val authId: AggregateReference<AuthEntity, Long>,
+    val authId: AggregateReference<AuthEntity, UUID>,
 ) {
     companion object {
         const val TABLE_NAME = "users_has_authorities"

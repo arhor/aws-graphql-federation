@@ -28,6 +28,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.Optional
+import java.util.UUID
 
 internal class PostServiceImplTest {
 
@@ -66,8 +67,8 @@ internal class PostServiceImplTest {
         fun `should return expected Post when PostEntity exists by passed ID`() {
             // Given
             val expectedEntity = PostEntity(
-                id = 1L,
-                userId = 2L,
+                id = UUID.randomUUID(),
+                userId = UUID.randomUUID(),
                 header = "test-header",
                 content = "test-content",
             )
@@ -96,7 +97,7 @@ internal class PostServiceImplTest {
         @Test
         fun `should throw EntityNotFoundException when PostEntity does not exist by passed ID`() {
             // Given
-            val postId = 1L
+            val postId = UUID.randomUUID()
 
             val expectedEntity = DgsConstants.POST.TYPE_NAME
             val expectedCondition = "${DgsConstants.POST.Id} = $postId"
@@ -129,8 +130,8 @@ internal class PostServiceImplTest {
 
             val expectedDataFromDB = listOf(
                 PostProjection(
-                    id = 1L,
-                    userId = 2L,
+                    id = UUID.randomUUID(),
+                    userId = UUID.randomUUID(),
                     header = "test-header",
                     content = "test-content",
                     options = PostEntity.Options(),

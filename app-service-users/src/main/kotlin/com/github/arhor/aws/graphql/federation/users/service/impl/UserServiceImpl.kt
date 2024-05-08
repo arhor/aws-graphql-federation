@@ -30,6 +30,7 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Trace
 @Service
@@ -42,7 +43,7 @@ class UserServiceImpl(
 ) : UserService {
 
     @Transactional(readOnly = true)
-    override fun getUserById(id: Long): User {
+    override fun getUserById(id: UUID): User {
         return userRepository.findByIdOrNull(id)?.let { userMapper.mapToResult(it) }
             ?: throw EntityNotFoundException(
                 entity = USER.TYPE_NAME,

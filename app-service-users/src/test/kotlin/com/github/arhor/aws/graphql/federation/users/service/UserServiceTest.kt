@@ -40,6 +40,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.util.UUID
 
 internal class UserServiceTest {
 
@@ -64,7 +65,7 @@ internal class UserServiceTest {
         @Test
         fun `should return an existing user by id`() {
             // Given
-            val userId = 1L
+            val userId = UUID.randomUUID()
             val userEntity = mockk<UserEntity>()
             val userResult = mockk<User>()
 
@@ -88,7 +89,7 @@ internal class UserServiceTest {
         @Test
         fun `should throw EntityNotFoundException trying to get non-existing user by id`() {
             // Given
-            val userId = 1L
+            val userId = UUID.randomUUID()
 
             val expectedEntity = USER.TYPE_NAME
             val expectedOperation = Operation.LOOKUP
@@ -174,7 +175,7 @@ internal class UserServiceTest {
         fun `should return current user for a valid pair of username and password`() {
             // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
-            val userId = 1L
+            val userId = UUID.randomUUID()
             val entity = mockk<UserEntity>()
 
             every { entity.id } returns userId
@@ -224,7 +225,7 @@ internal class UserServiceTest {
         fun `should throw DgsBadRequestException exception trying to get current user with invalid password`() {
             // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
-            val userId = 1L
+            val userId = UUID.randomUUID()
             val entity = mockk<UserEntity>()
 
             every { entity.id } returns userId
@@ -255,7 +256,7 @@ internal class UserServiceTest {
         @Test
         fun `should correctly create new user entity and return DTO with assigned id`() {
             // Given
-            val expectedId = 1L
+            val expectedId = UUID.randomUUID()
             val expectedUsername = "test@email.com"
             val expectedPassword = "TestPassword123"
 
@@ -327,7 +328,7 @@ internal class UserServiceTest {
         fun `should save updated user state to repository when there are actual changes`() {
             // Given
             val user = UserEntity(
-                id = 1,
+                id = UUID.randomUUID(),
                 username = "test-username",
                 password = "test-password",
             )
@@ -353,7 +354,7 @@ internal class UserServiceTest {
         fun `should not call save method on repository when there are no changes in user state`() {
             // Given
             val user = UserEntity(
-                id = 1,
+                id = UUID.randomUUID(),
                 username = "test-username",
                 password = "test-password",
             )
@@ -383,7 +384,7 @@ internal class UserServiceTest {
         @Test
         fun `should return expected result deleting user`() {
             // Given
-            val expectedId = 1L
+            val expectedId = UUID.randomUUID()
 
             every { userRepository.findByIdOrNull(any()) } returns mockk { every { id } returns expectedId }
             every { userRepository.delete(any()) } just runs
@@ -421,7 +422,7 @@ internal class UserServiceTest {
             }
         }
 
-    private fun copyingUserWithAssignedId(id: Long): MockKAnswerScope<UserEntity, *>.(Call) -> UserEntity = {
+    private fun copyingUserWithAssignedId(id: UUID): MockKAnswerScope<UserEntity, *>.(Call) -> UserEntity = {
         firstArg<UserEntity>().copy(id = id)
     }
 }

@@ -4,6 +4,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +24,7 @@ class UserCommentsBatchLoaderTest {
     @Test
     void should_return_empty_map_when_empty_keys_set_provided() {
         // Given
-        final var userIds = Collections.<Long>emptySet();
+        final var userIds = Collections.<UUID>emptySet();
 
         // When
         final var result = userCommentsBatchLoader.load(userIds);

@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.UUID
 
 @SpringBootTest(
     classes = [
@@ -51,7 +52,7 @@ internal class UserFetcherTest {
         @Test
         fun `should return expected user by username without any exceptions`() {
             // Given
-            val expectedId = 1L
+            val expectedId = UUID.randomUUID()
             val expectedUsername = "test-username"
 
             val expectedErrors = emptyList<GraphQLError>()
@@ -59,7 +60,7 @@ internal class UserFetcherTest {
             val expectedData =
                 mapOf(
                     QUERY.User to mapOf(
-                        USER.Id to expectedId,
+                        USER.Id to expectedId.toString(),
                         USER.Username to expectedUsername
                     )
                 )
@@ -69,7 +70,7 @@ internal class UserFetcherTest {
             // When
             val result = dgsQueryExecutor.execute(
                 """
-                query (${'$'}id: Long!) {
+                query (${'$'}id: UUID!) {
                     user(id: ${'$'}id) {
                         id
                         username
@@ -89,7 +90,7 @@ internal class UserFetcherTest {
         @Test
         fun `should return GQL error trying to find user by incorrect username`() {
             // Given
-            val id = 1L
+            val id = UUID.randomUUID()
 
             every { userService.getUserById(any()) } answers {
                 throw EntityNotFoundException(
@@ -102,7 +103,7 @@ internal class UserFetcherTest {
             // When
             val result = dgsQueryExecutor.execute(
                 """
-                query (${'$'}id: Long!) {
+                query (${'$'}id: UUID!) {
                     user(id: ${'$'}id) {
                         id
                         username
@@ -154,7 +155,7 @@ internal class UserFetcherTest {
         fun `should return successful result containing list with single expected user`() {
             // Given
             val user = User(
-                id = 1,
+                id = UUID.randomUUID(),
                 username = "test-user",
             )
 
@@ -183,7 +184,7 @@ internal class UserFetcherTest {
                 .containsEntry(
                     QUERY.Users, listOf(
                         mapOf(
-                            USER.Id to user.id,
+                            USER.Id to user.id.toString(),
                             USER.Username to user.username,
                         )
                     )
@@ -198,7 +199,7 @@ internal class UserFetcherTest {
         @Test
         fun `should create new user and return result object containing created user data`() {
             // Given
-            val id = -1L
+            val id = UUID.randomUUID()
             val username = "test-username"
             val password = "test-password"
             val expectedUser = User(id, username)
@@ -240,7 +241,7 @@ internal class UserFetcherTest {
         @Test
         fun `should update existing user and return result object containing updated user data`() {
             // Given
-            val id = -1L
+            val id = UUID.randomUUID()
             val username = "test-username"
             val password = "test-password"
             val expectedUser = User(id, username)
@@ -253,7 +254,7 @@ internal class UserFetcherTest {
                 mutation {
                     updateUser(
                         input: {
-                            id: $id
+                            id: "$id"
                             password: "$password"
                         }
                     ) {
@@ -282,7 +283,7 @@ internal class UserFetcherTest {
         @Test
         fun `should delete existing user and return result object containing success field with value true`() {
             // Given
-            val id = -1L
+            val id = UUID.randomUUID()
 
             every { userService.deleteUser(any()) } returns DeleteUserResult(true)
 
@@ -292,7 +293,7 @@ internal class UserFetcherTest {
                 mutation {
                     deleteUser(
                         input: {
-                            id: $id
+                            id: "$id"
                         }
                     ) {
                         success

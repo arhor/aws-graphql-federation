@@ -3,16 +3,17 @@ package com.github.arhor.aws.graphql.federation.comments.service;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 
 import java.util.Set;
+import java.util.UUID;
 
 public interface PostService {
 
-    Post findInternalPostRepresentation(Long postId);
+    Post findInternalPostRepresentation(UUID postId);
 
-    void createInternalPostRepresentation(Long postId);
+    void createInternalPostRepresentation(UUID postId);
 
-    void createInternalPostRepresentation(Set<? extends Long> postIds);
+    void createInternalPostRepresentation(Set<? extends UUID> postIds);
 
-    void deleteInternalPostRepresentation(Long postId);
+    void deleteInternalPostRepresentation(UUID postId);
 
-    void deleteInternalPostRepresentation(Set<? extends Long> postIds);
+    void deleteInternalPostRepresentation(Set<? extends UUID> postIds);
 }

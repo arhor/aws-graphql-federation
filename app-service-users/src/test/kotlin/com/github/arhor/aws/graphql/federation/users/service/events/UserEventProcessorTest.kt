@@ -18,6 +18,7 @@ import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
+import java.util.UUID
 
 @SpringJUnitConfig
 internal class UserEventProcessorTest {
@@ -43,13 +44,14 @@ internal class UserEventProcessorTest {
     @Test
     fun `should publish outbox events using OutboxEventPublisher instance`() {
         // Given
+        val userId = UUID.randomUUID()
         val outboxEvents = listOf(
             OutboxMessageEntity(
                 type = UserEvent.USER_EVENT_DELETED,
-                data = mapOf("ids" to setOf(1)),
+                data = mapOf("ids" to setOf(userId)),
             )
         )
-        val userEvent = UserEvent.Deleted(ids = setOf(1))
+        val userEvent = UserEvent.Deleted(ids = setOf(userId))
 
         every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
         every { outboxEventPublisher.publish(any()) } just runs

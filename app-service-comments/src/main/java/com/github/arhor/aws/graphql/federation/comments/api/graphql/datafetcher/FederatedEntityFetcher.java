@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-import static com.github.arhor.aws.graphql.federation.common.MapExtKt.getLong;
+import static com.github.arhor.aws.graphql.federation.common.MapExtKt.getUuid;
 
 @DgsComponent
 @RequiredArgsConstructor
@@ -25,11 +25,11 @@ public class FederatedEntityFetcher {
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
     public User resolveUser(final Map<String, ?> values) {
-        return userService.findInternalUserRepresentation(getLong(values, USER.Id));
+        return userService.findInternalUserRepresentation(getUuid(values, USER.Id));
     }
 
     @DgsEntityFetcher(name = POST.TYPE_NAME)
     public Post resolvePost(final Map<String, ?> values) {
-        return postService.findInternalPostRepresentation(getLong(values, POST.Id));
+        return postService.findInternalPostRepresentation(getUuid(values, POST.Id));
     }
 }

@@ -1,13 +1,10 @@
 package com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader;
 
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +24,7 @@ class PostCommentsBatchLoaderTest {
     @Test
     void should_return_empty_map_when_empty_keys_set_provided() {
         // Given
-        final var postIds = Collections.<Long>emptySet();
+        final var postIds = Collections.<UUID>emptySet();
 
         // When
         final var result = postCommentsBatchLoader.load(postIds);

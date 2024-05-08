@@ -1,12 +1,14 @@
 package com.github.arhor.aws.graphql.federation.common.event
 
+import java.util.UUID
+
 sealed interface UserEvent : DomainEvent {
 
-    data class Created(val ids: Set<Long>) : UserEvent {
+    data class Created(val ids: Set<UUID>) : UserEvent {
         override fun type(): String = USER_EVENT_CREATED
     }
 
-    data class Deleted(val ids: Set<Long>) : UserEvent {
+    data class Deleted(val ids: Set<UUID>) : UserEvent {
         override fun type(): String = USER_EVENT_DELETED
     }
 

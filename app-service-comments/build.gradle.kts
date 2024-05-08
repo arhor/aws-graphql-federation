@@ -116,6 +116,9 @@ tasks {
     generateJava {
         language = "java"
         packageName = "com.github.arhor.aws.graphql.federation.comments.generated.graphql"
+        typeMapping = mutableMapOf(
+            "UUID" to "java.util.UUID"
+        )
     }
 
     jacocoTestReport {

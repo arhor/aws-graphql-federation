@@ -2,27 +2,27 @@
 # noinspection GraphQLMemberRedefinition
 # noinspection DgsEntityFetcherInspector
 
-scalar Long
+scalar UUID
 scalar Upload
 
 type Query {
-    post(id: Long!): Post
+    post(id: UUID!): Post
     posts(input: PostsLookupInput! = {}): [Post!]!
 }
 
 type Mutation {
     createPost(input: CreatePostInput!): Post!
     updatePost(input: UpdatePostInput!): Post!
-    deletePost(id: Long!): Boolean!
+    deletePost(id: UUID!): Boolean!
 }
 
 input PostsLookupInput {
-    page: Long! = 0
-    size: Long! = 20
+    page: Int! = 0
+    size: Int! = 20
 }
 
 input CreatePostInput {
-    userId: Long!
+    userId: UUID!
     header: String!
     content: String!
     options: [Option!]
@@ -30,7 +30,7 @@ input CreatePostInput {
 }
 
 input UpdatePostInput {
-    id: Long!
+    id: UUID!
     header: String
     content: String
     options: [Option!]
@@ -38,8 +38,8 @@ input UpdatePostInput {
 }
 
 type Post @key(fields: "id") {
-    id: Long!
-    userId: Long
+    id: UUID!
+    userId: UUID
     header: String!
     content: String!
     options: [Option!]
@@ -51,6 +51,6 @@ enum Option {
 }
 
 type User @key(fields: "id") @extends {
-    id: Long! @external
+    id: UUID! @external
     posts: [Post!]
 }
