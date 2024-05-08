@@ -19,31 +19,55 @@ class UserEventProcessorImpl(
     private val outboxEventPublisher: UserEventPublisher,
 ) : UserEventProcessor {
 
-    @Scheduled(cron = "*/5 * * * * *")
+    @Scheduled(cron = "\${app-props.outbox-events-processing-cron:}")
+    @Transactional(propagation = Propagation.REQUIRED)
+    override fun processUserCreatedEvents() {
+        dequeueAndPublishEvents(
+            eventType = UserEvent.Type.USER_EVENT_CREATED,
+            composeFn = ::composeCreatedEvents
+        )
+    }
+
+    @Scheduled(cron = "\${app-props.outbox-events-processing-cron:}")
     @Transactional(propagation = Propagation.REQUIRED)
     override fun processUserDeletedEvents() {
+        dequeueAndPublishEvents(
+            eventType = UserEvent.Type.USER_EVENT_DELETED,
+            composeFn = ::composeDeletedEvents
+        )
+    }
+
+    private inline fun <reified T : UserEvent> dequeueAndPublishEvents(
+        eventType: UserEvent.Type,
+        composeFn: Sequence<T>.() -> T,
+    ) {
         val outboxMessages =
             outboxMessageRepository.dequeueOldest(
-                messageType = UserEvent.USER_EVENT_DELETED,
+                messageType = eventType.code,
                 messagesNum = DEFAULT_EVENTS_BATCH_SIZE,
             )
 
         if (outboxMessages.isNotEmpty()) {
-            val composedEvent = outboxMessages.deserialize().compose()
+            val composedEvent = outboxMessages.deserialize<T>().composeFn()
 
             outboxEventPublisher.publish(composedEvent)
             outboxMessageRepository.deleteAll(outboxMessages)
         }
     }
 
-    private fun Collection<OutboxMessageEntity>.deserialize(): Sequence<UserEvent.Deleted> =
+    private inline fun <reified T : UserEvent> Collection<OutboxMessageEntity>.deserialize(): Sequence<T> =
         this.asSequence()
-            .map { objectMapper.convertValue<UserEvent.Deleted>(it.data) }
+            .map { objectMapper.convertValue(it.data) }
 
-    private fun Sequence<UserEvent.Deleted>.compose(): UserEvent.Deleted =
-        this.flatMap { it.ids }
+    private fun composeDeletedEvents(data: Sequence<UserEvent.Deleted>): UserEvent.Deleted =
+        data.flatMap { it.ids }
             .toSet()
             .let { UserEvent.Deleted(ids = it) }
+
+    private fun composeCreatedEvents(data: Sequence<UserEvent.Created>): UserEvent.Created =
+        data.flatMap { it.ids }
+            .toSet()
+            .let { UserEvent.Created(ids = it) }
 
     companion object {
         private const val DEFAULT_EVENTS_BATCH_SIZE = 50

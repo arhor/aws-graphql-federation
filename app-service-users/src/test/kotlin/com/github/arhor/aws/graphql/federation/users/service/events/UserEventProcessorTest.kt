@@ -9,6 +9,8 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.runs
 import io.mockk.verify
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.ComponentScan
@@ -41,28 +43,63 @@ internal class UserEventProcessorTest {
     @Autowired
     private lateinit var userEventProcessor: UserEventProcessor
 
-    @Test
-    fun `should publish outbox events using OutboxEventPublisher instance`() {
-        // Given
-        val userId = UUID.randomUUID()
-        val outboxEvents = listOf(
-            OutboxMessageEntity(
-                type = UserEvent.USER_EVENT_DELETED,
-                data = mapOf("ids" to setOf(userId)),
+    @Nested
+    @DisplayName("UserEventProcessor :: processUserCreatedEvents")
+    inner class ProcessUserCreatedEventsTest {
+        @Test
+        fun `should publish UserEvent#Created using OutboxEventPublisher instance`() {
+            // Given
+            val userId = UUID.randomUUID()
+            val eventTypeCode = UserEvent.Type.USER_EVENT_CREATED.code
+            val outboxEvents = listOf(
+                OutboxMessageEntity(
+                    type = eventTypeCode,
+                    data = mapOf("ids" to setOf(userId)),
+                )
             )
-        )
-        val userEvent = UserEvent.Deleted(ids = setOf(userId))
+            val userEvent = UserEvent.Created(id = userId)
 
-        every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
-        every { outboxEventPublisher.publish(any()) } just runs
-        every { outboxMessageRepository.deleteAll(any()) } just runs
+            every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
+            every { outboxEventPublisher.publish(any()) } just runs
+            every { outboxMessageRepository.deleteAll(any()) } just runs
 
-        // When
-        userEventProcessor.processUserDeletedEvents()
+            // When
+            userEventProcessor.processUserCreatedEvents()
 
-        // Then
-        verify(exactly = 1) { outboxMessageRepository.dequeueOldest(UserEvent.USER_EVENT_DELETED, 50) }
-        verify(exactly = 1) { outboxEventPublisher.publish(userEvent) }
-        verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxEvents) }
+            // Then
+            verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
+            verify(exactly = 1) { outboxEventPublisher.publish(userEvent) }
+            verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxEvents) }
+        }
+    }
+
+    @Nested
+    @DisplayName("UserEventProcessor :: processUserDeletedEvents")
+    inner class ProcessUserDeletedEventsTest {
+        @Test
+        fun `should publish UserEvent#Deleted using OutboxEventPublisher instance`() {
+            // Given
+            val userId = UUID.randomUUID()
+            val eventTypeCode = UserEvent.Type.USER_EVENT_DELETED.code
+            val outboxEvents = listOf(
+                OutboxMessageEntity(
+                    type = eventTypeCode,
+                    data = mapOf("ids" to setOf(userId)),
+                )
+            )
+            val userEvent = UserEvent.Deleted(id = userId)
+
+            every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
+            every { outboxEventPublisher.publish(any()) } just runs
+            every { outboxMessageRepository.deleteAll(any()) } just runs
+
+            // When
+            userEventProcessor.processUserDeletedEvents()
+
+            // Then
+            verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
+            verify(exactly = 1) { outboxEventPublisher.publish(userEvent) }
+            verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxEvents) }
+        }
     }
 }

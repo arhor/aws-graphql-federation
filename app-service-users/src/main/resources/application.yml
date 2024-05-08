@@ -54,6 +54,7 @@ app-props:
     delay: \${RETRY_DELAY:1000}
     multiplier: \${RETRY_MULTIPLIER:0}
     max-attempts: \${RETRY_MAX_ATTEMPTS:3}
+  outbox-events-processing-cron: "*/5 * * * * *"
 
 ---
 

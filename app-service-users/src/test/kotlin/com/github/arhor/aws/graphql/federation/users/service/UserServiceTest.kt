@@ -269,6 +269,7 @@ internal class UserServiceTest {
             every { passwordEncoder.encode(any()) } answers { firstArg() }
             every { userMapper.mapToEntity(any()) } answers convertingDtoToUser
             every { userRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
+            every { eventPublisher.publishEvent(any<Any>()) } just runs
             every { userMapper.mapToResult(any()) } answers convertingUserToDto
 
             // When
@@ -282,6 +283,7 @@ internal class UserServiceTest {
             verify(exactly = 1) { userRepository.existsByUsername(any()) }
             verify(exactly = 1) { userMapper.mapToEntity(any()) }
             verify(exactly = 1) { userRepository.save(any()) }
+            verify(exactly = 1) { eventPublisher.publishEvent(any<Any>()) }
             verify(exactly = 1) { userMapper.mapToResult(any()) }
         }
 

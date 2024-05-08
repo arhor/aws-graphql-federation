@@ -105,6 +105,7 @@ class UserServiceImpl(
         val user = input.copy(password = passwordEncoder.encode(input.password))
             .let { userMapper.mapToEntity(it) }
             .let { userRepository.save(it) }
+            .also { eventPublisher.publishEvent(UserEvent.Created(id = it.id!!)) }
             .let { userMapper.mapToResult(it) }
 
         return CreateUserResult(user)
@@ -137,7 +138,7 @@ class UserServiceImpl(
                 null -> false
                 else -> {
                     userRepository.delete(user)
-                    eventPublisher.publishEvent(UserEvent.Deleted(ids = setOf(user.id!!)))
+                    eventPublisher.publishEvent(UserEvent.Deleted(id = user.id!!))
                     true
                 }
             }
