@@ -9,11 +9,7 @@ public interface PostService {
 
     Post findInternalPostRepresentation(UUID postId);
 
-    void createInternalPostRepresentation(UUID postId);
-
     void createInternalPostRepresentation(Set<? extends UUID> postIds);
-
-    void deleteInternalPostRepresentation(UUID postId);
 
     void deleteInternalPostRepresentation(Set<? extends UUID> postIds);
 }

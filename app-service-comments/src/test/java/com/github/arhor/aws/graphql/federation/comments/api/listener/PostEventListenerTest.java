@@ -28,7 +28,7 @@ class PostEventListenerTest {
         // Then
         then(postService)
             .should()
-            .createInternalPostRepresentation(event.getId());
+            .createInternalPostRepresentation(event.getIds());
 
         then(postService)
             .shouldHaveNoMoreInteractions();
@@ -45,7 +45,7 @@ class PostEventListenerTest {
         // Then
         then(postService)
             .should()
-            .deleteInternalPostRepresentation(event.getId());
+            .deleteInternalPostRepresentation(event.getIds());
 
         then(postService)
             .shouldHaveNoMoreInteractions();

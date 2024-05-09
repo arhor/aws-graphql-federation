@@ -33,22 +33,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void createInternalPostRepresentation(final UUID postId) {
-        createInternalPostRepresentation(Set.of(postId));
-    }
-
-    @Override
     public void createInternalPostRepresentation(final Set<? extends UUID> postIds) {
         final var entities = postIds.stream()
             .map(PostEntity::new)
             .toList();
 
         postRepository.saveAll(entities);
-    }
-
-    @Override
-    public void deleteInternalPostRepresentation(final UUID postId) {
-        deleteInternalPostRepresentation(Set.of(postId));
     }
 
     @Override

@@ -12,13 +12,13 @@ public class PostEventListener {
 
     private final PostService postService;
 
-    @SqsListener("${app-props.aws.sqs.post-created-events}")
+    @SqsListener("${app-props.aws.sqs.post-created-events:}")
     public void handlePostCreatedEvent(final PostEvent.Created event) {
-        postService.createInternalPostRepresentation(event.getId());
+        postService.createInternalPostRepresentation(event.getIds());
     }
 
-    @SqsListener("${app-props.aws.sqs.post-deleted-events}")
+    @SqsListener("${app-props.aws.sqs.post-deleted-events:}")
     public void handlePostDeletedEvent(final PostEvent.Deleted event) {
-        postService.deleteInternalPostRepresentation(event.getId());
+        postService.deleteInternalPostRepresentation(event.getIds());
     }
 }
