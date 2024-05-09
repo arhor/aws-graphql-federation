@@ -16,6 +16,7 @@ data class AppProps(
         )
 
         data class Sqs(
+            val userCreatedEvents: String,
             val userDeletedEvents: String,
         )
     }

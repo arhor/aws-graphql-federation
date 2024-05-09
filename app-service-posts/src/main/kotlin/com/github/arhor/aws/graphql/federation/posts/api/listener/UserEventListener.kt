@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Trace
 @Component
-class UserEventSqsListener(
+class UserEventListener(
     private val userService: UserService,
 ) {
 

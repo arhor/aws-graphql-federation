@@ -11,6 +11,14 @@ graphql-dgs-codegen = "6.1.5"
 gradle-test-logger = "3.2.0"
 mockk = "1.13.3"
 archunit = "1.2.1"
+awaitility = "4.2.1"
+
+[libraries]
+findbugs-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "findbugs-jsr305" }
+mockk-core  = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-spring  = { module = "com.ninja-squad:springmockk", version.ref = "spring-mockk" }
+awaitility  = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
+archunit-junit5  = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 
 [plugins]
 test-logger = { id = "com.adarshr.test-logger", version.ref = "gradle-test-logger" }
