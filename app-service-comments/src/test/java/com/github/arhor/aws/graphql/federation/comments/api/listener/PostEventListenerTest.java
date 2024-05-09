@@ -10,43 +10,44 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.UUID;
 
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
-@SpringJUnitConfig(PostEventsListener.class)
-class PostEventsListenerTest {
+class PostEventListenerTest {
 
-    @MockBean
-    private PostService postService;
-
-    @Autowired
-    private PostEventsListener postEventsListener;
+    private final PostService postService = mock();
+    private final PostEventListener postEventListener = new PostEventListener(postService);
 
     @Test
     void should_call_createInternalPostRepresentation_method_on_post_created_event() {
         // Given
-        final var postId = UUID.randomUUID();
-        final var event = new PostEvent.Created(postId);
+        final var event = new PostEvent.Created(UUID.randomUUID());
 
         // When
-        postEventsListener.handlePostCreatedEvent(event);
+        postEventListener.handlePostCreatedEvent(event);
 
         // Then
         then(postService)
             .should()
-            .createInternalPostRepresentation(postId);
+            .createInternalPostRepresentation(event.getId());
+
+        then(postService)
+            .shouldHaveNoMoreInteractions();
     }
 
     @Test
     void should_call_deleteInternalPostRepresentation_method_on_post_deleted_event() {
         // Given
-        final var postId = UUID.randomUUID();
-        final var event = new PostEvent.Deleted(postId);
+        final var event = new PostEvent.Deleted(UUID.randomUUID());
 
         // When
-        postEventsListener.handlePostDeletedEvent(event);
+        postEventListener.handlePostDeletedEvent(event);
 
         // Then
         then(postService)
             .should()
-            .deleteInternalPostRepresentation(postId);
+            .deleteInternalPostRepresentation(event.getId());
+
+        then(postService)
+            .shouldHaveNoMoreInteractions();
     }
 }

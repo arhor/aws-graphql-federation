@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PostEventsListener {
+public class PostEventListener {
 
     private final PostService postService;
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Trace
 @Component
 @RequiredArgsConstructor
-public class UserEventsListener {
+public class UserEventListener {
 
     private final UserService userService;
 
