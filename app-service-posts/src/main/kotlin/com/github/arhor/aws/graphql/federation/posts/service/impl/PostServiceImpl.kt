@@ -13,13 +13,13 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
-import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmitter
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
 import com.github.arhor.aws.graphql.federation.posts.util.limit
 import com.github.arhor.aws.graphql.federation.posts.util.offset
 import com.github.arhor.aws.graphql.federation.tracing.Trace
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable
@@ -30,9 +30,9 @@ import java.util.UUID
 @Trace
 @Service
 class PostServiceImpl(
+    private val appEventPublisher: ApplicationEventPublisher,
     private val postMapper: PostMapper,
     private val postRepository: PostRepository,
-    private val postEventEmitter: PostEventEmitter,
     private val tagMapper: TagMapper,
     private val tagRepository: TagRepository,
     private val optionsMapper: OptionsMapper,
@@ -70,7 +70,7 @@ class PostServiceImpl(
     override fun createPost(input: CreatePostInput): Post {
         return postMapper.mapToEntity(input = input, tags = materialize(input.tags))
             .let(postRepository::save)
-            .also { postEventEmitter.emit(PostEvent.Created(id = it.id!!)) }
+            .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!)) }
             .let(postMapper::mapToPost)
     }
 
@@ -103,7 +103,7 @@ class PostServiceImpl(
             null -> false
             else -> {
                 postRepository.delete(post)
-                postEventEmitter.emit(PostEvent.Deleted(id = id))
+                appEventPublisher.publishEvent(PostEvent.Deleted(id = id))
                 true
             }
         }

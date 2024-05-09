@@ -30,7 +30,7 @@ spring:
       enabled: always
   cache:
     caffeine:
-      spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s'
+      spec: "initialCapacity=100,maximumSize=500,expireAfterAccess=300s"
   cloud:
     aws:
       credentials:
@@ -51,7 +51,7 @@ app-props:
     sqs:
       user-created-events: \${AWS_SQS_USER_CREATED_EVENTS_FOR_POSTS}
       user-deleted-events: \${AWS_SQS_USER_DELETED_EVENTS_FOR_POSTS}
-
+  outbox-events-processing-cron: "*/5 * * * * *"
 ---
 
 spring:
@@ -63,7 +63,7 @@ spring:
       - optional:file:${project.rootDir}/../.env[.properties]
   cache:
     caffeine:
-      spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s,recordStats'
+      spec: "initialCapacity=100,maximumSize=500,expireAfterAccess=300s,recordStats"
   devtools:
     livereload:
       enabled: true

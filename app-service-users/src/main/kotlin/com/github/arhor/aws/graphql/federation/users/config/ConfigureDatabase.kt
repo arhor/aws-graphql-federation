@@ -22,8 +22,8 @@ import java.util.function.Supplier
 class ConfigureDatabase(private val objectMapper: ObjectMapper) : AbstractJdbcConfiguration() {
 
     override fun userConverters() = listOf(
-        JsonWritingConverter(objectMapper),
         JsonReadingConverter(objectMapper),
+        JsonWritingConverter(objectMapper),
     )
 
     @Bean

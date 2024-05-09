@@ -9,7 +9,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.TagReposito
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
-import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventEmitter
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
@@ -27,22 +26,23 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import java.util.Optional
 import java.util.UUID
 
 internal class PostServiceImplTest {
 
+    private val appEventPublisher = mockk<ApplicationEventPublisher>()
     private val postMapper = mockk<PostMapper>()
     private val postRepository = mockk<PostRepository>()
-    private val postEventEmitter = mockk<PostEventEmitter>()
     private val tagMapper = mockk<TagMapper>()
     private val tagRepository = mockk<TagRepository>()
     private val optionsMapper = mockk<OptionsMapper>()
 
     private val postService = PostServiceImpl(
+        appEventPublisher,
         postMapper,
         postRepository,
-        postEventEmitter,
         tagMapper,
         tagRepository,
         optionsMapper,
@@ -53,7 +53,7 @@ internal class PostServiceImplTest {
         confirmVerified(
             postMapper,
             postRepository,
-            postEventEmitter,
+            appEventPublisher,
             tagMapper,
             tagRepository,
             optionsMapper,

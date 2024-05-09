@@ -1,5 +1,8 @@
 package com.github.arhor.aws.graphql.federation.posts.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.arhor.aws.graphql.federation.posts.data.converter.JsonReadingConverter
+import com.github.arhor.aws.graphql.federation.posts.data.converter.JsonWritingConverter
 import com.github.arhor.aws.graphql.federation.posts.data.converter.OptionsReadingConverter
 import com.github.arhor.aws.graphql.federation.posts.data.converter.OptionsWritingConverter
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer
@@ -18,9 +21,11 @@ import java.util.function.Supplier
 @EnableJdbcAuditing(modifyOnCreate = false, dateTimeProviderRef = "currentDateTimeProvider")
 @EnableJdbcRepositories(basePackages = ["com.github.arhor.aws.graphql.federation.posts.data.repository"])
 @EnableTransactionManagement
-class ConfigureDatabase : AbstractJdbcConfiguration() {
+class ConfigureDatabase(private val objectMapper: ObjectMapper) : AbstractJdbcConfiguration() {
 
     override fun userConverters() = listOf(
+        JsonReadingConverter(objectMapper),
+        JsonWritingConverter(objectMapper),
         OptionsReadingConverter,
         OptionsWritingConverter,
     )
