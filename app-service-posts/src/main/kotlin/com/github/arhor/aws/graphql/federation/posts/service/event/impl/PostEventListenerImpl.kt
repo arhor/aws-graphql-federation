@@ -1,11 +1,11 @@
-package com.github.arhor.aws.graphql.federation.posts.service.events.impl
+package com.github.arhor.aws.graphql.federation.posts.service.event.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
-import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventListener
+import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventListener
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component

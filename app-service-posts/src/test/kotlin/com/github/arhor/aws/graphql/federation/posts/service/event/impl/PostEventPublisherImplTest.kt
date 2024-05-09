@@ -1,7 +1,8 @@
-package com.github.arhor.aws.graphql.federation.users.service.events
+package com.github.arhor.aws.graphql.federation.posts.service.event.impl
 
-import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
+import com.github.arhor.aws.graphql.federation.common.event.PostEvent
+import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
+import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventPublisher
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
@@ -15,10 +16,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.ComponentScan.Filter
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.FilterType
 import org.springframework.messaging.MessagingException
 import org.springframework.retry.annotation.EnableRetry
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -27,15 +25,16 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
-@SpringJUnitConfig
-internal class UserEventPublisherTest {
+@SpringJUnitConfig(
+    classes = [
+        PostEventPublisherImpl::class,
+        PostEventPublisherImplTest.Config::class,
+    ]
+)
+class PostEventPublisherImplTest {
 
     @EnableRetry
     @Configuration
-    @ComponentScan(
-        includeFilters = [Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [UserEventPublisher::class])],
-        useDefaultFilters = false,
-    )
     class Config
 
     @MockkBean
@@ -45,56 +44,55 @@ internal class UserEventPublisherTest {
     private lateinit var sns: SnsOperations
 
     @Autowired
-    private lateinit var outboxEventPublisher: UserEventPublisher
-
+    private lateinit var postEventPublisher: PostEventPublisher
 
     @Test
     fun `should send outbox event as notifications to the SNS with correct payload and headers`() {
         // Given
-        val userEvent = UserEvent.Deleted(ids = setOf(UUID.randomUUID()))
+        val event = PostEvent.Deleted(id = UUID.randomUUID())
 
         val actualSnsTopicName = slot<String>()
         val actualNotification = slot<SnsNotification<*>>()
 
-        every { appProps.aws.sns.userEvents } returns TEST_USER_EVENTS
+        every { appProps.aws.sns.postEvents } returns TEST_POST_EVENTS
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // When
-        outboxEventPublisher.publish(userEvent)
+        postEventPublisher.publish(event)
 
         // Then
         assertThat(actualSnsTopicName.captured)
-            .isEqualTo(TEST_USER_EVENTS)
+            .isEqualTo(TEST_POST_EVENTS)
 
         assertThat(actualNotification.captured)
             .satisfies(
-                { assertThat(it.payload).isEqualTo(userEvent) },
-                { assertThat(it.headers).isEqualTo(userEvent.attributes()) },
+                { assertThat(it.payload).isEqualTo(event) },
+                { assertThat(it.headers).isEqualTo(event.attributes()) },
             )
     }
 
     @Test
     fun `should retry on MessagingException sending notification to SNS`() {
         // Given
-        val userEvent = UserEvent.Deleted(ids = setOf(UUID.randomUUID()))
+        val event = PostEvent.Deleted(id = UUID.randomUUID())
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
 
-        every { appProps.aws.sns.userEvents } returns TEST_USER_EVENTS
+        every { appProps.aws.sns.postEvents } returns TEST_POST_EVENTS
         every { sns.sendNotification(any(), any()) } throwsMany errors andThenJust runs
 
         // When
-        outboxEventPublisher.publish(userEvent)
+        postEventPublisher.publish(event)
 
         // Then
-        verify(exactly = 3) { appProps.aws.sns.userEvents }
+        verify(exactly = 3) { appProps.aws.sns.postEvents }
         verify(exactly = 3) { sns.sendNotification(any(), any()) }
 
         confirmVerified(appProps, sns)
     }
 
     companion object {
-        private const val TEST_USER_EVENTS = "test-user-events"
+        private const val TEST_POST_EVENTS = "test-post-events"
 
         @JvmStatic
         @DynamicPropertySource

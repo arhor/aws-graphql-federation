@@ -1,47 +1,43 @@
-package com.github.arhor.aws.graphql.federation.users.service.events
+package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository
-import com.github.arhor.aws.graphql.federation.users.test.ConfigureTestObjectMapper
-import com.ninjasquad.springmockk.MockkBean
+import com.github.arhor.aws.graphql.federation.users.service.event.UserEventPublisher
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.ComponentScan.Filter
-import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.FilterType
-import org.springframework.context.annotation.Import
-import org.springframework.retry.annotation.EnableRetry
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.util.UUID
 
-@SpringJUnitConfig
-internal class UserEventProcessorTest {
+class UserEventProcessorImplTest {
 
-    @EnableRetry
-    @Configuration
-    @ComponentScan(
-        includeFilters = [Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [UserEventProcessor::class])],
-        useDefaultFilters = false,
+    private val objectMapper = mockk<ObjectMapper>()
+    private val outboxMessageRepository = mockk<OutboxMessageRepository>()
+    private val userEventPublisher = mockk<UserEventPublisher>()
+
+    private val userEventProcessor = UserEventProcessorImpl(
+        objectMapper,
+        outboxMessageRepository,
+        userEventPublisher,
     )
-    @Import(ConfigureTestObjectMapper::class)
-    class Config
 
-    @MockkBean
-    private lateinit var outboxMessageRepository: OutboxMessageRepository
-
-    @MockkBean
-    private lateinit var outboxEventPublisher: UserEventPublisher
-
-    @Autowired
-    private lateinit var userEventProcessor: UserEventProcessor
+    @AfterEach
+    fun tearDown() {
+        confirmVerified(
+            objectMapper,
+            outboxMessageRepository,
+            userEventPublisher,
+        )
+    }
 
     @Nested
     @DisplayName("UserEventProcessor :: processUserCreatedEvents")
@@ -51,16 +47,18 @@ internal class UserEventProcessorTest {
             // Given
             val userId = UUID.randomUUID()
             val eventTypeCode = UserEvent.Type.USER_EVENT_CREATED.code
+            val eventData = mapOf("ids" to setOf(userId))
             val outboxEvents = listOf(
                 OutboxMessageEntity(
                     type = eventTypeCode,
-                    data = mapOf("ids" to setOf(userId)),
+                    data = eventData,
                 )
             )
-            val userEvent = UserEvent.Created(id = userId)
+            val event = UserEvent.Created(id = userId)
 
             every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
-            every { outboxEventPublisher.publish(any()) } just runs
+            every { objectMapper.convertValue(any(), any<TypeReference<UserEvent.Created>>()) } returns event
+            every { userEventPublisher.publish(any()) } just runs
             every { outboxMessageRepository.deleteAll(any()) } just runs
 
             // When
@@ -68,7 +66,8 @@ internal class UserEventProcessorTest {
 
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
-            verify(exactly = 1) { outboxEventPublisher.publish(userEvent) }
+            verify(exactly = 1) { objectMapper.convertValue(eventData, any<TypeReference<UserEvent.Created>>()) }
+            verify(exactly = 1) { userEventPublisher.publish(event) }
             verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxEvents) }
         }
     }
@@ -81,16 +80,18 @@ internal class UserEventProcessorTest {
             // Given
             val userId = UUID.randomUUID()
             val eventTypeCode = UserEvent.Type.USER_EVENT_DELETED.code
+            val eventData = mapOf("ids" to setOf(userId))
             val outboxEvents = listOf(
                 OutboxMessageEntity(
                     type = eventTypeCode,
-                    data = mapOf("ids" to setOf(userId)),
+                    data = eventData,
                 )
             )
-            val userEvent = UserEvent.Deleted(id = userId)
+            val event = UserEvent.Deleted(id = userId)
 
             every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
-            every { outboxEventPublisher.publish(any()) } just runs
+            every { objectMapper.convertValue(any(), any<TypeReference<UserEvent.Deleted>>()) } returns event
+            every { userEventPublisher.publish(any()) } just runs
             every { outboxMessageRepository.deleteAll(any()) } just runs
 
             // When
@@ -98,7 +99,8 @@ internal class UserEventProcessorTest {
 
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
-            verify(exactly = 1) { outboxEventPublisher.publish(userEvent) }
+            verify(exactly = 1) { objectMapper.convertValue(eventData, any<TypeReference<UserEvent.Deleted>>()) }
+            verify(exactly = 1) { userEventPublisher.publish(event) }
             verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxEvents) }
         }
     }

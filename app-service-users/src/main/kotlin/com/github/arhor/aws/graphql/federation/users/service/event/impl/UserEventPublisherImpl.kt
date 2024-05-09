@@ -1,8 +1,8 @@
-package com.github.arhor.aws.graphql.federation.posts.service.events.impl
+package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
-import com.github.arhor.aws.graphql.federation.common.event.PostEvent
-import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
-import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventPublisher
+import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
+import com.github.arhor.aws.graphql.federation.users.service.event.UserEventPublisher
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import org.springframework.messaging.MessagingException
@@ -11,10 +11,10 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
 @Component
-class PostEventPublisherImpl(
+class UserEventPublisherImpl(
     private val appProps: AppProps,
     private val sns: SnsOperations,
-) : PostEventPublisher {
+) : UserEventPublisher {
 
     @Retryable(
         include = [
@@ -26,9 +26,9 @@ class PostEventPublisherImpl(
         ),
         maxAttemptsExpression = "\${app-props.retry.max-attempts}",
     )
-    override fun publish(event: PostEvent) {
-        val snsTopicName = appProps.aws.sns.postEvents
-        val notification = SnsNotification(event, event.attributes())
+    override fun publish(userEvent: UserEvent) {
+        val snsTopicName = appProps.aws.sns.userEvents
+        val notification = SnsNotification(userEvent, userEvent.attributes())
 
         sns.sendNotification(snsTopicName, notification)
     }

@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.service.events.impl
+package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
@@ -6,7 +6,7 @@ import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository
-import com.github.arhor.aws.graphql.federation.users.service.events.UserEventListener
+import com.github.arhor.aws.graphql.federation.users.service.event.UserEventListener
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation.MANDATORY

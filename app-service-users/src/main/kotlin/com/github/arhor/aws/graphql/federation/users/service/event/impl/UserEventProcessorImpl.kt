@@ -1,44 +1,44 @@
-package com.github.arhor.aws.graphql.federation.posts.service.events.impl
+package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
-import com.github.arhor.aws.graphql.federation.common.event.PostEvent
-import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
-import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
-import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventProcessor
-import com.github.arhor.aws.graphql.federation.posts.service.events.PostEventPublisher
+import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository
+import com.github.arhor.aws.graphql.federation.users.service.event.UserEventProcessor
+import com.github.arhor.aws.graphql.federation.users.service.event.UserEventPublisher
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 @Component
-class PostEventProcessorImpl(
+class UserEventProcessorImpl(
     private val objectMapper: ObjectMapper,
     private val outboxMessageRepository: OutboxMessageRepository,
-    private val outboxEventPublisher: PostEventPublisher,
-) : PostEventProcessor {
+    private val outboxEventPublisher: UserEventPublisher,
+) : UserEventProcessor {
 
     @Scheduled(cron = "\${app-props.outbox-events-processing-cron:}")
     @Transactional(propagation = Propagation.REQUIRED)
-    override fun processPostCreatedEvents() {
+    override fun processUserCreatedEvents() {
         dequeueAndPublishEvents(
-            eventType = PostEvent.Type.POST_EVENT_CREATED,
+            eventType = UserEvent.Type.USER_EVENT_CREATED,
             composeFn = ::composeCreatedEvents
         )
     }
 
     @Scheduled(cron = "\${app-props.outbox-events-processing-cron:}")
     @Transactional(propagation = Propagation.REQUIRED)
-    override fun processPostDeletedEvents() {
+    override fun processUserDeletedEvents() {
         dequeueAndPublishEvents(
-            eventType = PostEvent.Type.POST_EVENT_DELETED,
+            eventType = UserEvent.Type.USER_EVENT_DELETED,
             composeFn = ::composeDeletedEvents
         )
     }
 
-    private inline fun <reified T : PostEvent> dequeueAndPublishEvents(
-        eventType: PostEvent.Type,
+    private inline fun <reified T : UserEvent> dequeueAndPublishEvents(
+        eventType: UserEvent.Type,
         composeFn: Sequence<T>.() -> T,
     ) {
         val outboxMessages =
@@ -55,19 +55,19 @@ class PostEventProcessorImpl(
         }
     }
 
-    private inline fun <reified T : PostEvent> Collection<OutboxMessageEntity>.deserialize(): Sequence<T> =
+    private inline fun <reified T : UserEvent> Collection<OutboxMessageEntity>.deserialize(): Sequence<T> =
         this.asSequence()
             .map { objectMapper.convertValue(it.data) }
 
-    private fun composeDeletedEvents(data: Sequence<PostEvent.Deleted>): PostEvent.Deleted =
+    private fun composeDeletedEvents(data: Sequence<UserEvent.Deleted>): UserEvent.Deleted =
         data.flatMap { it.ids }
             .toSet()
-            .let { PostEvent.Deleted(ids = it) }
+            .let { UserEvent.Deleted(ids = it) }
 
-    private fun composeCreatedEvents(data: Sequence<PostEvent.Created>): PostEvent.Created =
+    private fun composeCreatedEvents(data: Sequence<UserEvent.Created>): UserEvent.Created =
         data.flatMap { it.ids }
             .toSet()
-            .let { PostEvent.Created(ids = it) }
+            .let { UserEvent.Created(ids = it) }
 
     companion object {
         private const val DEFAULT_EVENTS_BATCH_SIZE = 50

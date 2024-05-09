@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.service.events
+package com.github.arhor.aws.graphql.federation.users.service.event
 
 interface UserEventProcessor {
 

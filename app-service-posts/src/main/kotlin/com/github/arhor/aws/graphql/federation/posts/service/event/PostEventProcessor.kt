@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.posts.service.events
+package com.github.arhor.aws.graphql.federation.posts.service.event
 
 interface PostEventProcessor {
 
