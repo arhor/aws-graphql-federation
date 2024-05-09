@@ -75,6 +75,7 @@ dependencies {
 
     testImplementation("com.tngtech.archunit:archunit-junit5")
     testImplementation("io.awspring.cloud:spring-cloud-aws-test")
+    testImplementation("org.awaitility:awaitility")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
     testImplementation("org.testcontainers:junit-jupiter")
