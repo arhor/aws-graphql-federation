@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.config
 
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
+import com.github.arhor.aws.graphql.federation.posts.util.get
 import com.github.benmanes.caffeine.cache.Caffeine
 import graphql.execution.preparsed.PreparsedDocumentProvider
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer
@@ -35,12 +36,10 @@ class ConfigureCaching {
 
     @Bean
     fun preparsedDocumentProvider(cacheManager: CacheManager): PreparsedDocumentProvider {
-        val cacheKey = Caches.GRAPHQL_DOCUMENTS
-        val cacheVal = cacheManager.getCache(cacheKey.name)
-            ?: throw IllegalStateException("Cache $cacheKey is not found!")
+        val cache = cacheManager[Caches.GRAPHQL_DOCUMENTS]
 
         return PreparsedDocumentProvider { executionInput, parseAndValidateFunction ->
-            cacheVal.get(executionInput.query) {
+            cache.get(executionInput.query) {
                 parseAndValidateFunction.apply(executionInput)
             }
         }
