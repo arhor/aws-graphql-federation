@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.arhor.aws.graphql.federation.common.event.DomainEvent.HEADER_IDEMPOTENCY_ID;
+import static com.github.arhor.aws.graphql.federation.common.event.DomainEvent.HEADER_IDEMPOTENCY_KEY;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
 
@@ -43,7 +43,7 @@ class PostEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_createInternalPostRepresentation_method_on_post_created_event() {
         // Given
-        final var idempotencyId = UUID.randomUUID();
+        final var idempotencyKey = UUID.randomUUID();
         final var event = new PostEvent.Created(UUID.randomUUID());
 
         // When
@@ -51,7 +51,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             POST_CREATED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(HEADER_IDEMPOTENCY_ID, idempotencyId)
+                Map.of(HEADER_IDEMPOTENCY_KEY, idempotencyKey)
             )
         );
 
@@ -61,7 +61,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postService)
                     .should()
-                    .createInternalPostRepresentation(event.getId(), idempotencyId);
+                    .createInternalPostRepresentation(event.getId(), idempotencyKey);
 
                 then(postService)
                     .shouldHaveNoMoreInteractions();
@@ -71,7 +71,7 @@ class PostEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_deleteInternalPostRepresentation_method_on_post_deleted_event() {
         // Given
-        final var idempotencyId = UUID.randomUUID();
+        final var idempotencyKey = UUID.randomUUID();
         final var event = new PostEvent.Deleted(UUID.randomUUID());
 
         // When
@@ -79,7 +79,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             POST_DELETED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(HEADER_IDEMPOTENCY_ID, idempotencyId)
+                Map.of(HEADER_IDEMPOTENCY_KEY, idempotencyKey)
             )
         );
 
@@ -89,7 +89,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postService)
                     .should()
-                    .deleteInternalPostRepresentation(event.getId(), idempotencyId);
+                    .deleteInternalPostRepresentation(event.getId(), idempotencyKey);
 
                 then(postService)
                     .shouldHaveNoMoreInteractions();

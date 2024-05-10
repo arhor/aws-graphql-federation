@@ -27,9 +27,9 @@ class PostEventPublisherImpl(
         ),
         maxAttemptsExpression = "\${app-props.retry.max-attempts}",
     )
-    override fun publish(event: PostEvent, idempotencyId: UUID) {
+    override fun publish(event: PostEvent, idempotencyKey: UUID) {
         val snsTopicName = appProps.aws.sns.postEvents
-        val notification = SnsNotification(event, event.attributes(idempotencyId))
+        val notification = SnsNotification(event, event.attributes(idempotencyKey))
 
         sns.sendNotification(snsTopicName, notification)
     }

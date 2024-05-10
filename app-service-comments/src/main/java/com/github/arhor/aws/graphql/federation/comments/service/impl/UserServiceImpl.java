@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createInternalUserRepresentation(final UUID userId, final UUID idempotencyId) {
+    public void createInternalUserRepresentation(final UUID userId, final UUID idempotencyKey) {
         userRepository.save(
             UserEntity.builder()
                 .id(userId)
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteInternalUserRepresentation(final UUID userId, final UUID idempotencyId) {
+    public void deleteInternalUserRepresentation(final UUID userId, final UUID idempotencyKey) {
         userRepository.deleteById(userId);
     }
 

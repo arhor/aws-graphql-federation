@@ -5,6 +5,6 @@ import java.util.UUID
 
 interface UserService {
     fun findInternalUserRepresentation(userId: UUID): User
-    fun createInternalUserRepresentation(userId: UUID, idempotencyId: UUID)
-    fun deleteInternalUserRepresentation(userId: UUID, idempotencyId: UUID)
+    fun createInternalUserRepresentation(userId: UUID, idempotencyKey: UUID)
+    fun deleteInternalUserRepresentation(userId: UUID, idempotencyKey: UUID)
 }

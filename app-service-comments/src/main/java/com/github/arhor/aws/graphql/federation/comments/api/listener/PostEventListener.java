@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.common.event.DomainEvent.HEADER_IDEMPOTENCY_ID;
+import static com.github.arhor.aws.graphql.federation.common.event.DomainEvent.HEADER_IDEMPOTENCY_KEY;
 
 @Component
 @RequiredArgsConstructor
@@ -21,16 +21,16 @@ public class PostEventListener {
     @SqsListener("${app-props.aws.sqs.post-created-events:}")
     public void handlePostCreatedEvent(
         @Payload final PostEvent.Created event,
-        @Header(HEADER_IDEMPOTENCY_ID) final UUID idempotencyId
+        @Header(HEADER_IDEMPOTENCY_KEY) final UUID idempotencyKey
     ) {
-        postService.createInternalPostRepresentation(event.getId(), idempotencyId);
+        postService.createInternalPostRepresentation(event.getId(), idempotencyKey);
     }
 
     @SqsListener("${app-props.aws.sqs.post-deleted-events:}")
     public void handlePostDeletedEvent(
         @Payload final PostEvent.Deleted event,
-        @Header(HEADER_IDEMPOTENCY_ID) final UUID idempotencyId
+        @Header(HEADER_IDEMPOTENCY_KEY) final UUID idempotencyKey
     ) {
-        postService.deleteInternalPostRepresentation(event.getId(), idempotencyId);
+        postService.deleteInternalPostRepresentation(event.getId(), idempotencyKey);
     }
 }

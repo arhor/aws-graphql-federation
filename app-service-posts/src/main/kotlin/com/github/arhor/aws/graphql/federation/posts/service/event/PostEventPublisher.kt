@@ -5,5 +5,5 @@ import java.util.UUID
 
 interface PostEventPublisher {
 
-    fun publish(event: PostEvent, idempotencyId: UUID)
+    fun publish(event: PostEvent, idempotencyKey: UUID)
 }

@@ -8,7 +8,7 @@ public interface UserService {
 
     User findInternalUserRepresentation(UUID userId);
 
-    void createInternalUserRepresentation(UUID userId, UUID idempotencyId);
+    void createInternalUserRepresentation(UUID userId, UUID idempotencyKey);
 
-    void deleteInternalUserRepresentation(UUID userId, UUID idempotencyId);
+    void deleteInternalUserRepresentation(UUID userId, UUID idempotencyKey);
 }

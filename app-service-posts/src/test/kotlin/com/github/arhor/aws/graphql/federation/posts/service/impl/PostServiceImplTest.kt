@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.Post
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
@@ -99,8 +100,8 @@ internal class PostServiceImplTest {
             // Given
             val postId = UUID.randomUUID()
 
-            val expectedEntity = DgsConstants.POST.TYPE_NAME
-            val expectedCondition = "${DgsConstants.POST.Id} = $postId"
+            val expectedEntity = POST.TYPE_NAME
+            val expectedCondition = "${POST.Id} = $postId"
             val expectedOperation = Operation.LOOKUP
 
             every { postRepository.findById(any()) } returns Optional.empty()

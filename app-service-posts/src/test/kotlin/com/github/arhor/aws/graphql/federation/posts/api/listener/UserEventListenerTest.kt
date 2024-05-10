@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.api.listener
 
-import com.github.arhor.aws.graphql.federation.common.event.DomainEvent.Companion.HEADER_IDEMPOTENCY_ID
+import com.github.arhor.aws.graphql.federation.common.event.DomainEvent.Companion.HEADER_IDEMPOTENCY_KEY
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserService
 import com.ninjasquad.springmockk.MockkBean
@@ -33,7 +33,7 @@ class UserEventListenerTest : EventListenerTestBase() {
     @Test
     fun `should call createInternalUserRepresentation on UserEvent#Created`() {
         // Given
-        val idempotencyId = UUID.randomUUID()
+        val idempotencyKey = UUID.randomUUID()
         val event = UserEvent.Created(id = UUID.randomUUID())
 
         every { userService.createInternalUserRepresentation(any(), any()) } just runs
@@ -43,20 +43,20 @@ class UserEventListenerTest : EventListenerTestBase() {
             USER_CREATED_TEST_QUEUE,
             GenericMessage(
                 event,
-                mapOf(HEADER_IDEMPOTENCY_ID to idempotencyId)
+                mapOf(HEADER_IDEMPOTENCY_KEY to idempotencyKey)
             )
         )
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userService.createInternalUserRepresentation(event.id, idempotencyId)
+            userService.createInternalUserRepresentation(event.id, idempotencyKey)
         }
     }
 
     @Test
     fun `should call deleteInternalUserRepresentation on UserEvent#Deleted`() {
         // Given
-        val idempotencyId = UUID.randomUUID()
+        val idempotencyKey = UUID.randomUUID()
         val event = UserEvent.Deleted(id = UUID.randomUUID())
 
         every { userService.deleteInternalUserRepresentation(any(), any()) } just runs
@@ -66,13 +66,13 @@ class UserEventListenerTest : EventListenerTestBase() {
             USER_DELETED_TEST_QUEUE,
             GenericMessage(
                 event,
-                mapOf(HEADER_IDEMPOTENCY_ID to idempotencyId)
+                mapOf(HEADER_IDEMPOTENCY_KEY to idempotencyKey)
             )
         )
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userService.deleteInternalUserRepresentation(event.id, idempotencyId)
+            userService.deleteInternalUserRepresentation(event.id, idempotencyKey)
         }
     }
 

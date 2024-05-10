@@ -4,7 +4,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepository
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.UserService
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
@@ -34,20 +34,20 @@ class UserServiceImpl(
     override fun findInternalUserRepresentation(userId: UUID): User {
         return userRepository.findByIdOrNull(userId)?.let(::mapEntityToUser)
             ?: throw EntityNotFoundException(
-                DgsConstants.USER.TYPE_NAME,
-                "${DgsConstants.USER.Id} = $userId",
-                Operation.LOOKUP,
+                entity = USER.TYPE_NAME,
+                condition = "${USER.Id} = $userId",
+                operation = Operation.LOOKUP,
             )
     }
 
-    override fun createInternalUserRepresentation(userId: UUID, idempotencyId: UUID) {
-        cache.get(idempotencyId) {
+    override fun createInternalUserRepresentation(userId: UUID, idempotencyKey: UUID) {
+        cache.get(idempotencyKey) {
             userRepository.save(UserEntity(id = userId))
         }
     }
 
-    override fun deleteInternalUserRepresentation(userId: UUID, idempotencyId: UUID) {
-        cache.get(idempotencyId) {
+    override fun deleteInternalUserRepresentation(userId: UUID, idempotencyKey: UUID) {
+        cache.get(idempotencyKey) {
             userRepository.deleteById(userId)
         }
     }
