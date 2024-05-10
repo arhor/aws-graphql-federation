@@ -9,7 +9,7 @@ interface DomainEvent {
     fun attributes(idempotencyId: UUID, vararg values: Pair<String, Any> = emptyArray()): Map<String, Any> {
         return mapOf(
             HEADER_PAYLOAD_TYPE to type(),
-            HEADER_IDEMPOTENCY_ID to idempotencyId,
+            HEADER_IDEMPOTENCY_ID to idempotencyId.toString(),
             *values
         )
     }

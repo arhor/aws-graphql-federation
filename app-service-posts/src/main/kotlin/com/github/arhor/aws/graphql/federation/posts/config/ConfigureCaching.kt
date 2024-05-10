@@ -1,43 +1,48 @@
 package com.github.arhor.aws.graphql.federation.posts.config
 
+import com.github.arhor.aws.graphql.federation.posts.util.Caches
 import com.github.benmanes.caffeine.cache.Caffeine
-import graphql.ExecutionInput
-import graphql.execution.preparsed.PreparsedDocumentEntry
 import graphql.execution.preparsed.PreparsedDocumentProvider
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer
+import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
+import org.springframework.cache.caffeine.CaffeineCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.time.Duration
-import java.util.concurrent.Executor
-import java.util.function.Function
-
-private typealias ParsingValidator = Function<ExecutionInput, PreparsedDocumentEntry>
 
 @EnableCaching
 @Configuration(proxyBeanMethods = false)
 class ConfigureCaching {
 
     @Bean
-    @Suppress("OVERRIDE_DEPRECATION")
-    fun asyncCachePreParsedDocumentProvider(
-        @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME) executor: Executor
-    ): PreparsedDocumentProvider =
-        object : PreparsedDocumentProvider {
-            private val cache = buildAsyncCache<String, PreparsedDocumentEntry> {
-                maximumSize(250)
-                expireAfterAccess(Duration.ofMinutes(10))
-                executor(executor)
+    fun caffeineCacheManagerCustomizer() = CacheManagerCustomizer<CaffeineCacheManager> {
+        it.registerCustomCache(
+            Caches.GRAPHQL_DOCUMENTS.name,
+            Caffeine.newBuilder()
+                .maximumSize(250)
+                .expireAfterAccess(Duration.ofMinutes(10))
+                .build()
+        )
+        it.registerCustomCache(
+            Caches.IDEMPOTENT_ID_SET.name,
+            Caffeine.newBuilder()
+                .maximumSize(10_000)
+                .expireAfterAccess(Duration.ofMinutes(30))
+                .build()
+        )
+    }
+
+    @Bean
+    fun preparsedDocumentProvider(cacheManager: CacheManager): PreparsedDocumentProvider {
+        val cacheKey = Caches.GRAPHQL_DOCUMENTS
+        val cacheVal = cacheManager.getCache(cacheKey.name)
+            ?: throw IllegalStateException("Cache $cacheKey is not found!")
+
+        return PreparsedDocumentProvider { executionInput, parseAndValidateFunction ->
+            cacheVal.get(executionInput.query) {
+                parseAndValidateFunction.apply(executionInput)
             }
-
-            override fun getDocument(execInput: ExecutionInput, validator: ParsingValidator) =
-                cache.synchronous().get(execInput.query) { _ -> validator.apply(execInput) }
-
-            override fun getDocumentAsync(execInput: ExecutionInput, validator: ParsingValidator) =
-                cache.get(execInput.query) { _ -> validator.apply(execInput) }
         }
-
-    private inline fun <K, V> buildAsyncCache(init: Caffeine<Any, Any>.() -> Unit) =
-        Caffeine.newBuilder().apply { init() }.buildAsync<K, V>()
+    }
 }

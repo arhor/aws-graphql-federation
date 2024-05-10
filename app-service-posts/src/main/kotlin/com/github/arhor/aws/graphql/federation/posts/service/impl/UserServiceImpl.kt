@@ -7,7 +7,12 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.UserReposit
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.UserService
+import com.github.arhor.aws.graphql.federation.posts.util.Caches
+import com.github.arhor.aws.graphql.federation.posts.util.get
 import com.github.arhor.aws.graphql.federation.tracing.Trace
+import jakarta.annotation.PostConstruct
+import org.springframework.cache.Cache
+import org.springframework.cache.CacheManager
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -15,8 +20,16 @@ import java.util.UUID
 @Trace
 @Service
 class UserServiceImpl(
+    private val cacheManager: CacheManager,
     private val userRepository: UserRepository,
 ) : UserService {
+
+    private lateinit var cache: Cache
+
+    @PostConstruct
+    fun initialize() {
+        cache = cacheManager[Caches.IDEMPOTENT_ID_SET]
+    }
 
     override fun findInternalUserRepresentation(userId: UUID): User {
         return userRepository.findByIdOrNull(userId)?.let(::mapEntityToUser)
@@ -28,13 +41,15 @@ class UserServiceImpl(
     }
 
     override fun createInternalUserRepresentation(userId: UUID, idempotencyId: UUID) {
-        val entities = UserEntity(id = userId)
-
-        userRepository.save(entities)
+        cache.get(idempotencyId) {
+            userRepository.save(UserEntity(id = userId))
+        }
     }
 
     override fun deleteInternalUserRepresentation(userId: UUID, idempotencyId: UUID) {
-        userRepository.deleteById(userId)
+        cache.get(idempotencyId) {
+            userRepository.deleteById(userId)
+        }
     }
 
     private fun mapEntityToUser(entity: UserEntity): User {
