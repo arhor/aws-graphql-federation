@@ -51,7 +51,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             USER_CREATED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(HEADER_IDEMPOTENCY_ID, UUID.randomUUID())
+                Map.of(HEADER_IDEMPOTENCY_ID, idempotencyId)
             )
         );
 
