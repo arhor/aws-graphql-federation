@@ -7,24 +7,14 @@ on:
     paths:
       - '.github/workflows/app-service-comments-CI.yml'
       - 'app-service-comments/**'
-      - 'lib-common/**'
-      - 'lib-platform/**'
-      - 'lib-spring-starter-core/**'
-      - 'lib-spring-starter-dgs/**'
-      - 'lib-spring-starter-security/**'
-      - 'lib-spring-starter-tracing/**'
+      - 'lib-*/**'
   pull_request:
     branches:
       - 'master'
     paths:
       - '.github/workflows/app-service-comments-CI.yml'
       - 'app-service-comments/**'
-      - 'lib-common/**'
-      - 'lib-platform/**'
-      - 'lib-spring-starter-core/**'
-      - 'lib-spring-starter-dgs/**'
-      - 'lib-spring-starter-security/**'
-      - 'lib-spring-starter-tracing/**'
+      - 'lib-*/**'
   workflow_dispatch:
 
 jobs:
@@ -80,7 +70,7 @@ jobs:
           path: ${{ github.workspace }}/app-service-comments/build
 
       - name: Generate JaCoCo reports and verify code coverage
-        run: './gradlew :app-service-comments:jacocoTestReport :app-service-comments:jacocoTestCoverageVerification'
+        run: './gradlew :app-service-comments:jacocoTestReportAndVerification'
 
       - name: Upload JaCoCo html report
         uses: actions/upload-artifact@v4

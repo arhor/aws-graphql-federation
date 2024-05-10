@@ -145,12 +145,17 @@ tasks {
         }
     }
 
+    val jacocoTestReportAndVerification by registering {
+        dependsOn(
+            jacocoTestReport,
+            jacocoTestCoverageVerification,
+        )
+        group = "verification"
+    }
+
     if (providers.environmentVariable("CI").getOrNull() != "true") {
         check {
-            finalizedBy(
-                jacocoTestReport,
-                jacocoTestCoverageVerification,
-            )
+            finalizedBy(jacocoTestReportAndVerification)
         }
     }
 }

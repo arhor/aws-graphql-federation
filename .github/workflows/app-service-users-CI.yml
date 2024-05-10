@@ -70,7 +70,7 @@ jobs:
           path: ${{ github.workspace }}/app-service-users/build
 
       - name: Generate JaCoCo reports and verify code coverage
-        run: './gradlew :app-service-users:jacocoTestReport :app-service-users:jacocoTestCoverageVerification'
+        run: './gradlew :app-service-users:jacocoTestReportAndVerification'
 
       - name: Upload JaCoCo html report
         uses: actions/upload-artifact@v4
