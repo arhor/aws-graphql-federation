@@ -1,6 +1,4 @@
-@file:Suppress("SameParameterValue")
-
-package com.github.arhor.aws.graphql.federation.users.service
+package com.github.arhor.aws.graphql.federation.users.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
@@ -15,7 +13,6 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Del
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
-import com.github.arhor.aws.graphql.federation.users.service.impl.UserServiceImpl
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
 import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
 import io.mockk.Call
@@ -42,7 +39,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.UUID
 
-internal class UserServiceTest {
+class UserServiceImplTest {
 
     private val userMapper: UserMapper = mockk()
     private val userRepository: UserRepository = mockk()
