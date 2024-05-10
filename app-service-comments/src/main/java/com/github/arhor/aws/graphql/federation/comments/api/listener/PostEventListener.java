@@ -23,7 +23,7 @@ public class PostEventListener {
         @Payload final PostEvent.Created event,
         @Header(HEADER_IDEMPOTENCY_ID) final UUID idempotencyId
     ) {
-        postService.createInternalPostRepresentation(event.getId());
+        postService.createInternalPostRepresentation(event.getId(), idempotencyId);
     }
 
     @SqsListener("${app-props.aws.sqs.post-deleted-events:}")
@@ -31,6 +31,6 @@ public class PostEventListener {
         @Payload final PostEvent.Deleted event,
         @Header(HEADER_IDEMPOTENCY_ID) final UUID idempotencyId
     ) {
-        postService.deleteInternalPostRepresentation(event.getId());
+        postService.deleteInternalPostRepresentation(event.getId(), idempotencyId);
     }
 }

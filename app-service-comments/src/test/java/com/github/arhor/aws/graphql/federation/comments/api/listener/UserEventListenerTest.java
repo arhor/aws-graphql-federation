@@ -43,6 +43,7 @@ class UserEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_createInternalUserRepresentation_method_on_user_created_event() {
         // Given
+        final var idempotencyId = UUID.randomUUID();
         final var event = new UserEvent.Created(UUID.randomUUID());
 
         // When
@@ -60,7 +61,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userService)
                     .should()
-                    .createInternalUserRepresentation(event.getId());
+                    .createInternalUserRepresentation(event.getId(), idempotencyId);
 
                 then(userService)
                     .shouldHaveNoMoreInteractions();
@@ -70,6 +71,7 @@ class UserEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_deleteInternalUserRepresentation_method_on_user_deleted_event() {
         // Given
+        final var idempotencyId = UUID.randomUUID();
         final var event = new UserEvent.Deleted(UUID.randomUUID());
 
         // When
@@ -77,7 +79,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             USER_DELETED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(HEADER_IDEMPOTENCY_ID, UUID.randomUUID())
+                Map.of(HEADER_IDEMPOTENCY_ID, idempotencyId)
             )
         );
 
@@ -87,7 +89,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userService)
                     .should()
-                    .deleteInternalUserRepresentation(event.getId());
+                    .deleteInternalUserRepresentation(event.getId(), idempotencyId);
 
                 then(userService)
                     .shouldHaveNoMoreInteractions();

@@ -43,6 +43,7 @@ class PostEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_createInternalPostRepresentation_method_on_post_created_event() {
         // Given
+        final var idempotencyId = UUID.randomUUID();
         final var event = new PostEvent.Created(UUID.randomUUID());
 
         // When
@@ -50,7 +51,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             POST_CREATED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(HEADER_IDEMPOTENCY_ID, UUID.randomUUID())
+                Map.of(HEADER_IDEMPOTENCY_ID, idempotencyId)
             )
         );
 
@@ -60,7 +61,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postService)
                     .should()
-                    .createInternalPostRepresentation(event.getId());
+                    .createInternalPostRepresentation(event.getId(), idempotencyId);
 
                 then(postService)
                     .shouldHaveNoMoreInteractions();
@@ -70,6 +71,7 @@ class PostEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_deleteInternalPostRepresentation_method_on_post_deleted_event() {
         // Given
+        final var idempotencyId = UUID.randomUUID();
         final var event = new PostEvent.Deleted(UUID.randomUUID());
 
         // When
@@ -77,7 +79,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             POST_DELETED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(HEADER_IDEMPOTENCY_ID, UUID.randomUUID())
+                Map.of(HEADER_IDEMPOTENCY_ID, idempotencyId)
             )
         );
 
@@ -87,7 +89,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postService)
                     .should()
-                    .deleteInternalPostRepresentation(event.getId());
+                    .deleteInternalPostRepresentation(event.getId(), idempotencyId);
 
                 then(postService)
                     .shouldHaveNoMoreInteractions();

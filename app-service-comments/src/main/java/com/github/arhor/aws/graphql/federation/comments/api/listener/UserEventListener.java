@@ -25,7 +25,7 @@ public class UserEventListener {
         @Payload final UserEvent.Created event,
         @Header(HEADER_IDEMPOTENCY_ID) final UUID idempotencyId
     ) {
-        userService.createInternalUserRepresentation(event.getId());
+        userService.createInternalUserRepresentation(event.getId(), idempotencyId);
     }
 
     @SqsListener("${app-props.aws.sqs.user-deleted-events:}")
@@ -33,6 +33,6 @@ public class UserEventListener {
         @Payload final UserEvent.Deleted event,
         @Header(HEADER_IDEMPOTENCY_ID) final UUID idempotencyId
     ) {
-        userService.deleteInternalUserRepresentation(event.getId());
+        userService.deleteInternalUserRepresentation(event.getId(), idempotencyId);
     }
 }

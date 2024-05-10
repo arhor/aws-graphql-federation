@@ -32,7 +32,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void createInternalPostRepresentation(final UUID postId) {
+    public void createInternalPostRepresentation(final UUID postId, final UUID idempotencyId) {
         postRepository.save(
             PostEntity.builder()
                 .id(postId)
@@ -41,7 +41,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deleteInternalPostRepresentation(final UUID postId) {
+    public void deleteInternalPostRepresentation(final UUID postId, final UUID idempotencyId) {
         postRepository.deleteById(postId);
     }
 

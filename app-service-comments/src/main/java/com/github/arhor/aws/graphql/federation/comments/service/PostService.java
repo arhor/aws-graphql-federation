@@ -8,7 +8,7 @@ public interface PostService {
 
     Post findInternalPostRepresentation(UUID postId);
 
-    void createInternalPostRepresentation(UUID postIds);
+    void createInternalPostRepresentation(UUID postId, UUID idempotencyId);
 
-    void deleteInternalPostRepresentation(UUID postIds);
+    void deleteInternalPostRepresentation(UUID postId, UUID idempotencyId);
 }
