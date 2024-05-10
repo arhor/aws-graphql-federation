@@ -11,7 +11,6 @@ import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Trace
@@ -33,17 +32,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createInternalUserRepresentation(final Set<? extends UUID> userIds) {
-        final var entities = userIds.stream()
-            .map(UserEntity::new)
-            .toList();
-
-        userRepository.saveAll(entities);
+    public void createInternalUserRepresentation(final UUID userId) {
+        userRepository.save(
+            UserEntity.builder()
+                .id(userId)
+                .build()
+        );
     }
 
     @Override
-    public void deleteInternalUserRepresentation(final Set<? extends UUID> userIds) {
-        userRepository.deleteAllById(userIds);
+    public void deleteInternalUserRepresentation(final UUID userId) {
+        userRepository.deleteById(userId);
     }
 
     private User mapEntityToUser(final UserEntity entity) {

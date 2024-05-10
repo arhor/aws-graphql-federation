@@ -49,6 +49,7 @@ class PostEventPublisherImplTest {
     @Test
     fun `should send outbox event as notifications to the SNS with correct payload and headers`() {
         // Given
+        val idempotencyId = UUID.randomUUID()
         val event = PostEvent.Deleted(id = UUID.randomUUID())
 
         val actualSnsTopicName = slot<String>()
@@ -58,7 +59,7 @@ class PostEventPublisherImplTest {
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // When
-        postEventPublisher.publish(event)
+        postEventPublisher.publish(event, idempotencyId)
 
         // Then
         assertThat(actualSnsTopicName.captured)
@@ -67,13 +68,14 @@ class PostEventPublisherImplTest {
         assertThat(actualNotification.captured)
             .satisfies(
                 { assertThat(it.payload).isEqualTo(event) },
-                { assertThat(it.headers).isEqualTo(event.attributes()) },
+                { assertThat(it.headers).isEqualTo(event.attributes(idempotencyId)) },
             )
     }
 
     @Test
     fun `should retry on MessagingException sending notification to SNS`() {
         // Given
+        val idempotencyId = UUID.randomUUID()
         val event = PostEvent.Deleted(id = UUID.randomUUID())
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
@@ -82,7 +84,7 @@ class PostEventPublisherImplTest {
         every { sns.sendNotification(any(), any()) } throwsMany errors andThenJust runs
 
         // When
-        postEventPublisher.publish(event)
+        postEventPublisher.publish(event, idempotencyId)
 
         // Then
         verify(exactly = 3) { appProps.aws.sns.postEvents }

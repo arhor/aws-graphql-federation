@@ -5,14 +5,17 @@ import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.arhor.aws.graphql.federation.common.event.DomainEvent.HEADER_IDEMPOTENCY_ID;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
 
@@ -43,7 +46,13 @@ class UserEventListenerTest extends EventListenerTestBase {
         final var event = new UserEvent.Created(UUID.randomUUID());
 
         // When
-        sqsTemplate.send(USER_CREATED_TEST_QUEUE, event);
+        sqsTemplate.send(
+            USER_CREATED_TEST_QUEUE,
+            new GenericMessage<>(
+                event,
+                Map.of(HEADER_IDEMPOTENCY_ID, UUID.randomUUID())
+            )
+        );
 
         // Then
         await()
@@ -51,7 +60,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userService)
                     .should()
-                    .createInternalUserRepresentation(event.getIds());
+                    .createInternalUserRepresentation(event.getId());
 
                 then(userService)
                     .shouldHaveNoMoreInteractions();
@@ -64,7 +73,13 @@ class UserEventListenerTest extends EventListenerTestBase {
         final var event = new UserEvent.Deleted(UUID.randomUUID());
 
         // When
-        sqsTemplate.send(USER_DELETED_TEST_QUEUE, event);
+        sqsTemplate.send(
+            USER_DELETED_TEST_QUEUE,
+            new GenericMessage<>(
+                event,
+                Map.of(HEADER_IDEMPOTENCY_ID, UUID.randomUUID())
+            )
+        );
 
         // Then
         await()
@@ -72,7 +87,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userService)
                     .should()
-                    .deleteInternalUserRepresentation(event.getIds());
+                    .deleteInternalUserRepresentation(event.getId());
 
                 then(userService)
                     .shouldHaveNoMoreInteractions();

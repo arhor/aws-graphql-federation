@@ -9,6 +9,7 @@ import org.springframework.messaging.MessagingException
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class UserEventPublisherImpl(
@@ -26,9 +27,9 @@ class UserEventPublisherImpl(
         ),
         maxAttemptsExpression = "\${app-props.retry.max-attempts}",
     )
-    override fun publish(userEvent: UserEvent) {
+    override fun publish(event: UserEvent, idempotencyId: UUID) {
         val snsTopicName = appProps.aws.sns.userEvents
-        val notification = SnsNotification(userEvent, userEvent.attributes())
+        val notification = SnsNotification(event, event.attributes(idempotencyId))
 
         sns.sendNotification(snsTopicName, notification)
     }

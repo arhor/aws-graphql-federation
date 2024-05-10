@@ -1,14 +1,23 @@
 package com.github.arhor.aws.graphql.federation.common.event
 
+import java.util.UUID
+
 interface DomainEvent {
 
     fun type(): String
 
-    fun attributes(vararg values: Pair<String, Any> = emptyArray()): Map<String, Any> {
-        return mapOf(HEADER_PAYLOAD_TYPE to type(), *values)
+    fun attributes(idempotencyId: UUID, vararg values: Pair<String, Any> = emptyArray()): Map<String, Any> {
+        return mapOf(
+            HEADER_PAYLOAD_TYPE to type(),
+            HEADER_IDEMPOTENCY_ID to idempotencyId,
+            *values
+        )
     }
 
     companion object {
-        const val HEADER_PAYLOAD_TYPE = "x_event_type"
+        // @formatter:off
+        const val HEADER_PAYLOAD_TYPE   = "x_event_type"
+        const val HEADER_IDEMPOTENCY_ID = "x_idempotency_id"
+        // @formatter:on
     }
 }

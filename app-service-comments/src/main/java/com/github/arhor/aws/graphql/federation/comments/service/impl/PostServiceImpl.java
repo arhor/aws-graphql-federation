@@ -11,7 +11,6 @@ import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
 import java.util.UUID;
 
 @Trace
@@ -33,17 +32,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void createInternalPostRepresentation(final Set<? extends UUID> postIds) {
-        final var entities = postIds.stream()
-            .map(PostEntity::new)
-            .toList();
-
-        postRepository.saveAll(entities);
+    public void createInternalPostRepresentation(final UUID postId) {
+        postRepository.save(
+            PostEntity.builder()
+                .id(postId)
+                .build()
+        );
     }
 
     @Override
-    public void deleteInternalPostRepresentation(final Set<? extends UUID> postIds) {
-        postRepository.deleteAllById(postIds);
+    public void deleteInternalPostRepresentation(final UUID postId) {
+        postRepository.deleteById(postId);
     }
 
     private Post mapEntityToPost(final PostEntity entity) {

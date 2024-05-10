@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.api.listener
 
+import com.github.arhor.aws.graphql.federation.common.event.DomainEvent.Companion.HEADER_IDEMPOTENCY_ID
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserService
 import com.ninjasquad.springmockk.MockkBean
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.messaging.support.GenericMessage
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
@@ -28,6 +31,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Tag("integration")
 @SqsTest
+@DirtiesContext
 @Testcontainers
 @ContextConfiguration(classes = [UserEventListener::class])
 class UserEventListenerTest {
@@ -51,11 +55,17 @@ class UserEventListenerTest {
         every { userService.createInternalUserRepresentation(any()) } just runs
 
         // When
-        sqsTemplate.send(USER_CREATED_TEST_QUEUE, event)
+        sqsTemplate.send(
+            USER_CREATED_TEST_QUEUE,
+            GenericMessage(
+                event,
+                mapOf(HEADER_IDEMPOTENCY_ID to UUID.randomUUID())
+            )
+        )
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userService.createInternalUserRepresentation(event.ids)
+            userService.createInternalUserRepresentation(event.id)
         }
     }
 
@@ -67,17 +77,23 @@ class UserEventListenerTest {
         every { userService.deleteInternalUserRepresentation(any()) } just runs
 
         // When
-        sqsTemplate.send(USER_DELETED_TEST_QUEUE, event)
+        sqsTemplate.send(
+            USER_DELETED_TEST_QUEUE,
+            GenericMessage(
+                event,
+                mapOf(HEADER_IDEMPOTENCY_ID to UUID.randomUUID())
+            )
+        )
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userService.deleteInternalUserRepresentation(event.ids)
+            userService.deleteInternalUserRepresentation(event.id)
         }
     }
 
     companion object {
-        private const val USER_CREATED_TEST_QUEUE = "test-queue-1"
-        private const val USER_DELETED_TEST_QUEUE = "test-queue-2"
+        private const val USER_CREATED_TEST_QUEUE = "user-created-test-queue"
+        private const val USER_DELETED_TEST_QUEUE = "user-deleted-test-queue"
 
         @JvmStatic
         @Container

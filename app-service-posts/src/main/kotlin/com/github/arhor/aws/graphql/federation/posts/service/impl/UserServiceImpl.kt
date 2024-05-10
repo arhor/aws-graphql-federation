@@ -27,14 +27,14 @@ class UserServiceImpl(
             )
     }
 
-    override fun createInternalUserRepresentation(userIds: Set<UUID>) {
-        val entities = userIds.map(::UserEntity)
+    override fun createInternalUserRepresentation(userId: UUID) {
+        val entities = UserEntity(id = userId)
 
-        userRepository.saveAll(entities)
+        userRepository.save(entities)
     }
 
-    override fun deleteInternalUserRepresentation(userIds: Set<UUID>) {
-        userRepository.deleteAllById(userIds)
+    override fun deleteInternalUserRepresentation(userId: UUID) {
+        userRepository.deleteById(userId)
     }
 
     private fun mapEntityToUser(entity: UserEntity): User {

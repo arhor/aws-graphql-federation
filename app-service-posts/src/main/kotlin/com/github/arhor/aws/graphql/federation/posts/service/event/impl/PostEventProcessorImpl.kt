@@ -3,7 +3,6 @@ package com.github.arhor.aws.graphql.federation.posts.service.event.impl
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
-import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventProcessor
 import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventPublisher
@@ -22,25 +21,16 @@ class PostEventProcessorImpl(
     @Scheduled(cron = "\${app-props.outbox-events-processing-cron:}")
     @Transactional(propagation = Propagation.REQUIRED)
     override fun processPostCreatedEvents() {
-        dequeueAndPublishEvents(
-            eventType = PostEvent.Type.POST_EVENT_CREATED,
-            composeFn = ::composeCreatedEvents
-        )
+        dequeueAndPublishEvents<PostEvent.Created>(PostEvent.Type.POST_EVENT_CREATED)
     }
 
     @Scheduled(cron = "\${app-props.outbox-events-processing-cron:}")
     @Transactional(propagation = Propagation.REQUIRED)
     override fun processPostDeletedEvents() {
-        dequeueAndPublishEvents(
-            eventType = PostEvent.Type.POST_EVENT_DELETED,
-            composeFn = ::composeDeletedEvents
-        )
+        dequeueAndPublishEvents<PostEvent.Deleted>(PostEvent.Type.POST_EVENT_DELETED)
     }
 
-    private inline fun <reified T : PostEvent> dequeueAndPublishEvents(
-        eventType: PostEvent.Type,
-        composeFn: Sequence<T>.() -> T,
-    ) {
+    private inline fun <reified T : PostEvent> dequeueAndPublishEvents(eventType: PostEvent.Type) {
         val outboxMessages =
             outboxMessageRepository.dequeueOldest(
                 messageType = eventType.code,
@@ -48,26 +38,14 @@ class PostEventProcessorImpl(
             )
 
         if (outboxMessages.isNotEmpty()) {
-            val composedEvent = outboxMessages.deserialize<T>().composeFn()
+            for (message in outboxMessages) {
+                val event = objectMapper.convertValue<T>(message.data)
 
-            outboxEventPublisher.publish(composedEvent)
-            outboxMessageRepository.deleteAll(outboxMessages)
+                outboxEventPublisher.publish(event, message.id!!)
+            }
+            outboxMessageRepository.deleteAll(outboxMessages) // TODO: is it necessary at all?
         }
     }
-
-    private inline fun <reified T : PostEvent> Collection<OutboxMessageEntity>.deserialize(): Sequence<T> =
-        this.asSequence()
-            .map { objectMapper.convertValue(it.data) }
-
-    private fun composeDeletedEvents(data: Sequence<PostEvent.Deleted>): PostEvent.Deleted =
-        data.flatMap { it.ids }
-            .toSet()
-            .let { PostEvent.Deleted(ids = it) }
-
-    private fun composeCreatedEvents(data: Sequence<PostEvent.Created>): PostEvent.Created =
-        data.flatMap { it.ids }
-            .toSet()
-            .let { PostEvent.Created(ids = it) }
 
     companion object {
         private const val DEFAULT_EVENTS_BATCH_SIZE = 50

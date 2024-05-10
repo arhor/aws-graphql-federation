@@ -4,17 +4,11 @@ import java.util.UUID
 
 sealed interface PostEvent : DomainEvent {
 
-    data class Created(val ids: Set<UUID>) : PostEvent {
-
-        constructor(id: UUID) : this(ids = setOf(id))
-
+    data class Created(val id: UUID) : PostEvent {
         override fun type(): String = Type.POST_EVENT_CREATED.code
     }
 
-    data class Deleted(val ids: Set<UUID>) : PostEvent {
-
-        constructor(id: UUID) : this(ids = setOf(id))
-
+    data class Deleted(val id: UUID) : PostEvent {
         override fun type(): String = Type.POST_EVENT_DELETED.code
     }
 
