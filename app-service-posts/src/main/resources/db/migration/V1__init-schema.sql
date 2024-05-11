@@ -29,9 +29,8 @@ CREATE TABLE IF NOT EXISTS "tags"
 
 CREATE TABLE IF NOT EXISTS "posts_has_tags"
 (
-    "id"      BIGSERIAL NOT NULL PRIMARY KEY,
-    "post_id" UUID      NOT NULL,
-    "tag_id"  UUID      NOT NULL,
+    "post_id" UUID NOT NULL,
+    "tag_id"  UUID NOT NULL,
 
     CONSTRAINT "UQ__posts_has_tags__post_id__tag_id"
         UNIQUE ("post_id", "tag_id"),

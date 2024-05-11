@@ -73,7 +73,7 @@ class UserServiceImpl(
                     if (user.authorities.isNotEmpty()) {
                         addAll(
                             user.authorities
-                                .map { it.authId.id }
+                                .map { it.authId }
                                 .let { authRepository.findAllById(it) }
                                 .map { it.name }
                         )

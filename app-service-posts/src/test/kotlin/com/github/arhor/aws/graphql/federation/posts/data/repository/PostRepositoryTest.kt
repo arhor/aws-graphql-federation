@@ -19,7 +19,7 @@ import java.util.UUID
         TagEntityCallback::class,
     ]
 )
-internal class PostRepositoryTest : RepositoryTestBase() {
+class PostRepositoryTest : RepositoryTestBase() {
 
     @Autowired
     private lateinit var postRepository: PostRepository

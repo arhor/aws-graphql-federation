@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
     ]
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-internal abstract class RepositoryTestBase {
+abstract class RepositoryTestBase {
 
     companion object {
         @JvmStatic

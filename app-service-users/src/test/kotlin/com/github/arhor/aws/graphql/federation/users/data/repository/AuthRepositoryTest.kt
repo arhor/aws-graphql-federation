@@ -37,7 +37,7 @@ internal class AuthRepositoryTest : RepositoryTestBase() {
         )
         val createdUser = userRepository.createAndSaveTestUser(
             authorities = authorities
-                .map { AuthRef.create(it) }
+                .map { AuthRef.from(it) }
                 .toSet()
         )
 

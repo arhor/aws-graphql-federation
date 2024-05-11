@@ -26,7 +26,7 @@ class TagMapperImplTest {
 
             // Then
             assertThat(result)
-                .returns(entity.id, from { it.tagId.id })
+                .returns(entity.id, from { it.tagId })
         }
 
         @Test

@@ -17,9 +17,8 @@ CREATE TABLE IF NOT EXISTS "authorities"
 
 CREATE TABLE IF NOT EXISTS "users_has_authorities"
 (
-    "id"      BIGSERIAL NOT NULL PRIMARY KEY,
-    "user_id" UUID      NOT NULL,
-    "auth_id" UUID      NOT NULL,
+    "user_id" UUID NOT NULL,
+    "auth_id" UUID NOT NULL,
 
     CONSTRAINT "UQ__users_has_authorities__user_id__auth_id"
         UNIQUE ("user_id", "auth_id"),
