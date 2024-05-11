@@ -38,7 +38,7 @@ import java.util.UUID
         UserFetcher::class,
     ]
 )
-internal class UserFetcherTest {
+class UserFetcherTest {
 
     @MockkBean
     private lateinit var userService: UserService

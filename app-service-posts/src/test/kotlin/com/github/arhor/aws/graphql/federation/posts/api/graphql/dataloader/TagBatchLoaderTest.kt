@@ -13,7 +13,7 @@ import java.time.Duration
 import java.util.UUID
 import java.util.concurrent.Executors
 
-internal class TagBatchLoaderTest {
+class TagBatchLoaderTest {
 
     private val executor = Executors.newSingleThreadExecutor()
     private val tagService = mockk<TagService>()

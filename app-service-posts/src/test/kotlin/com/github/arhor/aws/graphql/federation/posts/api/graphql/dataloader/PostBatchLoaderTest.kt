@@ -14,7 +14,7 @@ import java.time.Duration
 import java.util.UUID
 import java.util.concurrent.Executors
 
-internal class PostBatchLoaderTest {
+class PostBatchLoaderTest {
 
     private val executor = Executors.newSingleThreadExecutor()
     private val postService = mockk<PostService>()

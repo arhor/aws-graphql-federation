@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
 @ContextConfiguration(classes = [OutboxMessageEntityCallback::class])
-internal class OutboxMessageRepositoryTest : RepositoryTestBase() {
+class OutboxMessageRepositoryTest : RepositoryTestBase() {
 
     @Autowired
     private lateinit var outboxMessageRepository: OutboxMessageRepository

@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.util.UUID
 
 @SpringJUnitConfig
-internal class UserMapperTest {
+class UserMapperTest {
 
     @Configuration
     @ComponentScan(

@@ -31,7 +31,7 @@ import org.springframework.context.ApplicationEventPublisher
 import java.util.Optional
 import java.util.UUID
 
-internal class PostServiceImplTest {
+class PostServiceImplTest {
 
     private val appEventPublisher = mockk<ApplicationEventPublisher>()
     private val postMapper = mockk<PostMapper>()

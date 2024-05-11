@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.util.EnumSet
 import java.util.stream.Stream
 
-internal class OptionsConvertersTest {
+class OptionsConvertersTest {
 
     @MethodSource
     @ParameterizedTest

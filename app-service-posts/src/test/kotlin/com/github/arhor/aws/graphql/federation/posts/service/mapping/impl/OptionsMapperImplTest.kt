@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.EnumSet
 
-internal class OptionsMapperImplTest {
+class OptionsMapperImplTest {
 
     private val optionsMapper = OptionsMapperImpl()
 

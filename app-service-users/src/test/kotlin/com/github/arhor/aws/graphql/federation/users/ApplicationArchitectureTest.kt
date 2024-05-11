@@ -15,7 +15,7 @@ import java.time.temporal.Temporal
 
 @ArchTag("architecture")
 @AnalyzeClasses(packagesOf = [UsersServiceRunner::class], importOptions = [DoNotIncludeTests::class])
-internal class ApplicationArchitectureTest {
+class ApplicationArchitectureTest {
 
     @ArchTest
     fun `should check that correct layered architecture is observed`(

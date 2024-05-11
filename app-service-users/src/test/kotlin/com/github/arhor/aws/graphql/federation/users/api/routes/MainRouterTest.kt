@@ -15,7 +15,7 @@ import org.springframework.web.servlet.function.ServerRequest
 import java.net.URI
 import java.util.UUID
 
-internal class MainRouterTest {
+class MainRouterTest {
 
     private val userService = mockk<UserService>()
     private val mainRouter = MainRouter(

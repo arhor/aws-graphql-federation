@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
 @ContextConfiguration(classes = [UserEntityCallback::class])
-internal class UserRepositoryTest : RepositoryTestBase() {
+class UserRepositoryTest : RepositoryTestBase() {
 
     @Autowired
     private lateinit var userRepository: UserRepository

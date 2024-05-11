@@ -31,7 +31,7 @@ import java.util.UUID
         PostFetcher::class,
     ]
 )
-internal class PostFetcherTest {
+class PostFetcherTest {
 
     @MockkBean
     private lateinit var postService: PostService

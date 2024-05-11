@@ -31,7 +31,7 @@ import kotlin.time.Duration.Companion.seconds
         UserEventPublisherImplTest.Config::class,
     ]
 )
-internal class UserEventPublisherImplTest {
+class UserEventPublisherImplTest {
 
     @EnableRetry
     @Configuration

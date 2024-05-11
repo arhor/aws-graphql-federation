@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-internal class TagServiceImplTest {
+class TagServiceImplTest {
 
     private val tagRepository = mockk<TagRepository>()
 

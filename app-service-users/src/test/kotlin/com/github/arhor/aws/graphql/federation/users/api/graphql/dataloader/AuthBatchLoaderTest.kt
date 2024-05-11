@@ -13,7 +13,7 @@ import java.time.Duration
 import java.util.UUID
 import java.util.concurrent.Executors
 
-internal class AuthBatchLoaderTest {
+class AuthBatchLoaderTest {
 
     private val executor = Executors.newSingleThreadExecutor()
     private val authService = mockk<AuthService>()

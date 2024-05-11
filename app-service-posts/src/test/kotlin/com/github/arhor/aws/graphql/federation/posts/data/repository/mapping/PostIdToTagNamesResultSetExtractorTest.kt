@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import java.sql.ResultSet
 import java.util.UUID
 
-internal class PostIdToTagNamesResultSetExtractorTest {
+class PostIdToTagNamesResultSetExtractorTest {
 
     private val resultSetExtractor = PostIdToTagNamesResultSetExtractor()
 

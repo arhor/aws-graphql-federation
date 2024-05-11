@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration
         UserIdToAuthNamesResultSetExtractor::class,
     ]
 )
-internal class AuthRepositoryTest : RepositoryTestBase() {
+class AuthRepositoryTest : RepositoryTestBase() {
 
     @Autowired
     private lateinit var authRepository: AuthRepository
