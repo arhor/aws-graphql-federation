@@ -52,7 +52,7 @@ app-props:
     expire: \${JWT_EXPIRE}
   retry:
     delay: \${RETRY_DELAY:1000}
-    multiplier: \${RETRY_MULTIPLIER:0}
+    multiplier: \${RETRY_MULTIPLIER:1.5}
     max-attempts: \${RETRY_MAX_ATTEMPTS:3}
   outbox-events-processing-cron: "*/5 * * * * *"
 

@@ -22,10 +22,10 @@ class UserEventPublisherImpl(
             MessagingException::class,
         ],
         backoff = Backoff(
-            delayExpression = "\${app-props.retry.delay}",
-            multiplierExpression = "\${app-props.retry.multiplier}",
+            delayExpression = "\${app-props.retry.delay:}",
+            multiplierExpression = "\${app-props.retry.multiplier:}",
         ),
-        maxAttemptsExpression = "\${app-props.retry.max-attempts}",
+        maxAttemptsExpression = "\${app-props.retry.max-attempts:}",
     )
     override fun publish(event: UserEvent, idempotencyKey: UUID) {
         val snsTopicName = appProps.aws.sns.userEvents

@@ -51,6 +51,10 @@ app-props:
     sqs:
       user-created-events: \${AWS_SQS_USER_CREATED_EVENTS_FOR_POSTS}
       user-deleted-events: \${AWS_SQS_USER_DELETED_EVENTS_FOR_POSTS}
+  retry:
+    delay: \${RETRY_DELAY:1000}
+    multiplier: \${RETRY_MULTIPLIER:1.5}
+    max-attempts: \${RETRY_MAX_ATTEMPTS:3}
   outbox-events-processing-cron: "*/5 * * * * *"
 ---
 
