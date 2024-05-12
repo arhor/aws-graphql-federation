@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.users.service.event.UserEventPublisher
 import com.ninjasquad.springmockk.MockkBean
@@ -49,7 +50,7 @@ class UserEventPublisherImplTest {
     @Test
     fun `should send outbox event as notifications to the SNS with correct payload and headers`() {
         // Given
-        val idempotencyKey = UUID.randomUUID()
+        val traceId = UUID.randomUUID()
         val event = UserEvent.Deleted(id = UUID.randomUUID())
 
         val actualSnsTopicName = slot<String>()
@@ -59,7 +60,7 @@ class UserEventPublisherImplTest {
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // When
-        userEventPublisher.publish(event, idempotencyKey)
+        userEventPublisher.publish(event, traceId)
 
         // Then
         assertThat(actualSnsTopicName.captured)
@@ -68,7 +69,7 @@ class UserEventPublisherImplTest {
         assertThat(actualNotification.captured)
             .satisfies(
                 { assertThat(it.payload).isEqualTo(event) },
-                { assertThat(it.headers).isEqualTo(event.attributes(idempotencyKey)) },
+                { assertThat(it.headers).isEqualTo(event.attributes(Attributes.TRACING_ID.key to traceId)) },
             )
     }
 

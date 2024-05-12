@@ -21,6 +21,9 @@ data class OutboxMessageEntity(
     @Column("data")
     val data: Map<String, Any?>,
 
+    @Column("trace_id")
+    val traceId: UUID,
+
     @CreatedDate
     @Column("created_date_time")
     val createdDateTime: LocalDateTime? = null,

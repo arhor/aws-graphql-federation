@@ -26,7 +26,7 @@ const server = fastify({
             }
         }
     } : false,
-    requestIdHeader: 'X-Tracing-ID',
+    requestIdHeader: 'x-tracing-id',
     requestIdLogLabel: 'tracing-id',
     genReqId: () => uuid.v4(),
 });

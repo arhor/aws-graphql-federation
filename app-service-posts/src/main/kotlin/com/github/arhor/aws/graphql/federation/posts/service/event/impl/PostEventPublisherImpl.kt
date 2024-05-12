@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.posts.service.event.impl
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventPublisher
+import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import org.springframework.messaging.MessagingException
@@ -27,9 +28,9 @@ class PostEventPublisherImpl(
         ),
         maxAttemptsExpression = "\${app-props.retry.max-attempts:}",
     )
-    override fun publish(event: PostEvent, idempotencyKey: UUID) {
+    override fun publish(event: PostEvent, traceId: UUID) {
         val snsTopicName = appProps.aws.sns.postEvents
-        val notification = SnsNotification(event, event.attributes(idempotencyKey))
+        val notification = SnsNotification(event, event.attributes(TRACING_ID_KEY to traceId))
 
         sns.sendNotification(snsTopicName, notification)
     }

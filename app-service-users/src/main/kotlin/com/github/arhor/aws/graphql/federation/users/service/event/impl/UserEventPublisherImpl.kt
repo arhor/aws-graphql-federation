@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.users.service.event.UserEventPublisher
 import io.awspring.cloud.sns.core.SnsNotification
@@ -27,9 +28,9 @@ class UserEventPublisherImpl(
         ),
         maxAttemptsExpression = "\${app-props.retry.max-attempts:}",
     )
-    override fun publish(event: UserEvent, idempotencyKey: UUID) {
+    override fun publish(event: UserEvent, traceId: UUID) {
         val snsTopicName = appProps.aws.sns.userEvents
-        val notification = SnsNotification(event, event.attributes(idempotencyKey))
+        val notification = SnsNotification(event, event.attributes(Attributes.TRACING_ID.key to traceId))
 
         sns.sendNotification(snsTopicName, notification)
     }

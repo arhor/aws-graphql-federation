@@ -6,7 +6,9 @@ import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventListener
+import com.github.arhor.aws.graphql.federation.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.tracing.useContextAttribute
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation.MANDATORY
@@ -26,6 +28,7 @@ class PostEventListenerImpl(
             OutboxMessageEntity(
                 type = event.type(),
                 data = objectMapper.convertValue(event),
+                traceId = useContextAttribute(Attributes.TRACING_ID),
             )
         )
     }

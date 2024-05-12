@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS "outbox_messages"
     "id"                UUID        NOT NULL PRIMARY KEY,
     "type"              VARCHAR(64) NOT NULL,
     "data"              JSONB       NOT NULL,
+    "trace_id"          UUID        NOT NULL,
     "created_date_time" TIMESTAMP   NOT NULL
 ) WITH (OIDS = FALSE);
 

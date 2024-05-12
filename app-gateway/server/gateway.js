@@ -82,10 +82,10 @@ function createRemoteDatasource({ url, name }) {
             } = context;
 
             if (tracingUuid) {
-                request.http.headers.set('X-Tracing-ID', tracingUuid);
+                request.http.headers.set('x-tracing-id', tracingUuid);
             }
             if (currentUser) {
-                request.http.headers.set('X-Current-User', JSON.stringify(currentUser));
+                request.http.headers.set('x-current-user', JSON.stringify(currentUser));
             }
         },
     });

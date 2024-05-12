@@ -37,13 +37,10 @@ class PostEventProcessorImpl(
                 messagesNum = DEFAULT_EVENTS_BATCH_SIZE,
             )
 
-        if (outboxMessages.isNotEmpty()) {
-            for (message in outboxMessages) {
-                val event = objectMapper.convertValue<T>(message.data)
+        for (message in outboxMessages) {
+            val event = objectMapper.convertValue<T>(message.data)
 
-                outboxEventPublisher.publish(event, message.id!!)
-            }
-            outboxMessageRepository.deleteAll(outboxMessages) // TODO: is it necessary at all?
+            outboxEventPublisher.publish(event, message.traceId)
         }
     }
 

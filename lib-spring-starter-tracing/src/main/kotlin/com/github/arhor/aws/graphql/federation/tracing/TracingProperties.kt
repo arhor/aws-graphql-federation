@@ -5,7 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "tracing")
 data class TracingProperties(
-    val enabled: Boolean = true,
     val methodExecutionLogging: MethodExecutionLogging = MethodExecutionLogging(),
 ) {
     data class MethodExecutionLogging(

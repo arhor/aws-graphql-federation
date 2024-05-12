@@ -16,7 +16,7 @@ class PreAuthenticatedUserAuthenticationProcessingFilter(
 ) : AbstractAuthenticationProcessingFilter(requestMatcher, authManager) {
 
     companion object {
-        const val PRE_AUTHENTICATED_USER_HEADER = "X-Current-User"
+        const val PRE_AUTHENTICATED_USER_HEADER = "x-current-user"
     }
 
     override fun attemptAuthentication(

@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.posts.service.event.impl
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventPublisher
+import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
@@ -49,7 +50,7 @@ class PostEventPublisherImplTest {
     @Test
     fun `should send outbox event as notifications to the SNS with correct payload and headers`() {
         // Given
-        val idempotencyKey = UUID.randomUUID()
+        val traceId = UUID.randomUUID()
         val event = PostEvent.Deleted(id = UUID.randomUUID())
 
         val actualSnsTopicName = slot<String>()
@@ -59,7 +60,7 @@ class PostEventPublisherImplTest {
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // When
-        postEventPublisher.publish(event, idempotencyKey)
+        postEventPublisher.publish(event, traceId)
 
         // Then
         assertThat(actualSnsTopicName.captured)
@@ -68,7 +69,7 @@ class PostEventPublisherImplTest {
         assertThat(actualNotification.captured)
             .satisfies(
                 { assertThat(it.payload).isEqualTo(event) },
-                { assertThat(it.headers).isEqualTo(event.attributes(idempotencyKey)) },
+                { assertThat(it.headers).isEqualTo(event.attributes(TRACING_ID_KEY to traceId)) },
             )
     }
 

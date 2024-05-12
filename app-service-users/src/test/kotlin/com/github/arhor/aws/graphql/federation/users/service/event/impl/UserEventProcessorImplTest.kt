@@ -52,6 +52,7 @@ class UserEventProcessorImplTest {
                 id = UUID.randomUUID(),
                 type = eventTypeCode,
                 data = eventData,
+                traceId = UUID.randomUUID(),
             )
             val outboxMessages = listOf(outboxMessage)
             val event = UserEvent.Created(id = userId)
@@ -59,7 +60,6 @@ class UserEventProcessorImplTest {
             every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxMessages
             every { objectMapper.convertValue(any(), any<TypeReference<UserEvent.Created>>()) } returns event
             every { userEventPublisher.publish(any(), any()) } just runs
-            every { outboxMessageRepository.deleteAll(any()) } just runs
 
             // When
             userEventProcessor.processUserCreatedEvents()
@@ -67,8 +67,7 @@ class UserEventProcessorImplTest {
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
             verify(exactly = 1) { objectMapper.convertValue(eventData, any<TypeReference<UserEvent.Created>>()) }
-            verify(exactly = 1) { userEventPublisher.publish(event, outboxMessage.id!!) }
-            verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxMessages) }
+            verify(exactly = 1) { userEventPublisher.publish(event, outboxMessage.traceId) }
         }
     }
 
@@ -85,6 +84,7 @@ class UserEventProcessorImplTest {
                 id = UUID.randomUUID(),
                 type = eventTypeCode,
                 data = eventData,
+                traceId = UUID.randomUUID(),
             )
             val outboxMessages = listOf(outboxMessage)
             val event = UserEvent.Deleted(id = userId)
@@ -92,7 +92,6 @@ class UserEventProcessorImplTest {
             every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxMessages
             every { objectMapper.convertValue(any(), any<TypeReference<UserEvent.Deleted>>()) } returns event
             every { userEventPublisher.publish(any(), any()) } just runs
-            every { outboxMessageRepository.deleteAll(any()) } just runs
 
             // When
             userEventProcessor.processUserDeletedEvents()
@@ -100,8 +99,7 @@ class UserEventProcessorImplTest {
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
             verify(exactly = 1) { objectMapper.convertValue(eventData, any<TypeReference<UserEvent.Deleted>>()) }
-            verify(exactly = 1) { userEventPublisher.publish(event, outboxMessage.id!!) }
-            verify(exactly = 1) { outboxMessageRepository.deleteAll(outboxMessages) }
+            verify(exactly = 1) { userEventPublisher.publish(event, outboxMessage.traceId) }
         }
     }
 }

@@ -3,7 +3,9 @@ package com.github.arhor.aws.graphql.federation.users.service.event.impl
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.tracing.useContextAttribute
 import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.users.service.event.UserEventListener
@@ -26,6 +28,7 @@ class UserEventListenerImpl(
             OutboxMessageEntity(
                 type = event.type(),
                 data = objectMapper.convertValue(event),
+                traceId = useContextAttribute(Attributes.TRACING_ID),
             )
         )
     }
