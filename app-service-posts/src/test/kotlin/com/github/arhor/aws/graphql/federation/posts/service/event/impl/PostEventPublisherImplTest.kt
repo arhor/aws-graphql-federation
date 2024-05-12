@@ -76,7 +76,7 @@ class PostEventPublisherImplTest {
     @Test
     fun `should retry on MessagingException sending notification to SNS`() {
         // Given
-        val idempotencyKey = UUID.randomUUID()
+        val traceId = UUID.randomUUID()
         val event = PostEvent.Deleted(id = UUID.randomUUID())
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
@@ -85,7 +85,7 @@ class PostEventPublisherImplTest {
         every { sns.sendNotification(any(), any()) } throwsMany errors andThenJust runs
 
         // When
-        postEventPublisher.publish(event, idempotencyKey)
+        postEventPublisher.publish(event, traceId)
 
         // Then
         verify(exactly = 3) { appProps.aws.sns.postEvents }

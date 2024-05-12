@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.arhor.aws.graphql.federation.common.event.DomainEvent.HEADER_IDEMPOTENCY_KEY;
+import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
 
@@ -43,7 +43,7 @@ class UserEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_createInternalUserRepresentation_method_on_user_created_event() {
         // Given
-        final var idempotencyKey = UUID.randomUUID();
+        final var traceId = UUID.randomUUID();
         final var event = new UserEvent.Created(UUID.randomUUID());
 
         // When
@@ -51,7 +51,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             USER_CREATED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(HEADER_IDEMPOTENCY_KEY, idempotencyKey)
+                Map.of(TRACING_ID_KEY, traceId)
             )
         );
 
@@ -61,7 +61,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userService)
                     .should()
-                    .createInternalUserRepresentation(event.getId(), idempotencyKey);
+                    .createInternalUserRepresentation(event.getId(), traceId);
 
                 then(userService)
                     .shouldHaveNoMoreInteractions();
@@ -71,7 +71,7 @@ class UserEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_deleteInternalUserRepresentation_method_on_user_deleted_event() {
         // Given
-        final var idempotencyKey = UUID.randomUUID();
+        final var traceId = UUID.randomUUID();
         final var event = new UserEvent.Deleted(UUID.randomUUID());
 
         // When
@@ -79,7 +79,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             USER_DELETED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(HEADER_IDEMPOTENCY_KEY, idempotencyKey)
+                Map.of(TRACING_ID_KEY, traceId)
             )
         );
 
@@ -89,7 +89,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userService)
                     .should()
-                    .deleteInternalUserRepresentation(event.getId(), idempotencyKey);
+                    .deleteInternalUserRepresentation(event.getId(), traceId);
 
                 then(userService)
                     .shouldHaveNoMoreInteractions();
