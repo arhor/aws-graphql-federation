@@ -5,7 +5,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @JvmInline
-value class Timer(private val start: Long = System.currentTimeMillis()) {
+internal value class Timer(private val start: Long = System.currentTimeMillis()) {
 
     val elapsedTime: Duration
         get() = (System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)

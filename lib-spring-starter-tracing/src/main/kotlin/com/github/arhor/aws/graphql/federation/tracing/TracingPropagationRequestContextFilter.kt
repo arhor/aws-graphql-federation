@@ -9,14 +9,15 @@ import org.springframework.stereotype.Component
 import java.util.UUID
 
 @Component
-class RequestIdPropagatingFilter : OrderedRequestContextFilter() {
+class TracingPropagationRequestContextFilter : OrderedRequestContextFilter() {
 
     override fun doFilterInternal(req: HttpServletRequest, res: HttpServletResponse, next: FilterChain) {
-        super.doFilterInternal(req, res, withContextExtension(next))
+        super.doFilterInternal(req, res, next.withContextExtension())
     }
 
-    private fun withContextExtension(next: FilterChain) = FilterChain { req, res ->
+    private fun FilterChain.withContextExtension() = FilterChain { req, res ->
         if ((req is HttpServletRequest) && (res is HttpServletResponse)) {
+
             fun propagate(header: String, mdcProp: String) {
                 val id = req.getHeader(header)?.takeIf(String::isNotEmpty)
                     ?: UUID.randomUUID().toString()
@@ -24,11 +25,12 @@ class RequestIdPropagatingFilter : OrderedRequestContextFilter() {
                 MDC.put(mdcProp, id)
                 res.setHeader(header, id)
             }
+
             propagate(TRACING_ID_HEADER, TRACING_ID_MDC_PROP)
             propagate(REQUEST_ID_HEADER, REQUEST_ID_MDC_PROP)
         }
         try {
-            next.doFilter(req, res)
+            doFilter(req, res)
         } finally {
             MDC.remove(TRACING_ID_MDC_PROP)
             MDC.remove(REQUEST_ID_MDC_PROP)

@@ -17,4 +17,3 @@ class JsonWritingConverter(private val objectMapper: ObjectMapper) : Converter<M
         }
     }
 }
-
