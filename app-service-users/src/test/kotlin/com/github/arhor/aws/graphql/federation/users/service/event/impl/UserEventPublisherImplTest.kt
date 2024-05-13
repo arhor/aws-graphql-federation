@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.tracing.Attributes
+import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.users.service.event.UserEventPublisher
 import com.ninjasquad.springmockk.MockkBean
@@ -69,7 +69,7 @@ class UserEventPublisherImplTest {
         assertThat(actualNotification.captured)
             .satisfies(
                 { assertThat(it.payload).isEqualTo(event) },
-                { assertThat(it.headers).isEqualTo(event.attributes(Attributes.TRACING_ID.key to traceId)) },
+                { assertThat(it.headers).isEqualTo(event.attributes(TRACING_ID_KEY to traceId)) },
             )
     }
 

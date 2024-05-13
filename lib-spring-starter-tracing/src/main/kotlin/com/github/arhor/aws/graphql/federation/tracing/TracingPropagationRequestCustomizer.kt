@@ -11,7 +11,7 @@ import org.springframework.web.context.request.RequestContextHolder
 class TracingPropagationRequestCustomizer : RestTemplateRequestCustomizer<ClientHttpRequest> {
 
     override fun customize(clientRequest: ClientHttpRequest) {
-        val attributeKey = Attributes.TRACING_ID.key
+        val attributeKey = TRACING_ID_KEY
         val attributes = RequestContextHolder.currentRequestAttributes()
         val serverRequest = attributes.resolveReference(REFERENCE_REQUEST) as HttpServletRequest
 

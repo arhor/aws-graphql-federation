@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.tracing.Attributes
+import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.users.service.event.UserEventPublisher
 import io.awspring.cloud.sns.core.SnsNotification
@@ -30,7 +30,7 @@ class UserEventPublisherImpl(
     )
     override fun publish(event: UserEvent, traceId: UUID) {
         val snsTopicName = appProps.aws.sns.userEvents
-        val notification = SnsNotification(event, event.attributes(Attributes.TRACING_ID.key to traceId))
+        val notification = SnsNotification(event, event.attributes(TRACING_ID_KEY to traceId))
 
         sns.sendNotification(snsTopicName, notification)
     }

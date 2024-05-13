@@ -23,7 +23,6 @@ class TracingPropagationRequestContextFilter : OrderedRequestContextFilter() {
                     ?: UUID.randomUUID().toString()
 
                 MDC.put(attributeKey, id)
-                res.setHeader(attributeKey, id)
                 req.setAttribute(attributeKey, id)
             }
         }
@@ -31,7 +30,10 @@ class TracingPropagationRequestContextFilter : OrderedRequestContextFilter() {
             doFilter(req, res)
         } finally {
             for (attribute in Attributes.entries) {
-                MDC.remove(attribute.key)
+                val attributeKey = attribute.key
+
+                MDC.remove(attributeKey)
+                req.removeAttribute(attributeKey)
             }
         }
     }
