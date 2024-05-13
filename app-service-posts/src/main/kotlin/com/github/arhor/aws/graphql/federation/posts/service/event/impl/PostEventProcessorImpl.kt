@@ -20,13 +20,13 @@ class PostEventProcessorImpl(
     private val outboxEventPublisher: PostEventPublisher,
 ) : PostEventProcessor {
 
-    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron:}")
+    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron}")
     @Transactional(propagation = Propagation.REQUIRED)
     override fun processPostCreatedEvents() {
         dequeueAndPublishEvents<PostEvent.Created>(PostEvent.Type.POST_EVENT_CREATED)
     }
 
-    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron:}")
+    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron}")
     @Transactional(propagation = Propagation.REQUIRED)
     override fun processPostDeletedEvents() {
         dequeueAndPublishEvents<PostEvent.Deleted>(PostEvent.Type.POST_EVENT_DELETED)

@@ -16,7 +16,7 @@ class UserEventListener(
     private val userService: UserService,
 ) {
 
-    @SqsListener("\${app-props.aws.sqs.user-created-events:}")
+    @SqsListener("\${app-props.aws.sqs.user-created-events}")
     fun handleUserCreatedEvent(
         @Payload event: UserEvent.Created,
         @Header(TRACING_ID_KEY) traceId: UUID,
@@ -24,7 +24,7 @@ class UserEventListener(
         userService.createInternalUserRepresentation(userId = event.id, idempotencyKey = traceId)
     }
 
-    @SqsListener("\${app-props.aws.sqs.user-deleted-events:}")
+    @SqsListener("\${app-props.aws.sqs.user-deleted-events}")
     fun handleUserDeletedEvent(
         @Payload event: UserEvent.Deleted,
         @Header(TRACING_ID_KEY) traceId: UUID,

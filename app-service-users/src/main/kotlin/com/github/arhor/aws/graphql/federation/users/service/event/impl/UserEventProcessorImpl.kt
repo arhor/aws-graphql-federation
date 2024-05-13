@@ -20,13 +20,13 @@ class UserEventProcessorImpl(
     private val outboxEventPublisher: UserEventPublisher,
 ) : UserEventProcessor {
 
-    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron:}")
+    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron}")
     @Transactional(propagation = Propagation.REQUIRED)
     override fun processUserCreatedEvents() {
         dequeueAndPublishEvents<UserEvent.Created>(UserEvent.Type.USER_EVENT_CREATED)
     }
 
-    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron:}")
+    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron}")
     @Transactional(propagation = Propagation.REQUIRED)
     override fun processUserDeletedEvents() {
         dequeueAndPublishEvents<UserEvent.Deleted>(UserEvent.Type.USER_EVENT_DELETED)

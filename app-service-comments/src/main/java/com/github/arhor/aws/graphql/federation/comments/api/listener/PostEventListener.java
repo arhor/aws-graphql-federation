@@ -20,7 +20,7 @@ public class PostEventListener {
 
     private final PostService postService;
 
-    @SqsListener("${app-props.aws.sqs.post-created-events:}")
+    @SqsListener("${app-props.aws.sqs.post-created-events}")
     public void handlePostCreatedEvent(
         @Payload final PostEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId
@@ -28,7 +28,7 @@ public class PostEventListener {
         postService.createInternalPostRepresentation(event.getId(), traceId);
     }
 
-    @SqsListener("${app-props.aws.sqs.post-deleted-events:}")
+    @SqsListener("${app-props.aws.sqs.post-deleted-events}")
     public void handlePostDeletedEvent(
         @Payload final PostEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId

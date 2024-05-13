@@ -25,10 +25,10 @@ class PostEventPublisherImpl(
             MessagingException::class,
         ],
         backoff = Backoff(
-            delayExpression = "\${app-props.retry.delay:}",
-            multiplierExpression = "\${app-props.retry.multiplier:}",
+            delayExpression = "\${app-props.retry.delay}",
+            multiplierExpression = "\${app-props.retry.multiplier}",
         ),
-        maxAttemptsExpression = "\${app-props.retry.max-attempts:}",
+        maxAttemptsExpression = "\${app-props.retry.max-attempts}",
     )
     override fun publish(event: PostEvent, traceId: UUID) {
         val snsTopicName = appProps.aws.sns.postEvents
