@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.users.service.event.impl
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.users.service.event.UserEventProcessor
 import com.github.arhor.aws.graphql.federation.users.service.event.UserEventPublisher
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
+@Trace
 @Component
 class UserEventProcessorImpl(
     private val objectMapper: ObjectMapper,

@@ -6,11 +6,13 @@ import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventProcessor
 import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventPublisher
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
+@Trace
 @Component
 class PostEventProcessorImpl(
     private val objectMapper: ObjectMapper,

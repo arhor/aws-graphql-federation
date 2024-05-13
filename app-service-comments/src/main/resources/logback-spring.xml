@@ -16,7 +16,6 @@
 
     <springProfile name="dev">
         <logger name="com.github.arhor.aws.graphql.federation" level="DEBUG"/>
-        <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG"/>
     </springProfile>
 
     <root level="INFO">

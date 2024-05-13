@@ -95,7 +95,7 @@ Resources:
       TopicArn: !Ref UserEventsTopic
       Endpoint: !GetAtt UserCreatedEventsForPostsQueue.Arn
       FilterPolicy:
-        x_event_type:
+        x-event-type:
           - UserEvent::Created
       RawMessageDelivery: true
 
@@ -106,7 +106,7 @@ Resources:
       TopicArn: !Ref UserEventsTopic
       Endpoint: !GetAtt UserDeletedEventsForPostsQueue.Arn
       FilterPolicy:
-        x_event_type:
+        x-event-type:
           - UserEvent::Deleted
       RawMessageDelivery: true
 
@@ -117,7 +117,7 @@ Resources:
       TopicArn: !Ref UserEventsTopic
       Endpoint: !GetAtt UserCreatedEventsForCommentsQueue.Arn
       FilterPolicy:
-        x_event_type:
+        x-event-type:
           - UserEvent::Created
       RawMessageDelivery: true
 
@@ -128,7 +128,7 @@ Resources:
       TopicArn: !Ref UserEventsTopic
       Endpoint: !GetAtt UserDeletedEventsForCommentsQueue.Arn
       FilterPolicy:
-        x_event_type:
+        x-event-type:
           - UserEvent::Deleted
       RawMessageDelivery: true
 
@@ -139,7 +139,7 @@ Resources:
       TopicArn: !Ref PostEventsTopic
       Endpoint: !GetAtt PostCreatedEventsForCommentsQueue.Arn
       FilterPolicy:
-        x_event_type:
+        x-event-type:
           - PostEvent::Created
       RawMessageDelivery: true
 
@@ -150,6 +150,6 @@ Resources:
       TopicArn: !Ref PostEventsTopic
       Endpoint: !GetAtt PostDeletedEventsForCommentsQueue.Arn
       FilterPolicy:
-        x_event_type:
+        x-event-type:
           - PostEvent::Deleted
       RawMessageDelivery: true

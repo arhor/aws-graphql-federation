@@ -69,7 +69,7 @@ class UserEventPublisherImplTest {
         assertThat(actualNotification.captured)
             .satisfies(
                 { assertThat(it.payload).isEqualTo(event) },
-                { assertThat(it.headers).isEqualTo(event.attributes(TRACING_ID_KEY to traceId)) },
+                { assertThat(it.headers).isEqualTo(event.attributes(TRACING_ID_KEY to traceId.toString())) },
             )
     }
 
