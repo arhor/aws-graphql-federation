@@ -55,7 +55,8 @@ app-props:
     delay: \${RETRY_DELAY:1000}
     multiplier: \${RETRY_MULTIPLIER:1.5}
     max-attempts: \${RETRY_MAX_ATTEMPTS:3}
-  outbox-events-processing-cron: "*/5 * * * * *"
+  outbox-messages-processing-cron: "*/5 * * * * *"
+
 ---
 
 spring:
@@ -82,4 +83,7 @@ dgs:
     graphiql:
       enabled: true
 
-log-method-execution: true
+tracing:
+  method-execution-logging:
+    enabled: true
+    level: debug

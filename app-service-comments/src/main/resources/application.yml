@@ -82,4 +82,7 @@ dgs:
     graphiql:
       enabled: true
 
-log-method-execution: true
+tracing:
+  method-execution-logging:
+    enabled: true
+    level: debug

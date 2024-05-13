@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.api.listener;
 
 import com.github.arhor.aws.graphql.federation.comments.service.PostService;
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent;
+import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.Header;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
 
+@Trace
 @Component
 @RequiredArgsConstructor
 public class PostEventListener {
