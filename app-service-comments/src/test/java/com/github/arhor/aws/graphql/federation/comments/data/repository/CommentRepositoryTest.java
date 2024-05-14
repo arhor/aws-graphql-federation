@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommentRepositoryTest {
 
     @Container
-    private static final PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:12-alpine");
+    private static final PostgreSQLContainer<?> db = new PostgreSQLContainer<>("postgres:13-alpine");
 
     @Autowired
     private CommentRepository commentRepository;

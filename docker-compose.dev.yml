@@ -16,7 +16,7 @@ services:
       - "./cloudformation:/cloudformation"
 
   app-service-users-db:
-    image: postgres:12-alpine
+    image: postgres:13-alpine
     ports:
       - "5501:5432"
     tmpfs:
@@ -43,7 +43,7 @@ services:
       start_period: 10s
 
   app-service-posts-db:
-    image: postgres:12-alpine
+    image: postgres:13-alpine
     ports:
       - "5502:5432"
     tmpfs:
@@ -70,7 +70,7 @@ services:
       start_period: 10s
 
   app-service-comments-db:
-    image: postgres:12-alpine
+    image: postgres:13-alpine
     ports:
       - "5503:5432"
     tmpfs:

@@ -58,7 +58,7 @@ data class PostEntity(
         // @formatter:off
         const val COL_ID                = "id"
         const val COL_USER_ID           = "user_id"
-        const val COL_TITLE            = "title"
+        const val COL_TITLE             = "title"
         const val COL_CONTENT           = "content"
         const val COL_VERSION           = "version"
         const val COL_CREATED_DATE_TIME = "created_date_time"
