@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.users.data.entity.PredefinedAuthorities
 import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
@@ -67,23 +68,11 @@ class UserServiceImpl(
 
         if (user != null) {
             if (passwordEncoder.matches(password, user.password)) {
-                val authNames = buildSet {
-                    // TODO: move to the DB
-                    add(ROLE_USER)
-                    if (user.authorities.isNotEmpty()) {
-                        addAll(
-                            user.authorities
-                                .map { it.authId }
-                                .let { authRepository.findAllById(it) }
-                                .map { it.name }
-                        )
-                    }
-                }
+                val authorities = user.authorities
+                    .map { it.authId }
+                    .let { authRepository.findAllById(it) }
 
-                return CurrentUser(
-                    id = user.id!!,
-                    authorities = authNames.toList()
-                )
+                return userMapper.mapToCurrentUser(user, authorities)
             } else {
                 logger.error("Provided incorrect password for the user with id: {}", user.id)
             }
@@ -102,8 +91,11 @@ class UserServiceImpl(
                 operation = Operation.CREATE,
             )
         }
+        val auth = authRepository.findByName(PredefinedAuthorities.ROLE_USER.name)
+            ?: throw IllegalStateException("Cannot find default authority creating a new user")
+
         val user = input.copy(password = passwordEncoder.encode(input.password))
-            .let { userMapper.mapToEntity(it) }
+            .let { userMapper.mapToEntity(it, auth) }
             .let { userRepository.save(it) }
             .also { eventPublisher.publishEvent(UserEvent.Created(id = it.id!!)) }
             .let { userMapper.mapToResult(it) }
@@ -146,7 +138,6 @@ class UserServiceImpl(
     }
 
     companion object {
-        const val ROLE_USER = "ROLE_USER"
         private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 }

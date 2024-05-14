@@ -13,4 +13,6 @@ interface AuthRepository : CrudRepository<AuthEntity, UUID> {
         resultSetExtractorRef = UserIdToAuthNamesResultSetExtractor.BEAN_NAME,
     )
     fun findAllByUserIdIn(postIds: Collection<UUID>): Map<UUID, List<String>>
+
+    fun findByName(name: String): AuthEntity?
 }

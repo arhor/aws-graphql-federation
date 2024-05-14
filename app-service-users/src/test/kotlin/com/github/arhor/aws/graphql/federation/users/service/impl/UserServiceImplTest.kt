@@ -4,6 +4,8 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateE
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.users.data.entity.AuthEntity
+import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
@@ -22,12 +24,12 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
-import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.assertj.core.api.Assertions.from
 import org.assertj.core.api.InstanceOfAssertFactories.throwable
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -37,6 +39,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
+import java.util.Optional
 import java.util.UUID
 
 class UserServiceImplTest {
@@ -55,10 +58,20 @@ class UserServiceImplTest {
         passwordEncoder,
     )
 
+    @AfterEach
+    fun tearDown() {
+        confirmVerified(
+            userMapper,
+            userRepository,
+            authRepository,
+            eventPublisher,
+            passwordEncoder,
+        )
+    }
+
     @Nested
     @DisplayName("UserService :: getUserById")
     inner class GetUserByIdTest {
-
         @Test
         fun `should return an existing user by id`() {
             // Given
@@ -75,8 +88,6 @@ class UserServiceImplTest {
             // Then
             verify(exactly = 1) { userRepository.findById(userId) }
             verify(exactly = 1) { userMapper.mapToResult(userEntity) }
-
-            confirmVerified(userRepository, userMapper)
 
             assertThat(result)
                 .isNotNull()
@@ -101,8 +112,6 @@ class UserServiceImplTest {
             // Then
             verify(exactly = 1) { userRepository.findById(userId) }
 
-            confirmVerified(userRepository, userMapper)
-
             assertThat(result)
                 .asInstanceOf(throwable(expectedExceptionType))
                 .satisfies(
@@ -116,7 +125,6 @@ class UserServiceImplTest {
     @Nested
     @DisplayName("UserService :: getAllUsers")
     inner class GetAllUsersTest {
-
         @Test
         fun `should return an expected list of users`() {
             // Given
@@ -134,8 +142,6 @@ class UserServiceImplTest {
             // Then
             verify(exactly = 1) { userRepository.findAll(paged) }
             verify(exactly = 3) { userMapper.mapToResult(userEntity) }
-
-            confirmVerified(userRepository, userMapper)
 
             assertThat(result)
                 .isNotNull()
@@ -156,8 +162,6 @@ class UserServiceImplTest {
             // Then
             verify(exactly = 1) { userRepository.findAll(paged) }
 
-            confirmVerified(userRepository, userMapper)
-
             assertThat(result)
                 .isNotNull()
                 .isEmpty()
@@ -167,34 +171,33 @@ class UserServiceImplTest {
     @Nested
     @DisplayName("UserService :: getUserByUsernameAndPassword")
     inner class GetUserByUsernameAndPasswordTest {
-
         @Test
         fun `should return current user for a valid pair of username and password`() {
             // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
-            val userId = UUID.randomUUID()
             val entity = mockk<UserEntity>()
+            val expectedAuthorities = emptyList<AuthEntity>()
+            val expectedAuthorityRefs = emptySet<AuthRef>()
 
-            every { entity.id } returns userId
             every { entity.username } returns request.username
             every { entity.password } returns request.password
-            every { entity.authorities } returns emptySet()
+            every { entity.authorities } returns expectedAuthorityRefs
             every { userRepository.findByUsername(any()) } returns entity
             every { passwordEncoder.matches(any(), any()) } returns true
+            every { authRepository.findAllById(any()) } returns expectedAuthorities
+            every { userMapper.mapToCurrentUser(any(), any()) } returns mockk()
 
             // When
             val user = userService.getUserByUsernameAndPassword(request)
 
             verify(exactly = 1) { userRepository.findByUsername(request.username) }
             verify(exactly = 1) { passwordEncoder.matches(request.password, request.password) }
-
-            confirmVerified(userRepository, passwordEncoder)
+            verify(exactly = 1) { authRepository.findAllById(expectedAuthorityRefs.map { it.authId }) }
+            verify(exactly = 1) { userMapper.mapToCurrentUser(entity, expectedAuthorities) }
 
             // Then
             assertThat(user)
                 .isNotNull()
-                .returns(userId, from { it.id })
-                .returns(listOf("ROLE_USER"), from { it.authorities })
         }
 
         @Test
@@ -208,8 +211,6 @@ class UserServiceImplTest {
             val result = catchThrowable { userService.getUserByUsernameAndPassword(request) }
 
             verify(exactly = 1) { userRepository.findByUsername(request.username) }
-
-            confirmVerified(userRepository, passwordEncoder)
 
             // Then
             assertThat(result)
@@ -237,8 +238,6 @@ class UserServiceImplTest {
             verify(exactly = 1) { userRepository.findByUsername(request.username) }
             verify(exactly = 1) { passwordEncoder.matches(request.password, request.password) }
 
-            confirmVerified(userRepository, passwordEncoder)
-
             // Then
             assertThat(result)
                 .isNotNull()
@@ -263,8 +262,9 @@ class UserServiceImplTest {
             )
 
             every { userRepository.existsByUsername(any()) } returns false
+            every { authRepository.findByName(any()) } returns mockk()
             every { passwordEncoder.encode(any()) } answers { firstArg() }
-            every { userMapper.mapToEntity(any()) } answers convertingDtoToUser
+            every { userMapper.mapToEntity(any(), any()) } answers convertingDtoToUser
             every { userRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
             every { eventPublisher.publishEvent(any<Any>()) } just runs
             every { userMapper.mapToResult(any()) } answers convertingUserToDto
@@ -278,7 +278,9 @@ class UserServiceImplTest {
                 .returns(expectedUsername, from { it.username })
 
             verify(exactly = 1) { userRepository.existsByUsername(any()) }
-            verify(exactly = 1) { userMapper.mapToEntity(any()) }
+            verify(exactly = 1) { authRepository.findByName(any()) }
+            verify(exactly = 1) { passwordEncoder.encode(any()) }
+            verify(exactly = 1) { userMapper.mapToEntity(any(), any()) }
             verify(exactly = 1) { userRepository.save(any()) }
             verify(exactly = 1) { eventPublisher.publishEvent(any<Any>()) }
             verify(exactly = 1) { userMapper.mapToResult(any()) }
@@ -297,17 +299,14 @@ class UserServiceImplTest {
             val expectedCondition = "${USER.Username} = ${input.username}"
             val expectedExceptionType = EntityDuplicateException::class.java
 
-            val username = slot<String>()
-
-            every { userRepository.existsByUsername(capture(username)) } returns true
+            every { userRepository.existsByUsername(any()) } returns true
 
             // When
             val result = catchThrowable { userService.createUser(input) }
 
+            verify(exactly = 1) { userRepository.existsByUsername(input.username) }
+
             // Then
-            assertThat(username)
-                .returns(true, from { it.isCaptured })
-                .returns(input.username, from { it.captured })
 
             assertThat(result)
                 .asInstanceOf(throwable(expectedExceptionType))
@@ -322,7 +321,6 @@ class UserServiceImplTest {
     @Nested
     @DisplayName("UserService :: updateUser")
     inner class UpdateUserTest {
-
         @Test
         fun `should save updated user state to repository when there are actual changes`() {
             // Given
@@ -332,7 +330,7 @@ class UserServiceImplTest {
                 password = "test-password",
             )
 
-            every { userRepository.findByIdOrNull(any()) } returns user
+            every { userRepository.findById(any()) } returns Optional.of(user)
             every { userRepository.save(any()) } answers { firstArg() }
             every { userMapper.mapToResult(any()) } answers convertingUserToDto
             every { passwordEncoder.encode(any()) } answers { firstArg() }
@@ -346,7 +344,10 @@ class UserServiceImplTest {
             )
 
             // Then
+            verify(exactly = 1) { userRepository.findById(any()) }
             verify(exactly = 1) { userRepository.save(any()) }
+            verify(exactly = 1) { userMapper.mapToResult(any()) }
+            verify(exactly = 1) { passwordEncoder.encode(any()) }
         }
 
         @Test
@@ -358,8 +359,7 @@ class UserServiceImplTest {
                 password = "test-password",
             )
 
-            every { userRepository.findByIdOrNull(any()) } returns user
-            every { userRepository.save(any()) } answers { firstArg() }
+            every { userRepository.findById(any()) } returns Optional.of(user)
             every { userMapper.mapToResult(any()) } answers convertingUserToDto
             every { passwordEncoder.encode(any()) } answers { firstArg() }
 
@@ -372,14 +372,15 @@ class UserServiceImplTest {
             )
 
             // Then
-            verify(exactly = 0) { userRepository.save(any()) }
+            verify(exactly = 1) { userRepository.findById(any()) }
+            verify(exactly = 1) { userMapper.mapToResult(any()) }
+            verify(exactly = 1) { passwordEncoder.encode(any()) }
         }
     }
 
     @Nested
     @DisplayName("UserService :: deleteUser")
     inner class DeleteUserTest {
-
         @Test
         fun `should return expected result deleting user`() {
             // Given
@@ -396,8 +397,6 @@ class UserServiceImplTest {
             verify(exactly = 1) { userRepository.findByIdOrNull(any()) }
             verify(exactly = 1) { userRepository.delete(any()) }
             verify(exactly = 1) { eventPublisher.publishEvent(any<Any>()) }
-
-            confirmVerified(userMapper, userRepository, eventPublisher, passwordEncoder)
         }
     }
 
