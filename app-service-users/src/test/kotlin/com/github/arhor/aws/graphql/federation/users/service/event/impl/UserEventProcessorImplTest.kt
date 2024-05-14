@@ -42,7 +42,7 @@ class UserEventProcessorImplTest {
     @DisplayName("UserEventProcessor :: processUserCreatedEvents")
     inner class ProcessUserCreatedEventsTest {
         @Test
-        fun `should publish UserEvent#Created using OutboxEventPublisher instance`() {
+        fun `should publish UserEvent#Created using UserEventPublisher instance`() {
             // Given
             val userId = UUID.randomUUID()
             val eventTypeCode = UserEvent.Type.USER_EVENT_CREATED.code
@@ -74,7 +74,7 @@ class UserEventProcessorImplTest {
     @DisplayName("UserEventProcessor :: processUserDeletedEvents")
     inner class ProcessUserDeletedEventsTest {
         @Test
-        fun `should publish UserEvent#Deleted using OutboxEventPublisher instance`() {
+        fun `should publish UserEvent#Deleted using UserEventPublisher instance`() {
             // Given
             val userId = UUID.randomUUID()
             val eventTypeCode = UserEvent.Type.USER_EVENT_DELETED.code

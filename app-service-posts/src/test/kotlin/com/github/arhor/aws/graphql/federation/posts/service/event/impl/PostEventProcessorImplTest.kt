@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.posts.service.event.impl
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
@@ -43,7 +42,7 @@ class PostEventProcessorImplTest {
     @DisplayName("PostEventProcessor :: processPostCreatedEvents")
     inner class ProcessPostCreatedEventsTest {
         @Test
-        fun `should publish PostEvent#Created using OutboxEventPublisher instance`() {
+        fun `should publish PostEvent#Created using PostEventPublisher instance`() {
             // Given
             val postId = UUID.randomUUID()
             val eventTypeCode = PostEvent.Type.POST_EVENT_CREATED.code
@@ -58,7 +57,7 @@ class PostEventProcessorImplTest {
             val event = PostEvent.Created(id = postId)
 
             every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
-            every { objectMapper.convertValue(any(), any<TypeReference<PostEvent.Created>>()) } returns event
+            every { objectMapper.convertValue(any(), any<Class<PostEvent>>()) } returns event
             every { postEventPublisher.publish(any(), any()) } just runs
 
             // When
@@ -66,7 +65,7 @@ class PostEventProcessorImplTest {
 
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
-            verify(exactly = 1) { objectMapper.convertValue(eventData, any<TypeReference<PostEvent.Created>>()) }
+            verify(exactly = 1) { objectMapper.convertValue(eventData, PostEvent.Created::class.java) }
             verify(exactly = 1) { postEventPublisher.publish(event, outboxMessage.traceId) }
         }
     }
@@ -75,7 +74,7 @@ class PostEventProcessorImplTest {
     @DisplayName("PostEventProcessor :: processPostDeletedEvents")
     inner class ProcessPostDeletedEventsTest {
         @Test
-        fun `should publish PostEvent#Deleted using OutboxEventPublisher instance`() {
+        fun `should publish PostEvent#Deleted using PostEventPublisher instance`() {
             // Given
             val postId = UUID.randomUUID()
             val eventTypeCode = PostEvent.Type.POST_EVENT_DELETED.code
@@ -90,7 +89,7 @@ class PostEventProcessorImplTest {
             val event = PostEvent.Deleted(id = postId)
 
             every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
-            every { objectMapper.convertValue(any(), any<TypeReference<PostEvent.Deleted>>()) } returns event
+            every { objectMapper.convertValue(any(), any<Class<PostEvent>>()) } returns event
             every { postEventPublisher.publish(any(), any()) } just runs
 
             // When
@@ -98,7 +97,7 @@ class PostEventProcessorImplTest {
 
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
-            verify(exactly = 1) { objectMapper.convertValue(eventData, any<TypeReference<PostEvent.Deleted>>()) }
+            verify(exactly = 1) { objectMapper.convertValue(eventData, PostEvent.Deleted::class.java) }
             verify(exactly = 1) { postEventPublisher.publish(event, outboxMessage.traceId) }
         }
     }
