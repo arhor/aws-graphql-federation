@@ -13,7 +13,7 @@ class UserRepositoryTest : RepositoryTestBase() {
     private lateinit var userRepository: UserRepository
 
     @Test
-    fun `should return true for the email of an existing user`() {
+    fun `should return true for the username of an existing user`() {
         // Given
         val createdUser = userRepository.createAndSaveTestUser()
 

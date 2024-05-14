@@ -1,7 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Create tables
-
 CREATE TABLE IF NOT EXISTS "users"
 (
     "id"                UUID          NOT NULL PRIMARY KEY,
@@ -40,6 +38,4 @@ CREATE TABLE IF NOT EXISTS "users_has_authorities"
             ON DELETE CASCADE
 ) WITH (OIDS = FALSE);
 
--- Create initial data
-
-INSERT INTO "authorities" ("id", "name") VALUES (gen_random_uuid(), "ROLE_USER");
+INSERT INTO "authorities" ("id", "name") VALUES (gen_random_uuid(), 'ROLE_USER');
