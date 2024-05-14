@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(
@@ -65,6 +66,10 @@ class FederatedEntityFetcherTest {
         );
 
         // Then
+        then(userService)
+            .should()
+            .findInternalUserRepresentation(userId);
+
         assertThat(result)
             .isNotNull()
             .isEqualTo(expectedUser);
@@ -95,6 +100,10 @@ class FederatedEntityFetcherTest {
         );
 
         // Then
+        then(postService)
+            .should()
+            .findInternalPostRepresentation(postId);
+
         assertThat(result)
             .isNotNull()
             .isEqualTo(expectedPost);

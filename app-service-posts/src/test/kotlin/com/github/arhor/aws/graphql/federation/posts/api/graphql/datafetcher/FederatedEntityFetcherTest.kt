@@ -1,12 +1,15 @@
-package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher;
+package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.posts.service.UserService
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -21,6 +24,9 @@ import java.util.UUID
 )
 class FederatedEntityFetcherTest {
 
+    @MockkBean
+    private lateinit var userService: UserService
+
     @Autowired
     private lateinit var dgsQueryExecutor: DgsQueryExecutor
 
@@ -28,6 +34,9 @@ class FederatedEntityFetcherTest {
     fun `should create new user representation for the given id`() {
         // Given
         val userId = UUID.randomUUID()
+        val expectedUser = User(id = userId)
+
+        every { userService.findInternalUserRepresentation(any()) } returns expectedUser
 
         // When
         val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -45,7 +54,10 @@ class FederatedEntityFetcherTest {
         )
 
         // Then
+        verify(exactly = 1) { userService.findInternalUserRepresentation(userId) }
+
         assertThat(result)
-            .returns(userId, from(User::id));
+            .isNotNull()
+            .isEqualTo(expectedUser)
     }
 }
