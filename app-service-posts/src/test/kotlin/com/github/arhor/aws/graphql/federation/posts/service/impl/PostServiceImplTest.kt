@@ -70,13 +70,13 @@ class PostServiceImplTest {
             val expectedEntity = PostEntity(
                 id = UUID.randomUUID(),
                 userId = UUID.randomUUID(),
-                header = "test-header",
+                title = "test-title",
                 content = "test-content",
             )
             val expectedPost = Post(
                 id = expectedEntity.id!!,
                 userId = expectedEntity.userId,
-                header = expectedEntity.header,
+                title = expectedEntity.title,
                 content = expectedEntity.content,
             )
 
@@ -133,7 +133,7 @@ class PostServiceImplTest {
                 PostProjection(
                     id = UUID.randomUUID(),
                     userId = UUID.randomUUID(),
-                    header = "test-header",
+                    title = "test-title",
                     content = "test-content",
                     options = PostEntity.Options(),
                 )
@@ -142,7 +142,7 @@ class PostServiceImplTest {
                 Post(
                     id = it.id,
                     userId = it.userId,
-                    header = it.header,
+                    title = it.title,
                     content = it.content,
                 )
             }

@@ -6,7 +6,7 @@ import java.util.UUID
 data class PostProjection(
     val id: UUID,
     val userId: UUID?,
-    val header: String,
+    val title: String,
     val content: String,
     val options: PostEntity.Options,
 )

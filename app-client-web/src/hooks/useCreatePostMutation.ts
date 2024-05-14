@@ -8,7 +8,7 @@ const CREATE_POST = gql`
         createPost(input: $input) {
             id
             userId
-            header
+            title
             content
             options
             tags

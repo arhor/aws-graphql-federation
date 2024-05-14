@@ -23,7 +23,7 @@ input PostsLookupInput {
 
 input CreatePostInput {
     userId: UUID!
-    header: String!
+    title: String!
     content: String!
     options: [Option!]
     tags: [String!]
@@ -31,7 +31,7 @@ input CreatePostInput {
 
 input UpdatePostInput {
     id: UUID!
-    header: String
+    title: String
     content: String
     options: [Option!]
     tags: [String!]
@@ -40,7 +40,7 @@ input UpdatePostInput {
 type Post @key(fields: "id") {
     id: UUID!
     userId: UUID
-    header: String!
+    title: String!
     content: String!
     options: [Option!]
     tags: [String!]

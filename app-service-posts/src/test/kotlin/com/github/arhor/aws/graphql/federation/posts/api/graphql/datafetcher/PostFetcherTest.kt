@@ -55,7 +55,7 @@ class PostFetcherTest {
                     QUERY.Post to mapOf(
                         POST.Id to expectedId.toString(),
                         POST.UserId to expectedUserId.toString(),
-                        POST.Header to "test-header",
+                        POST.Title to "test-title",
                         POST.Content to "test-content",
                         POST.Options to listOf(Option.NSFW.name),
                     )
@@ -65,7 +65,7 @@ class PostFetcherTest {
                 Post(
                     id = firstArg(),
                     userId = expectedUserId,
-                    header = "test-header",
+                    title = "test-title",
                     content = "test-content",
                     options = listOf(Option.NSFW),
                 )
@@ -78,7 +78,7 @@ class PostFetcherTest {
                     post(id: ${'$'}id) {
                         id
                         userId
-                        header
+                        title
                         content
                         options
                     }
@@ -114,7 +114,7 @@ class PostFetcherTest {
                     post(id: ${'$'}id) {
                         id
                         userId
-                        header
+                        title
                         content
                         options
                     }

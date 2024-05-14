@@ -43,7 +43,7 @@ class PostMapperImplTest {
             // Given
             val createPostInput = CreatePostInput(
                 userId = UUID.randomUUID(),
-                header = "test-header",
+                title = "test-title",
                 content = "test-content",
             )
             val tags = emptySet<TagEntity>()
@@ -64,7 +64,7 @@ class PostMapperImplTest {
             assertThat(entity)
                 .isNotNull()
                 .returns(createPostInput.userId, from { it.userId })
-                .returns(createPostInput.header, from { it.header })
+                .returns(createPostInput.title, from { it.title })
                 .returns(createPostInput.content, from { it.content })
                 .returns(expectedOptions, from { it.options })
                 .returns(expectedTagRefs, from { it.tags })
@@ -80,7 +80,7 @@ class PostMapperImplTest {
             val entity = PostEntity(
                 id = UUID.randomUUID(),
                 userId = UUID.randomUUID(),
-                header = "test-header",
+                title = "test-title",
                 content = "test-content",
             )
             val expectedOptions = emptyList<Option>()
@@ -97,7 +97,7 @@ class PostMapperImplTest {
                 .isNotNull()
                 .returns(entity.id, from { it.id })
                 .returns(entity.userId, from { it.userId })
-                .returns(entity.header, from { it.header })
+                .returns(entity.title, from { it.title })
                 .returns(entity.content, from { it.content })
                 .returns(expectedOptions, from { it.options })
         }
@@ -108,7 +108,7 @@ class PostMapperImplTest {
             val projection = PostProjection(
                 id = UUID.randomUUID(),
                 userId = UUID.randomUUID(),
-                header = "test-header",
+                title = "test-title",
                 content = "test-content",
                 options = PostEntity.Options()
             )
@@ -126,7 +126,7 @@ class PostMapperImplTest {
                 .isNotNull()
                 .returns(projection.id, from { it.id })
                 .returns(projection.userId, from { it.userId })
-                .returns(projection.header, from { it.header })
+                .returns(projection.title, from { it.title })
                 .returns(projection.content, from { it.content })
                 .returns(expectedOptions, from { it.options })
         }

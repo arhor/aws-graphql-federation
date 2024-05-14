@@ -83,7 +83,7 @@ class PostServiceImpl(
             operation = Operation.UPDATE,
         )
         val currentState = initialState.copy(
-            header = input.header ?: initialState.header,
+            title = input.title ?: initialState.title,
             content = input.content ?: initialState.content,
             options = input.options?.let(optionsMapper::mapFromList) ?: initialState.options,
             tags = input.tags?.let(::materialize)?.let(tagMapper::mapToRefs) ?: initialState.tags

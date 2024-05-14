@@ -47,7 +47,7 @@ class PostBatchLoaderTest {
     fun `should return expected result calling getPostsByUserIds exactly once with expected keys`() {
         // Given
         val keys = (1..3).map { UUID.randomUUID() }.toSet()
-        val expectedPayload = keys.associateWith { listOf(Post(id = it, header = "test", content = "test")) }
+        val expectedPayload = keys.associateWith { listOf(Post(id = it, title = "test", content = "test")) }
 
         every { postService.getPostsByUserIds(any()) } returns expectedPayload
 

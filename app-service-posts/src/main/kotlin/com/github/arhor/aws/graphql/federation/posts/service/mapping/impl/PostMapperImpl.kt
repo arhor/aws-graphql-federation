@@ -19,7 +19,7 @@ class PostMapperImpl(
     override fun mapToEntity(input: CreatePostInput, tags: Set<TagEntity>): PostEntity {
         return PostEntity(
             userId = input.userId,
-            header = input.header,
+            title = input.title,
             content = input.content,
             options = optionsMapper.mapFromList(input.options),
             tags = tagMapper.mapToRefs(tags)
@@ -30,7 +30,7 @@ class PostMapperImpl(
         return Post(
             id = entity.id!!,
             userId = entity.userId,
-            header = entity.header,
+            title = entity.title,
             content = entity.content,
             options = optionsMapper.mapIntoList(entity.options),
         )
@@ -40,7 +40,7 @@ class PostMapperImpl(
         return Post(
             id = projection.id,
             userId = projection.userId,
-            header = projection.header,
+            title = projection.title,
             content = projection.content,
             options = optionsMapper.mapIntoList(projection.options),
         )

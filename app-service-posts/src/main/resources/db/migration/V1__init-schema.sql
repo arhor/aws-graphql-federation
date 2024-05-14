@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "posts"
 (
     "id"                UUID         NOT NULL PRIMARY KEY,
     "user_id"           UUID         NULL,
-    "header"            VARCHAR(512) NOT NULL,
+    "title"             VARCHAR(512) NOT NULL,
     "content"           TEXT         NOT NULL,
     "options"           BIGINT       NOT NULL,
     "version"           BIGINT       NOT NULL,

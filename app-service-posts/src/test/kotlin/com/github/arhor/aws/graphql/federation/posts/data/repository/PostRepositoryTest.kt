@@ -132,7 +132,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         (1..num).map {
             PostEntity(
                 userId = user.id,
-                header = "header-$it",
+                title = "title-$it",
                 content = "content-$it",
             )
         }
@@ -141,7 +141,7 @@ class PostRepositoryTest : RepositoryTestBase() {
     private fun PostEntity.toProjection() = PostProjection(
         id = id!!,
         userId = userId,
-        header = header,
+        title = title,
         content = content,
         options = options,
     )
