@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
+import static com.github.arhor.aws.graphql.federation.tracing.Utils.withExtendedMDC;
 
 @Trace
 @Component
@@ -25,7 +26,13 @@ public class UserEventListener {
         @Payload final UserEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId
     ) {
-        userService.createInternalUserRepresentation(event.getId(), traceId);
+        withExtendedMDC(
+            traceId,
+            () -> userService.createInternalUserRepresentation(
+                event.getId(),
+                traceId
+            )
+        );
     }
 
     @SqsListener("${app-props.aws.sqs.user-deleted-events}")
@@ -33,6 +40,12 @@ public class UserEventListener {
         @Payload final UserEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId
     ) {
-        userService.deleteInternalUserRepresentation(event.getId(), traceId);
+        withExtendedMDC(
+            traceId,
+            () -> userService.deleteInternalUserRepresentation(
+                event.getId(),
+                traceId
+            )
+        );
     }
 }

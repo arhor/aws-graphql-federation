@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
+import static com.github.arhor.aws.graphql.federation.tracing.Utils.withExtendedMDC;
 
 @Trace
 @Component
@@ -25,7 +26,13 @@ public class PostEventListener {
         @Payload final PostEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId
     ) {
-        postService.createInternalPostRepresentation(event.getId(), traceId);
+        withExtendedMDC(
+            traceId,
+            () -> postService.createInternalPostRepresentation(
+                event.getId(),
+                traceId
+            )
+        );
     }
 
     @SqsListener("${app-props.aws.sqs.post-deleted-events}")
@@ -33,6 +40,12 @@ public class PostEventListener {
         @Payload final PostEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId
     ) {
-        postService.deleteInternalPostRepresentation(event.getId(), traceId);
+        withExtendedMDC(
+            traceId,
+            () -> postService.deleteInternalPostRepresentation(
+                event.getId(),
+                traceId
+            )
+        );
     }
 }
