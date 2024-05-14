@@ -8,6 +8,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
@@ -17,6 +18,7 @@ import com.netflix.graphql.dgs.InputArgument
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
+@Trace
 @DgsComponent
 class PostFetcher(
     private val postService: PostService,

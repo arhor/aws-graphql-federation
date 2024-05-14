@@ -3,12 +3,14 @@ package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.TagBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
+@Trace
 @DgsComponent
 class TagFetcher {
 

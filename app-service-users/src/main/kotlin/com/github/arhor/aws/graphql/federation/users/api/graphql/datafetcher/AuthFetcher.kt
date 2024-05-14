@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher
 
+import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.api.graphql.dataloader.AuthBatchLoader
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
@@ -9,6 +10,7 @@ import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
+@Trace
 @DgsComponent
 class AuthFetcher {
 

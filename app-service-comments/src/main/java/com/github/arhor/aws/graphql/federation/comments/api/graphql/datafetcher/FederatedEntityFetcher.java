@@ -6,6 +6,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.PostService;
 import com.github.arhor.aws.graphql.federation.comments.service.UserService;
+import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsEntityFetcher;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import static com.github.arhor.aws.graphql.federation.common.MapExtKt.getUuid;
 
+@Trace
 @DgsComponent
 @RequiredArgsConstructor
 public class FederatedEntityFetcher {
