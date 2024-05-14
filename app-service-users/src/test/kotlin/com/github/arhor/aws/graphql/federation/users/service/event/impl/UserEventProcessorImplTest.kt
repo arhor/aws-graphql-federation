@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.users.service.event.impl
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
@@ -58,7 +57,7 @@ class UserEventProcessorImplTest {
             val event = UserEvent.Created(id = userId)
 
             every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxMessages
-            every { objectMapper.convertValue(any(), any<TypeReference<UserEvent.Created>>()) } returns event
+            every { objectMapper.convertValue(any(), any<Class<UserEvent>>()) } returns event
             every { userEventPublisher.publish(any(), any()) } just runs
 
             // When
@@ -66,7 +65,7 @@ class UserEventProcessorImplTest {
 
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
-            verify(exactly = 1) { objectMapper.convertValue(eventData, any<TypeReference<UserEvent.Created>>()) }
+            verify(exactly = 1) { objectMapper.convertValue(eventData, UserEvent.Created::class.java) }
             verify(exactly = 1) { userEventPublisher.publish(event, outboxMessage.traceId) }
         }
     }
@@ -90,7 +89,7 @@ class UserEventProcessorImplTest {
             val event = UserEvent.Deleted(id = userId)
 
             every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxMessages
-            every { objectMapper.convertValue(any(), any<TypeReference<UserEvent.Deleted>>()) } returns event
+            every { objectMapper.convertValue(any(), any<Class<UserEvent>>()) } returns event
             every { userEventPublisher.publish(any(), any()) } just runs
 
             // When
@@ -98,7 +97,7 @@ class UserEventProcessorImplTest {
 
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
-            verify(exactly = 1) { objectMapper.convertValue(eventData, any<TypeReference<UserEvent.Deleted>>()) }
+            verify(exactly = 1) { objectMapper.convertValue(eventData, UserEvent.Deleted::class.java) }
             verify(exactly = 1) { userEventPublisher.publish(event, outboxMessage.traceId) }
         }
     }
