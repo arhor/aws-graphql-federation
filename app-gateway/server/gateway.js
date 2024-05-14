@@ -11,7 +11,7 @@ export function createGateway(server) {
                 { name: 'auth', url: 'auth' },
                 { url: `${usersServiceUrl}/graphql`, name: 'users' },
                 { url: `${postsServiceUrl}/graphql`, name: 'posts' },
-                { url: `${commsServiceUrl}/graphql`, name: 'comms' },
+                { url: `${commsServiceUrl}/graphql`, name: 'comments' },
             ],
         }),
         buildService({ url, name }) {
