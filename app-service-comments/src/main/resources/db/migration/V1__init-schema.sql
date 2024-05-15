@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS "user_representations"
 
 CREATE TABLE IF NOT EXISTS "post_representations"
 (
-    "id" UUID NOT NULL PRIMARY KEY
+    "id"                UUID    NOT NULL PRIMARY KEY,
+    "comments_disabled" BOOLEAN NOT NULL
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "comments"

@@ -16,7 +16,6 @@ import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.comments.util.Caches.IDEMPOTENT_ID_SET;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -46,25 +45,36 @@ class PostRepresentationServiceImplTest {
         @Test
         void should_return_expected_post_when_it_exists_by_id() {
             // Given
-            final var postId = UUID.randomUUID();
+            final var postRepresentation =
+                PostRepresentation.builder()
+                    .id(UUID.randomUUID())
+                    .commentsDisabled(false)
+                    .build();
+
+            final var expectedPost =
+                Post.newBuilder()
+                    .id(postRepresentation.id())
+                    .commentsDisabled(postRepresentation.commentsDisabled())
+                    .commentsOperable(true)
+                    .build();
 
             when(postRepresentationRepository.findById(any()))
-                .thenReturn(Optional.of(new PostRepresentation(postId)));
+                .thenReturn(Optional.of(postRepresentation));
 
             // When
-            final var result = postService.findPostRepresentation(postId);
+            final var result = postService.findPostRepresentation(postRepresentation.id());
 
             // Then
             then(postRepresentationRepository)
                 .should()
-                .findById(postId);
+                .findById(postRepresentation.id());
 
             then(postRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
                 .isNotNull()
-                .returns(postId, from(Post::getId));
+                .isEqualTo(expectedPost);
         }
 
         @Test
@@ -103,18 +113,22 @@ class PostRepresentationServiceImplTest {
         void should_call_postRepository_save_only_once_with_the_same_idempotencyKey() {
             // Given
             final var idempotencyKey = UUID.randomUUID();
-            final var postId = UUID.randomUUID();
-            final var expectedPost = new PostRepresentation(postId);
+            final var expectedPostRepresentation =
+                PostRepresentation.builder()
+                    .id(UUID.randomUUID())
+                    .commentsDisabled(false)
+                    .shouldBePersisted(true)
+                    .build();
 
             // When
             for (int i = 0; i < 3; i++) {
-                postService.createPostRepresentation(postId, idempotencyKey);
+                postService.createPostRepresentation(expectedPostRepresentation.id(), idempotencyKey);
             }
 
             // Then
             then(postRepresentationRepository)
                 .should()
-                .save(expectedPost);
+                .save(expectedPostRepresentation);
 
             then(postRepresentationRepository)
                 .shouldHaveNoMoreInteractions();

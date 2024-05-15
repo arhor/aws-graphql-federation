@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
+import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -17,8 +19,19 @@ import java.util.UUID;
 public record PostRepresentation(
     @Id
     @Column("id")
-    UUID id
+    UUID id,
+
+    @Column("comments_disabled")
+    boolean commentsDisabled,
+
+    @Transient
+    boolean shouldBePersisted
 ) implements Persistable<UUID> {
+
+    @PersistenceCreator
+    public PostRepresentation(UUID id, boolean commentsDisabled) {
+        this(id, commentsDisabled, false);
+    }
 
     @Override
     public UUID getId() {
@@ -27,6 +40,6 @@ public record PostRepresentation(
 
     @Override
     public boolean isNew() {
-        return true;
+        return shouldBePersisted;
     }
 }

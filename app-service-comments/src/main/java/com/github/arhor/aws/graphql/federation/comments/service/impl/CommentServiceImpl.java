@@ -2,7 +2,9 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
@@ -39,18 +41,19 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
+    private final PostRepresentationRepository postRepresentationRepository;
 
-    private GrouppingLoader<CommentEntity, Comment, UUID> usersCommentsLoader;
-    private GrouppingLoader<CommentEntity, Comment, UUID> postsCommentsLoader;
+    private GroupingLoader<CommentEntity, Comment, UUID> usersCommentsLoader;
+    private GroupingLoader<CommentEntity, Comment, UUID> postsCommentsLoader;
 
     @PostConstruct
     public void init() {
-        usersCommentsLoader = new GrouppingLoader<>(
+        usersCommentsLoader = new GroupingLoader<>(
             commentRepository::findAllByUserIdIn,
             commentMapper::mapToDto,
             Comment::getUserId
         );
-        postsCommentsLoader = new GrouppingLoader<>(
+        postsCommentsLoader = new GroupingLoader<>(
             commentRepository::findAllByPostIdIn,
             commentMapper::mapToDto,
             Comment::getPostId
@@ -72,6 +75,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CreateCommentResult createComment(final CreateCommentInput input) {
+        ensureCommentsEnabled(input.getPostId());
+
         var entity = commentMapper.mapToEntity(input);
         var create = commentRepository.save(entity);
         var result = commentMapper.mapToDto(create);
@@ -91,6 +96,8 @@ public class CommentServiceImpl implements CommentService {
                 COMMENT.Id + " = " + commentId,
                 Operation.UPDATE
             ));
+
+        ensureCommentsEnabled(initialState.postId());
 
         final var currentStateBuilder = initialState.toBuilder();
         {
@@ -124,6 +131,21 @@ public class CommentServiceImpl implements CommentService {
         return new DeleteCommentResult(result);
     }
 
+    private void ensureCommentsEnabled(final UUID postId) {
+        final var post =
+            postRepresentationRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        POST.TYPE_NAME,
+                        POST.Id + " = " + postId,
+                        Operation.CREATE
+                    )
+                );
+
+        if (post.commentsDisabled()) {
+            throw new IllegalStateException("Comments disabled for the post: " + postId);
+        }
+    }
+
     /**
      * @param dataSource function that will be used to load comments in case ids collection is not empty
      * @param dataMapper function that converts entities of type T to type D
@@ -132,7 +154,7 @@ public class CommentServiceImpl implements CommentService {
      * @param <D>        type of output objects
      * @param <K>        type of key
      */
-    private record GrouppingLoader<T, D, K>(
+    private record GroupingLoader<T, D, K>(
         Function<Collection<K>, Stream<T>> dataSource,
         Function<T, D> dataMapper,
         Function<D, K> classifier

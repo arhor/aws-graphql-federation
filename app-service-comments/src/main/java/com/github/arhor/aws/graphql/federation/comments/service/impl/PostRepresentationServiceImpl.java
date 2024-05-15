@@ -34,15 +34,30 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     @Override
     public Post findPostRepresentation(final UUID postId) {
         return postRepresentationRepository.findById(postId)
-            .map((post) -> Post.newBuilder().id(post.id()).commentsOperable(true).build())
-            .orElseGet(() -> Post.newBuilder().id(postId).commentsOperable(false).build());
+            .map((post) ->
+                Post.newBuilder()
+                    .id(post.id())
+                    .commentsOperable(true)
+                    .commentsDisabled(post.commentsDisabled())
+                    .build()
+            )
+            .orElseGet(() ->
+                Post.newBuilder()
+                    .id(postId)
+                    .commentsOperable(false)
+                    .build()
+            );
     }
 
     @Override
     public void createPostRepresentation(final UUID postId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () ->
             postRepresentationRepository.save(
-                new PostRepresentation(postId)
+                PostRepresentation.builder()
+                    .id(postId)
+                    .commentsDisabled(false)
+                    .shouldBePersisted(true)
+                    .build()
             )
         );
     }

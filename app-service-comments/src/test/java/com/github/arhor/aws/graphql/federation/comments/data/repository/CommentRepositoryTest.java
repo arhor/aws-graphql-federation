@@ -152,6 +152,7 @@ public class CommentRepositoryTest {
         return postRepresentationRepository.save(
             PostRepresentation.builder()
                 .id(UUID.randomUUID())
+                .shouldBePersisted(true)
                 .build()
         );
     }
