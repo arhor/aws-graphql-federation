@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.api.listener;
 
-import com.github.arhor.aws.graphql.federation.comments.service.PostService;
+import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import io.awspring.cloud.sqs.annotation.SqsListener;
@@ -19,7 +19,7 @@ import static com.github.arhor.aws.graphql.federation.tracing.Utils.withExtended
 @RequiredArgsConstructor
 public class PostEventListener {
 
-    private final PostService postService;
+    private final PostRepresentationService postRepresentationService;
 
     @SqsListener("${app-props.aws.sqs.post-created-events}")
     public void handlePostCreatedEvent(
@@ -28,7 +28,7 @@ public class PostEventListener {
     ) {
         withExtendedMDC(
             traceId,
-            () -> postService.createInternalPostRepresentation(
+            () -> postRepresentationService.createPostRepresentation(
                 event.getId(),
                 traceId
             )
@@ -42,7 +42,7 @@ public class PostEventListener {
     ) {
         withExtendedMDC(
             traceId,
-            () -> postService.deleteInternalPostRepresentation(
+            () -> postRepresentationService.deletePostRepresentation(
                 event.getId(),
                 traceId
             )

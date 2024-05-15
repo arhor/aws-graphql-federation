@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
 import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
@@ -21,11 +20,9 @@ import java.util.UUID;
 public record CommentEntity(
     @Id
     @Column("id")
-    @Nullable
     UUID id,
 
     @Column("user_id")
-    @Nullable
     UUID userId,
 
     @Column("post_id")
@@ -36,17 +33,14 @@ public record CommentEntity(
 
     @Version
     @Column("version")
-    @Nullable
     Long version,
 
     @CreatedDate
     @Column("created_date_time")
-    @Nullable
     LocalDateTime createdDateTime,
 
     @LastModifiedDate
     @Column("updated_date_time")
-    @Nullable
     LocalDateTime updatedDateTime
 ) {
 }

@@ -2,8 +2,8 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.config.ConfigureDatabase;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentationEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.callback.CommentEntityCallback;
 import com.github.arhor.aws.graphql.federation.comments.test.ConfigureTestObjectMapper;
 import com.github.arhor.aws.graphql.federation.spring.core.ConfigureCoreApplicationComponents;
@@ -46,10 +46,10 @@ public class CommentRepositoryTest {
     private CommentRepository commentRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepresentationRepository userRepresentationRepository;
 
     @Autowired
-    private PostRepository postRepository;
+    private PostRepresentationRepository postRepresentationRepository;
 
     @DynamicPropertySource
     public static void registerDynamicProperties(final DynamicPropertyRegistry registry) {
@@ -140,23 +140,23 @@ public class CommentRepositoryTest {
             .doesNotContainAnyElementsOf(post3Comments);
     }
 
-    private UserEntity createUser() {
-        return userRepository.save(
-            UserEntity.builder()
+    private UserRepresentationEntity createUser() {
+        return userRepresentationRepository.save(
+            UserRepresentationEntity.builder()
                 .id(UUID.randomUUID())
                 .build()
         );
     }
 
-    private PostEntity createPost() {
-        return postRepository.save(
-            PostEntity.builder()
+    private PostRepresentationEntity createPost() {
+        return postRepresentationRepository.save(
+            PostRepresentationEntity.builder()
                 .id(UUID.randomUUID())
                 .build()
         );
     }
 
-    private CommentEntity createComment(final UserEntity user, final PostEntity post, final int num) {
+    private CommentEntity createComment(final UserRepresentationEntity user, final PostRepresentationEntity post, final int num) {
         return commentRepository.save(
             CommentEntity.builder()
                 .userId(user.id())

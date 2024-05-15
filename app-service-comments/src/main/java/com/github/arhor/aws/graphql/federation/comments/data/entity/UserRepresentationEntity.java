@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
 import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
 import org.springframework.data.domain.Persistable;
@@ -11,14 +10,13 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
-@Table("posts")
+@Table("user_representations")
 @Immutable
 @Builder(toBuilder = true)
 @FieldNameConstants(asEnum = true)
-public record PostEntity(
+public record UserRepresentationEntity(
     @Id
     @Column("id")
-    @Nullable
     UUID id
 ) implements Persistable<UUID> {
 

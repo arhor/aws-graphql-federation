@@ -1,10 +1,10 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
-import com.github.arhor.aws.graphql.federation.comments.service.PostService;
+import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
@@ -22,10 +22,10 @@ import static com.github.arhor.aws.graphql.federation.comments.util.CacheManager
 @Trace
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService {
+public class PostRepresentationServiceImpl implements PostRepresentationService {
 
     private final CacheManager cacheManager;
-    private final PostRepository postRepository;
+    private final PostRepresentationRepository postRepresentationRepository;
 
     private Cache cache;
 
@@ -35,8 +35,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post findInternalPostRepresentation(final UUID postId) {
-        return postRepository.findById(postId)
+    public Post findPostRepresentation(final UUID postId) {
+        return postRepresentationRepository.findById(postId)
             .map(this::mapEntityToPost)
             .orElseThrow(() -> new EntityNotFoundException(
                 POST.TYPE_NAME,
@@ -46,23 +46,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void createInternalPostRepresentation(final UUID postId, final UUID idempotencyKey) {
+    public void createPostRepresentation(final UUID postId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () ->
-            postRepository.save(
-                new PostEntity(postId)
+            postRepresentationRepository.save(
+                new PostRepresentationEntity(postId)
             )
         );
     }
 
     @Override
-    public void deleteInternalPostRepresentation(final UUID postId, final UUID idempotencyKey) {
+    public void deletePostRepresentation(final UUID postId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () -> {
-            postRepository.deleteById(postId);
+            postRepresentationRepository.deleteById(postId);
             return null;
         });
     }
 
-    private Post mapEntityToPost(final PostEntity entity) {
+    private Post mapEntityToPost(final PostRepresentationEntity entity) {
         return Post.newBuilder()
             .id(entity.id())
             .build();

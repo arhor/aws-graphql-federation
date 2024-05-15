@@ -1,9 +1,9 @@
-CREATE TABLE IF NOT EXISTS "users"
+CREATE TABLE IF NOT EXISTS "user_representations"
 (
     "id" UUID NOT NULL PRIMARY KEY
 ) WITH (OIDS = FALSE);
 
-CREATE TABLE IF NOT EXISTS "posts"
+CREATE TABLE IF NOT EXISTS "post_representations"
 (
     "id" UUID NOT NULL PRIMARY KEY
 ) WITH (OIDS = FALSE);
@@ -18,15 +18,15 @@ CREATE TABLE IF NOT EXISTS "comments"
     "created_date_time" TIMESTAMP     NOT NULL,
     "updated_date_time" TIMESTAMP     NULL,
 
-    CONSTRAINT "FK__comments__users"
+    CONSTRAINT "FK__comments__user_representations"
         FOREIGN KEY ("user_id")
-            REFERENCES "users" ("id")
+            REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE SET NULL,
 
-    CONSTRAINT "FK__comments__posts"
+    CONSTRAINT "FK__comments__post_representations"
         FOREIGN KEY ("post_id")
-            REFERENCES "posts" ("id")
+            REFERENCES "post_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
 ) WITH (OIDS = FALSE);

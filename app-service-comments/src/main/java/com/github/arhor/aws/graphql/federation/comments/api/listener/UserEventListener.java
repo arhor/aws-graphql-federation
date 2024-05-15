@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.api.listener;
 
-import com.github.arhor.aws.graphql.federation.comments.service.UserService;
+import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import io.awspring.cloud.sqs.annotation.SqsListener;
@@ -19,7 +19,7 @@ import static com.github.arhor.aws.graphql.federation.tracing.Utils.withExtended
 @RequiredArgsConstructor
 public class UserEventListener {
 
-    private final UserService userService;
+    private final UserRepresentationService userRepresentationService;
 
     @SqsListener("${app-props.aws.sqs.user-created-events}")
     public void handleUserCreatedEvent(
@@ -28,7 +28,7 @@ public class UserEventListener {
     ) {
         withExtendedMDC(
             traceId,
-            () -> userService.createInternalUserRepresentation(
+            () -> userRepresentationService.createUserRepresentation(
                 event.getId(),
                 traceId
             )
@@ -42,7 +42,7 @@ public class UserEventListener {
     ) {
         withExtendedMDC(
             traceId,
-            () -> userService.deleteInternalUserRepresentation(
+            () -> userRepresentationService.deleteUserRepresentation(
                 event.getId(),
                 traceId
             )

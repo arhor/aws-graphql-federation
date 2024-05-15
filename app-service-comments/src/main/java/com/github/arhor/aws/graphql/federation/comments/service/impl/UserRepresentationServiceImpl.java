@@ -1,10 +1,10 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
-import com.github.arhor.aws.graphql.federation.comments.service.UserService;
+import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
@@ -22,10 +22,10 @@ import static com.github.arhor.aws.graphql.federation.comments.util.CacheManager
 @Trace
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserRepresentationServiceImpl implements UserRepresentationService {
 
     private final CacheManager cacheManager;
-    private final UserRepository userRepository;
+    private final UserRepresentationRepository userRepresentationRepository;
 
     private Cache cache;
 
@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findInternalUserRepresentation(final UUID userId) {
-        return userRepository.findById(userId)
+    public User findUserRepresentation(final UUID userId) {
+        return userRepresentationRepository.findById(userId)
             .map(this::mapEntityToUser)
             .orElseThrow(() -> new EntityNotFoundException(
                 USER.TYPE_NAME,
@@ -46,23 +46,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createInternalUserRepresentation(final UUID userId, final UUID idempotencyKey) {
+    public void createUserRepresentation(final UUID userId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () ->
-            userRepository.save(
-                new UserEntity(userId)
+            userRepresentationRepository.save(
+                new UserRepresentationEntity(userId)
             )
         );
     }
 
     @Override
-    public void deleteInternalUserRepresentation(final UUID userId, final UUID idempotencyKey) {
+    public void deleteUserRepresentation(final UUID userId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () -> {
-            userRepository.deleteById(userId);
+            userRepresentationRepository.deleteById(userId);
             return null;
         });
     }
 
-    private User mapEntityToUser(final UserEntity entity) {
+    private User mapEntityToUser(final UserRepresentationEntity entity) {
         return User.newBuilder()
             .id(entity.id())
             .build();

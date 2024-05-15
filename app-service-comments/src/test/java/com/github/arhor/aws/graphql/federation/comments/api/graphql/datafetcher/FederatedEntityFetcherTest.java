@@ -4,8 +4,8 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
-import com.github.arhor.aws.graphql.federation.comments.service.PostService;
-import com.github.arhor.aws.graphql.federation.comments.service.UserService;
+import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
+import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration;
@@ -33,10 +33,10 @@ import static org.mockito.Mockito.when;
 class FederatedEntityFetcherTest {
 
     @MockBean
-    private UserService userService;
+    private UserRepresentationService userRepresentationService;
 
     @MockBean
-    private PostService postService;
+    private PostRepresentationService postRepresentationService;
 
     @Autowired
     private DgsQueryExecutor dgsQueryExecutor;
@@ -47,7 +47,7 @@ class FederatedEntityFetcherTest {
         final var userId = UUID.randomUUID();
         final var expectedUser = User.newBuilder().id(userId).build();
 
-        when(userService.findInternalUserRepresentation(any()))
+        when(userRepresentationService.findUserRepresentation(any()))
             .thenReturn(expectedUser);
 
         // When
@@ -66,9 +66,9 @@ class FederatedEntityFetcherTest {
         );
 
         // Then
-        then(userService)
+        then(userRepresentationService)
             .should()
-            .findInternalUserRepresentation(userId);
+            .findUserRepresentation(userId);
 
         assertThat(result)
             .isNotNull()
@@ -81,7 +81,7 @@ class FederatedEntityFetcherTest {
         final var postId = UUID.randomUUID();
         final var expectedPost = Post.newBuilder().id(postId).build();
 
-        when(postService.findInternalPostRepresentation(any()))
+        when(postRepresentationService.findPostRepresentation(any()))
             .thenReturn(expectedPost);
 
         // When
@@ -100,9 +100,9 @@ class FederatedEntityFetcherTest {
         );
 
         // Then
-        then(postService)
+        then(postRepresentationService)
             .should()
-            .findInternalPostRepresentation(postId);
+            .findPostRepresentation(postId);
 
         assertThat(result)
             .isNotNull()

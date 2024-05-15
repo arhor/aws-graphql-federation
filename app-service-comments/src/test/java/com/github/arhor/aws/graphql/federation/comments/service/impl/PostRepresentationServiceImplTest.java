@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
@@ -27,20 +27,20 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class PostServiceImplTest {
+class PostRepresentationServiceImplTest {
 
     private final Cache cache = new ConcurrentMapCache(IDEMPOTENT_ID_SET.name());
     private final CacheManager cacheManager = mock();
-    private final PostRepository postRepository = mock();
+    private final PostRepresentationRepository postRepresentationRepository = mock();
 
-    private PostServiceImpl postService;
+    private PostRepresentationServiceImpl postService;
 
     @BeforeEach
     void setUp() {
         when(cacheManager.getCache(IDEMPOTENT_ID_SET.name()))
             .thenReturn(cache);
 
-        postService = new PostServiceImpl(cacheManager, postRepository);
+        postService = new PostRepresentationServiceImpl(cacheManager, postRepresentationRepository);
         postService.initialize();
     }
 
@@ -53,18 +53,18 @@ class PostServiceImplTest {
             // Given
             final var postId = UUID.randomUUID();
 
-            when(postRepository.findById(any()))
-                .thenReturn(Optional.of(new PostEntity(postId)));
+            when(postRepresentationRepository.findById(any()))
+                .thenReturn(Optional.of(new PostRepresentationEntity(postId)));
 
             // When
-            final var result = postService.findInternalPostRepresentation(postId);
+            final var result = postService.findPostRepresentation(postId);
 
             // Then
-            then(postRepository)
+            then(postRepresentationRepository)
                 .should()
                 .findById(postId);
 
-            then(postRepository)
+            then(postRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
@@ -81,18 +81,18 @@ class PostServiceImplTest {
             final var expectedCondition = POST.Id + " = " + postId;
             final var expectedOperation = Operation.LOOKUP;
 
-            when(postRepository.findById(any()))
+            when(postRepresentationRepository.findById(any()))
                 .thenReturn(Optional.empty());
 
             // When
-            final var result = catchException(() -> postService.findInternalPostRepresentation(postId));
+            final var result = catchException(() -> postService.findPostRepresentation(postId));
 
             // Then
-            then(postRepository)
+            then(postRepresentationRepository)
                 .should()
                 .findById(postId);
 
-            then(postRepository)
+            then(postRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
@@ -112,19 +112,19 @@ class PostServiceImplTest {
             // Given
             final var idempotencyKey = UUID.randomUUID();
             final var postId = UUID.randomUUID();
-            final var expectedPost = new PostEntity(postId);
+            final var expectedPost = new PostRepresentationEntity(postId);
 
             // When
             for (int i = 0; i < 3; i++) {
-                postService.createInternalPostRepresentation(postId, idempotencyKey);
+                postService.createPostRepresentation(postId, idempotencyKey);
             }
 
             // Then
-            then(postRepository)
+            then(postRepresentationRepository)
                 .should()
                 .save(expectedPost);
 
-            then(postRepository)
+            then(postRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
         }
     }
@@ -140,15 +140,15 @@ class PostServiceImplTest {
 
             // When
             for (int i = 0; i < 3; i++) {
-                postService.deleteInternalPostRepresentation(postId, idempotencyKey);
+                postService.deletePostRepresentation(postId, idempotencyKey);
             }
 
             // Then
-            then(postRepository)
+            then(postRepresentationRepository)
                 .should()
                 .deleteById(postId);
 
-            then(postRepository)
+            then(postRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
         }
     }

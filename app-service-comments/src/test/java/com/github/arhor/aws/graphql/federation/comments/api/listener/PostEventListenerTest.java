@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.api.listener;
 
-import com.github.arhor.aws.graphql.federation.comments.service.PostService;
+import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class PostEventListenerTest extends EventListenerTestBase {
     private static final String POST_DELETED_TEST_QUEUE = "post-deleted-test-queue";
 
     @MockBean
-    private PostService postService;
+    private PostRepresentationService postRepresentationService;
 
     @DynamicPropertySource
     static void registerDynamicProperties(final DynamicPropertyRegistry registry) {
@@ -59,11 +59,11 @@ class PostEventListenerTest extends EventListenerTestBase {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(postService)
+                then(postRepresentationService)
                     .should()
-                    .createInternalPostRepresentation(event.getId(), traceId);
+                    .createPostRepresentation(event.getId(), traceId);
 
-                then(postService)
+                then(postRepresentationService)
                     .shouldHaveNoMoreInteractions();
             });
     }
@@ -87,11 +87,11 @@ class PostEventListenerTest extends EventListenerTestBase {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(postService)
+                then(postRepresentationService)
                     .should()
-                    .deleteInternalPostRepresentation(event.getId(), traceId);
+                    .deletePostRepresentation(event.getId(), traceId);
 
-                then(postService)
+                then(postRepresentationService)
                     .shouldHaveNoMoreInteractions();
             });
     }

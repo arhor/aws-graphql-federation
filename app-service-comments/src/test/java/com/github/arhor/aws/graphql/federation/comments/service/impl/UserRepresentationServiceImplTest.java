@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
@@ -27,20 +27,20 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class UserServiceImplTest {
+class UserRepresentationServiceImplTest {
 
     private final Cache cache = new ConcurrentMapCache(IDEMPOTENT_ID_SET.name());
     private final CacheManager cacheManager = mock();
-    private final UserRepository userRepository = mock();
+    private final UserRepresentationRepository userRepresentationRepository = mock();
 
-    private UserServiceImpl userService;
+    private UserRepresentationServiceImpl userService;
 
     @BeforeEach
     void setUp() {
         when(cacheManager.getCache(IDEMPOTENT_ID_SET.name()))
             .thenReturn(cache);
 
-        userService = new UserServiceImpl(cacheManager, userRepository);
+        userService = new UserRepresentationServiceImpl(cacheManager, userRepresentationRepository);
         userService.initialize();
     }
 
@@ -53,18 +53,18 @@ class UserServiceImplTest {
             // Given
             final var userId = UUID.randomUUID();
 
-            when(userRepository.findById(any()))
-                .thenReturn(Optional.of(new UserEntity(userId)));
+            when(userRepresentationRepository.findById(any()))
+                .thenReturn(Optional.of(new UserRepresentationEntity(userId)));
 
             // When
-            final var result = userService.findInternalUserRepresentation(userId);
+            final var result = userService.findUserRepresentation(userId);
 
             // Then
-            then(userRepository)
+            then(userRepresentationRepository)
                 .should()
                 .findById(userId);
 
-            then(userRepository)
+            then(userRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
@@ -81,18 +81,18 @@ class UserServiceImplTest {
             final var expectedCondition = USER.Id + " = " + userId;
             final var expectedOperation = Operation.LOOKUP;
 
-            when(userRepository.findById(any()))
+            when(userRepresentationRepository.findById(any()))
                 .thenReturn(Optional.empty());
 
             // When
-            final var result = catchException(() -> userService.findInternalUserRepresentation(userId));
+            final var result = catchException(() -> userService.findUserRepresentation(userId));
 
             // Then
-            then(userRepository)
+            then(userRepresentationRepository)
                 .should()
                 .findById(userId);
 
-            then(userRepository)
+            then(userRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
@@ -112,19 +112,19 @@ class UserServiceImplTest {
             // Given
             final var idempotencyKey = UUID.randomUUID();
             final var userId = UUID.randomUUID();
-            final var expectedUser = new UserEntity(userId);
+            final var expectedUser = new UserRepresentationEntity(userId);
 
             // When
             for (int i = 0; i < 3; i++) {
-                userService.createInternalUserRepresentation(userId, idempotencyKey);
+                userService.createUserRepresentation(userId, idempotencyKey);
             }
 
             // Then
-            then(userRepository)
+            then(userRepresentationRepository)
                 .should()
                 .save(expectedUser);
 
-            then(userRepository)
+            then(userRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
         }
     }
@@ -140,15 +140,15 @@ class UserServiceImplTest {
 
             // When
             for (int i = 0; i < 3; i++) {
-                userService.deleteInternalUserRepresentation(userId, idempotencyKey);
+                userService.deleteUserRepresentation(userId, idempotencyKey);
             }
 
             // Then
-            then(userRepository)
+            then(userRepresentationRepository)
                 .should()
                 .deleteById(userId);
 
-            then(userRepository)
+            then(userRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
         }
     }

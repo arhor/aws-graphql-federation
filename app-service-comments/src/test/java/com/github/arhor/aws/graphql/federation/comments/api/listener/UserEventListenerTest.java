@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.api.listener;
 
-import com.github.arhor.aws.graphql.federation.comments.service.UserService;
+import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class UserEventListenerTest extends EventListenerTestBase {
     private static final String USER_DELETED_TEST_QUEUE = "user-deleted-test-queue";
 
     @MockBean
-    private UserService userService;
+    private UserRepresentationService userRepresentationService;
 
     @DynamicPropertySource
     static void registerDynamicProperties(final DynamicPropertyRegistry registry) {
@@ -59,11 +59,11 @@ class UserEventListenerTest extends EventListenerTestBase {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(userService)
+                then(userRepresentationService)
                     .should()
-                    .createInternalUserRepresentation(event.getId(), traceId);
+                    .createUserRepresentation(event.getId(), traceId);
 
-                then(userService)
+                then(userRepresentationService)
                     .shouldHaveNoMoreInteractions();
             });
     }
@@ -87,11 +87,11 @@ class UserEventListenerTest extends EventListenerTestBase {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(userService)
+                then(userRepresentationService)
                     .should()
-                    .deleteInternalUserRepresentation(event.getId(), traceId);
+                    .deleteUserRepresentation(event.getId(), traceId);
 
-                then(userService)
+                then(userRepresentationService)
                     .shouldHaveNoMoreInteractions();
             });
     }
