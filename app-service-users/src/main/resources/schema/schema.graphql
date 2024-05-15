@@ -9,9 +9,9 @@ type Query {
 }
 
 type Mutation {
-    createUser(input: CreateUserInput!): CreateUserResult
-    updateUser(input: UpdateUserInput!): UpdateUserResult
-    deleteUser(input: DeleteUserInput!): DeleteUserResult
+    createUser(input: CreateUserInput!): CreateUserResult!
+    updateUser(input: UpdateUserInput!): UpdateUserResult!
+    deleteUser(input: DeleteUserInput!): DeleteUserResult!
 }
 
 input UsersLookupInput {

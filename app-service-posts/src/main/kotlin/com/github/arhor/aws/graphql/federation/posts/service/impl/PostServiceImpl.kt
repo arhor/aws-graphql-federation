@@ -9,9 +9,13 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.PostReposit
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostResult
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostResult
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostResult
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
@@ -67,16 +71,18 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun createPost(input: CreatePostInput): Post {
-        return postMapper.mapToEntity(input = input, tags = materialize(input.tags))
+    override fun createPost(input: CreatePostInput): CreatePostResult {
+        val post = postMapper.mapToEntity(input = input, tags = materialize(input.tags))
             .let(postRepository::save)
             .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!)) }
             .let(postMapper::mapToPost)
+
+        return CreatePostResult(post)
     }
 
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
-    override fun updatePost(input: UpdatePostInput): Post {
+    override fun updatePost(input: UpdatePostInput): UpdatePostResult {
         val initialState = postRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
             entity = POST.TYPE_NAME,
             condition = "${POST.Id} = ${input.id}",
@@ -88,25 +94,27 @@ class PostServiceImpl(
             options = input.options?.let(optionsMapper::mapFromList) ?: initialState.options,
             tags = input.tags?.let(::materialize)?.let(tagMapper::mapToRefs) ?: initialState.tags
         )
-
-        return postMapper.mapToPost(
+        val post = postMapper.mapToPost(
             entity = when (currentState != initialState) {
                 true -> postRepository.save(currentState)
                 else -> initialState
             }
         )
+        return UpdatePostResult(post)
     }
 
     @Transactional
-    override fun deletePost(id: UUID): Boolean {
-        return when (val post = postRepository.findByIdOrNull(id)) {
-            null -> false
-            else -> {
-                postRepository.delete(post)
-                appEventPublisher.publishEvent(PostEvent.Deleted(id = id))
-                true
+    override fun deletePost(input: DeletePostInput): DeletePostResult {
+        return DeletePostResult(
+            success = when (val post = postRepository.findByIdOrNull(input.id)) {
+                null -> false
+                else -> {
+                    postRepository.delete(post)
+                    appEventPublisher.publishEvent(PostEvent.Deleted(id = post.id!!))
+                    true
+                }
             }
-        }
+        )
     }
 
     private fun materialize(tags: List<String>?): Set<TagEntity> = when {

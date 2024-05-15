@@ -11,9 +11,9 @@ type Query {
 }
 
 type Mutation {
-    createPost(input: CreatePostInput!): Post!
-    updatePost(input: UpdatePostInput!): Post!
-    deletePost(id: UUID!): Boolean!
+    createPost(input: CreatePostInput!): CreatePostResult!
+    updatePost(input: UpdatePostInput!): UpdatePostResult!
+    deletePost(input: DeletePostInput!): DeletePostResult!
 }
 
 input PostsLookupInput {
@@ -35,6 +35,22 @@ input UpdatePostInput {
     content: String
     options: [Option!]
     tags: [String!]
+}
+
+input DeletePostInput {
+    id: UUID!
+}
+
+type CreatePostResult {
+    user: Post!
+}
+
+type UpdatePostResult {
+    user: Post!
+}
+
+type DeletePostResult {
+    success: Boolean!
 }
 
 type Post @key(fields: "id") {
