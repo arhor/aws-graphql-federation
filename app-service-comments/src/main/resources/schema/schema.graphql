@@ -7,6 +7,7 @@ scalar UUID
 type Mutation {
     createComment(input: CreateCommentInput!): CreateCommentResult
     updateComment(input: UpdateCommentInput!): UpdateCommentResult
+    deleteComment(input: DeleteCommentInput!): DeleteCommentResult
 }
 
 input CreateCommentInput {
@@ -20,12 +21,20 @@ input UpdateCommentInput {
     content: String
 }
 
+input DeleteCommentInput {
+    id: UUID!
+}
+
 type CreateCommentResult {
-    comment: Comment
+    comment: Comment!
 }
 
 type UpdateCommentResult {
-    comment: Comment
+    comment: Comment!
+}
+
+type DeleteCommentResult {
+    success: Boolean!
 }
 
 type Comment {

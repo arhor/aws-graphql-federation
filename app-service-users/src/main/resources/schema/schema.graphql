@@ -5,13 +5,13 @@ scalar UUID
 
 type Query {
     user(id: UUID!): User
-    users(input: UsersLookupInput! = {}): [User!]!
+    users(input: UsersLookupInput! = {}): [User!]
 }
 
 type Mutation {
-    createUser(input: CreateUserInput!): CreateUserResult!
-    updateUser(input: UpdateUserInput!): UpdateUserResult!
-    deleteUser(input: DeleteUserInput!): DeleteUserResult!
+    createUser(input: CreateUserInput!): CreateUserResult
+    updateUser(input: UpdateUserInput!): UpdateUserResult
+    deleteUser(input: DeleteUserInput!): DeleteUserResult
 }
 
 input UsersLookupInput {

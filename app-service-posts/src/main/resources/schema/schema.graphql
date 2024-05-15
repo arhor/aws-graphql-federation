@@ -7,13 +7,13 @@ scalar Upload
 
 type Query {
     post(id: UUID!): Post
-    posts(input: PostsLookupInput! = {}): [Post!]!
+    posts(input: PostsLookupInput! = {}): [Post!]
 }
 
 type Mutation {
-    createPost(input: CreatePostInput!): CreatePostResult!
-    updatePost(input: UpdatePostInput!): UpdatePostResult!
-    deletePost(input: DeletePostInput!): DeletePostResult!
+    createPost(input: CreatePostInput!): CreatePostResult
+    updatePost(input: UpdatePostInput!): UpdatePostResult
+    deletePost(input: DeletePostInput!): DeletePostResult
 }
 
 input PostsLookupInput {

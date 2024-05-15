@@ -6,6 +6,8 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
@@ -111,13 +113,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean deleteComment(final UUID id) {
-        return commentRepository.findById(id)
+    public DeleteCommentResult deleteComment(final DeleteCommentInput input) {
+        final var result = commentRepository.findById(input.getId())
             .map((comment) -> {
                 commentRepository.delete(comment);
                 return true;
             })
             .orElse(false);
+
+        return new DeleteCommentResult(result);
     }
 
     /**

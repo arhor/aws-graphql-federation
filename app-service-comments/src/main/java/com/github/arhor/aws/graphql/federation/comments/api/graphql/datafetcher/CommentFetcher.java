@@ -7,6 +7,8 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult;
@@ -55,6 +57,11 @@ public class CommentFetcher {
     @DgsMutation
     public UpdateCommentResult updateComment(final @InputArgument UpdateCommentInput input) {
         return commentService.updateComment(input);
+    }
+
+    @DgsMutation
+    public DeleteCommentResult deleteComment(final @InputArgument DeleteCommentInput input) {
+        return commentService.deleteComment(input);
     }
 
     /* Internal implementation */
