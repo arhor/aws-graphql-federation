@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.api.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.posts.service.UserService
+import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.confirmVerified
@@ -23,11 +23,11 @@ import kotlin.time.Duration.Companion.seconds
 class UserEventListenerTest : EventListenerTestBase() {
 
     @MockkBean
-    private lateinit var userService: UserService
+    private lateinit var userRepresentationService: UserRepresentationService
 
     @AfterEach
     fun tearDown() {
-        confirmVerified(userService)
+        confirmVerified(userRepresentationService)
     }
 
     @Test
@@ -36,7 +36,7 @@ class UserEventListenerTest : EventListenerTestBase() {
         val traceId = UUID.randomUUID()
         val event = UserEvent.Created(id = UUID.randomUUID())
 
-        every { userService.createInternalUserRepresentation(any(), any()) } just runs
+        every { userRepresentationService.createUserRepresentation(any(), any()) } just runs
 
         // When
         sqsTemplate.send(
@@ -49,7 +49,7 @@ class UserEventListenerTest : EventListenerTestBase() {
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userService.createInternalUserRepresentation(event.id, traceId)
+            userRepresentationService.createUserRepresentation(event.id, traceId)
         }
     }
 
@@ -59,7 +59,7 @@ class UserEventListenerTest : EventListenerTestBase() {
         val traceId = UUID.randomUUID()
         val event = UserEvent.Deleted(id = UUID.randomUUID())
 
-        every { userService.deleteInternalUserRepresentation(any(), any()) } just runs
+        every { userRepresentationService.deleteUserRepresentation(any(), any()) } just runs
 
         // When
         sqsTemplate.send(
@@ -72,7 +72,7 @@ class UserEventListenerTest : EventListenerTestBase() {
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userService.deleteInternalUserRepresentation(event.id, traceId)
+            userRepresentationService.deleteUserRepresentation(event.id, traceId)
         }
     }
 

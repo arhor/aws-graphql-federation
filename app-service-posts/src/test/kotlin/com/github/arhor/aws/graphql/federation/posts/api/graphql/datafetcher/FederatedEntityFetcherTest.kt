@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
-import com.github.arhor.aws.graphql.federation.posts.service.UserService
+import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
@@ -25,7 +25,7 @@ import java.util.UUID
 class FederatedEntityFetcherTest {
 
     @MockkBean
-    private lateinit var userService: UserService
+    private lateinit var userRepresentationService: UserRepresentationService
 
     @Autowired
     private lateinit var dgsQueryExecutor: DgsQueryExecutor
@@ -36,7 +36,7 @@ class FederatedEntityFetcherTest {
         val userId = UUID.randomUUID()
         val expectedUser = User(id = userId)
 
-        every { userService.findInternalUserRepresentation(any()) } returns expectedUser
+        every { userRepresentationService.findUserRepresentation(any()) } returns expectedUser
 
         // When
         val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -54,7 +54,7 @@ class FederatedEntityFetcherTest {
         )
 
         // Then
-        verify(exactly = 1) { userService.findInternalUserRepresentation(userId) }
+        verify(exactly = 1) { userRepresentationService.findUserRepresentation(userId) }
 
         assertThat(result)
             .isNotNull()

@@ -2,11 +2,11 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserEntity
-import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepository
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentationEntity
+import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
-import com.github.arhor.aws.graphql.federation.posts.service.UserService
+import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
 import com.github.arhor.aws.graphql.federation.posts.util.get
 import com.github.arhor.aws.graphql.federation.tracing.Trace
@@ -19,10 +19,10 @@ import java.util.UUID
 
 @Trace
 @Service
-class UserServiceImpl(
+class UserRepresentationServiceImpl(
     private val cacheManager: CacheManager,
-    private val userRepository: UserRepository,
-) : UserService {
+    private val userRepresentationRepository: UserRepresentationRepository,
+) : UserRepresentationService {
 
     private lateinit var cache: Cache
 
@@ -31,8 +31,8 @@ class UserServiceImpl(
         cache = cacheManager[Caches.IDEMPOTENT_ID_SET]
     }
 
-    override fun findInternalUserRepresentation(userId: UUID): User {
-        return userRepository.findByIdOrNull(userId)?.let(::mapEntityToUser)
+    override fun findUserRepresentation(userId: UUID): User {
+        return userRepresentationRepository.findByIdOrNull(userId)?.let(::mapEntityToUser)
             ?: throw EntityNotFoundException(
                 entity = USER.TYPE_NAME,
                 condition = "${USER.Id} = $userId",
@@ -40,19 +40,19 @@ class UserServiceImpl(
             )
     }
 
-    override fun createInternalUserRepresentation(userId: UUID, idempotencyKey: UUID) {
+    override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID) {
         cache.get(idempotencyKey) {
-            userRepository.save(UserEntity(id = userId))
+            userRepresentationRepository.save(UserRepresentationEntity(id = userId))
         }
     }
 
-    override fun deleteInternalUserRepresentation(userId: UUID, idempotencyKey: UUID) {
+    override fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID) {
         cache.get(idempotencyKey) {
-            userRepository.deleteById(userId)
+            userRepresentationRepository.deleteById(userId)
         }
     }
 
-    private fun mapEntityToUser(entity: UserEntity): User {
+    private fun mapEntityToUser(entity: UserRepresentationEntity): User {
         return User(
             id = entity.id,
         )

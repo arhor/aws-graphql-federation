@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentationEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.PostEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.TagEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
@@ -25,7 +25,7 @@ class PostRepositoryTest : RepositoryTestBase() {
     private lateinit var postRepository: PostRepository
 
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userRepresentationRepository: UserRepresentationRepository
 
     @Nested
     @DisplayName("PostRepository :: findAll")
@@ -33,7 +33,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return list containing expected posts data`() {
             // Given
-            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val user = userRepresentationRepository.save(UserRepresentationEntity(id = UUID.randomUUID()))
             val expectedPosts = createPosts(user).map { it.toProjection() }
 
             // When
@@ -49,7 +49,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when limit is zero`() {
             // Given
-            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val user = userRepresentationRepository.save(UserRepresentationEntity(id = UUID.randomUUID()))
             createPosts(user)
 
             // When
@@ -64,7 +64,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
-            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val user = userRepresentationRepository.save(UserRepresentationEntity(id = UUID.randomUUID()))
             val createdPosts = createPosts(user)
 
             // When
@@ -83,7 +83,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return list containing expected posts data`() {
             // Given
-            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val user = userRepresentationRepository.save(UserRepresentationEntity(id = UUID.randomUUID()))
             val expectedPosts = createPosts(user).map { it.toProjection() }
 
             // When
@@ -99,7 +99,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when userIds passed as empty list`() {
             // Given
-            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val user = userRepresentationRepository.save(UserRepresentationEntity(id = UUID.randomUUID()))
             createPosts(user)
 
             // When
@@ -114,7 +114,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
-            val user = userRepository.save(UserEntity(id = UUID.randomUUID()))
+            val user = userRepresentationRepository.save(UserRepresentationEntity(id = UUID.randomUUID()))
             createPosts(user)
             val incorrectUserIds = listOf(UUID.randomUUID())
 
@@ -128,7 +128,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         }
     }
 
-    private fun createPosts(user: UserEntity, num: Long = 3) = postRepository.saveAll(
+    private fun createPosts(user: UserRepresentationEntity, num: Long = 3) = postRepository.saveAll(
         (1..num).map {
             PostEntity(
                 userId = user.id,

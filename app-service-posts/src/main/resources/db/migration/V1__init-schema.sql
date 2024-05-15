@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "users"
+CREATE TABLE IF NOT EXISTS "user_representations"
 (
     "id" UUID NOT NULL PRIMARY KEY
 ) WITH (OIDS = FALSE);
@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS "posts"
     "created_date_time" TIMESTAMP    NOT NULL,
     "updated_date_time" TIMESTAMP    NULL,
 
-    CONSTRAINT "FK__posts__users"
+    CONSTRAINT "FK__posts__user_representations"
         FOREIGN KEY ("user_id")
-            REFERENCES "users" ("id")
+            REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE SET NULL
 ) WITH (OIDS = FALSE);

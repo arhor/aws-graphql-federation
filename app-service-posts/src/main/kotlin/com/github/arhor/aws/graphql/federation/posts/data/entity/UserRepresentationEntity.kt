@@ -7,9 +7,9 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.util.UUID
 
-@Table(UserEntity.TABLE_NAME)
+@Table(UserRepresentationEntity.TABLE_NAME)
 @Immutable
-data class UserEntity(
+data class UserRepresentationEntity(
     @Id
     @Column("id")
     private val id: UUID,
@@ -20,6 +20,6 @@ data class UserEntity(
     override fun isNew(): Boolean = true
 
     companion object {
-        const val TABLE_NAME = "users"
+        const val TABLE_NAME = "user_representations"
     }
 }
