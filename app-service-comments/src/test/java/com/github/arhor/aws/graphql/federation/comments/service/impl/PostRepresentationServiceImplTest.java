@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ class PostRepresentationServiceImplTest {
             final var postId = UUID.randomUUID();
 
             when(postRepresentationRepository.findById(any()))
-                .thenReturn(Optional.of(new PostRepresentationEntity(postId)));
+                .thenReturn(Optional.of(new PostRepresentation(postId)));
 
             // When
             final var result = postService.findPostRepresentation(postId);
@@ -104,7 +104,7 @@ class PostRepresentationServiceImplTest {
             // Given
             final var idempotencyKey = UUID.randomUUID();
             final var postId = UUID.randomUUID();
-            final var expectedPost = new PostRepresentationEntity(postId);
+            final var expectedPost = new PostRepresentation(postId);
 
             // When
             for (int i = 0; i < 3; i++) {

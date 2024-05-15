@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
@@ -42,7 +42,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     public void createPostRepresentation(final UUID postId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () ->
             postRepresentationRepository.save(
-                new PostRepresentationEntity(postId)
+                new PostRepresentation(postId)
             )
         );
     }

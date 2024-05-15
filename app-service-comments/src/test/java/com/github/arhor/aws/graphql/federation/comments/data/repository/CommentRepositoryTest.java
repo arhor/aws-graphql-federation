@@ -2,8 +2,8 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.config.ConfigureDatabase;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentationEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.callback.CommentEntityCallback;
 import com.github.arhor.aws.graphql.federation.comments.test.ConfigureTestObjectMapper;
 import com.github.arhor.aws.graphql.federation.spring.core.ConfigureCoreApplicationComponents;
@@ -140,23 +140,23 @@ public class CommentRepositoryTest {
             .doesNotContainAnyElementsOf(post3Comments);
     }
 
-    private UserRepresentationEntity createUser() {
+    private UserRepresentation createUser() {
         return userRepresentationRepository.save(
-            UserRepresentationEntity.builder()
+            UserRepresentation.builder()
                 .id(UUID.randomUUID())
                 .build()
         );
     }
 
-    private PostRepresentationEntity createPost() {
+    private PostRepresentation createPost() {
         return postRepresentationRepository.save(
-            PostRepresentationEntity.builder()
+            PostRepresentation.builder()
                 .id(UUID.randomUUID())
                 .build()
         );
     }
 
-    private CommentEntity createComment(final UserRepresentationEntity user, final PostRepresentationEntity post, final int num) {
+    private CommentEntity createComment(final UserRepresentation user, final PostRepresentation post, final int num) {
         return commentRepository.save(
             CommentEntity.builder()
                 .userId(user.id())

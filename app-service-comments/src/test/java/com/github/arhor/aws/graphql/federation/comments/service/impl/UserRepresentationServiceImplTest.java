@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ class UserRepresentationServiceImplTest {
             final var userId = UUID.randomUUID();
 
             when(userRepresentationRepository.findById(any()))
-                .thenReturn(Optional.of(new UserRepresentationEntity(userId)));
+                .thenReturn(Optional.of(new UserRepresentation(userId)));
 
             // When
             final var result = userService.findUserRepresentation(userId);
@@ -104,7 +104,7 @@ class UserRepresentationServiceImplTest {
             // Given
             final var idempotencyKey = UUID.randomUUID();
             final var userId = UUID.randomUUID();
-            final var expectedUser = new UserRepresentationEntity(userId);
+            final var expectedUser = new UserRepresentation(userId);
 
             // When
             for (int i = 0; i < 3; i++) {

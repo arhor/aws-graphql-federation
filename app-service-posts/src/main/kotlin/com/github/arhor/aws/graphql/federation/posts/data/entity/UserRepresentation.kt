@@ -7,9 +7,9 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.util.UUID
 
-@Table(UserRepresentationEntity.TABLE_NAME)
+@Table(UserRepresentation.TABLE_NAME)
 @Immutable
-data class UserRepresentationEntity(
+data class UserRepresentation(
     @Id
     @Column("id")
     private val id: UUID,

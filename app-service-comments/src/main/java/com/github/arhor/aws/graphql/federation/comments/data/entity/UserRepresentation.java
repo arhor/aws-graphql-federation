@@ -14,7 +14,7 @@ import java.util.UUID;
 @Immutable
 @Builder(toBuilder = true)
 @FieldNameConstants(asEnum = true)
-public record UserRepresentationEntity(
+public record UserRepresentation(
     @Id
     @Column("id")
     UUID id

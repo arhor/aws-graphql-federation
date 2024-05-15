@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.service.impl
 
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentationEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
@@ -35,7 +35,7 @@ class UserRepresentationServiceImpl(
 
     override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID) {
         cache.get(idempotencyKey) {
-            userRepresentationRepository.save(UserRepresentationEntity(id = userId))
+            userRepresentationRepository.save(UserRepresentation(id = userId))
         }
     }
 
@@ -45,7 +45,7 @@ class UserRepresentationServiceImpl(
         }
     }
 
-    private fun mapEntityToUser(userId: UUID, user: UserRepresentationEntity?): User {
+    private fun mapEntityToUser(userId: UUID, user: UserRepresentation?): User {
         return User(
             id = user?.id ?: userId,
             availableForPosts = user != null,

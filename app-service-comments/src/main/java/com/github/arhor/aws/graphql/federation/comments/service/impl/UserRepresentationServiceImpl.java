@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentationEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
@@ -42,7 +42,7 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     public void createUserRepresentation(final UUID userId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () ->
             userRepresentationRepository.save(
-                new UserRepresentationEntity(userId)
+                new UserRepresentation(userId)
             )
         );
     }
