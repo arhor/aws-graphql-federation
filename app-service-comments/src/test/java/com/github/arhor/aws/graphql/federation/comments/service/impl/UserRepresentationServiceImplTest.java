@@ -46,8 +46,8 @@ class UserRepresentationServiceImplTest {
 
 
     @Nested
-    @DisplayName("UserService :: findInternalUserRepresentation")
-    class FindInternalUserRepresentationTest {
+    @DisplayName("UserService :: findUserRepresentation")
+    class FindUserRepresentationTest {
         @Test
         void should_return_expected_user_when_it_exists_by_id() {
             // Given
@@ -105,8 +105,8 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: createInternalUserRepresentation")
-    class CreateInternalUserRepresentationTest {
+    @DisplayName("UserService :: createUserRepresentation")
+    class CreateUserRepresentationTest {
         @Test
         void should_call_userRepository_save_only_once_with_the_same_idempotencyKey() {
             // Given
@@ -130,8 +130,8 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: deleteInternalUserRepresentation")
-    class DeleteInternalUserRepresentationTest {
+    @DisplayName("UserService :: deleteUserRepresentation")
+    class DeleteUserRepresentationTest {
         @Test
         void should_call_userRepository_deleteById_only_once_with_the_same_idempotencyKey() {
             // Given

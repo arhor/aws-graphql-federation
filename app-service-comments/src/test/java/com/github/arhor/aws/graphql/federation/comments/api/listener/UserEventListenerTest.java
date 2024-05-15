@@ -41,7 +41,7 @@ class UserEventListenerTest extends EventListenerTestBase {
     }
 
     @Test
-    void should_call_createInternalUserRepresentation_method_on_user_created_event() {
+    void should_call_createUserRepresentation_method_on_user_created_event() {
         // Given
         final var traceId = UUID.randomUUID();
         final var event = new UserEvent.Created(UUID.randomUUID());
@@ -69,7 +69,7 @@ class UserEventListenerTest extends EventListenerTestBase {
     }
 
     @Test
-    void should_call_deleteInternalUserRepresentation_method_on_user_deleted_event() {
+    void should_call_deleteUserRepresentation_method_on_user_deleted_event() {
         // Given
         final var traceId = UUID.randomUUID();
         final var event = new UserEvent.Deleted(UUID.randomUUID());

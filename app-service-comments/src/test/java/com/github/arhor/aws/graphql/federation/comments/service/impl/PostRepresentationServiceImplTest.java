@@ -46,8 +46,8 @@ class PostRepresentationServiceImplTest {
 
 
     @Nested
-    @DisplayName("PostService :: findInternalPostRepresentation")
-    class FindInternalPostRepresentationTest {
+    @DisplayName("PostService :: findPostRepresentation")
+    class FindPostRepresentationTest {
         @Test
         void should_return_expected_post_when_it_exists_by_id() {
             // Given
@@ -105,8 +105,8 @@ class PostRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: createInternalPostRepresentation")
-    class CreateInternalPostRepresentationTest {
+    @DisplayName("PostService :: createPostRepresentation")
+    class CreatePostRepresentationTest {
         @Test
         void should_call_postRepository_save_only_once_with_the_same_idempotencyKey() {
             // Given
@@ -130,8 +130,8 @@ class PostRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: deleteInternalPostRepresentation")
-    class DeleteInternalPostRepresentationTest {
+    @DisplayName("PostService :: deletePostRepresentation")
+    class DeletePostRepresentationTest {
         @Test
         void should_call_postRepository_deleteById_only_once_with_the_same_idempotencyKey() {
             // Given

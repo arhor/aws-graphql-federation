@@ -41,7 +41,7 @@ class PostEventListenerTest extends EventListenerTestBase {
     }
 
     @Test
-    void should_call_createInternalPostRepresentation_method_on_post_created_event() {
+    void should_call_createPostRepresentation_method_on_post_created_event() {
         // Given
         final var traceId = UUID.randomUUID();
         final var event = new PostEvent.Created(UUID.randomUUID());
@@ -69,7 +69,7 @@ class PostEventListenerTest extends EventListenerTestBase {
     }
 
     @Test
-    void should_call_deleteInternalPostRepresentation_method_on_post_deleted_event() {
+    void should_call_deletePostRepresentation_method_on_post_deleted_event() {
         // Given
         final var traceId = UUID.randomUUID();
         final var event = new PostEvent.Deleted(UUID.randomUUID());

@@ -31,7 +31,7 @@ class UserEventListenerTest : EventListenerTestBase() {
     }
 
     @Test
-    fun `should call createInternalUserRepresentation on UserEvent#Created`() {
+    fun `should call createUserRepresentation on UserEvent#Created`() {
         // Given
         val traceId = UUID.randomUUID()
         val event = UserEvent.Created(id = UUID.randomUUID())
@@ -54,7 +54,7 @@ class UserEventListenerTest : EventListenerTestBase() {
     }
 
     @Test
-    fun `should call deleteInternalUserRepresentation on UserEvent#Deleted`() {
+    fun `should call deleteUserRepresentation on UserEvent#Deleted`() {
         // Given
         val traceId = UUID.randomUUID()
         val event = UserEvent.Deleted(id = UUID.randomUUID())
