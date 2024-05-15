@@ -2,12 +2,9 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentationEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
-import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
-import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +34,8 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     @Override
     public User findUserRepresentation(final UUID userId) {
         return userRepresentationRepository.findById(userId)
-            .map(this::mapEntityToUser)
-            .orElseThrow(() -> new EntityNotFoundException(
-                USER.TYPE_NAME,
-                USER.Id + " = " + userId,
-                Operation.LOOKUP
-            ));
+            .map((user) -> User.newBuilder().id(user.id()).availableForComments(true).build())
+            .orElseGet(() -> User.newBuilder().id(userId).availableForComments(false).build());
     }
 
     @Override
@@ -60,11 +53,5 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
             userRepresentationRepository.deleteById(userId);
             return null;
         });
-    }
-
-    private User mapEntityToUser(final UserRepresentationEntity entity) {
-        return User.newBuilder()
-            .id(entity.id())
-            .build();
     }
 }

@@ -2,10 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentationEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
-import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
-import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,9 +16,7 @@ import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.comments.util.Caches.IDEMPOTENT_ID_SET;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchException;
 import static org.assertj.core.api.Assertions.from;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -73,34 +68,31 @@ class PostRepresentationServiceImplTest {
         }
 
         @Test
-        void should_throw_EntityNotFoundException_when_post_does_not_exist_by_id() {
+        void should_return_post_with_availableForComments_false_when_post_does_not_exist_by_id() {
             // Given
-            final var postId = UUID.randomUUID();
-
-            final var expectedEntity = POST.TYPE_NAME;
-            final var expectedCondition = POST.Id + " = " + postId;
-            final var expectedOperation = Operation.LOOKUP;
+            final var expectedPost =
+                Post.newBuilder()
+                    .id(UUID.randomUUID())
+                    .availableForComments(false)
+                    .build();
 
             when(postRepresentationRepository.findById(any()))
                 .thenReturn(Optional.empty());
 
             // When
-            final var result = catchException(() -> postService.findPostRepresentation(postId));
+            final var result = postService.findPostRepresentation(expectedPost.getId());
 
             // Then
             then(postRepresentationRepository)
                 .should()
-                .findById(postId);
+                .findById(expectedPost.getId());
 
             then(postRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
                 .isNotNull()
-                .asInstanceOf(type(EntityNotFoundException.class))
-                .returns(expectedEntity, from(EntityNotFoundException::getEntity))
-                .returns(expectedCondition, from(EntityNotFoundException::getCondition))
-                .returns(expectedOperation, from(EntityNotFoundException::getOperation));
+                .isEqualTo(expectedPost);
         }
     }
 

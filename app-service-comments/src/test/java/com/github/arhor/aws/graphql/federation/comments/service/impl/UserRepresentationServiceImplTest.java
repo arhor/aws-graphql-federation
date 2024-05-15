@@ -2,10 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentationEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
-import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
-import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,9 +16,7 @@ import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.comments.util.Caches.IDEMPOTENT_ID_SET;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchException;
 import static org.assertj.core.api.Assertions.from;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -73,34 +68,31 @@ class UserRepresentationServiceImplTest {
         }
 
         @Test
-        void should_throw_EntityNotFoundException_when_user_does_not_exist_by_id() {
+        void should_return_user_with_availableForComments_false_when_user_does_not_exist_by_id() {
             // Given
-            final var userId = UUID.randomUUID();
-
-            final var expectedEntity = USER.TYPE_NAME;
-            final var expectedCondition = USER.Id + " = " + userId;
-            final var expectedOperation = Operation.LOOKUP;
+            final var expectedUser =
+                User.newBuilder()
+                    .id(UUID.randomUUID())
+                    .availableForComments(false)
+                    .build();
 
             when(userRepresentationRepository.findById(any()))
                 .thenReturn(Optional.empty());
 
             // When
-            final var result = catchException(() -> userService.findUserRepresentation(userId));
+            final var result = userService.findUserRepresentation(expectedUser.getId());
 
             // Then
             then(userRepresentationRepository)
                 .should()
-                .findById(userId);
+                .findById(expectedUser.getId());
 
             then(userRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
                 .isNotNull()
-                .asInstanceOf(type(EntityNotFoundException.class))
-                .returns(expectedEntity, from(EntityNotFoundException::getEntity))
-                .returns(expectedCondition, from(EntityNotFoundException::getCondition))
-                .returns(expectedOperation, from(EntityNotFoundException::getOperation));
+                .isEqualTo(expectedUser);
         }
     }
 

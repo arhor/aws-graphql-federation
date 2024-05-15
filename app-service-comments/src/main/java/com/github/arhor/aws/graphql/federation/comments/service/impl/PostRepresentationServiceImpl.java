@@ -2,12 +2,9 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentationEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
-import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
-import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +34,8 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     @Override
     public Post findPostRepresentation(final UUID postId) {
         return postRepresentationRepository.findById(postId)
-            .map(this::mapEntityToPost)
-            .orElseThrow(() -> new EntityNotFoundException(
-                POST.TYPE_NAME,
-                POST.Id + " = " + postId,
-                Operation.LOOKUP
-            ));
+            .map((post) -> Post.newBuilder().id(post.id()).availableForComments(true).build())
+            .orElseGet(() -> Post.newBuilder().id(postId).availableForComments(false).build());
     }
 
     @Override
@@ -60,11 +53,5 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
             postRepresentationRepository.deleteById(postId);
             return null;
         });
-    }
-
-    private Post mapEntityToPost(final PostRepresentationEntity entity) {
-        return Post.newBuilder()
-            .id(entity.id())
-            .build();
     }
 }
