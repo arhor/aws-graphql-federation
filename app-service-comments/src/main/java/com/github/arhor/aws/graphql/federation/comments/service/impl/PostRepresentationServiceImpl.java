@@ -34,8 +34,8 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     @Override
     public Post findPostRepresentation(final UUID postId) {
         return postRepresentationRepository.findById(postId)
-            .map((post) -> Post.newBuilder().id(post.id()).availableForComments(true).build())
-            .orElseGet(() -> Post.newBuilder().id(postId).availableForComments(false).build());
+            .map((post) -> Post.newBuilder().id(post.id()).commentsOperable(true).build())
+            .orElseGet(() -> Post.newBuilder().id(postId).commentsOperable(false).build());
     }
 
     @Override

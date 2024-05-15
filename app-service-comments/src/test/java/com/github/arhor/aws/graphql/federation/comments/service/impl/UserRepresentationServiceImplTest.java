@@ -68,12 +68,12 @@ class UserRepresentationServiceImplTest {
         }
 
         @Test
-        void should_return_user_with_availableForComments_false_when_user_does_not_exist_by_id() {
+        void should_return_user_with_commentsOperable_false_when_user_does_not_exist_by_id() {
             // Given
             final var expectedUser =
                 User.newBuilder()
                     .id(UUID.randomUUID())
-                    .availableForComments(false)
+                    .commentsOperable(false)
                     .build();
 
             when(userRepresentationRepository.findById(any()))

@@ -68,12 +68,12 @@ class PostRepresentationServiceImplTest {
         }
 
         @Test
-        void should_return_post_with_availableForComments_false_when_post_does_not_exist_by_id() {
+        void should_return_post_with_commentsOperable_false_when_post_does_not_exist_by_id() {
             // Given
             final var expectedPost =
                 Post.newBuilder()
                     .id(UUID.randomUUID())
-                    .availableForComments(false)
+                    .commentsOperable(false)
                     .build();
 
             when(postRepresentationRepository.findById(any()))

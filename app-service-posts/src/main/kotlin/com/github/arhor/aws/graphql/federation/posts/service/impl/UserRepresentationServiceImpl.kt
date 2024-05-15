@@ -48,7 +48,7 @@ class UserRepresentationServiceImpl(
     private fun mapEntityToUser(userId: UUID, user: UserRepresentation?): User {
         return User(
             id = user?.id ?: userId,
-            availableForPosts = user != null,
+            postsOperable = user != null,
         )
     }
 }

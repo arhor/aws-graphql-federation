@@ -34,8 +34,8 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     @Override
     public User findUserRepresentation(final UUID userId) {
         return userRepresentationRepository.findById(userId)
-            .map((user) -> User.newBuilder().id(user.id()).availableForComments(true).build())
-            .orElseGet(() -> User.newBuilder().id(userId).availableForComments(false).build());
+            .map((user) -> User.newBuilder().id(user.id()).commentsOperable(true).build())
+            .orElseGet(() -> User.newBuilder().id(userId).commentsOperable(false).build());
     }
 
     @Override
