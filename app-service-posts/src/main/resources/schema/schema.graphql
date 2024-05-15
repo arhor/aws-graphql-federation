@@ -69,4 +69,5 @@ enum Option {
 type User @key(fields: "id") @extends {
     id: UUID! @external
     posts: [Post!]
+    availableForPosts: Boolean
 }

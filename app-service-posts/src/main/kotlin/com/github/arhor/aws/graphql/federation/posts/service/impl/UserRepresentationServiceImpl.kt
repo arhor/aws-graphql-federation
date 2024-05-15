@@ -1,10 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.service.impl
 
-import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
-import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentationEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
@@ -31,14 +28,10 @@ class UserRepresentationServiceImpl(
         cache = cacheManager[Caches.IDEMPOTENT_ID_SET]
     }
 
-    override fun findUserRepresentation(userId: UUID): User {
-        return userRepresentationRepository.findByIdOrNull(userId)?.let(::mapEntityToUser)
-            ?: throw EntityNotFoundException(
-                entity = USER.TYPE_NAME,
-                condition = "${USER.Id} = $userId",
-                operation = Operation.LOOKUP,
-            )
-    }
+    override fun findUserRepresentation(userId: UUID): User =
+        userRepresentationRepository
+            .findByIdOrNull(userId)
+            .let { mapEntityToUser(userId, it) }
 
     override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID) {
         cache.get(idempotencyKey) {
@@ -52,9 +45,10 @@ class UserRepresentationServiceImpl(
         }
     }
 
-    private fun mapEntityToUser(entity: UserRepresentationEntity): User {
+    private fun mapEntityToUser(userId: UUID, user: UserRepresentationEntity?): User {
         return User(
-            id = entity.id,
+            id = user?.id ?: userId,
+            availableForPosts = user != null,
         )
     }
 }

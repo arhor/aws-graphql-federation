@@ -16,5 +16,7 @@ class FederatedEntityFetcher(
 
     @DgsEntityFetcher(name = USER.TYPE_NAME)
     fun resolveUser(values: Map<String, Any>): User =
-        userRepresentationService.findUserRepresentation(userId = values.getUuid(USER.Id))
+        userRepresentationService.findUserRepresentation(
+            userId = values.getUuid(USER.Id)
+        )
 }
