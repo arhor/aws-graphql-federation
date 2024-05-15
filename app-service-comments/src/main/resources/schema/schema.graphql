@@ -2,7 +2,6 @@
 # noinspection GraphQLMemberRedefinition
 # noinspection DgsEntityFetcherInspector
 
-scalar Long
 scalar UUID
 
 type Mutation {
