@@ -66,7 +66,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom(SpringBootPlugin.BOM_COORDINATES)
-        mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${libs.versions.graphql.dgs.bom.get()}")
+        mavenBom(libs.bom.graphql.dgs.get().toString())
     }
 }
 

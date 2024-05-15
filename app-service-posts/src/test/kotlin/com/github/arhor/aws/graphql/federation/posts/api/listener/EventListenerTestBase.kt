@@ -16,7 +16,7 @@ import org.testcontainers.utility.DockerImageName
 @Tag("integration")
 @SqsTest
 @DirtiesContext
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 abstract class EventListenerTestBase {
 
     @Autowired

@@ -19,7 +19,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 @Tag("integration")
 @SqsTest
 @DirtiesContext
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 abstract class EventListenerTestBase {
 
     @Container

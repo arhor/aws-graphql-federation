@@ -92,8 +92,8 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:${libs.versions.graphql.dgs.bom.get()}")
-        mavenBom("io.awspring.cloud:spring-cloud-aws-dependencies:${libs.versions.spring.cloud.aws.get()}")
+        mavenBom(libs.bom.graphql.dgs.get().toString())
+        mavenBom(libs.bom.spring.cloud.aws.get().toString())
     }
 }
 
