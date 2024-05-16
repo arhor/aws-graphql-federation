@@ -1,14 +1,16 @@
 package com.github.arhor.aws.graphql.federation.posts.service.impl
 
+import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
@@ -18,12 +20,14 @@ import com.github.arhor.aws.graphql.federation.posts.util.limit
 import com.github.arhor.aws.graphql.federation.posts.util.offset
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchException
 import org.assertj.core.api.Assertions.from
-import org.assertj.core.api.InstanceOfAssertFactories
+import org.assertj.core.api.InstanceOfAssertFactories.type
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -116,8 +120,7 @@ class PostServiceImplTest {
             verify(exactly = 1) { postRepository.findById(postId) }
 
             assertThat(result)
-                .isInstanceOf(EntityNotFoundException::class.java)
-                .asInstanceOf(InstanceOfAssertFactories.type(EntityNotFoundException::class.java))
+                .asInstanceOf(type(EntityNotFoundException::class.java))
                 .returns(expectedEntity, from { it.entity })
                 .returns(expectedCondition, from { it.condition })
                 .returns(expectedOperation, from { it.operation })
@@ -184,47 +187,79 @@ class PostServiceImplTest {
 
     @Nested
     @DisplayName("PostService :: getPostsByUserIds")
-    inner class GetPostsByUserIdsTest {
+    inner class GetPostsByUserIdsTest
+
+    @Nested
+    @DisplayName("PostService :: createPost")
+    inner class CreatePostTest {
         @Test
-        fun `should return expected posts grouped by user id when they exist in the repository`() {
+        fun `should successfully create new post publishing PostEvent#Created to the application`() {
             // Given
-            val post1Projection = createPostProjection()
-            val post2Projection = createPostProjection()
+            val input = CreatePostInput(
+                userId = UUID.randomUUID(),
+                title = "test-title",
+                content = "test-content",
+            )
+            val entity = PostEntity(
+                id = UUID.randomUUID(),
+                userId = input.userId,
+                title = input.title,
+                content = input.content,
+            )
+            val expectedPost = Post(
+                id = entity.id!!,
+                userId = entity.userId,
+                title = entity.title,
+                content = entity.content,
+            )
 
-            val projections = listOf(post1Projection, post2Projection)
-            val posts = projections.map { it.toPost() }
-
-            val expectedUserIds = projections.toSet { it.userId!! }
-            val expectedResult = posts.groupBy { it.userId }
-
-            every { postRepository.findAllByUserIdIn(any()) } returns projections
-            every { postMapper.mapToPost(any<PostProjection>()) } returnsMany posts
+            every { userRepository.existsById(any()) } returns true
+            every { postMapper.mapToEntity(any(), any()) } returns entity
+            every { postRepository.save(any()) } answers { firstArg() }
+            every { appEventPublisher.publishEvent(any<Any>()) } just runs
+            every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
 
             // When
-            val result = postService.getPostsByUserIds(expectedUserIds)
+            val result = postService.createPost(input)
 
             // Then
-            verify(exactly = 1) { postRepository.findAllByUserIdIn(expectedUserIds) }
-            verify(exactly = 1) { postMapper.mapToPost(post1Projection) }
-            verify(exactly = 1) { postMapper.mapToPost(post2Projection) }
+            verify(exactly = 1) { userRepository.existsById(input.userId) }
+            verify(exactly = 1) { postMapper.mapToEntity(input, emptySet()) }
+            verify(exactly = 1) { postRepository.save(entity) }
+            verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Created(id = entity.id!!)) }
+            verify(exactly = 1) { postMapper.mapToPost(entity) }
 
             assertThat(result)
                 .isNotNull()
-                .isEqualTo(expectedResult)
         }
 
         @Test
-        fun `should return empty map without repository calls when passed user ids empty`() {
+        fun `should throw EntityNotFoundException when specified user does not exist`() {
             // Given
-            val userIds = emptySet<UUID>()
+            val input = CreatePostInput(
+                userId = UUID.randomUUID(),
+                title = "test-title",
+                content = "test-content",
+            )
+
+            val expectedEntity = POST.TYPE_NAME
+            val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = ${input.userId} is not found"
+            val expectedOperation = Operation.CREATE
+
+            every { userRepository.existsById(any()) } returns false
 
             // When
-            val result = postService.getPostsByUserIds(userIds)
+            val result = catchException { postService.createPost(input) }
 
             // Then
+            verify(exactly = 1) { userRepository.existsById(input.userId) }
+
             assertThat(result)
                 .isNotNull()
-                .isEmpty()
+                .asInstanceOf(type(EntityNotFoundException::class.java))
+                .returns(expectedEntity, from { it.entity })
+                .returns(expectedCondition, from { it.condition })
+                .returns(expectedOperation, from { it.operation })
         }
     }
 
