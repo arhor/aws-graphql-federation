@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS "user_representations"
 (
-    "id" UUID NOT NULL PRIMARY KEY
+    "id"             UUID    NOT NULL PRIMARY KEY,
+    "posts_disabled" BOOLEAN NOT NULL
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "posts"

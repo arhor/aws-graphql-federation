@@ -35,7 +35,13 @@ class UserRepresentationServiceImpl(
 
     override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID) {
         cache.get(idempotencyKey) {
-            userRepresentationRepository.save(UserRepresentation(id = userId))
+            userRepresentationRepository.save(
+                UserRepresentation(
+                    id = userId,
+                    postsDisabled = false,
+                    shouldBePersisted = true,
+                )
+            )
         }
     }
 
@@ -49,6 +55,7 @@ class UserRepresentationServiceImpl(
         return User(
             id = user?.id ?: userId,
             postsOperable = user != null,
+            postsDisabled = user?.postsDisabled,
         )
     }
 }

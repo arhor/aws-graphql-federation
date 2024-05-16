@@ -91,7 +91,11 @@ class UserRepresentationServiceImplTest {
             // Given
             val idempotencyKey = UUID.randomUUID()
             val userId = UUID.randomUUID()
-            val expectedUser = UserRepresentation(userId)
+            val expectedUser = UserRepresentation(
+                id = userId,
+                postsDisabled = false,
+                shouldBePersisted = true,
+            )
 
             every { userRepresentationRepository.save(any()) } answers { firstArg() }
 
