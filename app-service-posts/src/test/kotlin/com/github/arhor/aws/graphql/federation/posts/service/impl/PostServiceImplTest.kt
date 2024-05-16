@@ -15,6 +15,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Cre
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
@@ -309,7 +310,67 @@ class PostServiceImplTest {
 
     @Nested
     @DisplayName("PostService :: updatePost")
-    inner class UpdatePostTest
+    inner class UpdatePostTest {
+        @Test
+        fun `should throw EntityNotFoundException when specified post does not exist`() {
+            // Given
+            val input = UpdatePostInput(id = UUID.randomUUID())
+
+            val expectedEntity = POST.TYPE_NAME
+            val expectedCondition = "${POST.Id} = ${input.id}"
+            val expectedOperation = Operation.UPDATE
+
+            every { postRepository.findById(any()) } returns Optional.empty()
+
+            // When
+            val result = catchException { postService.updatePost(input) }
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(input.id) }
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(type(EntityNotFoundException::class.java))
+                .returns(expectedEntity, from { it.entity })
+                .returns(expectedCondition, from { it.condition })
+                .returns(expectedOperation, from { it.operation })
+        }
+
+        @Test
+        fun `should throw EntityNotFoundException when specified user does not exist`() {
+            // Given
+            val input = UpdatePostInput(
+                id = UUID.randomUUID(),
+            )
+            val entity = PostEntity(
+                id = input.id,
+                userId = UUID.randomUUID(),
+                title = "test-title",
+                content = "test-content",
+            )
+
+            val expectedEntity = POST.TYPE_NAME
+            val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = ${entity.userId} is not found"
+            val expectedOperation = Operation.UPDATE
+
+            every { postRepository.findById(any()) } returns Optional.of(entity)
+            every { userRepository.existsById(any()) } returns false
+
+            // When
+            val result = catchException { postService.updatePost(input) }
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(input.id) }
+            verify(exactly = 1) { userRepository.existsById(entity.userId!!) }
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(type(EntityNotFoundException::class.java))
+                .returns(expectedEntity, from { it.entity })
+                .returns(expectedCondition, from { it.condition })
+                .returns(expectedOperation, from { it.operation })
+        }
+    }
 
     @Nested
     @DisplayName("PostService :: deletePost")
