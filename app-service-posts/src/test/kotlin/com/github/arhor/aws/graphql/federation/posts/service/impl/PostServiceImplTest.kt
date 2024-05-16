@@ -370,6 +370,42 @@ class PostServiceImplTest {
                 .returns(expectedCondition, from { it.condition })
                 .returns(expectedOperation, from { it.operation })
         }
+
+        @Test
+        fun `should not call PostRepository#save when there are no updates done to the entity`() {
+            // Given
+            val input = UpdatePostInput(
+                id = UUID.randomUUID(),
+            )
+            val entity = PostEntity(
+                id = input.id,
+                userId = UUID.randomUUID(),
+                title = "test-title",
+                content = "test-content",
+            )
+            val expectedPost = Post(
+                id = entity.id!!,
+                userId = entity.userId,
+                title = entity.title,
+                content = entity.content,
+            )
+
+            every { postRepository.findById(any()) } returns Optional.of(entity)
+            every { userRepository.existsById(any()) } returns true
+            every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
+
+            // When
+            val result = postService.updatePost(input)
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(input.id) }
+            verify(exactly = 1) { userRepository.existsById(entity.userId!!) }
+            verify(exactly = 1) { postMapper.mapToPost(entity) }
+
+            assertThat(result)
+                .isNotNull()
+                .returns(expectedPost, from { it.post })
+        }
     }
 
     @Nested

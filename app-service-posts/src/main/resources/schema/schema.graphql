@@ -42,11 +42,11 @@ input DeletePostInput {
 }
 
 type CreatePostResult {
-    user: Post!
+    post: Post!
 }
 
 type UpdatePostResult {
-    user: Post!
+    post: Post!
 }
 
 type DeletePostResult {

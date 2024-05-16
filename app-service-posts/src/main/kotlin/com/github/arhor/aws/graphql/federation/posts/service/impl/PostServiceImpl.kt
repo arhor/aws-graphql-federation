@@ -88,14 +88,15 @@ class PostServiceImpl(
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
     override fun updatePost(input: UpdatePostInput): UpdatePostResult {
+        val currentOperation = Operation.UPDATE
         val initialState = postRepository.findByIdOrNull(input.id)
             ?: throw EntityNotFoundException(
                 entity = POST.TYPE_NAME,
                 condition = "${POST.Id} = ${input.id}",
-                operation = Operation.UPDATE,
+                operation = currentOperation,
             )
 
-        ensureUserExists(initialState.userId!!, Operation.UPDATE)
+        ensureUserExists(initialState.userId!!, currentOperation)
 
         val currentState = initialState.copy(
             title = input.title ?: initialState.title,
