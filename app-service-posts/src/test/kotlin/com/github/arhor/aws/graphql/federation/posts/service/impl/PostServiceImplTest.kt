@@ -2,11 +2,11 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
+import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
@@ -178,4 +178,66 @@ class PostServiceImplTest {
                 .isEmpty()
         }
     }
+
+    @Nested
+    @DisplayName("PostService :: getPostsByUserIds")
+    inner class GetPostsByUserIdsTest {
+        @Test
+        fun `should return expected posts grouped by user id when they exist in the repository`() {
+            // Given
+            val post1Projection = createPostProjection()
+            val post2Projection = createPostProjection()
+
+            val projections = listOf(post1Projection, post2Projection)
+            val posts = projections.map { it.toPost() }
+
+            val expectedUserIds = projections.toSet { it.userId!! }
+            val expectedResult = posts.groupBy { it.userId }
+
+            every { postRepository.findAllByUserIdIn(any()) } returns projections
+            every { postMapper.mapToPost(any<PostProjection>()) } returnsMany posts
+
+            // When
+            val result = postService.getPostsByUserIds(expectedUserIds)
+
+            // Then
+            verify(exactly = 1) { postRepository.findAllByUserIdIn(expectedUserIds) }
+            verify(exactly = 1) { postMapper.mapToPost(post1Projection) }
+            verify(exactly = 1) { postMapper.mapToPost(post2Projection) }
+
+            assertThat(result)
+                .isNotNull()
+                .isEqualTo(expectedResult)
+        }
+
+        @Test
+        fun `should return empty map without repository calls when passed user ids empty`() {
+            // Given
+            val userIds = emptySet<UUID>()
+
+            // When
+            val result = postService.getPostsByUserIds(userIds)
+
+            // Then
+            assertThat(result)
+                .isNotNull()
+                .isEmpty()
+        }
+    }
+
+    private fun createPostProjection() = PostProjection(
+        id = UUID.randomUUID(),
+        userId = UUID.randomUUID(),
+        title = "test-title",
+        content = "test-content",
+        options = PostEntity.Options(),
+    )
+
+    private fun PostProjection.toPost() = Post(
+        id = id,
+        userId = userId,
+        title = title,
+        content = content,
+        options = options.items.toList(),
+    )
 }
