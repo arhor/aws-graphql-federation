@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
+import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
@@ -11,6 +12,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.UserReprese
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
@@ -187,7 +189,49 @@ class PostServiceImplTest {
 
     @Nested
     @DisplayName("PostService :: getPostsByUserIds")
-    inner class GetPostsByUserIdsTest
+    inner class GetPostsByUserIdsTest {
+        @Test
+        fun `should return expected posts grouped by user id when they exist in the repository`() {
+            // Given
+            val post1Projection = createPostProjection()
+            val post2Projection = createPostProjection()
+
+            val projections = listOf(post1Projection, post2Projection)
+            val posts = projections.map { it.toPost() }
+
+            val expectedUserIds = projections.toSet { it.userId!! }
+            val expectedResult = posts.groupBy { it.userId }
+
+            every { postRepository.findAllByUserIdIn(any()) } returns projections
+            every { postMapper.mapToPost(any<PostProjection>()) } returnsMany posts
+
+            // When
+            val result = postService.getPostsByUserIds(expectedUserIds)
+
+            // Then
+            verify(exactly = 1) { postRepository.findAllByUserIdIn(expectedUserIds) }
+            verify(exactly = 1) { postMapper.mapToPost(post1Projection) }
+            verify(exactly = 1) { postMapper.mapToPost(post2Projection) }
+
+            assertThat(result)
+                .isNotNull()
+                .isEqualTo(expectedResult)
+        }
+
+        @Test
+        fun `should return empty map without repository calls when passed user ids empty`() {
+            // Given
+            val userIds = emptySet<UUID>()
+
+            // When
+            val result = postService.getPostsByUserIds(userIds)
+
+            // Then
+            assertThat(result)
+                .isNotNull()
+                .isEmpty()
+        }
+    }
 
     @Nested
     @DisplayName("PostService :: createPost")
@@ -260,6 +304,59 @@ class PostServiceImplTest {
                 .returns(expectedEntity, from { it.entity })
                 .returns(expectedCondition, from { it.condition })
                 .returns(expectedOperation, from { it.operation })
+        }
+    }
+
+    @Nested
+    @DisplayName("PostService :: updatePost")
+    inner class UpdatePostTest
+
+    @Nested
+    @DisplayName("PostService :: deletePost")
+    inner class DeletePostTest {
+        @Test
+        fun `should successfully delete existing post publishing PostEvent#Deleted to the application`() {
+            // Given
+            val entity = PostEntity(
+                id = UUID.randomUUID(),
+                userId = UUID.randomUUID(),
+                title = "test-title",
+                content = "test-content",
+            )
+
+            every { postRepository.findById(any()) } returns Optional.of(entity)
+            every { postRepository.delete(any()) } just runs
+            every { appEventPublisher.publishEvent(any<PostEvent>()) } just runs
+
+            // When
+            val result = postService.deletePost(DeletePostInput(id = entity.id!!))
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(entity.id!!) }
+            verify(exactly = 1) { postRepository.delete(entity) }
+            verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Deleted(id = entity.id!!)) }
+
+            assertThat(result)
+                .isNotNull()
+                .returns(true, from { it.success })
+        }
+
+        @Test
+        fun `should return result with success false trying to delete post which does not exist`() {
+            // Given
+            val postId = UUID.randomUUID()
+
+            every { postRepository.findById(any()) } returns Optional.empty()
+
+            // When
+            val result = postService.deletePost(DeletePostInput(id = postId))
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(postId) }
+
+            assertThat(result)
+                .isNotNull()
+                .returns(false, from { it.success })
         }
     }
 
