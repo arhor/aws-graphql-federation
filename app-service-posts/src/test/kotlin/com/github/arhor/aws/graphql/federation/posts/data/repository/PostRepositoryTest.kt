@@ -33,7 +33,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return list containing expected posts data`() {
             // Given
-            val user = userRepresentationRepository.save(UserRepresentation(id = UUID.randomUUID()))
+            val user = createUser()
             val expectedPosts = createPosts(user).map { it.toProjection() }
 
             // When
@@ -49,7 +49,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when limit is zero`() {
             // Given
-            val user = userRepresentationRepository.save(UserRepresentation(id = UUID.randomUUID()))
+            val user = createUser()
             createPosts(user)
 
             // When
@@ -64,7 +64,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
-            val user = userRepresentationRepository.save(UserRepresentation(id = UUID.randomUUID()))
+            val user = createUser()
             val createdPosts = createPosts(user)
 
             // When
@@ -83,7 +83,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return list containing expected posts data`() {
             // Given
-            val user = userRepresentationRepository.save(UserRepresentation(id = UUID.randomUUID()))
+            val user = createUser()
             val expectedPosts = createPosts(user).map { it.toProjection() }
 
             // When
@@ -99,7 +99,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when userIds passed as empty list`() {
             // Given
-            val user = userRepresentationRepository.save(UserRepresentation(id = UUID.randomUUID()))
+            val user = createUser()
             createPosts(user)
 
             // When
@@ -114,7 +114,8 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
-            val user = userRepresentationRepository.save(UserRepresentation(id = UUID.randomUUID()))
+            val user =
+                userRepresentationRepository.save(UserRepresentation(id = UUID.randomUUID(), shouldBePersisted = true))
             createPosts(user)
             val incorrectUserIds = listOf(UUID.randomUUID())
 
@@ -127,6 +128,13 @@ class PostRepositoryTest : RepositoryTestBase() {
                 .isEmpty()
         }
     }
+
+    private fun createUser() = userRepresentationRepository.save(
+        UserRepresentation(
+            id = UUID.randomUUID(),
+            shouldBePersisted = true,
+        )
+    )
 
     private fun createPosts(user: UserRepresentation, num: Long = 3) = postRepository.saveAll(
         (1..num).map {
