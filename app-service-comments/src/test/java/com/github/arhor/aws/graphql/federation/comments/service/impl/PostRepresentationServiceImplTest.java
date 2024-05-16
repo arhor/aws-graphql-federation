@@ -38,7 +38,6 @@ class PostRepresentationServiceImplTest {
         postService.initialize();
     }
 
-
     @Nested
     @DisplayName("PostService :: findPostRepresentation")
     class FindPostRepresentationTest {

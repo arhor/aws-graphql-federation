@@ -1,51 +1,62 @@
-package com.github.arhor.aws.graphql.federation.comments.service;
+package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-@SpringJUnitConfig
-class CommentServiceTest {
+class CommentServiceImplTest {
 
-    @Configuration
-    @ComponentScan(
-        includeFilters = {@Filter(type = ASSIGNABLE_TYPE, classes = CommentService.class)},
-        useDefaultFilters = false
-    )
-    static class Config {
+    private final CommentRepository commentRepository = mock();
+    private final CommentMapper commentMapper = mock();
+    private final PostRepresentationRepository postRepository = mock();
+    private final UserRepresentationRepository userRepository = mock();
+
+    private CommentServiceImpl commentService;
+
+    @BeforeEach
+    void setUp() {
+        commentService = new CommentServiceImpl(
+            commentRepository,
+            commentMapper,
+            postRepository,
+            userRepository
+        );
+        commentService.initialize();
     }
 
-    @MockBean
-    private CommentRepository commentRepository;
-
-    @MockBean
-    private CommentMapper commentMapper;
-
-    @Autowired
-    private CommentService commentService;
+    @AfterEach
+    void tearDown() {
+        verifyNoMoreInteractions(
+            commentRepository,
+            commentMapper,
+            postRepository,
+            userRepository
+        );
+    }
 
     @Nested
     @DisplayName("CommentService :: getCommentsByUserIds")
@@ -105,8 +116,6 @@ class CommentServiceTest {
             var result = commentService.getCommentsByUserIds(userIds);
 
             // Then
-            verifyNoInteractions(commentRepository, commentMapper);
-
             assertThat(result)
                 .isNotNull()
                 .isEmpty();
@@ -188,16 +197,28 @@ class CommentServiceTest {
         @Test
         void should_create_comment_and_return_it_in_the_result() {
             // Given
-            final var input = CreateCommentInput.newBuilder().build();
-            final var entity = CommentEntity.builder().build();
-            final var dto = Comment.newBuilder().build();
+            final var input =
+                CreateCommentInput.newBuilder()
+                    .userId(UUID.randomUUID())
+                    .postId(UUID.randomUUID())
+                    .content("test-content")
+                    .build();
+
+            final var comment = CommentEntity.builder().build();
+            final var post = PostRepresentation.builder().build();
+
+            final var expectedComment = Comment.newBuilder().build();
 
             given(commentMapper.mapToEntity(any()))
-                .willReturn(entity);
+                .willReturn(comment);
+            given(postRepository.findById(any()))
+                .willReturn(Optional.of(post));
+            given(userRepository.existsById(any()))
+                .willReturn(true);
             given(commentRepository.save(any()))
-                .willReturn(entity);
+                .willReturn(comment);
             given(commentMapper.mapToDto(any()))
-                .willReturn(dto);
+                .willReturn(expectedComment);
 
             // When
             final var createCommentResult = commentService.createComment(input);
@@ -206,18 +227,24 @@ class CommentServiceTest {
             then(commentMapper)
                 .should()
                 .mapToEntity(input);
+            then(userRepository)
+                .should()
+                .existsById(input.getUserId());
+            then(postRepository)
+                .should()
+                .findById(input.getPostId());
             then(commentRepository)
                 .should()
-                .save(entity);
+                .save(comment);
             then(commentMapper)
                 .should()
-                .mapToDto(entity);
+                .mapToDto(comment);
 
             assertThat(createCommentResult)
                 .isNotNull()
                 .extracting(CreateCommentResult::getComment)
                 .isNotNull()
-                .isEqualTo(dto);
+                .isEqualTo(expectedComment);
         }
     }
 }

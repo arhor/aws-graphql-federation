@@ -3,8 +3,10 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
@@ -41,13 +43,14 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
-    private final PostRepresentationRepository postRepresentationRepository;
+    private final PostRepresentationRepository postRepository;
+    private final UserRepresentationRepository userRepository;
 
     private GroupingLoader<CommentEntity, Comment, UUID> usersCommentsLoader;
     private GroupingLoader<CommentEntity, Comment, UUID> postsCommentsLoader;
 
     @PostConstruct
-    public void init() {
+    public void initialize() {
         usersCommentsLoader = new GroupingLoader<>(
             commentRepository::findAllByUserIdIn,
             commentMapper::mapToDto,
@@ -75,7 +78,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CreateCommentResult createComment(final CreateCommentInput input) {
-        ensureCommentsEnabled(input.getPostId());
+        final var currentOperation = Operation.CREATE;
+
+        ensureUserExists(input.getUserId(), currentOperation);
+        ensureCommentsEnabled(input.getPostId(), currentOperation);
 
         var entity = commentMapper.mapToEntity(input);
         var create = commentRepository.save(entity);
@@ -88,17 +94,37 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Retryable(retryFor = OptimisticLockingFailureException.class)
     public UpdateCommentResult updateComment(final UpdateCommentInput input) {
+        final var currentOperation = Operation.UPDATE;
         final var commentId = input.getId();
-        final var initialState = commentRepository
-            .findById(commentId)
-            .orElseThrow(() -> new EntityNotFoundException(
-                COMMENT.TYPE_NAME,
-                COMMENT.Id + " = " + commentId,
-                Operation.UPDATE
-            ));
+        final var initialState =
+            commentRepository.findById(commentId)
+                .orElseThrow(() ->
+                    new EntityNotFoundException(
+                        COMMENT.TYPE_NAME,
+                        COMMENT.Id + " = " + commentId,
+                        currentOperation
+                    )
+                );
 
-        ensureCommentsEnabled(initialState.postId());
+        ensureUserExists(initialState.userId(), currentOperation);
+        ensureCommentsEnabled(initialState.postId(), currentOperation);
 
+        final var currentState = determineCurrentState(initialState, input);
+
+        final var entity =
+            initialState.equals(currentState)
+                ? currentState
+                : commentRepository.save(currentState);
+
+        final var comment = commentMapper.mapToDto(entity);
+
+        return new UpdateCommentResult(comment);
+    }
+
+    private CommentEntity determineCurrentState(
+        final CommentEntity initialState,
+        final UpdateCommentInput input
+    ) {
         final var currentStateBuilder = initialState.toBuilder();
         {
             final var content = input.getContent();
@@ -106,16 +132,7 @@ public class CommentServiceImpl implements CommentService {
                 currentStateBuilder.content(content);
             }
         }
-        final var currentState = currentStateBuilder.build();
-
-        final var entity =
-            initialState.equals(currentState)
-                ? initialState
-                : commentRepository.save(currentState);
-
-        final var comment = commentMapper.mapToDto(entity);
-
-        return new UpdateCommentResult(comment);
+        return currentStateBuilder.build();
     }
 
     @Override
@@ -131,18 +148,30 @@ public class CommentServiceImpl implements CommentService {
         return new DeleteCommentResult(result);
     }
 
-    private void ensureCommentsEnabled(final UUID postId) {
+    private void ensureCommentsEnabled(final UUID postId, final Operation operation) {
         final var post =
-            postRepresentationRepository.findById(postId)
+            postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        POST.TYPE_NAME,
-                        POST.Id + " = " + postId,
-                        Operation.CREATE
+                        COMMENT.TYPE_NAME,
+                        POST.TYPE_NAME + " with " + POST.Id + " = " + postId + " is not found",
+                        operation
                     )
                 );
 
         if (post.commentsDisabled()) {
             throw new IllegalStateException("Comments disabled for the post: " + postId);
+        }
+    }
+
+    private void ensureUserExists(final UUID userId, final Operation operation) {
+        final var userExists = userRepository.existsById(userId);
+
+        if (!userExists) {
+            throw new EntityNotFoundException(
+                COMMENT.TYPE_NAME,
+                USER.TYPE_NAME + " with " + USER.Id + " = " + userId + " is not found",
+                operation
+            );
         }
     }
 
