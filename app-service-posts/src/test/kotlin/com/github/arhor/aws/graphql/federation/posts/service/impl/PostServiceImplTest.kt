@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
+import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
@@ -39,6 +40,7 @@ class PostServiceImplTest {
     private val tagMapper = mockk<TagMapper>()
     private val tagRepository = mockk<TagRepository>()
     private val optionsMapper = mockk<OptionsMapper>()
+    private val userRepository = mockk<UserRepresentationRepository>()
 
     private val postService = PostServiceImpl(
         appEventPublisher,
@@ -47,6 +49,7 @@ class PostServiceImplTest {
         tagMapper,
         tagRepository,
         optionsMapper,
+        userRepository,
     )
 
     @AfterEach

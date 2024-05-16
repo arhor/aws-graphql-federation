@@ -7,7 +7,9 @@ import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
+import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostResult
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
@@ -40,6 +42,7 @@ class PostServiceImpl(
     private val tagMapper: TagMapper,
     private val tagRepository: TagRepository,
     private val optionsMapper: OptionsMapper,
+    private val userRepository: UserRepresentationRepository,
 ) : PostService {
 
     @Transactional(readOnly = true)
@@ -72,6 +75,8 @@ class PostServiceImpl(
 
     @Transactional
     override fun createPost(input: CreatePostInput): CreatePostResult {
+        ensureUserExists(input.userId, Operation.CREATE)
+
         val post = postMapper.mapToEntity(input = input, tags = materialize(input.tags))
             .let(postRepository::save)
             .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!)) }
@@ -83,11 +88,15 @@ class PostServiceImpl(
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
     override fun updatePost(input: UpdatePostInput): UpdatePostResult {
-        val initialState = postRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
-            entity = POST.TYPE_NAME,
-            condition = "${POST.Id} = ${input.id}",
-            operation = Operation.UPDATE,
-        )
+        val initialState = postRepository.findByIdOrNull(input.id)
+            ?: throw EntityNotFoundException(
+                entity = POST.TYPE_NAME,
+                condition = "${POST.Id} = ${input.id}",
+                operation = Operation.UPDATE,
+            )
+
+        ensureUserExists(initialState.userId!!, Operation.UPDATE)
+
         val currentState = initialState.copy(
             title = input.title ?: initialState.title,
             content = input.content ?: initialState.content,
@@ -117,18 +126,31 @@ class PostServiceImpl(
         )
     }
 
-    private fun materialize(tags: List<String>?): Set<TagEntity> = when {
-        tags != null -> {
-            val presentTags = tagRepository.findAllByNameIn(tags)
-            val missingTags = (tags - presentTags.toSet { it.name }).map { TagEntity(name = it) }
-            val createdTags = tagRepository.saveAll(missingTags)
+    private fun materialize(tags: List<String>?): Set<TagEntity> =
+        when {
+            tags != null -> {
+                val presentTags = tagRepository.findAllByNameIn(tags)
+                val missingTags = (tags - presentTags.toSet { it.name }).map { TagEntity(name = it) }
+                val createdTags = tagRepository.saveAll(missingTags)
 
-            HashSet<TagEntity>(presentTags.size + createdTags.size).apply {
-                addAll(presentTags)
-                addAll(createdTags)
+                HashSet<TagEntity>(presentTags.size + createdTags.size).apply {
+                    addAll(presentTags)
+                    addAll(createdTags)
+                }
             }
+
+            else -> emptySet()
         }
 
-        else -> emptySet()
+    private fun ensureUserExists(userId: UUID, operation: Operation) {
+        val userExists = userRepository.existsById(userId)
+
+        if (!userExists) {
+            throw EntityNotFoundException(
+                POST.TYPE_NAME,
+                "${USER.TYPE_NAME} with ${USER.Id} = $userId is not found",
+                operation,
+            )
+        }
     }
 }
