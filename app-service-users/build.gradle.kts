@@ -124,6 +124,7 @@ tasks {
         typeMapping = mutableMapOf(
             "UUID" to "java.util.UUID"
         )
+        addGeneratedAnnotation = true
     }
 
     jacocoTestReport {

@@ -120,6 +120,7 @@ tasks {
         typeMapping = mutableMapOf(
             "UUID" to "java.util.UUID"
         )
+        addGeneratedAnnotation = true
     }
 
     jacocoTestReport {
@@ -139,7 +140,7 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = 0.50.toBigDecimal()
+                    minimum = 0.80.toBigDecimal()
                 }
             }
         }
@@ -166,10 +167,7 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/aws/graphql/federation/comments/**/CommentsServiceRunner*.class",
-                        "com/github/arhor/aws/graphql/federation/comments/**/aop/",
                         "com/github/arhor/aws/graphql/federation/comments/**/config/",
-                        "com/github/arhor/aws/graphql/federation/comments/**/data/entity/",
                         "com/github/arhor/aws/graphql/federation/comments/**/generated/",
                     )
                 }

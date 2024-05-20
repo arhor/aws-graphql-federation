@@ -16,6 +16,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
+import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
@@ -121,6 +122,19 @@ public class CommentServiceImpl implements CommentService {
         return new UpdateCommentResult(comment);
     }
 
+    @Override
+    @Transactional
+    public DeleteCommentResult deleteComment(final DeleteCommentInput input) {
+        final var result = commentRepository.findById(input.getId())
+            .map((comment) -> {
+                commentRepository.delete(comment);
+                return true;
+            })
+            .orElse(false);
+
+        return new DeleteCommentResult(result);
+    }
+
     private CommentEntity determineCurrentState(
         final CommentEntity initialState,
         final UpdateCommentInput input
@@ -135,19 +149,6 @@ public class CommentServiceImpl implements CommentService {
         return currentStateBuilder.build();
     }
 
-    @Override
-    @Transactional
-    public DeleteCommentResult deleteComment(final DeleteCommentInput input) {
-        final var result = commentRepository.findById(input.getId())
-            .map((comment) -> {
-                commentRepository.delete(comment);
-                return true;
-            })
-            .orElse(false);
-
-        return new DeleteCommentResult(result);
-    }
-
     private void ensureCommentsEnabled(final UUID postId, final Operation operation) {
         final var post =
             postRepository.findById(postId)
@@ -159,7 +160,10 @@ public class CommentServiceImpl implements CommentService {
                 );
 
         if (post.commentsDisabled()) {
-            throw new IllegalStateException("Comments disabled for the post: " + postId);
+            throw new EntityCannotBeUpdatedException(
+                COMMENT.TYPE_NAME,
+                "Comments disabled for the " + POST.TYPE_NAME + " with " + POST.Id + " = " + postId
+            );
         }
     }
 

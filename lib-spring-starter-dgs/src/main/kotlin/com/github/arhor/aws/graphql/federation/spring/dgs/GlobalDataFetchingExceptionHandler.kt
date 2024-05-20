@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.spring.dgs
 
+import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.netflix.graphql.dgs.exceptions.DefaultDataFetcherExceptionHandler
@@ -30,6 +31,10 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DfeHandler) : Dfe
                 handleEntityDuplicateException(throwable, params)
             }
 
+            is EntityCannotBeUpdatedException -> {
+                handleEntityCannotBeUpdatedException(throwable, params)
+            }
+
             else -> {
                 delegate.handleException(params)
             }
@@ -41,13 +46,17 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DfeHandler) : Dfe
             else -> this
         }
 
-    private fun handleEntityNotFoundException(exception: EntityNotFoundException, params: DfeHandlerParams) =
+    private fun handleEntityNotFoundException(e: EntityNotFoundException, params: DfeHandlerParams) =
         TypedGraphQLError.newNotFoundBuilder()
-            .createResult(exception, params)
+            .createResult(e, params)
 
-    private fun handleEntityDuplicateException(exception: EntityDuplicateException, params: DfeHandlerParams) =
+    private fun handleEntityDuplicateException(e: EntityDuplicateException, params: DfeHandlerParams) =
         TypedGraphQLError.newConflictBuilder()
-            .createResult(exception, params)
+            .createResult(e, params)
+
+    private fun handleEntityCannotBeUpdatedException(e: EntityCannotBeUpdatedException, params: DfeHandlerParams) =
+        TypedGraphQLError.newPermissionDeniedBuilder()
+            .createResult(e, params)
 
     private fun TypedGraphQLError.Builder.createResult(throwable: Throwable, params: DfeHandlerParams) =
         this.message(throwable.message)
