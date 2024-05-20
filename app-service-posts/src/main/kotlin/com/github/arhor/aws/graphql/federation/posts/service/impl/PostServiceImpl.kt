@@ -129,7 +129,7 @@ class PostServiceImpl(
 
     private fun materialize(tags: List<String>?): Set<TagEntity> =
         when {
-            tags != null -> {
+            !tags.isNullOrEmpty() -> {
                 val presentTags = tagRepository.findAllByNameIn(tags)
                 val missingTags = (tags - presentTags.toSet { it.name }).map { TagEntity(name = it) }
                 val createdTags = tagRepository.saveAll(missingTags)

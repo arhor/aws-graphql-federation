@@ -406,6 +406,56 @@ class PostServiceImplTest {
                 .isNotNull()
                 .returns(expectedPost, from { it.post })
         }
+
+        @Test
+        fun `should call PostRepository#save when there are updates done to the entity`() {
+            // Given
+            val input = UpdatePostInput(
+                id = UUID.randomUUID(),
+                title = "new-test-title",
+                content = "new-test-content",
+                options = emptyList(),
+                tags = emptyList(),
+            )
+            val initialEntity = PostEntity(
+                id = input.id,
+                userId = UUID.randomUUID(),
+                title = "test-title",
+                content = "test-content",
+            )
+            val updatedEntity = initialEntity.copy(
+                title = input.title!!,
+                content = input.content!!,
+            )
+            val expectedPost = Post(
+                id = initialEntity.id!!,
+                userId = initialEntity.userId,
+                title = input.title!!,
+                content = input.content!!,
+            )
+
+            every { postRepository.findById(any()) } returns Optional.of(initialEntity)
+            every { userRepository.existsById(any()) } returns true
+            every { optionsMapper.mapFromList(any()) } returns PostEntity.Options()
+            every { tagMapper.mapToRefs(any()) } returns emptySet()
+            every { postRepository.save(any()) } answers { firstArg() }
+            every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
+
+            // When
+            val result = postService.updatePost(input)
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(input.id) }
+            verify(exactly = 1) { userRepository.existsById(initialEntity.userId!!) }
+            verify(exactly = 1) { optionsMapper.mapFromList(any()) }
+            verify(exactly = 1) { tagMapper.mapToRefs(any()) }
+            verify(exactly = 1) { postRepository.save(updatedEntity) }
+            verify(exactly = 1) { postMapper.mapToPost(updatedEntity) }
+
+            assertThat(result)
+                .isNotNull()
+                .returns(expectedPost, from { it.post })
+        }
     }
 
     @Nested
