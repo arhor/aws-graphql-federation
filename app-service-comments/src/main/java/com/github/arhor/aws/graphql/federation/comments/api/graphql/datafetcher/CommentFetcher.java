@@ -22,6 +22,7 @@ import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
 import lombok.RequiredArgsConstructor;
 import org.dataloader.MappedBatchLoader;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -50,16 +51,19 @@ public class CommentFetcher {
     /* ---------- Mutations ---------- */
 
     @DgsMutation
+    @PreAuthorize("isAuthenticated() && hasRole('USER')")
     public CreateCommentResult createComment(final @InputArgument CreateCommentInput input) {
         return commentService.createComment(input);
     }
 
     @DgsMutation
+    @PreAuthorize("isAuthenticated() && hasRole('USER')")
     public UpdateCommentResult updateComment(final @InputArgument UpdateCommentInput input) {
         return commentService.updateComment(input);
     }
 
     @DgsMutation
+    @PreAuthorize("isAuthenticated() && hasRole('USER')")
     public DeleteCommentResult deleteComment(final @InputArgument DeleteCommentInput input) {
         return commentService.deleteComment(input);
     }

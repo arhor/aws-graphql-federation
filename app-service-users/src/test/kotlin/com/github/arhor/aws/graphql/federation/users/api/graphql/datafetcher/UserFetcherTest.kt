@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
+import com.github.arhor.aws.graphql.federation.security.ConfigureSecurity
 import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
@@ -28,10 +29,13 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.test.context.support.WithAnonymousUser
+import org.springframework.security.test.context.support.WithMockUser
 import java.util.UUID
 
 @SpringBootTest(
     classes = [
+        ConfigureSecurity::class,
         DgsAutoConfiguration::class,
         DgsExtendedScalarsAutoConfiguration::class,
         GlobalDataFetchingExceptionHandler::class,
@@ -195,8 +199,8 @@ class UserFetcherTest {
     @Nested
     @DisplayName("mutation { createUser }")
     inner class CreateUserMutationTest {
-
         @Test
+        @WithAnonymousUser
         fun `should create new user and return result object containing created user data`() {
             // Given
             val id = UUID.randomUUID()
@@ -239,6 +243,7 @@ class UserFetcherTest {
     @DisplayName("mutation { updateUser }")
     inner class UpdateUserMutationTest {
         @Test
+        @WithMockUser
         fun `should update existing user and return result object containing updated user data`() {
             // Given
             val id = UUID.randomUUID()
@@ -281,6 +286,7 @@ class UserFetcherTest {
     @DisplayName("mutation { deleteUser }")
     inner class DeleteUserMutationTest {
         @Test
+        @WithMockUser
         fun `should delete existing user and return result object containing success field with value true`() {
             // Given
             val id = UUID.randomUUID()

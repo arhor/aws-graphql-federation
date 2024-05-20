@@ -19,6 +19,7 @@ import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
@@ -49,14 +50,17 @@ class PostFetcher(
     /* ---------- Mutations ---------- */
 
     @DgsMutation
+    @PreAuthorize("isAuthenticated() && hasRole('USER')")
     fun createPost(@InputArgument input: CreatePostInput): CreatePostResult =
         postService.createPost(input)
 
     @DgsMutation
+    @PreAuthorize("isAuthenticated() && hasRole('USER')")
     fun updatePost(@InputArgument input: UpdatePostInput): UpdatePostResult =
         postService.updatePost(input)
 
     @DgsMutation
+    @PreAuthorize("isAuthenticated() && hasRole('USER')")
     fun deletePost(@InputArgument input: DeletePostInput): DeletePostResult =
         postService.deletePost(input)
 }

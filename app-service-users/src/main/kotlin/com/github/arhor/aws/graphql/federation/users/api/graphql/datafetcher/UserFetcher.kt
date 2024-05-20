@@ -14,6 +14,7 @@ import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
+import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 
 @Trace
@@ -35,14 +36,17 @@ class UserFetcher(
     /* ---------- Mutations ---------- */
 
     @DgsMutation
+    @PreAuthorize("!isAuthenticated()")
     fun createUser(@InputArgument input: CreateUserInput): CreateUserResult =
         userService.createUser(input)
 
     @DgsMutation
+    @PreAuthorize("isAuthenticated() && hasRole('USER')")
     fun updateUser(@InputArgument input: UpdateUserInput): UpdateUserResult =
         userService.updateUser(input)
 
     @DgsMutation
+    @PreAuthorize("isAuthenticated() && hasRole('USER')")
     fun deleteUser(@InputArgument input: DeleteUserInput): DeleteUserResult =
         userService.deleteUser(input)
 }
