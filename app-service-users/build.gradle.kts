@@ -170,10 +170,7 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/aws/graphql/federation/users/**/UsersServiceRunner*.class",
-                        "com/github/arhor/aws/graphql/federation/users/**/aop/",
                         "com/github/arhor/aws/graphql/federation/users/**/config/",
-                        "com/github/arhor/aws/graphql/federation/users/**/data/entity/",
                         "com/github/arhor/aws/graphql/federation/users/**/generated/",
                     )
                 }

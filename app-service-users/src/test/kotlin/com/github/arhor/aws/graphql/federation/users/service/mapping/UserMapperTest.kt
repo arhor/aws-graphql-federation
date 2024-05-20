@@ -43,7 +43,7 @@ class UserMapperTest {
             // Given
             val expectedUsername = "test-username"
             val expectedPassword = "test-password"
-            val expectedAuthRef = AuthRef(authId = UUID.randomUUID())
+            val expectedAuthRef = AuthRef(authId = 1)
             val expectedAuthorities = setOf(expectedAuthRef)
 
             val input = mockk<CreateUserInput>()

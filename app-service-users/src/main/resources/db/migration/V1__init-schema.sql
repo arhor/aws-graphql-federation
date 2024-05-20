@@ -1,5 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
 CREATE TABLE IF NOT EXISTS "users"
 (
     "id"                UUID          NOT NULL PRIMARY KEY,
@@ -12,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "users"
 
 CREATE TABLE IF NOT EXISTS "authorities"
 (
-    "id"   UUID         NOT NULL PRIMARY KEY,
+    "id"   SERIAL       NOT NULL PRIMARY KEY,
     "name" VARCHAR(128) NOT NULL UNIQUE
 
 ) WITH (OIDS = FALSE);
@@ -20,10 +18,10 @@ CREATE TABLE IF NOT EXISTS "authorities"
 CREATE TABLE IF NOT EXISTS "users_has_authorities"
 (
     "user_id" UUID NOT NULL,
-    "auth_id" UUID NOT NULL,
+    "auth_id" INT  NOT NULL,
 
-    CONSTRAINT "UQ__users_has_authorities__user_id__auth_id"
-        UNIQUE ("user_id", "auth_id"),
+    CONSTRAINT "PK__users_has_authorities__user_id__auth_id"
+        PRIMARY KEY ("user_id", "auth_id"),
 
     CONSTRAINT "FK__users_has_authorities__users"
         FOREIGN KEY ("user_id")
@@ -38,4 +36,6 @@ CREATE TABLE IF NOT EXISTS "users_has_authorities"
             ON DELETE CASCADE
 ) WITH (OIDS = FALSE);
 
-INSERT INTO "authorities" ("id", "name") VALUES (gen_random_uuid(), 'ROLE_USER');
+INSERT INTO "authorities" ("name")
+    VALUES ('ROLE_USER')
+    ON CONFLICT DO NOTHING;

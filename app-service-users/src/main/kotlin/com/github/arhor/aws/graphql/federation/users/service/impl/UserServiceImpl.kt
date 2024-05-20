@@ -7,7 +7,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.users.data.entity.PredefinedAuthorities
+import com.github.arhor.aws.graphql.federation.users.data.entity.PredefinedAuthority
 import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
@@ -91,8 +91,7 @@ class UserServiceImpl(
                 operation = Operation.CREATE,
             )
         }
-        val auth = authRepository.findByName(PredefinedAuthorities.ROLE_USER.name)
-            ?: throw IllegalStateException("Cannot find default authority creating a new user")
+        val auth = authRepository.findByName(PredefinedAuthority.ROLE_USER)
 
         val user = input.copy(password = passwordEncoder.encode(input.password))
             .let { userMapper.mapToEntity(it, auth) }

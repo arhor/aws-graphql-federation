@@ -11,10 +11,10 @@ class UserIdToAuthNamesResultSetExtractor : ResultSetExtractor<Map<UUID, List<St
     override fun extractData(rs: ResultSet): Map<UUID, List<String>> {
         val result = HashMap<UUID, List<String>>()
         while (rs.next()) {
-            val post = rs.getObject(SELECT_COL_USER_ID, UUID::class.java)
-            val tags = rs.getArray(SELECT_COL_AUTHORITIES)
+            val userId = rs.getObject(SELECT_COL_USER_ID, UUID::class.java)
+            val authorities = rs.getArray(SELECT_COL_AUTHORITIES)
 
-            result[post] = (tags.array as Array<*>).mapNotNull { it.toString() }
+            result[userId] = (authorities.array as Array<*>).mapNotNull { it?.toString() }
         }
         return result
     }
@@ -22,7 +22,9 @@ class UserIdToAuthNamesResultSetExtractor : ResultSetExtractor<Map<UUID, List<St
     companion object {
         const val BEAN_NAME = "userIdToAuthNamesResultSetExtractor"
 
-        private const val SELECT_COL_USER_ID = "user_id"
+        // @formatter:off
+        private const val SELECT_COL_USER_ID     = "user_id"
         private const val SELECT_COL_AUTHORITIES = "authorities"
+        // @formatter:on
     }
 }
