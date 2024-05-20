@@ -31,7 +31,7 @@ class PostEventPublisherImpl(
         maxAttemptsExpression = "\${app-props.retry.max-attempts}",
     )
     override fun publish(event: PostEvent, traceId: UUID) {
-        val snsTopicName = appProps.aws.sns.postEvents
+        val snsTopicName = appProps.aws!!.sns!!.postEvents!!
         val notification = SnsNotification(event, event.attributes(TRACING_ID_KEY to traceId.toString()))
 
         sns.sendNotification(snsTopicName, notification)
