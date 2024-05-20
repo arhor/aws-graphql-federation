@@ -147,7 +147,7 @@ tasks {
         violationRules {
             rule {
                 limit {
-                    minimum = 0.50.toBigDecimal()
+                    minimum = 0.80.toBigDecimal()
                 }
             }
         }
@@ -174,10 +174,7 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/aws/graphql/federation/posts/**/PostsServiceRunner*.class",
-                        "com/github/arhor/aws/graphql/federation/posts/**/aop/",
                         "com/github/arhor/aws/graphql/federation/posts/**/config/",
-                        "com/github/arhor/aws/graphql/federation/posts/**/data/entity/",
                         "com/github/arhor/aws/graphql/federation/posts/**/generated/",
                     )
                 }
