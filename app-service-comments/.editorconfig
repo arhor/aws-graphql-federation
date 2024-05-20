@@ -14,3 +14,7 @@ ij_formatter_tags_enabled = true
 
 [*.yml]
 indent_size = 2
+
+[*.java]
+ij_java_keep_simple_classes_in_one_line = true
+ij_java_keep_simple_methods_in_one_line = true
