@@ -56,7 +56,7 @@ class UserEventPublisherImplTest {
         val actualSnsTopicName = slot<String>()
         val actualNotification = slot<SnsNotification<*>>()
 
-        every { appProps.aws.sns.userEvents } returns TEST_USER_EVENTS
+        every { appProps.aws!!.sns!!.userEvents } returns TEST_USER_EVENTS
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // When
@@ -81,14 +81,14 @@ class UserEventPublisherImplTest {
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
 
-        every { appProps.aws.sns.userEvents } returns TEST_USER_EVENTS
+        every { appProps.aws!!.sns!!.userEvents } returns TEST_USER_EVENTS
         every { sns.sendNotification(any(), any()) } throwsMany errors andThenJust runs
 
         // When
         userEventPublisher.publish(event, traceId)
 
         // Then
-        verify(exactly = 3) { appProps.aws.sns.userEvents }
+        verify(exactly = 3) { appProps.aws!!.sns!!.userEvents }
         verify(exactly = 3) { sns.sendNotification(any(), any()) }
 
         confirmVerified(appProps, sns)
