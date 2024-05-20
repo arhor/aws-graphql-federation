@@ -15,10 +15,6 @@ class PreAuthenticatedUserAuthenticationProcessingFilter(
     authManager: AuthenticationManager,
 ) : AbstractAuthenticationProcessingFilter(requestMatcher, authManager) {
 
-    companion object {
-        const val PRE_AUTHENTICATED_USER_HEADER = "x-current-user"
-    }
-
     override fun attemptAuthentication(
         req: HttpServletRequest,
         res: HttpServletResponse,
@@ -36,5 +32,9 @@ class PreAuthenticatedUserAuthenticationProcessingFilter(
     ) {
         SecurityContextHolder.getContext().authentication = auth
         next.doFilter(req, res)
+    }
+
+    companion object {
+        const val PRE_AUTHENTICATED_USER_HEADER = "x-current-user"
     }
 }

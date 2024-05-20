@@ -46,7 +46,7 @@ class ConfigureCoreApplicationComponents {
         val attributes = RequestContextHolder.getRequestAttributes()
         val contextMap = MDC.getCopyOfContextMap()
 
-        if (attributes == null && contextMap == null) it else Runnable {
+        return@TaskDecorator if (attributes == null && contextMap == null) it else Runnable {
             try {
                 RequestContextHolder.setRequestAttributes(attributes)
                 MDC.setContextMap(contextMap ?: emptyMap())

@@ -34,7 +34,7 @@ public class CommentFetcher {
 
     private final CommentService commentService;
 
-    /* Queries */
+    /* ---------- Queries ---------- */
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Comments)
     public CompletableFuture<List<Comment>> userComments(final DgsDataFetchingEnvironment dfe) {
@@ -47,7 +47,7 @@ public class CommentFetcher {
         return loadWith(PostCommentsBatchLoader.class, dfe, Post::getId);
     }
 
-    /* Mutations */
+    /* ---------- Mutations ---------- */
 
     @DgsMutation
     public CreateCommentResult createComment(final @InputArgument CreateCommentInput input) {
@@ -64,7 +64,7 @@ public class CommentFetcher {
         return commentService.deleteComment(input);
     }
 
-    /* Internal implementation */
+    /* ---------- Internal implementation ---------- */
 
     /**
      * @param loaderType concrete class of the data loader to use

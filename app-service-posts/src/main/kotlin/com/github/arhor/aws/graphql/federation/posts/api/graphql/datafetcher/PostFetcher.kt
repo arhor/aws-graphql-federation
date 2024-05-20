@@ -27,7 +27,8 @@ import java.util.concurrent.CompletableFuture
 class PostFetcher(
     private val postService: PostService,
 ) {
-    /* Queries */
+
+    /* ---------- Queries ---------- */
 
     @DgsQuery
     fun post(@InputArgument id: UUID): Post =
@@ -45,7 +46,7 @@ class PostFetcher(
         return loader.load(source.id)
     }
 
-    /* Mutations */
+    /* ---------- Mutations ---------- */
 
     @DgsMutation
     fun createPost(@InputArgument input: CreatePostInput): CreatePostResult =

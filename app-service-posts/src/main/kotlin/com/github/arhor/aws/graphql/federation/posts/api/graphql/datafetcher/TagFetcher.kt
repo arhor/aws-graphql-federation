@@ -14,10 +14,10 @@ import java.util.concurrent.CompletableFuture
 @DgsComponent
 class TagFetcher {
 
-    /* Queries */
+    /* ---------- Queries ---------- */
 
-    @DgsData(parentType = POST.TYPE_NAME)
-    fun tags(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
+    @DgsData(parentType = POST.TYPE_NAME, field = POST.Tags)
+    fun postTags(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
         val loader = dfe.getDataLoader<UUID, List<String>>(TagBatchLoader::class.java)
         val source = dfe.getSource<Post>()
 

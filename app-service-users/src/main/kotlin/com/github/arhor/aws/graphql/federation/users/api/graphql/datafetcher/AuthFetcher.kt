@@ -14,10 +14,10 @@ import java.util.concurrent.CompletableFuture
 @DgsComponent
 class AuthFetcher {
 
-    /* Queries */
+    /* ---------- Queries ---------- */
 
-    @DgsData(parentType = USER.TYPE_NAME)
-    fun authorities(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
+    @DgsData(parentType = USER.TYPE_NAME, field = USER.Authorities)
+    fun userAuthorities(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
         val loader = dfe.getDataLoader<UUID, List<String>>(AuthBatchLoader::class.java)
         val source = dfe.getSource<User>()
 
