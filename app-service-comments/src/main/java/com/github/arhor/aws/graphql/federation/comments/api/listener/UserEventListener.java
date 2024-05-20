@@ -21,7 +21,7 @@ public class UserEventListener {
 
     private final UserRepresentationService userRepresentationService;
 
-    @SqsListener("${app-props.aws.sqs.user-created-events}")
+    @SqsListener("${app-props.aws.sqs.user-created-events:}")
     public void handleUserCreatedEvent(
         @Payload final UserEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId
@@ -35,7 +35,7 @@ public class UserEventListener {
         );
     }
 
-    @SqsListener("${app-props.aws.sqs.user-deleted-events}")
+    @SqsListener("${app-props.aws.sqs.user-deleted-events:}")
     public void handleUserDeletedEvent(
         @Payload final UserEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId

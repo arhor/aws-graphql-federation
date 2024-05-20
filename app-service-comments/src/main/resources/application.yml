@@ -45,13 +45,13 @@ dgs:
       enabled: false
 
 app-props:
-  retry-attempts: 5
   aws:
     sqs:
       user-created-events: \${AWS_SQS_USER_CREATED_EVENTS_FOR_COMMENTS}
       user-deleted-events: \${AWS_SQS_USER_DELETED_EVENTS_FOR_COMMENTS}
       post-created-events: \${AWS_SQS_POST_CREATED_EVENTS_FOR_COMMENTS}
       post-deleted-events: \${AWS_SQS_POST_DELETED_EVENTS_FOR_COMMENTS}
+  retry-attempts: 5
 
 ---
 
