@@ -56,7 +56,7 @@ class PostEventPublisherImplTest {
         val actualSnsTopicName = slot<String>()
         val actualNotification = slot<SnsNotification<*>>()
 
-        every { appProps.aws.sns.postEvents } returns TEST_POST_EVENTS
+        every { appProps.aws!!.sns!!.postEvents } returns TEST_POST_EVENTS
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // When
@@ -81,14 +81,14 @@ class PostEventPublisherImplTest {
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
 
-        every { appProps.aws.sns.postEvents } returns TEST_POST_EVENTS
+        every { appProps.aws!!.sns!!.postEvents } returns TEST_POST_EVENTS
         every { sns.sendNotification(any(), any()) } throwsMany errors andThenJust runs
 
         // When
         postEventPublisher.publish(event, traceId)
 
         // Then
-        verify(exactly = 3) { appProps.aws.sns.postEvents }
+        verify(exactly = 3) { appProps.aws!!.sns!!.postEvents }
         verify(exactly = 3) { sns.sendNotification(any(), any()) }
 
         confirmVerified(appProps, sns)
