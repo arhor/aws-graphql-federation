@@ -44,21 +44,20 @@ class PostEventProcessorImplTest {
         @Test
         fun `should publish PostEvent#Created using PostEventPublisher instance`() {
             // Given
-            val postId = UUID.randomUUID()
             val eventTypeCode = PostEvent.Type.POST_EVENT_CREATED.code
             val eventData = mapOf("id" to postId)
-            val outboxMessage = OutboxMessageEntity(
-                id = UUID.randomUUID(),
+            val message = OutboxMessageEntity(
+                id = messageId,
                 type = eventTypeCode,
                 data = eventData,
-                traceId = UUID.randomUUID(),
+                traceId = traceId,
             )
-            val outboxEvents = listOf(outboxMessage)
+            val messages = listOf(message)
             val event = PostEvent.Created(id = postId)
 
-            every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
+            every { outboxMessageRepository.dequeueOldest(any(), any()) } returns messages
             every { objectMapper.convertValue(any(), any<Class<PostEvent>>()) } returns event
-            every { postEventPublisher.publish(any(), any()) } just runs
+            every { postEventPublisher.publish(any(), any(), any()) } just runs
 
             // When
             postEventProcessor.processPostCreatedEvents()
@@ -66,7 +65,7 @@ class PostEventProcessorImplTest {
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
             verify(exactly = 1) { objectMapper.convertValue(eventData, PostEvent.Created::class.java) }
-            verify(exactly = 1) { postEventPublisher.publish(event, outboxMessage.traceId) }
+            verify(exactly = 1) { postEventPublisher.publish(event, message.traceId, message.id!!) }
         }
     }
 
@@ -76,21 +75,20 @@ class PostEventProcessorImplTest {
         @Test
         fun `should publish PostEvent#Deleted using PostEventPublisher instance`() {
             // Given
-            val postId = UUID.randomUUID()
             val eventTypeCode = PostEvent.Type.POST_EVENT_DELETED.code
             val eventData = mapOf("ids" to setOf(postId))
-            val outboxMessage = OutboxMessageEntity(
-                id = UUID.randomUUID(),
+            val message = OutboxMessageEntity(
+                id = messageId,
                 type = eventTypeCode,
                 data = eventData,
-                traceId = UUID.randomUUID(),
+                traceId = traceId,
             )
-            val outboxEvents = listOf(outboxMessage)
+            val messages = listOf(message)
             val event = PostEvent.Deleted(id = postId)
 
-            every { outboxMessageRepository.dequeueOldest(any(), any()) } returns outboxEvents
+            every { outboxMessageRepository.dequeueOldest(any(), any()) } returns messages
             every { objectMapper.convertValue(any(), any<Class<PostEvent>>()) } returns event
-            every { postEventPublisher.publish(any(), any()) } just runs
+            every { postEventPublisher.publish(any(), any(), any()) } just runs
 
             // When
             postEventProcessor.processPostDeletedEvents()
@@ -98,7 +96,13 @@ class PostEventProcessorImplTest {
             // Then
             verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventTypeCode, 50) }
             verify(exactly = 1) { objectMapper.convertValue(eventData, PostEvent.Deleted::class.java) }
-            verify(exactly = 1) { postEventPublisher.publish(event, outboxMessage.traceId) }
+            verify(exactly = 1) { postEventPublisher.publish(event, message.traceId, message.id!!) }
         }
+    }
+
+    companion object {
+        private val postId = UUID.randomUUID()
+        private val traceId = UUID.randomUUID()
+        private val messageId = UUID.randomUUID()
     }
 }

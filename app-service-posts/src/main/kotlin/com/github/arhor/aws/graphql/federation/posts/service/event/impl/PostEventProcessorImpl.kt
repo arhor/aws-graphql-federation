@@ -39,7 +39,11 @@ class PostEventProcessorImpl(
         for (message in outboxMessages) {
             val event = objectMapper.convertValue(message.data, eventType.type.java)
 
-            outboxEventPublisher.publish(event, message.traceId)
+            outboxEventPublisher.publish(
+                event = event,
+                traceId = message.traceId,
+                idempotentKey = message.id!!,
+            )
         }
     }
 

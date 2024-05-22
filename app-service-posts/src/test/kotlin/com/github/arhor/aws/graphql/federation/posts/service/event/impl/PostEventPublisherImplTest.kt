@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.posts.service.event.impl
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.service.event.PostEventPublisher
+import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.ninjasquad.springmockk.MockkBean
 import io.awspring.cloud.sns.core.SnsNotification
@@ -50,8 +51,11 @@ class PostEventPublisherImplTest {
     @Test
     fun `should send outbox event as notifications to the SNS with correct payload and headers`() {
         // Given
-        val traceId = UUID.randomUUID()
-        val event = PostEvent.Deleted(id = UUID.randomUUID())
+        val event = PostEvent.Deleted(id = postId)
+        val expectedHeaders = event.attributes(
+            TRACING_ID_KEY to traceId.toString(),
+            IDEMPOTENT_KEY to idempotentKey.toString(),
+        )
 
         val actualSnsTopicName = slot<String>()
         val actualNotification = slot<SnsNotification<*>>()
@@ -60,7 +64,7 @@ class PostEventPublisherImplTest {
         every { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) } just runs
 
         // When
-        postEventPublisher.publish(event, traceId)
+        postEventPublisher.publish(event, traceId, idempotentKey)
 
         // Then
         assertThat(actualSnsTopicName.captured)
@@ -69,15 +73,14 @@ class PostEventPublisherImplTest {
         assertThat(actualNotification.captured)
             .satisfies(
                 { assertThat(it.payload).isEqualTo(event) },
-                { assertThat(it.headers).isEqualTo(event.attributes(TRACING_ID_KEY to traceId.toString())) },
+                { assertThat(it.headers).isEqualTo(expectedHeaders) },
             )
     }
 
     @Test
     fun `should retry on MessagingException sending notification to SNS`() {
         // Given
-        val traceId = UUID.randomUUID()
-        val event = PostEvent.Deleted(id = UUID.randomUUID())
+        val event = PostEvent.Deleted(id = postId)
         val error = MessagingException("Cannot deliver message during test!")
         val errors = listOf(error, error)
 
@@ -85,7 +88,7 @@ class PostEventPublisherImplTest {
         every { sns.sendNotification(any(), any()) } throwsMany errors andThenJust runs
 
         // When
-        postEventPublisher.publish(event, traceId)
+        postEventPublisher.publish(event, traceId, idempotentKey)
 
         // Then
         verify(exactly = 3) { appProps.aws!!.sns!!.postEvents }
@@ -96,6 +99,10 @@ class PostEventPublisherImplTest {
 
     companion object {
         private const val TEST_POST_EVENTS = "test-post-events"
+
+        private val postId = UUID.randomUUID()
+        private val traceId = UUID.randomUUID()
+        private val idempotentKey = UUID.randomUUID()
 
         @JvmStatic
         @DynamicPropertySource

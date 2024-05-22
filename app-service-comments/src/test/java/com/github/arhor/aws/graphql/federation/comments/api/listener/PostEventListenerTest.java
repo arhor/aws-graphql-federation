@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.IDEMPOTENT_KEY;
 import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
@@ -24,6 +25,10 @@ class PostEventListenerTest extends EventListenerTestBase {
 
     private static final String POST_CREATED_TEST_QUEUE = "post-created-test-queue";
     private static final String POST_DELETED_TEST_QUEUE = "post-deleted-test-queue";
+
+    private static final UUID postId = UUID.randomUUID();
+    private static final UUID traceId = UUID.randomUUID();
+    private static final UUID idempotentKey = UUID.randomUUID();
 
     @MockBean
     private PostRepresentationService postRepresentationService;
@@ -43,15 +48,17 @@ class PostEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_createPostRepresentation_method_on_post_created_event() {
         // Given
-        final var traceId = UUID.randomUUID();
-        final var event = new PostEvent.Created(UUID.randomUUID());
+        final var event = new PostEvent.Created(postId);
 
         // When
         sqsTemplate.send(
             POST_CREATED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(TRACING_ID_KEY, traceId)
+                Map.of(
+                    TRACING_ID_KEY, traceId,
+                    IDEMPOTENT_KEY, idempotentKey
+                )
             )
         );
 
@@ -61,7 +68,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postRepresentationService)
                     .should()
-                    .createPostRepresentation(event.getId(), traceId);
+                    .createPostRepresentation(event.getId(), idempotentKey);
 
                 then(postRepresentationService)
                     .shouldHaveNoMoreInteractions();
@@ -71,15 +78,17 @@ class PostEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_deletePostRepresentation_method_on_post_deleted_event() {
         // Given
-        final var traceId = UUID.randomUUID();
-        final var event = new PostEvent.Deleted(UUID.randomUUID());
+        final var event = new PostEvent.Deleted(postId);
 
         // When
         sqsTemplate.send(
             POST_DELETED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(TRACING_ID_KEY, traceId)
+                Map.of(
+                    TRACING_ID_KEY, traceId,
+                    IDEMPOTENT_KEY, idempotentKey
+                )
             )
         );
 
@@ -89,7 +98,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postRepresentationService)
                     .should()
-                    .deletePostRepresentation(event.getId(), traceId);
+                    .deletePostRepresentation(event.getId(), idempotentKey);
 
                 then(postRepresentationService)
                     .shouldHaveNoMoreInteractions();

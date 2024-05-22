@@ -33,8 +33,8 @@ class UserRepresentationServiceImpl(
             .findByIdOrNull(userId)
             .let { mapEntityToUser(userId, it) }
 
-    override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID) {
-        cache.get(idempotencyKey) {
+    override fun createUserRepresentation(userId: UUID, idempotentKey: UUID) {
+        cache.get(idempotentKey) {
             userRepresentationRepository.save(
                 UserRepresentation(
                     id = userId,
@@ -45,8 +45,8 @@ class UserRepresentationServiceImpl(
         }
     }
 
-    override fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID) {
-        cache.get(idempotencyKey) {
+    override fun deleteUserRepresentation(userId: UUID, idempotentKey: UUID) {
+        cache.get(idempotentKey) {
             userRepresentationRepository.deleteById(userId)
         }
     }

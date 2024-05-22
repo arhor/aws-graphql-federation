@@ -5,6 +5,6 @@ import java.util.UUID
 
 interface UserRepresentationService {
     fun findUserRepresentation(userId: UUID): User
-    fun createUserRepresentation(userId: UUID, idempotencyKey: UUID)
-    fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID)
+    fun createUserRepresentation(userId: UUID, idempotentKey: UUID)
+    fun deleteUserRepresentation(userId: UUID, idempotentKey: UUID)
 }

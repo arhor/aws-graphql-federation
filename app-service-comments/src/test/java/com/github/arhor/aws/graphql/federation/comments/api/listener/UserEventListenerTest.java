@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.IDEMPOTENT_KEY;
 import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
@@ -24,6 +25,10 @@ class UserEventListenerTest extends EventListenerTestBase {
 
     private static final String USER_CREATED_TEST_QUEUE = "user-created-test-queue";
     private static final String USER_DELETED_TEST_QUEUE = "user-deleted-test-queue";
+
+    private static final UUID userId = UUID.randomUUID();
+    private static final UUID traceId = UUID.randomUUID();
+    private static final UUID idempotentKey = UUID.randomUUID();
 
     @MockBean
     private UserRepresentationService userRepresentationService;
@@ -43,15 +48,17 @@ class UserEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_createUserRepresentation_method_on_user_created_event() {
         // Given
-        final var traceId = UUID.randomUUID();
-        final var event = new UserEvent.Created(UUID.randomUUID());
+        final var event = new UserEvent.Created(userId);
 
         // When
         sqsTemplate.send(
             USER_CREATED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(TRACING_ID_KEY, traceId)
+                Map.of(
+                    TRACING_ID_KEY, traceId,
+                    IDEMPOTENT_KEY, idempotentKey
+                )
             )
         );
 
@@ -61,7 +68,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userRepresentationService)
                     .should()
-                    .createUserRepresentation(event.getId(), traceId);
+                    .createUserRepresentation(event.getId(), idempotentKey);
 
                 then(userRepresentationService)
                     .shouldHaveNoMoreInteractions();
@@ -71,15 +78,17 @@ class UserEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_deleteUserRepresentation_method_on_user_deleted_event() {
         // Given
-        final var traceId = UUID.randomUUID();
-        final var event = new UserEvent.Deleted(UUID.randomUUID());
+        final var event = new UserEvent.Deleted(userId);
 
         // When
         sqsTemplate.send(
             USER_DELETED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
-                Map.of(TRACING_ID_KEY, traceId)
+                Map.of(
+                    TRACING_ID_KEY, traceId,
+                    IDEMPOTENT_KEY, idempotentKey
+                )
             )
         );
 
@@ -89,7 +98,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userRepresentationService)
                     .should()
-                    .deleteUserRepresentation(event.getId(), traceId);
+                    .deleteUserRepresentation(event.getId(), idempotentKey);
 
                 then(userRepresentationService)
                     .shouldHaveNoMoreInteractions();
