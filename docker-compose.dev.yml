@@ -27,13 +27,15 @@ services:
   app-service-users:
     image: app-service-users:latest
     build:
-      context: app-service-users
+      context: ./app-service-users
+    ports:
+      - "5001:5001"
     depends_on:
       - app-service-users-db
       - localstack
     env_file:
       - "./app-service-users/.env"
-      - ".env"
+      - "./.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5001/actuator/health | grep UP || exit 1"
@@ -54,13 +56,15 @@ services:
   app-service-posts:
     image: app-service-posts:latest
     build:
-      context: app-service-posts
+      context: ./app-service-posts
+    ports:
+      - "5002:5002"
     depends_on:
       - app-service-posts-db
       - localstack
     env_file:
       - "./app-service-posts/.env"
-      - ".env"
+      - "./.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5002/actuator/health | grep UP || exit 1"
@@ -81,13 +85,15 @@ services:
   app-service-comments:
     image: app-service-comments:latest
     build:
-      context: app-service-comments
+      context: ./app-service-comments
+    ports:
+      - "5003:5003"
     depends_on:
       - app-service-comments-db
       - localstack
     env_file:
       - "./app-service-comments/.env"
-      - ".env"
+      - "./.env"
     network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5003/actuator/health | grep UP || exit 1"
@@ -99,9 +105,13 @@ services:
   app-gateway:
     image: app-gateway:latest
     build:
-      context: app-gateway
+      context: ./app-gateway
+    ports:
+      - "4000:4000"
     depends_on:
       - app-service-users
       - app-service-posts
       - app-service-comments
     network_mode: host
+    env_file:
+      - ./app-gateway/.env
