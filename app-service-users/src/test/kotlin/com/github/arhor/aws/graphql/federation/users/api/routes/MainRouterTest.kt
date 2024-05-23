@@ -1,89 +1,80 @@
 package com.github.arhor.aws.graphql.federation.users.api.routes
 
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
+import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.service.UserService
+import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
-import io.mockk.mockk
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.from
+import io.mockk.verify
+import org.hamcrest.Matchers.contains
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
-import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.servlet.function.ServerRequest
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
 import java.net.URI
 import java.util.UUID
 
+@AutoConfigureMockMvc(addFilters = false)
+@WebMvcTest(controllers = [MainRouter::class])
 class MainRouterTest {
 
-    private val userService = mockk<UserService>()
-    private val mainRouter = MainRouter(
-        userService,
-    )
-    private val messageConverters = listOf(
-        MappingJackson2HttpMessageConverter(),
-    )
+    @Autowired
+    private lateinit var http: MockMvc
+
+    @MockkBean
+    private lateinit var userService: UserService
 
     @Test
     fun `should return empty response with NO_CONTENT status trying to get favicon`() {
         // Given
         val requestURI = URI.create("/favicon.ico")
-        val httpMethod = HttpMethod.GET
-        val httpStatus = HttpStatus.NO_CONTENT
-
-        val request = createMockServerRequest(requestURI, httpMethod)
 
         // When
-        val response = mainRouter.route(request).map { it.handle(request) }
+        val result = http.get(uri = requestURI)
 
         // Then
-        assertThat(response)
-            .isNotNull()
-            .isNotEmpty()
-            .get()
-            .returns(httpStatus, from { it.statusCode() })
+        result.andExpect {
+            status { isNoContent() }
+            content { string("") }
+        }
     }
 
     @Test
     fun `should handle user verification request`() {
         // Given
         val requestURI = URI.create("/api/users/verify")
-        val httpMethod = HttpMethod.POST
-        val httpStatus = HttpStatus.OK
 
-        val request = createMockServerRequest(
-            requestURI,
-            httpMethod,
-            """
-            {
-                "username": "test-username",
-                "password": "test-password"
-            }
-            """.trimIndent()
-        )
+        val expectedReq = CurrentUserRequest(username = "test-username", password = "test-password")
+        val expectedRes = CurrentUser(id = UUID.randomUUID(), authorities = listOf("ROLE_TEST_1", "ROLE_TEST_2"))
+        val expectedContentType = MediaType.APPLICATION_JSON
 
-        every { userService.getUserByUsernameAndPassword(any()) } returns CurrentUser(
-            id = UUID.randomUUID(),
-            authorities = listOf("ROLE_TEST"),
-        )
+        every { userService.getUserByUsernameAndPassword(any()) } returns expectedRes
 
         // When
-        val response = mainRouter.route(request).map { it.handle(request) }
+        val result = http.post(uri = requestURI) {
+            content = """
+                {
+                    "username": "${expectedReq.username}",
+                    "password": "${expectedReq.password}"
+                }
+            """.trimIndent()
+            contentType = expectedContentType
+        }
 
         // Then
-        assertThat(response)
-            .isNotNull()
-            .isNotEmpty()
-            .get()
-            .returns(httpStatus, from { it.statusCode() })
-    }
+        result.andExpect {
+            status { isOk() }
 
-    private fun createMockServerRequest(uri: URI, method: HttpMethod, content: String? = null): ServerRequest =
-        ServerRequest.create(
-            MockHttpServletRequest(method.name(), uri.toString())
-                .also { it.setContent(content?.encodeToByteArray()) }
-                .also { it.contentType = "application/json" },
-            messageConverters,
-        )
+            content { contentType(expectedContentType) }
+
+            jsonPath("$.id") { value(expectedRes.id.toString()) }
+            jsonPath("$.authorities") { value(contains(*expectedRes.authorities.toTypedArray())) }
+        }
+
+        verify(exactly = 1) { userService.getUserByUsernameAndPassword(expectedReq) }
+    }
 }
