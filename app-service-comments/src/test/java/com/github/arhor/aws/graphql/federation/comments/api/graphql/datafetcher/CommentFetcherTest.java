@@ -133,6 +133,7 @@ class CommentFetcherTest {
                                     content
                                 }
                                 commentsOperable
+                                commentsDisabled                                
                             }
                         }
                     }""".stripIndent(),

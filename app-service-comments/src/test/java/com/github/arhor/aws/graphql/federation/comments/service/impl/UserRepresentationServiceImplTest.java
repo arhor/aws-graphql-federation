@@ -16,7 +16,6 @@ import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.comments.util.Caches.IDEMPOTENT_ID_SET;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -46,25 +45,36 @@ class UserRepresentationServiceImplTest {
         @Test
         void should_return_expected_user_when_it_exists_by_id() {
             // Given
-            final var userId = UUID.randomUUID();
+            final var userRepresentation =
+                UserRepresentation.builder()
+                    .id(UUID.randomUUID())
+                    .commentsDisabled(false)
+                    .build();
+
+            final var expectedUser =
+                User.newBuilder()
+                    .id(userRepresentation.id())
+                    .commentsDisabled(userRepresentation.commentsDisabled())
+                    .commentsOperable(true)
+                    .build();
 
             when(userRepresentationRepository.findById(any()))
-                .thenReturn(Optional.of(new UserRepresentation(userId)));
+                .thenReturn(Optional.of(userRepresentation));
 
             // When
-            final var result = userService.findUserRepresentation(userId);
+            final var result = userService.findUserRepresentation(userRepresentation.id());
 
             // Then
             then(userRepresentationRepository)
                 .should()
-                .findById(userId);
+                .findById(userRepresentation.id());
 
             then(userRepresentationRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
                 .isNotNull()
-                .returns(userId, from(User::getId));
+                .isEqualTo(expectedUser);
         }
 
         @Test
@@ -103,18 +113,22 @@ class UserRepresentationServiceImplTest {
         void should_call_userRepository_save_only_once_with_the_same_idempotencyKey() {
             // Given
             final var idempotencyKey = UUID.randomUUID();
-            final var userId = UUID.randomUUID();
-            final var expectedUser = new UserRepresentation(userId);
+            final var expectedUserRepresentation =
+                UserRepresentation.builder()
+                    .id(UUID.randomUUID())
+                    .commentsDisabled(false)
+                    .shouldBePersisted(true)
+                    .build();
 
             // When
             for (int i = 0; i < 3; i++) {
-                userService.createUserRepresentation(userId, idempotencyKey);
+                userService.createUserRepresentation(expectedUserRepresentation.id(), idempotencyKey);
             }
 
             // Then
             then(userRepresentationRepository)
                 .should()
-                .save(expectedUser);
+                .save(expectedUserRepresentation);
 
             then(userRepresentationRepository)
                 .shouldHaveNoMoreInteractions();

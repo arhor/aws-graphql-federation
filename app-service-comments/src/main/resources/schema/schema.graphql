@@ -55,4 +55,5 @@ type User @key(fields: "id") @extends {
     id: UUID! @external
     comments: [Comment!]
     commentsOperable: Boolean
+    commentsDisabled: Boolean
 }

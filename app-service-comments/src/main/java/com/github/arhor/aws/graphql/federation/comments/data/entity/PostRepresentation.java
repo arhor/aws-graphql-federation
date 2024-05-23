@@ -1,7 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
 import lombok.Builder;
-import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -15,7 +14,6 @@ import java.util.UUID;
 @Table("post_representations")
 @Immutable
 @Builder(toBuilder = true)
-@FieldNameConstants(asEnum = true)
 public record PostRepresentation(
     @Id
     @Column("id")

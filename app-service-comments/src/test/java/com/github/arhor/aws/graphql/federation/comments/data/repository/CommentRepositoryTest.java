@@ -144,6 +144,7 @@ public class CommentRepositoryTest {
         return userRepresentationRepository.save(
             UserRepresentation.builder()
                 .id(UUID.randomUUID())
+                .shouldBePersisted(true)
                 .build()
         );
     }

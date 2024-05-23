@@ -34,15 +34,30 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     @Override
     public User findUserRepresentation(final UUID userId) {
         return userRepresentationRepository.findById(userId)
-            .map((user) -> User.newBuilder().id(user.id()).commentsOperable(true).build())
-            .orElseGet(() -> User.newBuilder().id(userId).commentsOperable(false).build());
+            .map((user) ->
+                User.newBuilder()
+                    .id(user.id())
+                    .commentsOperable(true)
+                    .commentsDisabled(user.commentsDisabled())
+                    .build()
+            )
+            .orElseGet(() ->
+                User.newBuilder()
+                    .id(userId)
+                    .commentsOperable(false)
+                    .build()
+            );
     }
 
     @Override
     public void createUserRepresentation(final UUID userId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () ->
             userRepresentationRepository.save(
-                new UserRepresentation(userId)
+                UserRepresentation.builder()
+                    .id(userId)
+                    .commentsDisabled(false)
+                    .shouldBePersisted(true)
+                    .build()
             )
         );
     }
