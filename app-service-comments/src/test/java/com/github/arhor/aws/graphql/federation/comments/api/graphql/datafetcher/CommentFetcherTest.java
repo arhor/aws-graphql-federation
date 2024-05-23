@@ -6,12 +6,9 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
@@ -36,7 +33,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.from;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -47,7 +43,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
         CommentFetcher.class,
         DgsAutoConfiguration.class,
         DgsExtendedScalarsAutoConfiguration.class,
-        FederatedEntityFetcher.class,
+        PostRepresentationFetcher.class,
+        UserRepresentationFetcher.class,
     }
 )
 class CommentFetcherTest {
@@ -133,7 +130,7 @@ class CommentFetcherTest {
                                     content
                                 }
                                 commentsOperable
-                                commentsDisabled                                
+                                commentsDisabled
                             }
                         }
                     }""".stripIndent(),
@@ -238,7 +235,7 @@ class CommentFetcherTest {
             var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content);
 
             given(commentService.createComment(any()))
-                .willReturn(new CreateCommentResult(expectedComment));
+                .willReturn(expectedComment);
 
             // When
             var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -252,17 +249,15 @@ class CommentFetcherTest {
                                 content: $content
                             }
                         ) {
-                            comment {
-                                id
-                                userId
-                                postId
-                                content
-                            }
+                            id
+                            userId
+                            postId
+                            content
                         }
                     }""".stripIndent(),
                 "$.data.createComment",
                 Map.of("userId", USER_ID, "postId", POST_ID, "content", content),
-                CreateCommentResult.class
+                Comment.class
             );
 
             // Then
@@ -271,7 +266,7 @@ class CommentFetcherTest {
                 .createComment(new CreateCommentInput(USER_ID, POST_ID, content));
 
             assertThat(result)
-                .returns(expectedComment, from(CreateCommentResult::getComment));
+                .isEqualTo(expectedComment);
         }
     }
 
@@ -285,7 +280,7 @@ class CommentFetcherTest {
             var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content);
 
             given(commentService.updateComment(any()))
-                .willReturn(new UpdateCommentResult(expectedComment));
+                .willReturn(expectedComment);
 
             // When
             var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -298,17 +293,15 @@ class CommentFetcherTest {
                                 content: $content
                             }
                         ) {
-                            comment {
-                                id
-                                userId
-                                postId
-                                content
-                            }
+                            id
+                            userId
+                            postId
+                            content
                         }
                     }""".stripIndent(),
                 "$.data.updateComment",
                 Map.of("id", COMMENT_ID, "content", content),
-                UpdateCommentResult.class
+                Comment.class
             );
 
             // Then
@@ -317,7 +310,7 @@ class CommentFetcherTest {
                 .updateComment(new UpdateCommentInput(COMMENT_ID, content));
 
             assertThat(result)
-                .returns(expectedComment, from(UpdateCommentResult::getComment));
+                .isEqualTo(expectedComment);
         }
     }
 
@@ -328,10 +321,9 @@ class CommentFetcherTest {
         @ParameterizedTest
         void should_return_expected_result_calling_comment_service_with_expected_input(
             // Given
-            final boolean success
+            final boolean expectedResult
         ) {
             final var expectedInput = new DeleteCommentInput(COMMENT_ID);
-            final var expectedResult = new DeleteCommentResult(success);
 
             given(commentService.deleteComment(any()))
                 .willReturn(expectedResult);
@@ -345,13 +337,11 @@ class CommentFetcherTest {
                             input: {
                                 id: $id
                             }
-                        ) {
-                            success
-                        }
+                        )
                     }""".stripIndent(),
                 "$.data.deleteComment",
                 Map.of("id", COMMENT_ID),
-                DeleteCommentResult.class
+                Boolean.class
             );
 
             // Then

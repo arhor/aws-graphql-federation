@@ -2,9 +2,13 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchUserCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
+import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +26,7 @@ import static com.github.arhor.aws.graphql.federation.comments.util.CacheManager
 public class UserRepresentationServiceImpl implements UserRepresentationService {
 
     private final CacheManager cacheManager;
-    private final UserRepresentationRepository userRepresentationRepository;
+    private final UserRepresentationRepository userRepository;
 
     private Cache cache;
 
@@ -33,7 +37,7 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
 
     @Override
     public User findUserRepresentation(final UUID userId) {
-        return userRepresentationRepository.findById(userId)
+        return userRepository.findById(userId)
             .map((user) ->
                 User.newBuilder()
                     .id(user.id())
@@ -52,7 +56,7 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     @Override
     public void createUserRepresentation(final UUID userId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () ->
-            userRepresentationRepository.save(
+            userRepository.save(
                 UserRepresentation.builder()
                     .id(userId)
                     .commentsDisabled(false)
@@ -65,8 +69,34 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     @Override
     public void deleteUserRepresentation(final UUID userId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () -> {
-            userRepresentationRepository.deleteById(userId);
+            userRepository.deleteById(userId);
             return null;
         });
+    }
+
+    @Override
+    public boolean switchComments(final SwitchUserCommentsInput input) {
+        final var userId = input.getUserId();
+        final var shouldBeDisabled = input.getDisabled();
+
+        final var user =
+            userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        USER.TYPE_NAME,
+                        USER.Id + " = " + userId,
+                        Operation.UPDATE
+                    )
+                );
+
+        if (user.commentsDisabled() != shouldBeDisabled) {
+            userRepository.save(
+                user.toBuilder()
+                    .commentsDisabled(shouldBeDisabled)
+                    .build()
+            );
+            return true;
+        } else {
+            return false;
+        }
     }
 }

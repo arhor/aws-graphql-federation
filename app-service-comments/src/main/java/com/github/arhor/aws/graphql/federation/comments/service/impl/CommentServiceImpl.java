@@ -9,11 +9,8 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException;
@@ -78,7 +75,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CreateCommentResult createComment(final CreateCommentInput input) {
+    public Comment createComment(final CreateCommentInput input) {
         final var currentOperation = Operation.CREATE;
 
         ensureUserExists(input.getUserId(), currentOperation);
@@ -86,15 +83,14 @@ public class CommentServiceImpl implements CommentService {
 
         var entity = commentMapper.mapToEntity(input);
         var create = commentRepository.save(entity);
-        var result = commentMapper.mapToDto(create);
 
-        return new CreateCommentResult(result);
+        return commentMapper.mapToDto(create);
     }
 
     @Override
     @Transactional
     @Retryable(retryFor = OptimisticLockingFailureException.class)
-    public UpdateCommentResult updateComment(final UpdateCommentInput input) {
+    public Comment updateComment(final UpdateCommentInput input) {
         final var currentOperation = Operation.UPDATE;
         final var commentId = input.getId();
         final var initialState =
@@ -116,22 +112,18 @@ public class CommentServiceImpl implements CommentService {
                 ? currentState
                 : commentRepository.save(currentState);
 
-        final var comment = commentMapper.mapToDto(entity);
-
-        return new UpdateCommentResult(comment);
+        return commentMapper.mapToDto(entity);
     }
 
     @Override
     @Transactional
-    public DeleteCommentResult deleteComment(final DeleteCommentInput input) {
-        final var result = commentRepository.findById(input.getId())
+    public boolean deleteComment(final DeleteCommentInput input) {
+        return commentRepository.findById(input.getId())
             .map((comment) -> {
                 commentRepository.delete(comment);
                 return true;
             })
             .orElse(false);
-
-        return new DeleteCommentResult(result);
     }
 
     private CommentEntity determineCurrentState(

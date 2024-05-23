@@ -7,12 +7,9 @@ import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepr
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException;
@@ -257,8 +254,6 @@ class CommentServiceImplTest {
 
             assertThat(createCommentResult)
                 .isNotNull()
-                .extracting(CreateCommentResult::getComment)
-                .isNotNull()
                 .isEqualTo(expectedComment);
         }
     }
@@ -392,21 +387,25 @@ class CommentServiceImplTest {
                 UpdateCommentInput.newBuilder()
                     .id(COMMENT_1_ID)
                     .build();
-            final var comment =
+            final var commentEntity =
                 CommentEntity.builder()
                     .userId(USER_ID)
                     .postId(POST_ID)
                     .build();
             final var post = mock(PostRepresentation.class);
+            final var commentDto = mock(Comment.class);
 
             given(commentRepository.findById(any()))
-                .willReturn(Optional.of(comment));
+                .willReturn(Optional.of(commentEntity));
 
             given(postRepository.findById(any()))
                 .willReturn(Optional.of(post));
 
             given(post.commentsDisabled())
                 .willReturn(false);
+
+            given(commentMapper.mapToDto(any()))
+                .willReturn(commentDto);
 
             // When
             final var result = commentService.updateComment(input);
@@ -422,10 +421,11 @@ class CommentServiceImplTest {
 
             then(commentMapper)
                 .should()
-                .mapToDto(comment);
+                .mapToDto(commentEntity);
 
             assertThat(result)
-                .isNotNull();
+                .isNotNull()
+                .isEqualTo(commentDto);
         }
     }
 
@@ -458,8 +458,7 @@ class CommentServiceImplTest {
                 .delete(comment);
 
             assertThat(result)
-                .isNotNull()
-                .returns(true, from(DeleteCommentResult::getSuccess));
+                .isTrue();
         }
 
         @Test
@@ -482,8 +481,7 @@ class CommentServiceImplTest {
                 .findById(input.getId());
 
             assertThat(result)
-                .isNotNull()
-                .returns(false, from(DeleteCommentResult::getSuccess));
+                .isFalse();
         }
     }
 }

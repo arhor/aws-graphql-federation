@@ -2,9 +2,13 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchPostCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
+import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +26,7 @@ import static com.github.arhor.aws.graphql.federation.comments.util.CacheManager
 public class PostRepresentationServiceImpl implements PostRepresentationService {
 
     private final CacheManager cacheManager;
-    private final PostRepresentationRepository postRepresentationRepository;
+    private final PostRepresentationRepository postRepository;
 
     private Cache cache;
 
@@ -33,7 +37,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
 
     @Override
     public Post findPostRepresentation(final UUID postId) {
-        return postRepresentationRepository.findById(postId)
+        return postRepository.findById(postId)
             .map((post) ->
                 Post.newBuilder()
                     .id(post.id())
@@ -52,7 +56,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     @Override
     public void createPostRepresentation(final UUID postId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () ->
-            postRepresentationRepository.save(
+            postRepository.save(
                 PostRepresentation.builder()
                     .id(postId)
                     .commentsDisabled(false)
@@ -65,8 +69,34 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     @Override
     public void deletePostRepresentation(final UUID postId, final UUID idempotencyKey) {
         cache.get(idempotencyKey, () -> {
-            postRepresentationRepository.deleteById(postId);
+            postRepository.deleteById(postId);
             return null;
         });
+    }
+
+    @Override
+    public boolean switchComments(final SwitchPostCommentsInput input) {
+        final var postId = input.getPostId();
+        final var shouldBeDisabled = input.getDisabled();
+
+        final var post =
+            postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        POST.TYPE_NAME,
+                        POST.Id + " = " + postId,
+                        Operation.UPDATE
+                    )
+                );
+
+        if (post.commentsDisabled() != shouldBeDisabled) {
+            postRepository.save(
+                post.toBuilder()
+                    .commentsDisabled(shouldBeDisabled)
+                    .build()
+            );
+            return true;
+        } else {
+            return false;
+        }
     }
 }

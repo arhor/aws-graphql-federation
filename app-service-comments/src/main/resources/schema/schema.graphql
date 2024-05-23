@@ -4,11 +4,18 @@
 
 scalar UUID
 
+# ---------- Root Types (Query/Mutation/Subscription) ----------
+
 type Mutation {
-    createComment(input: CreateCommentInput!): CreateCommentResult
-    updateComment(input: UpdateCommentInput!): UpdateCommentResult
-    deleteComment(input: DeleteCommentInput!): DeleteCommentResult
+    createComment(input: CreateCommentInput!): Comment!
+    updateComment(input: UpdateCommentInput!): Comment!
+    deleteComment(input: DeleteCommentInput!): Boolean!
+
+    switchPostComments(input: SwitchPostCommentsInput!): Boolean!
+    switchUserComments(input: SwitchUserCommentsInput!): Boolean!
 }
+
+# ---------- Input Types ----------
 
 input CreateCommentInput {
     userId: UUID!
@@ -25,17 +32,17 @@ input DeleteCommentInput {
     id: UUID!
 }
 
-type CreateCommentResult {
-    comment: Comment!
+input SwitchPostCommentsInput {
+    postId: UUID!
+    disabled: Boolean!
 }
 
-type UpdateCommentResult {
-    comment: Comment!
+input SwitchUserCommentsInput {
+    userId: UUID!
+    disabled: Boolean!
 }
 
-type DeleteCommentResult {
-    success: Boolean!
-}
+# ---------- Domain Types ----------
 
 type Comment {
     id: UUID!
@@ -43,6 +50,8 @@ type Comment {
     postId: UUID!
     content: String!
 }
+
+# ---------- Federated Types ----------
 
 type Post @key(fields: "id") @extends {
     id: UUID! @external

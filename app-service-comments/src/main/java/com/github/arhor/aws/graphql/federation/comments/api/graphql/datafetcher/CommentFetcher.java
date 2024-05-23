@@ -6,12 +6,9 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentResult;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
@@ -51,20 +48,20 @@ public class CommentFetcher {
     /* ---------- Mutations ---------- */
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated() && hasRole('USER')")
-    public CreateCommentResult createComment(final @InputArgument CreateCommentInput input) {
+    @PreAuthorize("hasRole('USER')")
+    public Comment createComment(final @InputArgument CreateCommentInput input) {
         return commentService.createComment(input);
     }
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated() && hasRole('USER')")
-    public UpdateCommentResult updateComment(final @InputArgument UpdateCommentInput input) {
+    @PreAuthorize("hasRole('USER')")
+    public Comment updateComment(final @InputArgument UpdateCommentInput input) {
         return commentService.updateComment(input);
     }
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated() && hasRole('USER')")
-    public DeleteCommentResult deleteComment(final @InputArgument DeleteCommentInput input) {
+    @PreAuthorize("hasRole('USER')")
+    public boolean deleteComment(final @InputArgument DeleteCommentInput input) {
         return commentService.deleteComment(input);
     }
 

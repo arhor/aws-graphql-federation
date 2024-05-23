@@ -7,9 +7,24 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+/**
+ * Repository interface for handling CRUD operations for comment entities.
+ */
 public interface CommentRepository extends ListCrudRepository<CommentEntity, UUID> {
 
+    /**
+     * Finds all comment entities for the specified user IDs.
+     *
+     * @param userIds the collection of user IDs to retrieve comments for
+     * @return a stream of comment entities associated with the specified user IDs
+     */
     Stream<CommentEntity> findAllByUserIdIn(Collection<UUID> userIds);
 
+    /**
+     * Finds all comment entities for the specified post IDs.
+     *
+     * @param postIds the collection of post IDs to retrieve comments for
+     * @return a stream of comment entities associated with the specified post IDs
+     */
     Stream<CommentEntity> findAllByPostIdIn(Collection<UUID> postIds);
 }
