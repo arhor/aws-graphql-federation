@@ -3,13 +3,10 @@ package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.PostBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostResult
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostResult
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostResult
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.tracing.Trace
@@ -50,17 +47,17 @@ class PostFetcher(
     /* ---------- Mutations ---------- */
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated() && hasRole('USER')")
-    fun createPost(@InputArgument input: CreatePostInput): CreatePostResult =
+    @PreAuthorize("hasRole('USER')")
+    fun createPost(@InputArgument input: CreatePostInput): Post =
         postService.createPost(input)
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated() && hasRole('USER')")
-    fun updatePost(@InputArgument input: UpdatePostInput): UpdatePostResult =
+    @PreAuthorize("hasRole('USER')")
+    fun updatePost(@InputArgument input: UpdatePostInput): Post =
         postService.updatePost(input)
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated() && hasRole('USER')")
-    fun deletePost(@InputArgument input: DeletePostInput): DeletePostResult =
+    @PreAuthorize("hasRole('USER')")
+    fun deletePost(@InputArgument input: DeletePostInput): Boolean =
         postService.deletePost(input)
 }

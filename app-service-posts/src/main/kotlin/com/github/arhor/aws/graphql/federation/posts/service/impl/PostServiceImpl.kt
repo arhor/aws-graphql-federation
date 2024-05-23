@@ -11,13 +11,10 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.UserReprese
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostResult
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostResult
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostResult
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
@@ -74,7 +71,7 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun createPost(input: CreatePostInput): CreatePostResult {
+    override fun createPost(input: CreatePostInput): Post {
         ensureUserExists(input.userId, Operation.CREATE)
 
         val post = postMapper.mapToEntity(input = input, tags = materialize(input.tags))
@@ -82,12 +79,12 @@ class PostServiceImpl(
             .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!)) }
             .let(postMapper::mapToPost)
 
-        return CreatePostResult(post)
+        return post
     }
 
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
-    override fun updatePost(input: UpdatePostInput): UpdatePostResult {
+    override fun updatePost(input: UpdatePostInput): Post {
         val currentOperation = Operation.UPDATE
         val initialState = postRepository.findByIdOrNull(input.id)
             ?: throw EntityNotFoundException(
@@ -108,21 +105,19 @@ class PostServiceImpl(
                 else -> initialState
             }
         )
-        return UpdatePostResult(post)
+        return post
     }
 
     @Transactional
-    override fun deletePost(input: DeletePostInput): DeletePostResult {
-        return DeletePostResult(
-            success = when (val post = postRepository.findByIdOrNull(input.id)) {
-                null -> false
-                else -> {
-                    postRepository.delete(post)
-                    appEventPublisher.publishEvent(PostEvent.Deleted(id = post.id!!))
-                    true
-                }
+    override fun deletePost(input: DeletePostInput): Boolean {
+        return when (val post = postRepository.findByIdOrNull(input.id)) {
+            null -> false
+            else -> {
+                postRepository.delete(post)
+                appEventPublisher.publishEvent(PostEvent.Deleted(id = post.id!!))
+                true
             }
-        )
+        }
     }
 
     private fun materialize(tags: List<String>?): Set<TagEntity> =

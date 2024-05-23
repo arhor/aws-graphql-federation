@@ -32,7 +32,7 @@ import java.util.UUID
     classes = [
         DgsAutoConfiguration::class,
         DgsExtendedScalarsAutoConfiguration::class,
-        FederatedEntityFetcher::class,
+        UserRepresentationFetcher::class,
         GlobalDataFetchingExceptionHandler::class,
         PostFetcher::class,
         TagFetcher::class,

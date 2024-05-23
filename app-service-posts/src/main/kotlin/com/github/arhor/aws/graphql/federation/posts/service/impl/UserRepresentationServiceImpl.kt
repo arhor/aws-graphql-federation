@@ -1,7 +1,11 @@
 package com.github.arhor.aws.graphql.federation.posts.service.impl
 
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.SwitchUserPostsInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
@@ -18,7 +22,7 @@ import java.util.UUID
 @Service
 class UserRepresentationServiceImpl(
     private val cacheManager: CacheManager,
-    private val userRepresentationRepository: UserRepresentationRepository,
+    private val userRepository: UserRepresentationRepository,
 ) : UserRepresentationService {
 
     private lateinit var cache: Cache
@@ -29,13 +33,13 @@ class UserRepresentationServiceImpl(
     }
 
     override fun findUserRepresentation(userId: UUID): User =
-        userRepresentationRepository
+        userRepository
             .findByIdOrNull(userId)
             .let { mapEntityToUser(userId, it) }
 
     override fun createUserRepresentation(userId: UUID, idempotentKey: UUID) {
         cache.get(idempotentKey) {
-            userRepresentationRepository.save(
+            userRepository.save(
                 UserRepresentation(
                     id = userId,
                     postsDisabled = false,
@@ -47,7 +51,29 @@ class UserRepresentationServiceImpl(
 
     override fun deleteUserRepresentation(userId: UUID, idempotentKey: UUID) {
         cache.get(idempotentKey) {
-            userRepresentationRepository.deleteById(userId)
+            userRepository.deleteById(userId)
+        }
+    }
+
+    override fun switchPosts(input: SwitchUserPostsInput): Boolean {
+        val userId = input.userId
+        val shouldBeDisabled = input.disabled
+
+        val user =
+            userRepository.findByIdOrNull(userId)
+                ?: throw EntityNotFoundException(
+                    USER.TYPE_NAME,
+                    "${USER.Id} = $userId",
+                    Operation.UPDATE
+                )
+
+        if (user.postsDisabled != shouldBeDisabled) {
+            userRepository.save(
+                user.copy(postsDisabled = shouldBeDisabled)
+            )
+            return true
+        } else {
+            return false
         }
     }
 

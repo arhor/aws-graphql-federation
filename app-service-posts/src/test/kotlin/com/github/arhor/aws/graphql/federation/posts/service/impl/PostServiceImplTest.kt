@@ -367,7 +367,7 @@ class PostServiceImplTest {
 
             assertThat(result)
                 .isNotNull()
-                .returns(expectedPost, from { it.post })
+                .isEqualTo(expectedPost)
         }
 
         @Test
@@ -415,7 +415,7 @@ class PostServiceImplTest {
 
             assertThat(result)
                 .isNotNull()
-                .returns(expectedPost, from { it.post })
+                .isEqualTo(expectedPost)
         }
     }
 
@@ -445,8 +445,7 @@ class PostServiceImplTest {
             verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Deleted(id = entity.id!!)) }
 
             assertThat(result)
-                .isNotNull()
-                .returns(true, from { it.success })
+                .isTrue()
         }
 
         @Test
@@ -463,8 +462,7 @@ class PostServiceImplTest {
             verify(exactly = 1) { postRepository.findById(postId) }
 
             assertThat(result)
-                .isNotNull()
-                .returns(false, from { it.success })
+                .isFalse()
         }
     }
 
