@@ -96,8 +96,6 @@ class PostServiceImpl(
                 operation = currentOperation,
             )
 
-        ensureUserExists(initialState.userId!!, currentOperation)
-
         val currentState = initialState.copy(
             title = input.title ?: initialState.title,
             content = input.content ?: initialState.content,

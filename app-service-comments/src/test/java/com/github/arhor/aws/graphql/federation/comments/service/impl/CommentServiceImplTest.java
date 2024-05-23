@@ -298,48 +298,6 @@ class CommentServiceImplTest {
         }
 
         @Test
-        void should_throw_EntityNotFoundException_when_comment_user_does_not_exist_by_id() {
-            // Given
-            final var input =
-                UpdateCommentInput.newBuilder()
-                    .id(COMMENT_1_ID)
-                    .build();
-            final var comment = mock(CommentEntity.class);
-
-            given(commentRepository.findById(any()))
-                .willReturn(Optional.of(comment));
-
-            given(comment.userId())
-                .willReturn(USER_ID);
-
-            given(userRepository.existsById(any()))
-                .willReturn(false);
-
-            final var expectedEntity = COMMENT.TYPE_NAME;
-            final var expectedCondition = USER.TYPE_NAME + " with " + USER.Id + " = " + USER_ID + " is not found";
-            final var expectedOperation = Operation.UPDATE;
-
-            // When
-            final var result = catchException(() -> commentService.updateComment(input));
-
-            // Then
-            then(commentRepository)
-                .should()
-                .findById(input.getId());
-
-            then(userRepository)
-                .should()
-                .existsById(USER_ID);
-
-            assertThat(result)
-                .isNotNull()
-                .asInstanceOf(type(EntityNotFoundException.class))
-                .returns(expectedEntity, from(EntityNotFoundException::getEntity))
-                .returns(expectedCondition, from(EntityNotFoundException::getCondition))
-                .returns(expectedOperation, from(EntityNotFoundException::getOperation));
-        }
-
-        @Test
         void should_throw_EntityNotFoundException_when_comment_post_does_not_exist_by_id() {
             // Given
             final var input =
@@ -351,14 +309,8 @@ class CommentServiceImplTest {
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
 
-            given(comment.userId())
-                .willReturn(USER_ID);
-
             given(comment.postId())
                 .willReturn(POST_ID);
-
-            given(userRepository.existsById(any()))
-                .willReturn(true);
 
             given(postRepository.findById(any()))
                 .willReturn(Optional.empty());
@@ -374,10 +326,6 @@ class CommentServiceImplTest {
             then(commentRepository)
                 .should()
                 .findById(input.getId());
-
-            then(userRepository)
-                .should()
-                .existsById(USER_ID);
 
             then(postRepository)
                 .should()
@@ -404,14 +352,8 @@ class CommentServiceImplTest {
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
 
-            given(comment.userId())
-                .willReturn(USER_ID);
-
             given(comment.postId())
                 .willReturn(POST_ID);
-
-            given(userRepository.existsById(any()))
-                .willReturn(true);
 
             given(postRepository.findById(any()))
                 .willReturn(Optional.of(post));
@@ -430,10 +372,6 @@ class CommentServiceImplTest {
             then(commentRepository)
                 .should()
                 .findById(input.getId());
-
-            then(userRepository)
-                .should()
-                .existsById(USER_ID);
 
             then(postRepository)
                 .should()
@@ -464,9 +402,6 @@ class CommentServiceImplTest {
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
 
-            given(userRepository.existsById(any()))
-                .willReturn(true);
-
             given(postRepository.findById(any()))
                 .willReturn(Optional.of(post));
 
@@ -480,10 +415,6 @@ class CommentServiceImplTest {
             then(commentRepository)
                 .should()
                 .findById(input.getId());
-
-            then(userRepository)
-                .should()
-                .existsById(USER_ID);
 
             then(postRepository)
                 .should()

@@ -107,7 +107,6 @@ public class CommentServiceImpl implements CommentService {
                     )
                 );
 
-        ensureUserExists(initialState.userId(), currentOperation);
         ensureCommentsEnabled(initialState.postId(), currentOperation);
 
         final var currentState = determineCurrentState(initialState, input);

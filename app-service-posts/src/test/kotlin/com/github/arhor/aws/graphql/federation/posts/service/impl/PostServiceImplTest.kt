@@ -337,41 +337,6 @@ class PostServiceImplTest {
         }
 
         @Test
-        fun `should throw EntityNotFoundException when specified user does not exist`() {
-            // Given
-            val input = UpdatePostInput(
-                id = UUID.randomUUID(),
-            )
-            val entity = PostEntity(
-                id = input.id,
-                userId = UUID.randomUUID(),
-                title = "test-title",
-                content = "test-content",
-            )
-
-            val expectedEntity = POST.TYPE_NAME
-            val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = ${entity.userId} is not found"
-            val expectedOperation = Operation.UPDATE
-
-            every { postRepository.findById(any()) } returns Optional.of(entity)
-            every { userRepository.existsById(any()) } returns false
-
-            // When
-            val result = catchException { postService.updatePost(input) }
-
-            // Then
-            verify(exactly = 1) { postRepository.findById(input.id) }
-            verify(exactly = 1) { userRepository.existsById(entity.userId!!) }
-
-            assertThat(result)
-                .isNotNull()
-                .asInstanceOf(type(EntityNotFoundException::class.java))
-                .returns(expectedEntity, from { it.entity })
-                .returns(expectedCondition, from { it.condition })
-                .returns(expectedOperation, from { it.operation })
-        }
-
-        @Test
         fun `should not call PostRepository#save when there are no updates done to the entity`() {
             // Given
             val input = UpdatePostInput(
@@ -391,7 +356,6 @@ class PostServiceImplTest {
             )
 
             every { postRepository.findById(any()) } returns Optional.of(entity)
-            every { userRepository.existsById(any()) } returns true
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
 
             // When
@@ -399,7 +363,6 @@ class PostServiceImplTest {
 
             // Then
             verify(exactly = 1) { postRepository.findById(input.id) }
-            verify(exactly = 1) { userRepository.existsById(entity.userId!!) }
             verify(exactly = 1) { postMapper.mapToPost(entity) }
 
             assertThat(result)
@@ -435,7 +398,6 @@ class PostServiceImplTest {
             )
 
             every { postRepository.findById(any()) } returns Optional.of(initialEntity)
-            every { userRepository.existsById(any()) } returns true
             every { optionsMapper.mapFromList(any()) } returns PostEntity.Options()
             every { tagMapper.mapToRefs(any()) } returns emptySet()
             every { postRepository.save(any()) } answers { firstArg() }
@@ -446,7 +408,6 @@ class PostServiceImplTest {
 
             // Then
             verify(exactly = 1) { postRepository.findById(input.id) }
-            verify(exactly = 1) { userRepository.existsById(initialEntity.userId!!) }
             verify(exactly = 1) { optionsMapper.mapFromList(any()) }
             verify(exactly = 1) { tagMapper.mapToRefs(any()) }
             verify(exactly = 1) { postRepository.save(updatedEntity) }
