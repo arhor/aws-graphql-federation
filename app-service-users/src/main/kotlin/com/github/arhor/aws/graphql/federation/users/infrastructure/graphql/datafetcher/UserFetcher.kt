@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher
+package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput

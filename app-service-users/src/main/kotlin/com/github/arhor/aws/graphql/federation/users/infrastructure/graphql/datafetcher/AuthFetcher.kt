@@ -1,7 +1,7 @@
-package com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher
+package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.users.api.graphql.dataloader.AuthBatchLoader
+import com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.dataloader.AuthBatchLoader
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.netflix.graphql.dgs.DgsComponent

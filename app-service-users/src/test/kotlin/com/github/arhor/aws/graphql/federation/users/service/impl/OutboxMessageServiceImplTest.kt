@@ -1,0 +1,167 @@
+package com.github.arhor.aws.graphql.federation.users.service.impl
+
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.tracing.Attributes
+import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
+import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
+import com.github.arhor.aws.graphql.federation.tracing.useContextAttribute
+import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
+import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository
+import io.awspring.cloud.sns.core.SnsNotification
+import io.awspring.cloud.sns.core.SnsOperations
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.runs
+import io.mockk.slot
+import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.from
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.retry.RetryCallback
+import org.springframework.retry.RetryOperations
+import java.util.UUID
+import java.util.stream.Stream
+
+private typealias OutboxEventData = TypeReference<Map<String, Any?>>
+
+class OutboxMessageServiceImplTest {
+
+    private val appProps = AppProps(
+        aws = AppProps.Aws(
+            sns = AppProps.Aws.Sns(
+                userEvents = TEST_USER_EVENTS
+            )
+        ),
+        retry = AppProps.Retry()
+    )
+
+    private val objectMapper = mockk<ObjectMapper>()
+    private val outboxMessageRepository = mockk<OutboxMessageRepository>()
+    private val snsRetryOperations = mockk<RetryOperations>()
+    private val sns = mockk<SnsOperations>()
+
+    private val outboxMessageService = OutboxMessageServiceImpl(
+        appProps,
+        objectMapper,
+        outboxMessageRepository,
+        snsRetryOperations,
+        sns,
+    )
+
+    @Nested
+    @DisplayName("OutboxMessageService :: storeAsOutboxMessage")
+    inner class StoreAsOutboxMessageTest {
+        @MethodSource(USER_EVENTS_METHOD_SOURCE)
+        @ParameterizedTest
+        fun `should save UserEvent to the OutboxEventRepository`(
+            // Given
+            event: UserEvent,
+        ) = mockkStatic(::useContextAttribute) {
+
+            val expectedData = mockk<Map<String, Any?>>()
+            val outboxMessageCapturingSlot = slot<OutboxMessageEntity>()
+
+            every { objectMapper.convertValue(any(), any<OutboxEventData>()) } returns expectedData
+            every { outboxMessageRepository.save(any()) } returns mockk()
+            every { useContextAttribute(any()) } returns TRACE_ID
+
+            // When
+            outboxMessageService.storeAsOutboxMessage(event)
+
+            // Then
+            verify(exactly = 1) { objectMapper.convertValue(event, any<OutboxEventData>()) }
+            verify(exactly = 1) { outboxMessageRepository.save(capture(outboxMessageCapturingSlot)) }
+            verify(exactly = 1) { useContextAttribute(Attributes.TRACING_ID) }
+
+            assertThat(outboxMessageCapturingSlot.captured)
+                .isNotNull()
+                .returns(event.type(), from { it.type })
+                .returns(expectedData, from { it.data })
+                .returns(TRACE_ID, from { it.traceId })
+        }
+    }
+
+    @Nested
+    @DisplayName("OutboxMessageService :: releaseOutboxMessagesOfType")
+    inner class ReleaseOutboxMessagesOfTypeTest {
+        @MethodSource(USER_EVENTS_METHOD_SOURCE)
+        @ParameterizedTest
+        fun `should publish UserEvent#Deleted using UserEventPublisher instance`(
+            // Given
+            event: UserEvent,
+            eventType: UserEvent.Type,
+        ) {
+            // Given
+            val eventData = mapOf("id" to USER_ID)
+            val message = OutboxMessageEntity(
+                id = MESSAGE_ID,
+                type = event.type(),
+                data = eventData,
+                traceId = TRACE_ID,
+            )
+            val messages = listOf(message)
+
+            val expectedHeaders = event.attributes(
+                TRACING_ID_KEY to TRACE_ID.toString(),
+                IDEMPOTENT_KEY to MESSAGE_ID.toString(),
+            )
+
+            val actualSnsTopicName = slot<String>()
+            val actualNotification = slot<SnsNotification<*>>()
+
+            every { outboxMessageRepository.dequeueOldest(any(), any()) } returns messages
+            every { objectMapper.convertValue(any(), any<Class<UserEvent>>()) } returns event
+            every { snsRetryOperations.execute<Unit, Throwable>(any()) } answers {
+                arg<RetryCallback<*, *>>(0).doWithRetry(
+                    null
+                )
+            }
+            every { sns.sendNotification(any(), any()) } just runs
+
+            // When
+            outboxMessageService.releaseOutboxMessagesOfType(eventType)
+
+            // Then
+            verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventType.code, 50) }
+            verify(exactly = 1) { objectMapper.convertValue(eventData, eventType.type.java) }
+            verify(exactly = 1) { snsRetryOperations.execute<Unit, Throwable>(any()) }
+            verify(exactly = 1) { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) }
+
+
+            assertThat(actualSnsTopicName.captured)
+                .isEqualTo(TEST_USER_EVENTS)
+
+            assertThat(actualNotification.captured)
+                .satisfies(
+                    { assertThat(it.payload).isEqualTo(event) },
+                    { assertThat(it.headers).isEqualTo(expectedHeaders) },
+                )
+        }
+    }
+
+    companion object {
+        private const val TEST_USER_EVENTS =
+            "test-user-events"
+        private const val USER_EVENTS_METHOD_SOURCE =
+            "com.github.arhor.aws.graphql.federation.users.service.impl.OutboxMessageServiceImplTest#userEventsTestFactory"
+
+        private val USER_ID = UUID.randomUUID()
+        private val TRACE_ID = UUID.randomUUID()
+        private val MESSAGE_ID = UUID.randomUUID()
+
+        @JvmStatic
+        fun userEventsTestFactory(): Stream<Arguments> = Stream.of(
+            Arguments.of(UserEvent.Created(id = USER_ID), UserEvent.Type.USER_EVENT_CREATED),
+            Arguments.of(UserEvent.Deleted(id = USER_ID), UserEvent.Type.USER_EVENT_DELETED),
+        )
+    }
+}

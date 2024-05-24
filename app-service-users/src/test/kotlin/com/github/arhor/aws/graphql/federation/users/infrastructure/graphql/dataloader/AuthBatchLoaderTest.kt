@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.api.graphql.dataloader
+package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.dataloader
 
 import com.github.arhor.aws.graphql.federation.users.service.AuthService
 import io.mockk.confirmVerified

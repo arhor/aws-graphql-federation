@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.api.routes
+package com.github.arhor.aws.graphql.federation.users.infrastructure.router
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
