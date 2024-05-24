@@ -28,12 +28,12 @@ class ApplicationArchitectureTest {
         val architecture =
             layeredArchitecture()
                 .consideringOnlyDependenciesInLayers()
-                .layer(API).definedBy("${applicationPackage}.api..")
+                .layer(INFRASTRUCTURE).definedBy("${applicationPackage}.infrastructure..")
                 .layer(SERVICE).definedBy("${applicationPackage}.service..")
                 .layer(DATA_ACCESS).definedBy("${applicationPackage}.data..")
                 .layer(CONFIGURATION).definedBy("${applicationPackage}.config..")
-                .whereLayer(API).mayNotBeAccessedByAnyLayer()
-                .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(API, CONFIGURATION)
+                .whereLayer(INFRASTRUCTURE).mayNotBeAccessedByAnyLayer()
+                .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(INFRASTRUCTURE, CONFIGURATION)
                 .whereLayer(DATA_ACCESS).mayOnlyBeAccessedByLayers(SERVICE, CONFIGURATION)
 
         // Then
@@ -56,10 +56,10 @@ class ApplicationArchitectureTest {
 
     companion object {
         // @formatter:off
-        private const val API           = "Api"
-        private const val SERVICE       = "Service"
-        private const val DATA_ACCESS   = "Data Access"
-        private const val CONFIGURATION = "Configuration"
+        private const val INFRASTRUCTURE = "Infrastructure"
+        private const val SERVICE        = "Service"
+        private const val DATA_ACCESS    = "Data Access"
+        private const val CONFIGURATION  = "Configuration"
         // @formatter:on
     }
 }
