@@ -28,6 +28,8 @@ class OutboxMessageServiceImpl(
     private val sns: SnsOperations,
 ) : OutboxMessageService {
 
+    private val userEventsSnsTopicName = appProps.aws!!.sns!!.userEvents!!
+
     override fun storeAsOutboxMessage(event: UserEvent) {
         outboxMessageRepository.save(
             OutboxMessageEntity(
@@ -57,7 +59,6 @@ class OutboxMessageServiceImpl(
     }
 
     private fun publishToSns(event: UserEvent, traceId: UUID, idempotentKey: UUID) {
-        val snsTopicName = appProps.aws!!.sns!!.userEvents!!
         val notification = SnsNotification(
             event,
             event.attributes(
@@ -66,7 +67,7 @@ class OutboxMessageServiceImpl(
             )
         )
         snsRetryOperations.execute<Unit, Throwable> {
-            sns.sendNotification(snsTopicName, notification)
+            sns.sendNotification(userEventsSnsTopicName, notification)
         }
     }
 
