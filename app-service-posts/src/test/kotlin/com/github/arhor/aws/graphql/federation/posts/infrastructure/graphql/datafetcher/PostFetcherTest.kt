@@ -75,16 +75,14 @@ class PostFetcherTest {
         @Test
         fun `should return expected post by id without any exceptions`() {
             // Given
-            val expectedId = UUID.randomUUID()
-            val expectedUserId = UUID.randomUUID()
 
             val expectedErrors = emptyList<GraphQLError>()
             val expectedPresent = true
             val expectedData =
                 mapOf(
                     QUERY.Post to mapOf(
-                        POST.Id to expectedId.toString(),
-                        POST.UserId to expectedUserId.toString(),
+                        POST.Id to POST_ID.toString(),
+                        POST.UserId to USER_ID.toString(),
                         POST.Title to "test-title",
                         POST.Content to "test-content",
                         POST.Options to listOf(Option.NSFW.name),
@@ -94,7 +92,7 @@ class PostFetcherTest {
             every { postService.getPostById(any()) } answers {
                 Post(
                     id = firstArg(),
-                    userId = expectedUserId,
+                    userId = USER_ID,
                     title = "test-title",
                     content = "test-content",
                     options = listOf(Option.NSFW),
@@ -114,11 +112,11 @@ class PostFetcherTest {
                     }
                 }
                 """,
-                mapOf(POST.Id to expectedId)
+                mapOf(POST.Id to POST_ID)
             )
 
             // Then
-            verify(exactly = 1) { postService.getPostById(expectedId) }
+            verify(exactly = 1) { postService.getPostById(POST_ID) }
 
             assertThat(result)
                 .returns(expectedErrors, from { it.errors })
@@ -129,8 +127,6 @@ class PostFetcherTest {
         @Test
         fun `should return GQL error trying to find post by incorrect id`() {
             // Given
-            val id = UUID.randomUUID()
-
             every { postService.getPostById(any()) } answers {
                 throw EntityNotFoundException(
                     entity = POST.TYPE_NAME,
@@ -152,11 +148,11 @@ class PostFetcherTest {
                     }
                 }
                 """,
-                mapOf(POST.Id to id)
+                mapOf(POST.Id to POST_ID)
             )
 
             // Then
-            verify(exactly = 1) { postService.getPostById(id) }
+            verify(exactly = 1) { postService.getPostById(POST_ID) }
 
             assertThat(result.errors)
                 .singleElement()
@@ -170,10 +166,9 @@ class PostFetcherTest {
         @Test
         fun `should return user representation with a list of expected posts`() {
             // Given
-            val userId = UUID.randomUUID()
-            val expectedUser = User(id = userId)
+            val expectedUser = User(id = USER_ID)
 
-            every { userRepresentationBatchLoader.load(any()) } returns CompletableFuture.completedFuture(mapOf(userId to expectedUser))
+            every { userRepresentationBatchLoader.load(any()) } returns CompletableFuture.completedFuture(mapOf(USER_ID to expectedUser))
 
             // When
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -182,7 +177,6 @@ class PostFetcherTest {
                     _entities(representations: ${'$'}representations) {
                         ... on User {
                             id
-                            postsOperable
                             postsDisabled
                         }
                     }
@@ -192,7 +186,7 @@ class PostFetcherTest {
                     "representations" to listOf(
                         mapOf(
                             "__typename" to USER.TYPE_NAME,
-                            USER.Id to userId
+                            USER.Id to USER_ID
                         )
                     )
                 ),
@@ -200,11 +194,16 @@ class PostFetcherTest {
             )
 
             // Then
-            verify(exactly = 1) { userRepresentationBatchLoader.load(setOf(userId)) }
+            verify(exactly = 1) { userRepresentationBatchLoader.load(setOf(USER_ID)) }
 
             assertThat(result)
                 .isNotNull()
                 .isEqualTo(expectedUser)
         }
+    }
+
+    companion object {
+        private val USER_ID = UUID.randomUUID()
+        private val POST_ID = UUID.randomUUID()
     }
 }

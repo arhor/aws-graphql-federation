@@ -40,11 +40,10 @@ class UserRepresentationServiceImpl(
             result[user.id] = User(
                 id = user.id,
                 postsDisabled = user.postsDisabled,
-                postsOperable = true
             )
         }
         userIds.filter { it !in result.keys }.forEach {
-            result[it] = User(id = it, postsOperable = false)
+            result[it] = User(id = it)
         }
         return result
     }
