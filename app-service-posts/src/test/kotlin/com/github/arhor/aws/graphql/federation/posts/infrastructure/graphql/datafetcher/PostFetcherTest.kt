@@ -2,13 +2,14 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dat
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.TagBatchLoader
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Option
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.TagBatchLoader
+import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
@@ -17,16 +18,19 @@ import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
 import com.ninjasquad.springmockk.MockkBean
 import graphql.GraphQLError
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 @SpringBootTest(
     classes = [
@@ -44,13 +48,26 @@ class PostFetcherTest {
     private lateinit var postService: PostService
 
     @MockkBean
+    private lateinit var tagBatchLoader: TagBatchLoader
+
+    @MockkBean
     private lateinit var userRepresentationService: UserRepresentationService
 
     @MockkBean
-    private lateinit var tagBatchLoader: TagBatchLoader
+    private lateinit var userRepresentationBatchLoader: UserRepresentationBatchLoader
 
     @Autowired
     private lateinit var dgsQueryExecutor: DgsQueryExecutor
+
+    @AfterEach
+    fun tearDown() {
+        confirmVerified(
+            postService,
+            tagBatchLoader,
+            userRepresentationService,
+            userRepresentationBatchLoader,
+        )
+    }
 
     @Nested
     @DisplayName("query { post }")
@@ -101,6 +118,8 @@ class PostFetcherTest {
             )
 
             // Then
+            verify(exactly = 1) { postService.getPostById(expectedId) }
+
             assertThat(result)
                 .returns(expectedErrors, from { it.errors })
                 .returns(expectedPresent, from { it.isDataPresent })
@@ -137,6 +156,8 @@ class PostFetcherTest {
             )
 
             // Then
+            verify(exactly = 1) { postService.getPostById(id) }
+
             assertThat(result.errors)
                 .singleElement()
                 .returns(listOf(QUERY.Post), from { it.path })
@@ -147,12 +168,12 @@ class PostFetcherTest {
     @DisplayName("query { user { posts } }")
     inner class UserPostsQueryTest {
         @Test
-        fun should_return_user_representation_with_a_list_of_expected_posts() {
+        fun `should return user representation with a list of expected posts`() {
             // Given
             val userId = UUID.randomUUID()
             val expectedUser = User(id = userId)
 
-            every { userRepresentationService.findUserRepresentation(any()) } returns expectedUser
+            every { userRepresentationBatchLoader.load(any()) } returns CompletableFuture.completedFuture(mapOf(userId to expectedUser))
 
             // When
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -170,8 +191,8 @@ class PostFetcherTest {
                 mapOf(
                     "representations" to listOf(
                         mapOf(
-                            "__typename" to DgsConstants.USER.TYPE_NAME,
-                            DgsConstants.USER.Id to userId
+                            "__typename" to USER.TYPE_NAME,
+                            USER.Id to userId
                         )
                     )
                 ),
@@ -179,12 +200,11 @@ class PostFetcherTest {
             )
 
             // Then
-            verify(exactly = 1) { userRepresentationService.findUserRepresentation(userId) }
+            verify(exactly = 1) { userRepresentationBatchLoader.load(setOf(userId)) }
 
             assertThat(result)
                 .isNotNull()
                 .isEqualTo(expectedUser)
         }
     }
-
 }

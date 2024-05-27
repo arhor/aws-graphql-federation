@@ -10,14 +10,12 @@ import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.cache.CacheManager
 import org.springframework.cache.concurrent.ConcurrentMapCache
-import java.util.Optional
 import java.util.UUID
 
 class UserRepresentationServiceImplTest {
@@ -41,45 +39,50 @@ class UserRepresentationServiceImplTest {
 
 
     @Nested
-    @DisplayName("UserService :: findUserRepresentation")
+    @DisplayName("UserService :: findUsersRepresentationsInBatch")
     inner class FindUserRepresentationTest {
         @Test
         fun `should return expected user when it exists by id`() {
             // Given
             val userId = UUID.randomUUID()
+            val userRepresentation = UserRepresentation(userId)
+            val expectedResult = mapOf(userId to User(id = userRepresentation.id, postsOperable = true, postsDisabled = false))
+            val expectedUserIds = setOf(userId)
 
-            every { userRepresentationRepository.findById(any()) } returns Optional.of(UserRepresentation(userId))
+            every { userRepresentationRepository.findAllById(any()) } returns listOf(userRepresentation)
 
             // When
-            val result = userService.findUserRepresentation(userId)
+            val result = userService.findUsersRepresentationsInBatch(expectedUserIds)
 
             // Then
-            verify(exactly = 1) { userRepresentationRepository.findById(userId) }
+            verify(exactly = 1) { userRepresentationRepository.findAllById(expectedUserIds) }
 
             assertThat(result)
                 .isNotNull()
-                .returns(userId, from { it.id })
+                .isEqualTo(expectedResult)
         }
 
         @Test
         fun `should return user with postsOperable false when user does not exist by id`() {
             // Given
-            val expectedUser = User(
+            val user = User(
                 id = UUID.randomUUID(),
                 postsOperable = false
             )
+            val expectedResult = mapOf(user.id to user)
+            val expectedUserIds = setOf(user.id)
 
-            every { userRepresentationRepository.findById(any()) } returns Optional.empty()
+            every { userRepresentationRepository.findAllById(any()) } returns emptyList()
 
             // When
-            val result = userService.findUserRepresentation(expectedUser.id)
+            val result = userService.findUsersRepresentationsInBatch(expectedUserIds)
 
             // Then
-            verify(exactly = 1) { userRepresentationRepository.findById(expectedUser.id) }
+            verify(exactly = 1) { userRepresentationRepository.findAllById(expectedUserIds) }
 
             assertThat(result)
                 .isNotNull()
-                .isEqualTo(expectedUser)
+                .isEqualTo(expectedResult)
         }
     }
 

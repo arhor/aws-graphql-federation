@@ -32,10 +32,22 @@ class UserRepresentationServiceImpl(
         cache = cacheManager[Caches.IDEMPOTENT_ID_SET]
     }
 
-    override fun findUserRepresentation(userId: UUID): User =
-        userRepository
-            .findByIdOrNull(userId)
-            .let { mapEntityToUser(userId, it) }
+    override fun findUsersRepresentationsInBatch(userIds: Set<UUID>): Map<UUID, User> {
+        val result = HashMap<UUID, User>(userIds.size)
+        val users = userRepository.findAllById(userIds)
+
+        for (user in users) {
+            result[user.id] = User(
+                id = user.id,
+                postsDisabled = user.postsDisabled,
+                postsOperable = true
+            )
+        }
+        userIds.filter { it !in result.keys }.forEach {
+            result[it] = User(id = it, postsOperable = false)
+        }
+        return result
+    }
 
     override fun createUserRepresentation(userId: UUID, idempotentKey: UUID) {
         cache.get(idempotentKey) {
@@ -67,21 +79,11 @@ class UserRepresentationServiceImpl(
                     Operation.UPDATE
                 )
 
-        if (user.postsDisabled != shouldBeDisabled) {
-            userRepository.save(
-                user.copy(postsDisabled = shouldBeDisabled)
-            )
-            return true
+        return if (user.postsDisabled != shouldBeDisabled) {
+            userRepository.save(user.copy(postsDisabled = shouldBeDisabled))
+            true
         } else {
-            return false
+            false
         }
-    }
-
-    private fun mapEntityToUser(userId: UUID, user: UserRepresentation?): User {
-        return User(
-            id = user?.id ?: userId,
-            postsOperable = user != null,
-            postsDisabled = user?.postsDisabled,
-        )
     }
 }

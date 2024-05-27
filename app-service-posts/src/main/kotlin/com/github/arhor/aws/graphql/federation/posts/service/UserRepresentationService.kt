@@ -9,13 +9,7 @@ import java.util.UUID
  */
 interface UserRepresentationService {
 
-    /**
-     * Finds the user representation by the specified user ID.
-     *
-     * @param userId the UUID of the user to find the representation for
-     * @return the user representation
-     */
-    fun findUserRepresentation(userId: UUID): User
+    fun findUsersRepresentationsInBatch(userIds: Set<UUID>): Map<UUID, User>
 
     /**
      * Creates a new user representation.
