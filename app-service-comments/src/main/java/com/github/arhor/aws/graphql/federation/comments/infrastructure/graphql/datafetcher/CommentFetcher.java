@@ -36,8 +36,8 @@ public class CommentFetcher {
 
     /* ---------- Queries ---------- */
 
-    @DgsData(parentType = COMMENT.TYPE_NAME, field = COMMENT.Children)
-    public CompletableFuture<List<Comment>> commentChildren(final DgsDataFetchingEnvironment dfe) {
+    @DgsData(parentType = COMMENT.TYPE_NAME, field = COMMENT.Replies)
+    public CompletableFuture<List<Comment>> commentReplies(final DgsDataFetchingEnvironment dfe) {
         return loadWith(CommentChildrenBatchLoader.class, dfe, Comment::getId);
     }
 
