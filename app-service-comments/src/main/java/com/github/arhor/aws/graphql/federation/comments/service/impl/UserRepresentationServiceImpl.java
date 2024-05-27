@@ -16,6 +16,9 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.comments.util.CacheManagerUtils.getCache;
@@ -36,21 +39,30 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     }
 
     @Override
-    public User findUserRepresentation(final UUID userId) {
-        return userRepository.findById(userId)
-            .map((user) ->
+    public Map<UUID, User> findUsersRepresentationsInBatch(final Set<UUID> userIds) {
+        final var result = new HashMap<UUID, User>(userIds.size());
+        final var users = userRepository.findAllById(userIds);
+
+        for (final var user : users) {
+            result.put(
+                user.id(),
                 User.newBuilder()
                     .id(user.id())
                     .commentsOperable(true)
                     .commentsDisabled(user.commentsDisabled())
                     .build()
-            )
-            .orElseGet(() ->
+            );
+        }
+        userIds.stream().filter(it -> !result.containsKey(it)).forEach((userId) ->
+            result.put(
+                userId,
                 User.newBuilder()
                     .id(userId)
                     .commentsOperable(false)
                     .build()
-            );
+            )
+        );
+        return result;
     }
 
     @Override

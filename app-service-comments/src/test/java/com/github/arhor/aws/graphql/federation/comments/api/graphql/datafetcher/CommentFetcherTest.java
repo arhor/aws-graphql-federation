@@ -1,7 +1,9 @@
 package com.github.arhor.aws.graphql.federation.comments.api.graphql.datafetcher;
 
 import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.PostCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.PostRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.UserCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.UserRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
@@ -57,16 +59,22 @@ class CommentFetcherTest {
     private CommentService commentService;
 
     @MockBean
-    private UserCommentsBatchLoader userCommentsBatchLoader;
-
-    @MockBean
     private PostCommentsBatchLoader postCommentsBatchLoader;
 
     @MockBean
-    private UserRepresentationService userRepresentationService;
+    private PostRepresentationBatchLoader postRepresentationBatchLoader;
 
     @MockBean
     private PostRepresentationService postRepresentationService;
+
+    @MockBean
+    private UserCommentsBatchLoader userCommentsBatchLoader;
+
+    @MockBean
+    private UserRepresentationBatchLoader userRepresentationBatchLoader;
+
+    @MockBean
+    private UserRepresentationService userRepresentationService;
 
     @Autowired
     private DgsQueryExecutor dgsQueryExecutor;
@@ -75,10 +83,12 @@ class CommentFetcherTest {
     void tearDown() {
         verifyNoMoreInteractions(
             commentService,
-            userCommentsBatchLoader,
             postCommentsBatchLoader,
-            userRepresentationService,
-            postRepresentationService
+            postRepresentationBatchLoader,
+            postRepresentationService,
+            userCommentsBatchLoader,
+            userRepresentationBatchLoader,
+            userRepresentationService
         );
     }
 
@@ -109,8 +119,8 @@ class CommentFetcherTest {
                     .commentsOperable(userRepresentation.getCommentsOperable())
                     .build();
 
-            given(userRepresentationService.findUserRepresentation(any()))
-                .willReturn(userRepresentation);
+            given(userRepresentationBatchLoader.load(any()))
+                .willReturn(CompletableFuture.completedFuture(Map.of(USER_ID, userRepresentation)));
 
             given(userCommentsBatchLoader.load(any()))
                 .willReturn(CompletableFuture.completedFuture(Map.of(USER_ID, expectedComments)));
@@ -140,9 +150,9 @@ class CommentFetcherTest {
             );
 
             // Then
-            then(userRepresentationService)
+            then(userRepresentationBatchLoader)
                 .should()
-                .findUserRepresentation(USER_ID);
+                .load(Set.of(USER_ID));
 
             then(userCommentsBatchLoader)
                 .should()
@@ -181,8 +191,8 @@ class CommentFetcherTest {
                     .commentsOperable(postRepresentation.getCommentsOperable())
                     .build();
 
-            given(postRepresentationService.findPostRepresentation(any()))
-                .willReturn(postRepresentation);
+            given(postRepresentationBatchLoader.load(any()))
+                .willReturn(CompletableFuture.completedFuture(Map.of(POST_ID, postRepresentation)));
 
             given(postCommentsBatchLoader.load(any()))
                 .willReturn(CompletableFuture.completedFuture(Map.of(POST_ID, expectedComments)));
@@ -211,9 +221,9 @@ class CommentFetcherTest {
             );
 
             // Then
-            then(postRepresentationService)
+            then(postRepresentationBatchLoader)
                 .should()
-                .findPostRepresentation(POST_ID);
+                .load(Set.of(POST_ID));
 
             then(postCommentsBatchLoader)
                 .should()
@@ -317,7 +327,7 @@ class CommentFetcherTest {
     @Nested
     @DisplayName("mutation { deleteComment }")
     class DeleteCommentMutationTest {
-        @ValueSource(booleans = { true, false })
+        @ValueSource(booleans = {true, false})
         @ParameterizedTest
         void should_return_expected_result_calling_comment_service_with_expected_input(
             // Given

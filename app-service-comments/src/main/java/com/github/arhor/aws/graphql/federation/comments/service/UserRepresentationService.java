@@ -3,6 +3,8 @@ package com.github.arhor.aws.graphql.federation.comments.service;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchUserCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -10,13 +12,7 @@ import java.util.UUID;
  */
 public interface UserRepresentationService {
 
-    /**
-     * Finds the user representation by the specified user ID.
-     *
-     * @param userId the UUID of the user to find the representation for
-     * @return the user representation
-     */
-    User findUserRepresentation(UUID userId);
+    Map<UUID, User> findUsersRepresentationsInBatch(Set<UUID> userIds);
 
     /**
      * Creates a new user representation.

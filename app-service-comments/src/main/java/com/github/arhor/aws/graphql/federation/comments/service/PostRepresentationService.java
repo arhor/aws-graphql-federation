@@ -3,6 +3,8 @@ package com.github.arhor.aws.graphql.federation.comments.service;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchPostCommentsInput;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -10,13 +12,7 @@ import java.util.UUID;
  */
 public interface PostRepresentationService {
 
-    /**
-     * Finds the post representation by the specified post ID.
-     *
-     * @param postId the UUID of the post to find the representation for
-     * @return the post representation
-     */
-    Post findPostRepresentation(UUID postId);
+    Map<UUID, Post> findPostsRepresentationsInBatch(Set<UUID> postIds);
 
     /**
      * Creates a new post representation.
