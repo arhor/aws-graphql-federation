@@ -19,8 +19,6 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Upd
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
-import com.github.arhor.aws.graphql.federation.posts.util.limit
-import com.github.arhor.aws.graphql.federation.posts.util.offset
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
@@ -36,6 +34,10 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import java.util.Optional
 import java.util.UUID
 
@@ -139,7 +141,7 @@ class PostServiceImplTest {
             val input = PostsLookupInput()
 
             val expectedDataFromDB = listOf(
-                PostProjection(
+                PostEntity(
                     id = UUID.randomUUID(),
                     userId = UUID.randomUUID(),
                     title = "test-title",
@@ -149,24 +151,24 @@ class PostServiceImplTest {
             )
             val expectedPosts = expectedDataFromDB.map {
                 Post(
-                    id = it.id,
+                    id = it.id!!,
                     userId = it.userId,
                     title = it.title,
                     content = it.content,
                 )
             }
 
-            every { postRepository.findAll(limit = any(), offset = any()) } returns expectedDataFromDB
-            every { postMapper.mapToPost(any<PostProjection>()) } returns expectedPosts.single()
+            every { postRepository.findAll(any<Pageable>()) } returns PageImpl(expectedDataFromDB)
+            every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPosts.single()
 
             // When
-            val result = postService.getPosts(input)
+            val result = postService.getPostPage(input)
 
             // Then
-            verify(exactly = 1) { postRepository.findAll(limit = input.limit, offset = input.offset) }
+            verify(exactly = 1) { postRepository.findAll(PageRequest.of(input.page, input.size)) }
             verify(exactly = 1) { postMapper.mapToPost(expectedDataFromDB.single()) }
 
-            assertThat(result)
+            assertThat(result.data)
                 .isEqualTo(expectedPosts)
         }
 
@@ -175,15 +177,15 @@ class PostServiceImplTest {
             // Given
             val input = PostsLookupInput()
 
-            every { postRepository.findAll(limit = any(), offset = any()) } returns emptyList()
+            every { postRepository.findAll(any<Pageable>()) } returns Page.empty()
 
             // When
-            val result = postService.getPosts(input)
+            val result = postService.getPostPage(input)
 
             // Then
-            verify(exactly = 1) { postRepository.findAll(limit = input.limit, offset = input.offset) }
+            verify(exactly = 1) { postRepository.findAll(PageRequest.of(input.page, input.size)) }
 
-            assertThat(result)
+            assertThat(result.data)
                 .isEmpty()
         }
     }

@@ -28,56 +28,6 @@ class PostRepositoryTest : RepositoryTestBase() {
     private lateinit var userRepresentationRepository: UserRepresentationRepository
 
     @Nested
-    @DisplayName("PostRepository :: findAll")
-    inner class FindAllTest {
-        @Test
-        fun `should return list containing expected posts data`() {
-            // Given
-            val user = createUser()
-            val expectedPosts = createPosts(user).map { it.toProjection() }
-
-            // When
-            val result = postRepository.findAll(limit = 10, offset = 0)
-
-            // Then
-            assertThat(result)
-                .isNotNull()
-                .isNotEmpty()
-                .containsExactlyInAnyOrderElementsOf(expectedPosts)
-        }
-
-        @Test
-        fun `should return empty list when limit is zero`() {
-            // Given
-            val user = createUser()
-            createPosts(user)
-
-            // When
-            val result = postRepository.findAll(limit = 0, offset = 0)
-
-            // Then
-            assertThat(result)
-                .isNotNull()
-                .isEmpty()
-        }
-
-        @Test
-        fun `should return empty list when offset is greater then number of existing posts`() {
-            // Given
-            val user = createUser()
-            val createdPosts = createPosts(user)
-
-            // When
-            val result = postRepository.findAll(limit = 10, offset = createdPosts.size)
-
-            // Then
-            assertThat(result)
-                .isNotNull()
-                .isEmpty()
-        }
-    }
-
-    @Nested
     @DisplayName("PostRepository :: findAllByUserIdIn")
     inner class FindAllByUserIdInTest {
         @Test

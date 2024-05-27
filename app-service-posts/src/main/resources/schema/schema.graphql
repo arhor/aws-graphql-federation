@@ -9,7 +9,7 @@ scalar Upload
 
 type Query {
     post(id: UUID!): Post
-    posts(input: PostsLookupInput! = {}): [Post!]
+    posts(input: PostsLookupInput! = {}): PostPage
 }
 
 type Mutation {
@@ -65,6 +65,14 @@ type Post @key(fields: "id") {
     content: String!
     options: [Option!]
     tags: [String!]
+}
+
+type PostPage {
+    data: [Post!]
+    page: Int
+    size: Int
+    hasPrev: Boolean
+    hasNext: Boolean
 }
 
 enum Option {

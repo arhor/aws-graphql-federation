@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.posts.service
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import java.util.UUID
@@ -26,7 +27,7 @@ interface PostService {
      * @param input the input object containing the criteria for retrieving posts
      * @return a list of posts matching the criteria
      */
-    fun getPosts(input: PostsLookupInput): List<Post>
+    fun getPostPage(input: PostsLookupInput): PostPage
 
     /**
      * Retrieves posts for the specified user IDs.

@@ -13,17 +13,17 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConsta
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
-import com.github.arhor.aws.graphql.federation.posts.util.limit
-import com.github.arhor.aws.graphql.federation.posts.util.offset
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.OptimisticLockingFailureException
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
@@ -53,10 +53,19 @@ class PostServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getPosts(input: PostsLookupInput): List<Post> {
+    override fun getPostPage(input: PostsLookupInput): PostPage {
         return postRepository
-            .findAll(limit = input.limit, offset = input.offset)
+            .findAll(PageRequest.of(input.page, input.size))
             .map(postMapper::mapToPost)
+            .let {
+                PostPage(
+                    data = it.content,
+                    page = input.page,
+                    size = input.size,
+                    hasPrev = it.hasPrevious(),
+                    hasNext = it.hasNext(),
+                )
+            }
     }
 
     @Transactional(readOnly = true)

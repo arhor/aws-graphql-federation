@@ -5,6 +5,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConsta
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
@@ -33,8 +34,8 @@ class PostFetcher(
         postService.getPostById(id)
 
     @DgsQuery
-    fun posts(@InputArgument input: PostsLookupInput): List<Post> =
-        postService.getPosts(input)
+    fun posts(@InputArgument input: PostsLookupInput): PostPage =
+        postService.getPostPage(input)
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Posts)
     fun userPosts(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Post>> {
