@@ -4,7 +4,7 @@ import fastifyJwt from '@fastify/jwt';
 import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastify';
 import { ApolloServer } from '@apollo/server';
 import { createGateway } from '#server/gateway.js';
-import { gatewayPort } from '#server/utils/env.js';
+import { GATEWAY_PORT } from '#server/utils/env.js';
 
 const server = fastify({
     logger: process.env.NODE_ENV === 'production' ? {
@@ -40,6 +40,7 @@ await apollo.start();
 await server.register(fastifyJwt, {
     secret: uuid.v4(),
 });
+
 await server.register(fastifyApollo(apollo), {
     context: (req) => ({
         tracingUuid: req.id,
@@ -53,4 +54,4 @@ server.addHook('onRequest', async (req) => {
     }
 });
 
-await server.listen({ port: gatewayPort });
+await server.listen({ port: GATEWAY_PORT });

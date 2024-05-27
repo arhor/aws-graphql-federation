@@ -2,22 +2,30 @@ import gql from 'graphql-tag';
 import fetcher from 'make-fetch-happen';
 import { ApolloGateway, IntrospectAndCompose, LocalGraphQLDataSource, RemoteGraphQLDataSource } from '@apollo/gateway';
 import { buildSubgraphSchema } from '@apollo/subgraph';
-import { commsServiceUrl, postsServiceUrl, usersServiceUrl } from '#server/utils/env.js';
+import {
+    COMMS_SERVICE_GRAPHQL_URL,
+    POSTS_SERVICE_GRAPHQL_URL,
+    USERS_SERVICE_GRAPHQL_URL,
+    USERS_SERVICE_VERIFY_PATH,
+} from '#server/utils/env.js';
 
 export function createGateway(server) {
     return new ApolloGateway({
         supergraphSdl: new IntrospectAndCompose({
             subgraphs: [
                 { name: 'auth', url: 'auth' },
-                { url: `${usersServiceUrl}/graphql`, name: 'users' },
-                { url: `${postsServiceUrl}/graphql`, name: 'posts' },
-                { url: `${commsServiceUrl}/graphql`, name: 'comments' },
+                { url: USERS_SERVICE_GRAPHQL_URL, name: 'users' },
+                { url: POSTS_SERVICE_GRAPHQL_URL, name: 'posts' },
+                { url: COMMS_SERVICE_GRAPHQL_URL, name: 'comments' },
             ],
         }),
         buildService({ url, name }) {
-            return name === 'auth'
-                ? createLocalDataSource({ server })
-                : createRemoteDatasource({ url, name });
+            switch (name) {
+                case 'auth':
+                    return createLocalDataSource({ server });
+                default:
+                    return createRemoteDatasource({ url, name });
+            }
         },
     });
 }
@@ -43,7 +51,7 @@ function createLocalDataSource({ server }) {
                 Mutation: {
                     signIn: async (source, args) => {
                         const accessToken =
-                            await fetch(`${usersServiceUrl}/api/users/verify`, {
+                            await fetch(USERS_SERVICE_VERIFY_PATH, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(args.input),

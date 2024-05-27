@@ -1,10 +1,18 @@
+const GRAPHQL_END_POINT = '/graphql';
+
+const USERS_SERVICE_BASE_PATH = String(required('SUBGRAPH_URL_USERS'));
+const POSTS_SERVICE_BASE_PATH = String(required('SUBGRAPH_URL_POSTS'));
+const COMMS_SERVICE_BASE_PATH = String(required('SUBGRAPH_URL_COMMS'));
+
+export const USERS_SERVICE_VERIFY_PATH = `${USERS_SERVICE_BASE_PATH}/api/users/verify`;
+
+export const USERS_SERVICE_GRAPHQL_URL = `${USERS_SERVICE_BASE_PATH}${GRAPHQL_END_POINT}`;
+export const POSTS_SERVICE_GRAPHQL_URL = `${POSTS_SERVICE_BASE_PATH}${GRAPHQL_END_POINT}`;
+export const COMMS_SERVICE_GRAPHQL_URL = `${COMMS_SERVICE_BASE_PATH}${GRAPHQL_END_POINT}`;
+export const GATEWAY_PORT = Number(process.env['GATEWAY_PORT'] ?? 4000);
+
 export function required(variable) {
     return process.env[variable] || (() => {
         throw Error(`Missing env variable: ${variable}`);
     })();
 }
-
-export const usersServiceUrl = String(required('SUBGRAPH_URL_USERS'));
-export const postsServiceUrl = String(required('SUBGRAPH_URL_POSTS'));
-export const commsServiceUrl = String(required('SUBGRAPH_URL_COMMS'));
-export const gatewayPort = Number(process.env['GATEWAY_PORT'] ?? 4000);
