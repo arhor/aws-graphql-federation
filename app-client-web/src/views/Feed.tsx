@@ -8,8 +8,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
+import usePostsPage from '@/hooks/usePostsPage.ts';
+
 export default function Feed() {
     const { t } = useTranslation();
+    const { data } = usePostsPage();
+
     return (
         <TableContainer component={Paper}>
             <Table>
@@ -20,6 +24,12 @@ export default function Feed() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
+                    {data?.posts?.data?.map((it: any) => (
+                        <TableRow key={it.id}>
+                            <TableCell>{it.id}</TableCell>
+                            <TableCell>{it.title}</TableCell>
+                        </TableRow>
+                    ))}
                 </TableBody>
             </Table>
         </TableContainer>
