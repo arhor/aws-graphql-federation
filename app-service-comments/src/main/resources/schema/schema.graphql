@@ -44,7 +44,7 @@ input SwitchUserCommentsInput {
 
 # ---------- Domain Types ----------
 
-type Comment @connection {
+type Comment {
     id: UUID!
     userId: UUID
     postId: UUID!
@@ -66,8 +66,6 @@ type User @key(fields: "id") @extends {
 }
 
 # ---------- Directives ----------
-
-directive @connection on OBJECT
 
 directive @NotBlank(
     message: String! = "graphql.validation.NotBlank.message"

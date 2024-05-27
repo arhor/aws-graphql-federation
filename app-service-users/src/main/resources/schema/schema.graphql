@@ -1,5 +1,4 @@
-# noinspection GraphQLTypeRedefinition
-# noinspection DgsEntityFetcherInspector
+# noinspection GraphQLTypeRedefinition,GraphQLUnresolvedReference,GraphQLMissingType,DgsEntityFetcherInspector
 
 scalar UUID
 
@@ -8,6 +7,8 @@ scalar UUID
 type Query {
     user(id: UUID!): User
     users(input: UsersLookupInput! = {}): [User!]
+
+    userCon: UserConection
 }
 
 type Mutation {

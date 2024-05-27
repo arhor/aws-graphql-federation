@@ -56,7 +56,6 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-validation")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
-    implementation("com.netflix.graphql.dgs:graphql-dgs-pagination")
     implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
