@@ -15,6 +15,7 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Cre
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
@@ -51,11 +52,19 @@ class UserServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getAllUsers(input: UsersLookupInput): List<User> {
+    override fun getUserPage(input: UsersLookupInput): UserPage {
         return userRepository
             .findAll(PageRequest.of(input.page, input.size))
             .map(userMapper::mapToResult)
-            .toList()
+            .let {
+                UserPage(
+                    data = it.content,
+                    page = input.page,
+                    size = input.size,
+                    hasPrev = it.hasPrevious(),
+                    hasNext = it.hasNext(),
+                )
+            }
     }
 
     @Transactional(readOnly = true)

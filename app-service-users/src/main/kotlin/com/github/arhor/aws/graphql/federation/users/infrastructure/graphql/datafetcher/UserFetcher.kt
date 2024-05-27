@@ -5,6 +5,7 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Cre
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.netflix.graphql.dgs.DgsComponent
@@ -27,8 +28,8 @@ class UserFetcher(
         userService.getUserById(id)
 
     @DgsQuery
-    fun users(@InputArgument input: UsersLookupInput): List<User> =
-        userService.getAllUsers(input)
+    fun users(@InputArgument input: UsersLookupInput): UserPage =
+        userService.getUserPage(input)
 
     /* ---------- Mutations ---------- */
 

@@ -137,13 +137,13 @@ class UserServiceImplTest {
             every { userMapper.mapToResult(any()) } returns mockk()
 
             // When
-            val result = userService.getAllUsers(input)
+            val result = userService.getUserPage(input)
 
             // Then
             verify(exactly = 1) { userRepository.findAll(paged) }
             verify(exactly = 3) { userMapper.mapToResult(userEntity) }
 
-            assertThat(result)
+            assertThat(result.data)
                 .isNotNull()
                 .hasSameSizeAs(resultList)
         }
@@ -157,12 +157,12 @@ class UserServiceImplTest {
             every { userRepository.findAll(any<Pageable>()) } returns Page.empty(paged)
 
             // When
-            val result = userService.getAllUsers(input)
+            val result = userService.getUserPage(input)
 
             // Then
             verify(exactly = 1) { userRepository.findAll(paged) }
 
-            assertThat(result)
+            assertThat(result.data)
                 .isNotNull()
                 .isEmpty()
         }

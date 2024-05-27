@@ -6,9 +6,7 @@ scalar UUID
 
 type Query {
     user(id: UUID!): User
-    users(input: UsersLookupInput! = {}): [User!]
-
-    userCon: UserConection
+    users(input: UsersLookupInput! = {}): UserPage
 }
 
 type Mutation {
@@ -44,6 +42,14 @@ type User @key(fields: "id") {
     id: UUID!
     username: String!
     authorities: [String!]
+}
+
+type UserPage {
+    data: [User!]
+    page: Int
+    size: Int
+    hasPrev: Boolean
+    hasNext: Boolean
 }
 
 # ---------- Directives ----------

@@ -10,6 +10,7 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Cre
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.netflix.graphql.dgs.DgsQueryExecutor
@@ -127,29 +128,33 @@ class UserFetcherTest {
         @Test
         fun `should return successful result containing empty list of users`() {
             // Given
-            every { userService.getAllUsers(any()) } returns emptyList()
+            every { userService.getUserPage(any()) } returns UserPage(data = emptyList())
 
             // When
-            val result = dgsQueryExecutor.execute(
+            val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 """
-            query {
-                users {
-                    id
-                    username
+                query {
+                    users {
+                        data {
+                            id
+                            username                    
+                        }
+                        page
+                        size
+                        hasPrev
+                        hasNext
+                    }
                 }
-            }
-            """
+                """.trimIndent(),
+                "$.data.users",
+                UserPage::class.java
             )
 
             // Then
-            verify { userService.getAllUsers(input = UsersLookupInput(page = 0, size = 20)) }
+            verify { userService.getUserPage(input = UsersLookupInput(page = 0, size = 20)) }
 
-            assertThat(result.errors)
+            assertThat(result.data)
                 .isEmpty()
-            assertThat(result.isDataPresent)
-                .isTrue
-            assertThat(result.getData<Map<String, *>>())
-                .containsEntry(QUERY.Users, emptyList<Any>())
         }
 
         @Test
@@ -160,36 +165,30 @@ class UserFetcherTest {
                 username = "test-user",
             )
 
-            every { userService.getAllUsers(any()) } returns listOf(user)
+            every { userService.getUserPage(any()) } returns UserPage(data = listOf(user))
 
             // When
-            val result = dgsQueryExecutor.execute(
+            val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 """
-            query {
-                users(input: { page: 0, size: 10 }) {
-                    id
-                    username
+                query {
+                    users(input: { page: 0, size: 10 }) {
+                        data {
+                            id
+                            username
+                        }
+                    }
                 }
-            }
-            """
+                """.trimIndent(),
+                "$.data.users",
+                UserPage::class.java
             )
 
             // Then
-            verify { userService.getAllUsers(input = UsersLookupInput(page = 0, size = 10)) }
+            verify { userService.getUserPage(input = UsersLookupInput(page = 0, size = 10)) }
 
-            assertThat(result.errors)
-                .isEmpty()
-            assertThat(result.isDataPresent)
-                .isTrue
-            assertThat(result.getData<Map<Any, Any>>())
-                .containsEntry(
-                    QUERY.Users, listOf(
-                        mapOf(
-                            USER.Id to user.id.toString(),
-                            USER.Username to user.username,
-                        )
-                    )
-                )
+            assertThat(result.data)
+                .singleElement()
+                .isEqualTo(user)
         }
     }
 
