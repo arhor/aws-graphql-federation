@@ -14,18 +14,18 @@ interface UserRepresentationService {
     /**
      * Creates a new user representation.
      *
-     * @param userId        the UUID of the user for whom the representation is to be created
-     * @param idempotentKey the UUID used to ensure idempotency of the creation operation
+     * @param userId         the UUID of the user for whom the representation is to be created
+     * @param idempotencyKey the UUID used to ensure idempotency of the creation operation
      */
-    fun createUserRepresentation(userId: UUID, idempotentKey: UUID)
+    fun createUserRepresentation(userId: UUID, idempotencyKey: UUID)
 
     /**
      * Deletes an existing user representation.
      *
-     * @param userId        the UUID of the user whose representation is to be deleted
-     * @param idempotentKey the UUID used to ensure idempotency of the deletion operation
+     * @param userId         the UUID of the user whose representation is to be deleted
+     * @param idempotencyKey the UUID used to ensure idempotency of the deletion operation
      */
-    fun deleteUserRepresentation(userId: UUID, idempotentKey: UUID)
+    fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID)
 
     /**
      * Switches the posts for the user based on the provided input.

@@ -26,13 +26,13 @@ public class UserEventListener {
     public void handleUserCreatedEvent(
         @Payload final UserEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId,
-        @Header(IDEMPOTENT_KEY) final UUID idempotentKey
+        @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
     ) {
         withExtendedMDC(
             traceId,
             () -> userRepresentationService.createUserRepresentation(
                 event.getId(),
-                idempotentKey
+                idempotencyKey
             )
         );
     }
@@ -41,13 +41,13 @@ public class UserEventListener {
     public void handleUserDeletedEvent(
         @Payload final UserEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId,
-        @Header(IDEMPOTENT_KEY) final UUID idempotentKey
+        @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
     ) {
         withExtendedMDC(
             traceId,
             () -> userRepresentationService.deleteUserRepresentation(
                 event.getId(),
-                idempotentKey
+                idempotencyKey
             )
         );
     }

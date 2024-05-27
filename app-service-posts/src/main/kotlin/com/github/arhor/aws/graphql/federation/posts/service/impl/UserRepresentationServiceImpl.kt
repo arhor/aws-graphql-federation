@@ -48,8 +48,8 @@ class UserRepresentationServiceImpl(
         return result
     }
 
-    override fun createUserRepresentation(userId: UUID, idempotentKey: UUID) {
-        cache.get(idempotentKey) {
+    override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID) {
+        cache.get(idempotencyKey) {
             userRepository.save(
                 UserRepresentation(
                     id = userId,
@@ -60,8 +60,8 @@ class UserRepresentationServiceImpl(
         }
     }
 
-    override fun deleteUserRepresentation(userId: UUID, idempotentKey: UUID) {
-        cache.get(idempotentKey) {
+    override fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID) {
+        cache.get(idempotencyKey) {
             userRepository.deleteById(userId)
         }
     }

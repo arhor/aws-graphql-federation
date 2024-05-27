@@ -22,12 +22,12 @@ class UserEventListener(
     fun onUserCreatedEvent(
         @Payload event: UserEvent.Created,
         @Header(TRACING_ID_KEY) traceId: UUID,
-        @Header(IDEMPOTENT_KEY) idempotentKey: UUID,
+        @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             userRepresentationService.createUserRepresentation(
                 userId = event.id,
-                idempotentKey = idempotentKey,
+                idempotencyKey = idempotencyKey,
             )
         }
     }
@@ -36,12 +36,12 @@ class UserEventListener(
     fun onUserDeletedEvent(
         @Payload event: UserEvent.Deleted,
         @Header(TRACING_ID_KEY) traceId: UUID,
-        @Header(IDEMPOTENT_KEY) idempotentKey: UUID,
+        @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             userRepresentationService.deleteUserRepresentation(
                 userId = event.id,
-                idempotentKey = idempotentKey,
+                idempotencyKey = idempotencyKey,
             )
         }
     }

@@ -53,17 +53,17 @@ class OutboxMessageServiceImpl(
             publishToSns(
                 event = event,
                 traceId = message.traceId,
-                idempotentKey = message.id!!,
+                idempotencyKey = message.id!!,
             )
         }
     }
 
-    private fun publishToSns(event: PostEvent, traceId: UUID, idempotentKey: UUID) {
+    private fun publishToSns(event: PostEvent, traceId: UUID, idempotencyKey: UUID) {
         val notification = SnsNotification(
             event,
             event.attributes(
                 TRACING_ID_KEY to traceId.toString(),
-                IDEMPOTENT_KEY to idempotentKey.toString(),
+                IDEMPOTENT_KEY to idempotencyKey.toString(),
             )
         )
         snsRetryOperations.execute<Unit, Throwable> {

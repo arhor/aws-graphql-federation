@@ -34,7 +34,7 @@ class UserEventListenerTest : SqsListenerTestBase() {
     @Test
     fun `should call createUserRepresentation on UserEvent#Created`() {
         // Given
-        val event = UserEvent.Created(id = userId)
+        val event = UserEvent.Created(id = USER_ID)
 
         every { userRepresentationService.createUserRepresentation(any(), any()) } just runs
 
@@ -44,22 +44,22 @@ class UserEventListenerTest : SqsListenerTestBase() {
             GenericMessage(
                 event,
                 mapOf(
-                    TRACING_ID_KEY to traceId,
-                    IDEMPOTENT_KEY to idempotentKey,
+                    TRACING_ID_KEY to TRACE_ID,
+                    IDEMPOTENT_KEY to IDEMPOTENCY_KEY,
                 )
             )
         )
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userRepresentationService.createUserRepresentation(event.id, idempotentKey)
+            userRepresentationService.createUserRepresentation(event.id, IDEMPOTENCY_KEY)
         }
     }
 
     @Test
     fun `should call deleteUserRepresentation on UserEvent#Deleted`() {
         // Given
-        val event = UserEvent.Deleted(id = userId)
+        val event = UserEvent.Deleted(id = USER_ID)
 
         every { userRepresentationService.deleteUserRepresentation(any(), any()) } just runs
 
@@ -69,15 +69,15 @@ class UserEventListenerTest : SqsListenerTestBase() {
             GenericMessage(
                 event,
                 mapOf(
-                    TRACING_ID_KEY to traceId,
-                    IDEMPOTENT_KEY to idempotentKey,
+                    TRACING_ID_KEY to TRACE_ID,
+                    IDEMPOTENT_KEY to IDEMPOTENCY_KEY,
                 )
             )
         )
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userRepresentationService.deleteUserRepresentation(event.id, idempotentKey)
+            userRepresentationService.deleteUserRepresentation(event.id, IDEMPOTENCY_KEY)
         }
     }
 
@@ -85,9 +85,9 @@ class UserEventListenerTest : SqsListenerTestBase() {
         private const val USER_CREATED_TEST_QUEUE = "user-created-test-queue"
         private const val USER_DELETED_TEST_QUEUE = "user-deleted-test-queue"
 
-        private val userId = UUID.randomUUID()
-        private val traceId = UUID.randomUUID()
-        private val idempotentKey = UUID.randomUUID()
+        private val USER_ID = UUID.randomUUID()
+        private val TRACE_ID = UUID.randomUUID()
+        private val IDEMPOTENCY_KEY = UUID.randomUUID()
 
         @JvmStatic
         @DynamicPropertySource

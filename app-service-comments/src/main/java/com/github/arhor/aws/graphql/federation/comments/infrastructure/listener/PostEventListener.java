@@ -26,13 +26,13 @@ public class PostEventListener {
     public void handlePostCreatedEvent(
         @Payload final PostEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId,
-        @Header(IDEMPOTENT_KEY) final UUID idempotentKey
+        @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
     ) {
         withExtendedMDC(
             traceId,
             () -> postRepresentationService.createPostRepresentation(
                 event.getId(),
-                idempotentKey
+                idempotencyKey
             )
         );
     }
@@ -41,13 +41,13 @@ public class PostEventListener {
     public void handlePostDeletedEvent(
         @Payload final PostEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId,
-        @Header(IDEMPOTENT_KEY) final UUID idempotentKey
+        @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
     ) {
         withExtendedMDC(
             traceId,
             () -> postRepresentationService.deletePostRepresentation(
                 event.getId(),
-                idempotentKey
+                idempotencyKey
             )
         );
     }
