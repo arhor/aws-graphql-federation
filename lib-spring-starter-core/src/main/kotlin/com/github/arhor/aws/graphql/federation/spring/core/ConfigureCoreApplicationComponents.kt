@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.spring.core
 
+import jakarta.validation.ClockProvider
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.boot.ApplicationRunner
@@ -21,9 +22,14 @@ import java.util.function.Supplier
 class ConfigureCoreApplicationComponents {
 
     @Bean
-    fun currentDateTimeSupplier(): Supplier<LocalDateTime> = Supplier {
-        val systemUTC = Clock.systemUTC()
-        val timestamp = LocalDateTime.now(systemUTC)
+    fun clockProvider(): ClockProvider = ClockProvider {
+        Clock.systemUTC()
+    }
+
+    @Bean
+    fun currentDateTimeSupplier(clockProvider: ClockProvider): Supplier<LocalDateTime> = Supplier {
+        val currClock = clockProvider.clock
+        val timestamp = LocalDateTime.now(currClock)
 
         timestamp.truncatedTo(ChronoUnit.MILLIS)
     }
