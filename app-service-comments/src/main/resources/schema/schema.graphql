@@ -56,13 +56,11 @@ type Comment {
 type Post @key(fields: "id") @extends {
     id: UUID! @external
     comments: [Comment!]
-    commentsOperable: Boolean
     commentsDisabled: Boolean
 }
 
 type User @key(fields: "id") @extends {
     id: UUID! @external
     comments: [Comment!]
-    commentsOperable: Boolean
     commentsDisabled: Boolean
 }

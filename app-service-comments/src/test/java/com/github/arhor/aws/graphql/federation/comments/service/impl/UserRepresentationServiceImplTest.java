@@ -62,7 +62,6 @@ class UserRepresentationServiceImplTest {
                 User.newBuilder()
                     .id(USER_ID)
                     .commentsDisabled(userRepresentation.commentsDisabled())
-                    .commentsOperable(true)
                     .build()
             );
             final var expectedUserIds = Set.of(USER_ID);
@@ -93,7 +92,6 @@ class UserRepresentationServiceImplTest {
                 USER_ID,
                 User.newBuilder()
                     .id(USER_ID)
-                    .commentsOperable(false)
                     .build()
             );
             final var expectedUserIds = Set.of(USER_ID);

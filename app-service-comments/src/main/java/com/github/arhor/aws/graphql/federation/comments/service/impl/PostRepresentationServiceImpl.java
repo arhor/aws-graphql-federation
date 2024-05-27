@@ -48,7 +48,6 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                 post.id(),
                 Post.newBuilder()
                     .id(post.id())
-                    .commentsOperable(true)
                     .commentsDisabled(post.commentsDisabled())
                     .build()
             );
@@ -58,7 +57,6 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                 postId,
                 Post.newBuilder()
                     .id(postId)
-                    .commentsOperable(false)
                     .build()
             )
         );

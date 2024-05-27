@@ -109,14 +109,12 @@ class CommentFetcherTest {
             final var userRepresentation =
                 User.newBuilder()
                     .id(USER_ID)
-                    .commentsOperable(true)
                     .build();
 
             final var expectedUser =
                 User.newBuilder()
                     .id(userRepresentation.getId())
                     .comments(expectedComments)
-                    .commentsOperable(userRepresentation.getCommentsOperable())
                     .build();
 
             given(userRepresentationBatchLoader.load(any()))
@@ -139,7 +137,6 @@ class CommentFetcherTest {
                                     postId
                                     content
                                 }
-                                commentsOperable
                                 commentsDisabled
                             }
                         }
@@ -181,14 +178,12 @@ class CommentFetcherTest {
             final var postRepresentation =
                 Post.newBuilder()
                     .id(POST_ID)
-                    .commentsOperable(true)
                     .build();
 
             final var expectedPost =
                 Post.newBuilder()
                     .id(postRepresentation.getId())
                     .comments(expectedComments)
-                    .commentsOperable(postRepresentation.getCommentsOperable())
                     .build();
 
             given(postRepresentationBatchLoader.load(any()))
@@ -211,7 +206,7 @@ class CommentFetcherTest {
                                     postId
                                     content
                                 }
-                                commentsOperable
+                                commentsDisabled
                             }
                         }
                     }""".stripIndent(),

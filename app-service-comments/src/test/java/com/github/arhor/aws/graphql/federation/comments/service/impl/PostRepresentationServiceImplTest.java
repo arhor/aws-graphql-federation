@@ -61,7 +61,6 @@ class PostRepresentationServiceImplTest {
                 Post.newBuilder()
                     .id(postRepresentation.id())
                     .commentsDisabled(postRepresentation.commentsDisabled())
-                    .commentsOperable(true)
                     .build()
             );
             final var expectedPostIds = Set.of(POST_ID);
@@ -92,7 +91,6 @@ class PostRepresentationServiceImplTest {
                 POST_ID,
                 Post.newBuilder()
                     .id(POST_ID)
-                    .commentsOperable(false)
                     .build()
             );
             final var expectedPostIds = Set.of(POST_ID);

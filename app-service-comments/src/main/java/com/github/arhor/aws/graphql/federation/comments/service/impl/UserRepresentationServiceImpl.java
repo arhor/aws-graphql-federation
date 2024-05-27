@@ -48,7 +48,6 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
                 user.id(),
                 User.newBuilder()
                     .id(user.id())
-                    .commentsOperable(true)
                     .commentsDisabled(user.commentsDisabled())
                     .build()
             );
@@ -58,7 +57,6 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
                 userId,
                 User.newBuilder()
                     .id(userId)
-                    .commentsOperable(false)
                     .build()
             )
         );
