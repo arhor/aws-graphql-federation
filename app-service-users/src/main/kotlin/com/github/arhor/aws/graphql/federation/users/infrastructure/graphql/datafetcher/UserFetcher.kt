@@ -2,11 +2,8 @@ package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.dat
 
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
@@ -37,16 +34,16 @@ class UserFetcher(
 
     @DgsMutation
     @PreAuthorize("!isAuthenticated()")
-    fun createUser(@InputArgument input: CreateUserInput): CreateUserResult =
+    fun createUser(@InputArgument input: CreateUserInput): User =
         userService.createUser(input)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated() && hasRole('USER')")
-    fun updateUser(@InputArgument input: UpdateUserInput): UpdateUserResult =
+    fun updateUser(@InputArgument input: UpdateUserInput): User =
         userService.updateUser(input)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated() && hasRole('USER')")
-    fun deleteUser(@InputArgument input: DeleteUserInput): DeleteUserResult =
+    fun deleteUser(@InputArgument input: DeleteUserInput): Boolean =
         userService.deleteUser(input)
 }

@@ -3,25 +3,29 @@
 
 scalar UUID
 
+# ---------- Root Types (Query/Mutation/Subscription) ----------
+
 type Query {
     user(id: UUID!): User
     users(input: UsersLookupInput! = {}): [User!]
 }
 
 type Mutation {
-    createUser(input: CreateUserInput!): CreateUserResult
-    updateUser(input: UpdateUserInput!): UpdateUserResult
-    deleteUser(input: DeleteUserInput!): DeleteUserResult
+    createUser(input: CreateUserInput!): User!
+    updateUser(input: UpdateUserInput!): User!
+    deleteUser(input: DeleteUserInput!): Boolean!
 }
 
+# ---------- Input Types ----------
+
 input UsersLookupInput {
-    page: Int! = 0
-    size: Int! = 20
+    page: Int! =  0 @Range(min: 0, max: 2147483647)
+    size: Int! = 20 @Range(min: 1, max: 100)
 }
 
 input CreateUserInput {
-    username: String!
-    password: String!
+    username: String! @NotBlank @Pattern(regexp: "^[a-zA-Z0-9]{6,20}$")
+    password: String! @NotBlank @Pattern(regexp: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{8,20}$")
 }
 
 input UpdateUserInput {
@@ -33,20 +37,27 @@ input DeleteUserInput {
     id: UUID!
 }
 
-type CreateUserResult {
-    user: User!
-}
-
-type UpdateUserResult {
-    user: User!
-}
-
-type DeleteUserResult {
-    success: Boolean!
-}
+# ---------- Domain Types ----------
 
 type User @key(fields: "id") {
     id: UUID!
     username: String!
     authorities: [String!]
 }
+
+# ---------- Directives ----------
+
+directive @NotBlank(
+    message: String! = "graphql.validation.NotBlank.message"
+) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @Pattern(
+    regexp: String!
+    message: String! = "graphql.validation.Pattern.message"
+) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @Range(
+    min: Int! = 0
+    max: Int! = 2147483647
+    message: String! = "graphql.validation.Range.message"
+) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION

@@ -12,11 +12,8 @@ import com.github.arhor.aws.graphql.federation.users.data.repository.AuthReposit
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
@@ -83,7 +80,7 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun createUser(input: CreateUserInput): CreateUserResult {
+    override fun createUser(input: CreateUserInput): User {
         if (userRepository.existsByUsername(input.username)) {
             throw EntityDuplicateException(
                 entity = USER.TYPE_NAME,
@@ -93,18 +90,16 @@ class UserServiceImpl(
         }
         val auth = authRepository.findByName(PredefinedAuthority.ROLE_USER)
 
-        val user = input.copy(password = passwordEncoder.encode(input.password))
+        return input.copy(password = passwordEncoder.encode(input.password))
             .let { userMapper.mapToEntity(it, auth) }
             .let { userRepository.save(it) }
             .also { eventPublisher.publishEvent(UserEvent.Created(id = it.id!!)) }
             .let { userMapper.mapToResult(it) }
-
-        return CreateUserResult(user)
     }
 
     @Transactional
     @Retryable(retryFor = [OptimisticLockingFailureException::class])
-    override fun updateUser(input: UpdateUserInput): UpdateUserResult {
+    override fun updateUser(input: UpdateUserInput): User {
         val initialState = userRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
             entity = USER.TYPE_NAME,
             condition = "${USER.Id} = ${input.id}",
@@ -113,27 +108,24 @@ class UserServiceImpl(
         val currentState = initialState.copy(
             password = input.password?.let(passwordEncoder::encode) ?: initialState.password
         )
-        val user = userMapper.mapToResult(
+        return userMapper.mapToResult(
             entity = when (currentState != initialState) {
                 true -> userRepository.save(currentState)
                 else -> initialState
             }
         )
-        return UpdateUserResult(user)
     }
 
     @Transactional
-    override fun deleteUser(input: DeleteUserInput): DeleteUserResult {
-        return DeleteUserResult(
-            success = when (val user = userRepository.findByIdOrNull(input.id)) {
-                null -> false
-                else -> {
-                    userRepository.delete(user)
-                    eventPublisher.publishEvent(UserEvent.Deleted(id = user.id!!))
-                    true
-                }
+    override fun deleteUser(input: DeleteUserInput): Boolean {
+        return when (val user = userRepository.findByIdOrNull(input.id)) {
+            null -> false
+            else -> {
+                userRepository.delete(user)
+                eventPublisher.publishEvent(UserEvent.Deleted(id = user.id!!))
+                true
             }
-        )
+        }
     }
 
     companion object {

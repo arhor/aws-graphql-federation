@@ -74,12 +74,10 @@ class PostServiceImpl(
     override fun createPost(input: CreatePostInput): Post {
         ensureUserExists(input.userId, Operation.CREATE)
 
-        val post = postMapper.mapToEntity(input = input, tags = materialize(input.tags))
+        return postMapper.mapToEntity(input = input, tags = materialize(input.tags?.map { it.name }))
             .let(postRepository::save)
             .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!)) }
             .let(postMapper::mapToPost)
-
-        return post
     }
 
     @Transactional
@@ -97,15 +95,14 @@ class PostServiceImpl(
             title = input.title ?: initialState.title,
             content = input.content ?: initialState.content,
             options = input.options?.let(optionsMapper::mapFromList) ?: initialState.options,
-            tags = input.tags?.let(::materialize)?.let(tagMapper::mapToRefs) ?: initialState.tags
+            tags = input.tags?.map { it.name }?.let(::materialize)?.let(tagMapper::mapToRefs) ?: initialState.tags
         )
-        val post = postMapper.mapToPost(
+        return postMapper.mapToPost(
             entity = when (currentState != initialState) {
                 true -> postRepository.save(currentState)
                 else -> initialState
             }
         )
-        return post
     }
 
     @Transactional

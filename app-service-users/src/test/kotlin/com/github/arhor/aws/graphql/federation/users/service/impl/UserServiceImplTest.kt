@@ -273,7 +273,7 @@ class UserServiceImplTest {
             val result = userService.createUser(input)
 
             // Then
-            assertThat(result.user)
+            assertThat(result)
                 .returns(expectedId, from { it.id })
                 .returns(expectedUsername, from { it.username })
 

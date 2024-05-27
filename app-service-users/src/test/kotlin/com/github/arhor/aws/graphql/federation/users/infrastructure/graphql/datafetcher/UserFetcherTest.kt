@@ -7,11 +7,8 @@ import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExce
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserResult
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
@@ -208,7 +205,7 @@ class UserFetcherTest {
             val password = "test-password"
             val expectedUser = User(id, username)
 
-            every { userService.createUser(any()) } returns CreateUserResult(expectedUser)
+            every { userService.createUser(any()) } returns expectedUser
 
             // When
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -220,20 +217,18 @@ class UserFetcherTest {
                             password: "$password"
                         }
                     ) {
-                        user {
-                            id
-                            username
-                        }
+                        id
+                        username
                     }
                 }
                 """.trimIndent(),
                 "$.data.createUser",
-                CreateUserResult::class.java
+                User::class.java
             )
 
             // Then
             assertThat(result)
-                .returns(expectedUser, from { it.user })
+                .returns(expectedUser, from { it })
 
             verify(exactly = 1) { userService.createUser(CreateUserInput(username, password)) }
         }
@@ -251,7 +246,7 @@ class UserFetcherTest {
             val password = "test-password"
             val expectedUser = User(id, username)
 
-            every { userService.updateUser(any()) } returns UpdateUserResult(expectedUser)
+            every { userService.updateUser(any()) } returns expectedUser
 
             // When
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -263,20 +258,18 @@ class UserFetcherTest {
                             password: "$password"
                         }
                     ) {
-                        user {
-                            id
-                            username
-                        }
+                        id
+                        username
                     }
                 }
                 """.trimIndent(),
                 "$.data.updateUser",
-                UpdateUserResult::class.java
+                User::class.java
             )
 
             // Then
             assertThat(result)
-                .returns(expectedUser, from { it.user })
+                .returns(expectedUser, from { it })
 
             verify(exactly = 1) { userService.updateUser(UpdateUserInput(id, password)) }
         }
@@ -291,7 +284,7 @@ class UserFetcherTest {
             // Given
             val id = UUID.randomUUID()
 
-            every { userService.deleteUser(any()) } returns DeleteUserResult(true)
+            every { userService.deleteUser(any()) } returns true
 
             // When
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
@@ -301,18 +294,16 @@ class UserFetcherTest {
                         input: {
                             id: "$id"
                         }
-                    ) {
-                        success
-                    }
+                    )
                 }
                 """.trimIndent(),
                 "$.data.deleteUser",
-                DeleteUserResult::class.java
+                Boolean::class.java
             )
 
             // Then
             assertThat(result)
-                .returns(true, from { it.success })
+                .isTrue()
 
             verify(exactly = 1) { userService.deleteUser(DeleteUserInput(id)) }
         }
