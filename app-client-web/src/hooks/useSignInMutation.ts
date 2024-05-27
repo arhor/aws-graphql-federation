@@ -1,21 +1,21 @@
 import { useEffect } from 'react';
 
-import { useMutation, gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
 const AUTHENTICATE = gql`
-    mutation Authenticate($input: AuthenticationInput!) {
-        authenticate(input: $input) {
+    mutation SignIn($input: SignInInput!) {
+        signIn(input: $input) {
             accessToken
         }
     }
 `;
 
-export default function useAuthenticateMutation() {
+export default function useSignInMutation() {
     const { enqueueSnackbar } = useSnackbar();
-    const [authenticate, { error }] = useMutation(AUTHENTICATE, {
+    const [signIn, { error }] = useMutation(AUTHENTICATE, {
         onCompleted(data) {
-            localStorage.setItem('token', data.authenticate.accessToken);
+            localStorage.setItem('accessToken', data.signIn.accessToken);
         },
     });
 
@@ -28,5 +28,5 @@ export default function useAuthenticateMutation() {
         }
     }, [error, enqueueSnackbar]);
 
-    return { authenticate };
+    return { signIn };
 }

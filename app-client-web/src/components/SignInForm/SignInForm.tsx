@@ -11,12 +11,12 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import useAuthenticateMutation from '@/hooks/useAuthenticateMutation';
+import useSignInMutation from '@/hooks/useSignInMutation';
 import { Optional } from '@/utils/core-utils';
 
 export default function SignInForm() {
     const navigate = useNavigate();
-    const { authenticate } = useAuthenticateMutation();
+    const { signIn } = useSignInMutation();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -27,7 +27,7 @@ export default function SignInForm() {
         const password = formData.get('password') as Optional<string>;
 
         if (username && password) {
-            await authenticate({
+            await signIn({
                 variables: {
                     input: {
                         username,

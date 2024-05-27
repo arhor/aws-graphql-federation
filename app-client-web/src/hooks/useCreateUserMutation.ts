@@ -6,10 +6,8 @@ import { useSnackbar } from 'notistack';
 const CREATE_USER = gql`
     mutation CreateUser($input: CreateUserInput!) {
         createUser(input: $input) {
-            user {
-                id
-                username
-            }
+            id
+            username
         }
     }
 `;
