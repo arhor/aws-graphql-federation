@@ -15,10 +15,17 @@ CREATE TABLE IF NOT EXISTS "comments"
     "id"                UUID          NOT NULL PRIMARY KEY,
     "user_id"           UUID          NULL,
     "post_id"           UUID          NOT NULL,
+    "prnt_id"           UUID          NULL,
     "content"           VARCHAR(1024) NOT NULL,
     "version"           BIGINT        NOT NULL,
     "created_date_time" TIMESTAMP     NOT NULL,
     "updated_date_time" TIMESTAMP     NULL,
+
+    CONSTRAINT "FK__comments__comments"
+        FOREIGN KEY ("prnt_id")
+            REFERENCES "comments" ("id")
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
 
     CONSTRAINT "FK__comments__user_representations"
         FOREIGN KEY ("user_id")

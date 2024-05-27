@@ -49,6 +49,7 @@ type Comment {
     userId: UUID
     postId: UUID!
     content: String!
+    children: [Comment!]
 }
 
 # ---------- Federated Types ----------

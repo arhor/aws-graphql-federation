@@ -15,6 +15,8 @@ import java.util.UUID;
  */
 public interface CommentService {
 
+    Map<UUID, List<Comment>> getCommentsChildren(Collection<UUID> commentIds);
+
     /**
      * Retrieves comments for the specified user IDs.
      *

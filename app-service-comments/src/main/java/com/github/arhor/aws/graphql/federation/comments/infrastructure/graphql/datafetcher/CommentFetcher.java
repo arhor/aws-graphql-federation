@@ -1,7 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.datafetcher;
 
-import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsBatchLoader;
-import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
@@ -10,6 +9,9 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.CommentChildrenBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserCommentsBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import com.netflix.graphql.dgs.DgsComponent;
@@ -33,6 +35,11 @@ public class CommentFetcher {
     private final CommentService commentService;
 
     /* ---------- Queries ---------- */
+
+    @DgsData(parentType = COMMENT.TYPE_NAME, field = COMMENT.Children)
+    public CompletableFuture<List<Comment>> commentChildren(final DgsDataFetchingEnvironment dfe) {
+        return loadWith(CommentChildrenBatchLoader.class, dfe, Comment::getId);
+    }
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Comments)
     public CompletableFuture<List<Comment>> userComments(final DgsDataFetchingEnvironment dfe) {

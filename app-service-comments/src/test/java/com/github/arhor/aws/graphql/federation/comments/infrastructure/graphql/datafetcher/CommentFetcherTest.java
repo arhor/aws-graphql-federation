@@ -1,9 +1,5 @@
 package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.datafetcher;
 
-import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsBatchLoader;
-import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostRepresentationBatchLoader;
-import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserCommentsBatchLoader;
-import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
@@ -12,6 +8,10 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostRepresentationBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
@@ -237,7 +237,7 @@ class CommentFetcherTest {
         void should_create_new_comment_and_return_result_object_containing_created_data() {
             // Given
             var content = "test-password";
-            var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content);
+            var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
 
             given(commentService.createComment(any()))
                 .willReturn(expectedComment);
@@ -282,7 +282,7 @@ class CommentFetcherTest {
         void should_update_existing_comment_and_return_result_object_containing_updated_data() {
             // Given
             var content = "test-password";
-            var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content);
+            var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
 
             given(commentService.updateComment(any()))
                 .willReturn(expectedComment);

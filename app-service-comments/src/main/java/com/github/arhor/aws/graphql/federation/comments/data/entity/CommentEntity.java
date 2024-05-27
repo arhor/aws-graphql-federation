@@ -26,6 +26,9 @@ public record CommentEntity(
     @Column("post_id")
     UUID postId,
 
+    @Column("prnt_id")
+    UUID prntId,
+
     @Column("content")
     String content,
 

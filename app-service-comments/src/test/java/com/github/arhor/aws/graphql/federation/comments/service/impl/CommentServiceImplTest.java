@@ -41,6 +41,7 @@ class CommentServiceImplTest {
 
     private static final UUID COMMENT_1_ID = UUID.randomUUID();
     private static final UUID COMMENT_2_ID = UUID.randomUUID();
+    private static final UUID COMMENT_3_ID = UUID.randomUUID();
     private static final UUID USER_ID = UUID.randomUUID();
     private static final UUID POST_ID = UUID.randomUUID();
 
@@ -73,6 +74,69 @@ class CommentServiceImplTest {
     }
 
     @Nested
+    @DisplayName("CommentService :: getCommentsChildren")
+    class GetCommentsChildrenTest {
+        @Test
+        void should_return_comments_grouped_by_prnt_id() {
+            // Given
+            final var commentIds = List.of(COMMENT_1_ID);
+
+            final var commentEntities = List.of(
+                CommentEntity.builder().id(COMMENT_2_ID).userId(USER_ID).prntId(COMMENT_1_ID).build(),
+                CommentEntity.builder().id(COMMENT_3_ID).userId(USER_ID).prntId(COMMENT_1_ID).build()
+            );
+            final var commentDtos = commentEntities.stream()
+                .map(it -> Comment.newBuilder().id(it.id()).userId(it.userId()).build())
+                .toList();
+
+            given(commentRepository.findAllByPrntIdIn(any()))
+                .willAnswer((__) -> commentEntities);
+
+            given(commentMapper.mapToDto(any()))
+                .willAnswer((__) -> commentDtos.get(0))
+                .willAnswer((__) -> commentDtos.get(1));
+
+            // When
+            var result = commentService.getCommentsChildren(commentIds);
+
+            // Then
+            then(commentRepository)
+                .should()
+                .findAllByPrntIdIn(commentIds);
+
+            then(commentMapper)
+                .should()
+                .mapToDto(commentEntities.get(0));
+            then(commentMapper)
+                .should()
+                .mapToDto(commentEntities.get(1));
+
+            assertThat(result)
+                .isNotNull()
+                .containsOnlyKeys(COMMENT_1_ID)
+                .hasEntrySatisfying(COMMENT_1_ID, (comments) ->
+                    assertThat(comments)
+                        .isNotNull()
+                        .containsExactlyElementsOf(commentDtos)
+                );
+        }
+
+        @Test
+        void should_not_interact_with_repository_if_userIds_is_empty() {
+            // Given
+            var userIds = Collections.<UUID>emptyList();
+
+            // When
+            var result = commentService.getCommentsByUserIds(userIds);
+
+            // Then
+            assertThat(result)
+                .isNotNull()
+                .isEmpty();
+        }
+    }
+
+    @Nested
     @DisplayName("CommentService :: getCommentsByUserIds")
     class GetCommentsByUserIdsMethodTest {
         @Test
@@ -89,11 +153,11 @@ class CommentServiceImplTest {
                 .toList();
 
             given(commentRepository.findAllByUserIdIn(any()))
-                .willAnswer((call) -> commentEntities.stream());
+                .willAnswer((__) -> commentEntities.stream());
 
             given(commentMapper.mapToDto(any()))
-                .willAnswer((call) -> commentDtos.get(0))
-                .willAnswer((call) -> commentDtos.get(1));
+                .willAnswer((__) -> commentDtos.get(0))
+                .willAnswer((__) -> commentDtos.get(1));
 
             // When
             var result = commentService.getCommentsByUserIds(userIds);
@@ -152,11 +216,11 @@ class CommentServiceImplTest {
                 .toList();
 
             given(commentRepository.findAllByPostIdIn(any()))
-                .willAnswer((call) -> commentEntities.stream());
+                .willAnswer((__) -> commentEntities.stream());
 
             given(commentMapper.mapToDto(any()))
-                .willAnswer((call) -> commentDtos.get(0))
-                .willAnswer((call) -> commentDtos.get(1));
+                .willAnswer((__) -> commentDtos.get(0))
+                .willAnswer((__) -> commentDtos.get(1));
 
             // When
             var result = commentService.getCommentsByPostIds(postIds);

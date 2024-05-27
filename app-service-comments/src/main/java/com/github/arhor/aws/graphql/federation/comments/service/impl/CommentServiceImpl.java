@@ -24,8 +24,10 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,6 +61,21 @@ public class CommentServiceImpl implements CommentService {
             commentMapper::mapToDto,
             Comment::getPostId
         );
+    }
+
+    @Override
+    public Map<UUID, List<Comment>> getCommentsChildren(final Collection<UUID> commentIds) {
+        final var result = new HashMap<UUID, List<Comment>>(commentIds.size());
+        final var children = commentRepository.findAllByPrntIdIn(commentIds);
+
+        for (final CommentEntity comment : children) {
+
+            final var group = result.computeIfAbsent(comment.prntId(), (__) -> new ArrayList<>());
+            final var child = commentMapper.mapToDto(comment);
+
+            group.add(child);
+        }
+        return result;
     }
 
     @Override
