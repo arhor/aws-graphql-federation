@@ -1,7 +1,7 @@
-package com.github.arhor.aws.graphql.federation.comments.api.listener;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.listener;
 
-import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
-import com.github.arhor.aws.graphql.federation.common.event.PostEvent;
+import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
+import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,39 +20,39 @@ import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACI
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
 
-@ContextConfiguration(classes = {PostEventListener.class})
-class PostEventListenerTest extends EventListenerTestBase {
+@ContextConfiguration(classes = {UserEventListener.class})
+class UserEventListenerTest extends EventListenerTestBase {
 
-    private static final String POST_CREATED_TEST_QUEUE = "post-created-test-queue";
-    private static final String POST_DELETED_TEST_QUEUE = "post-deleted-test-queue";
+    private static final String USER_CREATED_TEST_QUEUE = "user-created-test-queue";
+    private static final String USER_DELETED_TEST_QUEUE = "user-deleted-test-queue";
 
-    private static final UUID postId = UUID.randomUUID();
+    private static final UUID userId = UUID.randomUUID();
     private static final UUID traceId = UUID.randomUUID();
     private static final UUID idempotentKey = UUID.randomUUID();
 
     @MockBean
-    private PostRepresentationService postRepresentationService;
+    private UserRepresentationService userRepresentationService;
 
     @DynamicPropertySource
     static void registerDynamicProperties(final DynamicPropertyRegistry registry) {
-        registry.add("app-props.aws.sqs.post-created-events", () -> POST_CREATED_TEST_QUEUE);
-        registry.add("app-props.aws.sqs.post-deleted-events", () -> POST_DELETED_TEST_QUEUE);
+        registry.add("app-props.aws.sqs.user-created-events", () -> USER_CREATED_TEST_QUEUE);
+        registry.add("app-props.aws.sqs.user-deleted-events", () -> USER_DELETED_TEST_QUEUE);
     }
 
     @BeforeAll
     static void createdTestQueues() throws IOException, InterruptedException {
-        createdQueue(POST_CREATED_TEST_QUEUE);
-        createdQueue(POST_DELETED_TEST_QUEUE);
+        createdQueue(USER_CREATED_TEST_QUEUE);
+        createdQueue(USER_DELETED_TEST_QUEUE);
     }
 
     @Test
-    void should_call_createPostRepresentation_method_on_post_created_event() {
+    void should_call_createUserRepresentation_method_on_user_created_event() {
         // Given
-        final var event = new PostEvent.Created(postId);
+        final var event = new UserEvent.Created(userId);
 
         // When
         sqsTemplate.send(
-            POST_CREATED_TEST_QUEUE,
+            USER_CREATED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
                 Map.of(
@@ -66,23 +66,23 @@ class PostEventListenerTest extends EventListenerTestBase {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(postRepresentationService)
+                then(userRepresentationService)
                     .should()
-                    .createPostRepresentation(event.getId(), idempotentKey);
+                    .createUserRepresentation(event.getId(), idempotentKey);
 
-                then(postRepresentationService)
+                then(userRepresentationService)
                     .shouldHaveNoMoreInteractions();
             });
     }
 
     @Test
-    void should_call_deletePostRepresentation_method_on_post_deleted_event() {
+    void should_call_deleteUserRepresentation_method_on_user_deleted_event() {
         // Given
-        final var event = new PostEvent.Deleted(postId);
+        final var event = new UserEvent.Deleted(userId);
 
         // When
         sqsTemplate.send(
-            POST_DELETED_TEST_QUEUE,
+            USER_DELETED_TEST_QUEUE,
             new GenericMessage<>(
                 event,
                 Map.of(
@@ -96,11 +96,11 @@ class PostEventListenerTest extends EventListenerTestBase {
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(postRepresentationService)
+                then(userRepresentationService)
                     .should()
-                    .deletePostRepresentation(event.getId(), idempotentKey);
+                    .deleteUserRepresentation(event.getId(), idempotentKey);
 
-                then(postRepresentationService)
+                then(userRepresentationService)
                     .shouldHaveNoMoreInteractions();
             });
     }

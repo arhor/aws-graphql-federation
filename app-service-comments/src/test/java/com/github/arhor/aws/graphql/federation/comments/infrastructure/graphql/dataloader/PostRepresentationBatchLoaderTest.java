@@ -1,11 +1,10 @@
-package com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader;
 
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
-import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
+import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -20,14 +19,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
-class PostCommentsBatchLoaderTest {
+class PostRepresentationBatchLoaderTest {
 
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
-    private final CommentService commentService = mock();
+    private final PostRepresentationService postService = mock();
 
-    private final PostCommentsBatchLoader postCommentsBatchLoader = new PostCommentsBatchLoader(
+    private final PostRepresentationBatchLoader postRepresentationBatchLoader = new PostRepresentationBatchLoader(
         executor,
-        commentService
+        postService
     );
 
     @Test
@@ -38,23 +37,23 @@ class PostCommentsBatchLoaderTest {
         final var postIds = Set.of(post1Id, post2Id);
 
         final var expectedResult = Map.of(
-            post1Id, List.<Comment>of(),
-            post2Id, List.<Comment>of()
+            post1Id, Post.newBuilder().id(post1Id).build(),
+            post2Id, Post.newBuilder().id(post2Id).build()
         );
 
-        given(commentService.getCommentsByPostIds(any()))
+        given(postService.findPostsRepresentationsInBatch(any()))
             .willReturn(expectedResult);
 
         // When
-        final var result = postCommentsBatchLoader.load(postIds);
+        final var result = postRepresentationBatchLoader.load(postIds);
 
         // Then
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(commentService)
+                then(postService)
                     .should()
-                    .getCommentsByPostIds(postIds);
+                    .findPostsRepresentationsInBatch(postIds);
 
                 assertThat(result)
                     .isCompletedWithValue(expectedResult);
@@ -67,10 +66,10 @@ class PostCommentsBatchLoaderTest {
         final var postIds = Collections.<UUID>emptySet();
 
         // When
-        final var result = postCommentsBatchLoader.load(postIds);
+        final var result = postRepresentationBatchLoader.load(postIds);
 
         // Then
-        then(commentService)
+        then(postService)
             .shouldHaveNoInteractions();
 
         assertThat(result)

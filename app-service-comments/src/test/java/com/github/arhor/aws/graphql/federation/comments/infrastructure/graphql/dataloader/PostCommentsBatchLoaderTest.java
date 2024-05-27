@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader;
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
@@ -20,12 +20,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
-class UserCommentsBatchLoaderTest {
+class PostCommentsBatchLoaderTest {
 
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
     private final CommentService commentService = mock();
 
-    private final UserCommentsBatchLoader userCommentsBatchLoader = new UserCommentsBatchLoader(
+    private final PostCommentsBatchLoader postCommentsBatchLoader = new PostCommentsBatchLoader(
         executor,
         commentService
     );
@@ -33,20 +33,20 @@ class UserCommentsBatchLoaderTest {
     @Test
     void should_return_expected_map_when_not_empty_keys_set_provided() {
         // Given
-        final var user1Id = UUID.randomUUID();
-        final var user2Id = UUID.randomUUID();
-        final var userIds = Set.of(user1Id, user2Id);
+        final var post1Id = UUID.randomUUID();
+        final var post2Id = UUID.randomUUID();
+        final var postIds = Set.of(post1Id, post2Id);
 
         final var expectedResult = Map.of(
-            user1Id, List.<Comment>of(),
-            user2Id, List.<Comment>of()
+            post1Id, List.<Comment>of(),
+            post2Id, List.<Comment>of()
         );
 
-        given(commentService.getCommentsByUserIds(any()))
+        given(commentService.getCommentsByPostIds(any()))
             .willReturn(expectedResult);
 
         // When
-        final var result = userCommentsBatchLoader.load(userIds);
+        final var result = postCommentsBatchLoader.load(postIds);
 
         // Then
         await()
@@ -54,7 +54,7 @@ class UserCommentsBatchLoaderTest {
             .untilAsserted(() -> {
                 then(commentService)
                     .should()
-                    .getCommentsByUserIds(userIds);
+                    .getCommentsByPostIds(postIds);
 
                 assertThat(result)
                     .isCompletedWithValue(expectedResult);
@@ -64,10 +64,10 @@ class UserCommentsBatchLoaderTest {
     @Test
     void should_return_empty_map_when_empty_keys_set_provided() {
         // Given
-        final var userIds = Collections.<UUID>emptySet();
+        final var postIds = Collections.<UUID>emptySet();
 
         // When
-        final var result = userCommentsBatchLoader.load(userIds);
+        final var result = postCommentsBatchLoader.load(postIds);
 
         // Then
         then(commentService)

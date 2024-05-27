@@ -1,14 +1,13 @@
-package com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader;
 
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
-import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
+import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.netflix.graphql.dgs.DgsDataLoader;
 import lombok.RequiredArgsConstructor;
 import org.dataloader.MappedBatchLoader;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -19,16 +18,16 @@ import static org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfi
 
 @DgsDataLoader(maxBatchSize = 50)
 @RequiredArgsConstructor
-public class PostCommentsBatchLoader implements MappedBatchLoader<UUID, List<Comment>> {
+public class UserRepresentationBatchLoader implements MappedBatchLoader<UUID, User> {
 
     @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME)
     private final Executor executor;
-    private final CommentService commentService;
+    private final UserRepresentationService userService;
 
     @Override
-    public CompletableFuture<Map<UUID, List<Comment>>> load(final Set<UUID> keys) {
+    public CompletableFuture<Map<UUID, User>> load(final Set<UUID> keys) {
         return keys.isEmpty()
             ? CompletableFuture.completedFuture(Collections.emptyMap())
-            : CompletableFuture.supplyAsync(() -> commentService.getCommentsByPostIds(keys), executor);
+            : CompletableFuture.supplyAsync(() -> userService.findUsersRepresentationsInBatch(keys), executor);
     }
 }

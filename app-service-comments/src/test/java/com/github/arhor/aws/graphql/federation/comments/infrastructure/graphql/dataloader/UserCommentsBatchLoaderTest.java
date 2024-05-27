@@ -1,10 +1,11 @@
-package com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader;
 
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
-import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
+import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -19,14 +20,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
-class UserRepresentationBatchLoaderTest {
+class UserCommentsBatchLoaderTest {
 
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
-    private final UserRepresentationService userService = mock();
+    private final CommentService commentService = mock();
 
-    private final UserRepresentationBatchLoader userRepresentationBatchLoader = new UserRepresentationBatchLoader(
+    private final UserCommentsBatchLoader userCommentsBatchLoader = new UserCommentsBatchLoader(
         executor,
-        userService
+        commentService
     );
 
     @Test
@@ -37,23 +38,23 @@ class UserRepresentationBatchLoaderTest {
         final var userIds = Set.of(user1Id, user2Id);
 
         final var expectedResult = Map.of(
-            user1Id, User.newBuilder().id(user1Id).build(),
-            user2Id, User.newBuilder().id(user2Id).build()
+            user1Id, List.<Comment>of(),
+            user2Id, List.<Comment>of()
         );
 
-        given(userService.findUsersRepresentationsInBatch(any()))
+        given(commentService.getCommentsByUserIds(any()))
             .willReturn(expectedResult);
 
         // When
-        final var result = userRepresentationBatchLoader.load(userIds);
+        final var result = userCommentsBatchLoader.load(userIds);
 
         // Then
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(userService)
+                then(commentService)
                     .should()
-                    .findUsersRepresentationsInBatch(userIds);
+                    .getCommentsByUserIds(userIds);
 
                 assertThat(result)
                     .isCompletedWithValue(expectedResult);
@@ -63,13 +64,13 @@ class UserRepresentationBatchLoaderTest {
     @Test
     void should_return_empty_map_when_empty_keys_set_provided() {
         // Given
-        final var postIds = Collections.<UUID>emptySet();
+        final var userIds = Collections.<UUID>emptySet();
 
         // When
-        final var result = userRepresentationBatchLoader.load(postIds);
+        final var result = userCommentsBatchLoader.load(userIds);
 
         // Then
-        then(userService)
+        then(commentService)
             .shouldHaveNoInteractions();
 
         assertThat(result)

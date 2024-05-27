@@ -1,7 +1,7 @@
-package com.github.arhor.aws.graphql.federation.comments.api.graphql.datafetcher;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.datafetcher;
 
-import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.PostCommentsBatchLoader;
-import com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader.UserCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserCommentsBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;

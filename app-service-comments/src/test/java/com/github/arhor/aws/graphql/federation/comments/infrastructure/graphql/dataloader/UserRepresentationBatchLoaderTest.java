@@ -1,7 +1,7 @@
-package com.github.arhor.aws.graphql.federation.comments.api.graphql.dataloader;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader;
 
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
-import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
+import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -19,41 +19,41 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
-class PostRepresentationBatchLoaderTest {
+class UserRepresentationBatchLoaderTest {
 
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
-    private final PostRepresentationService postService = mock();
+    private final UserRepresentationService userService = mock();
 
-    private final PostRepresentationBatchLoader postRepresentationBatchLoader = new PostRepresentationBatchLoader(
+    private final UserRepresentationBatchLoader userRepresentationBatchLoader = new UserRepresentationBatchLoader(
         executor,
-        postService
+        userService
     );
 
     @Test
     void should_return_expected_map_when_not_empty_keys_set_provided() {
         // Given
-        final var post1Id = UUID.randomUUID();
-        final var post2Id = UUID.randomUUID();
-        final var postIds = Set.of(post1Id, post2Id);
+        final var user1Id = UUID.randomUUID();
+        final var user2Id = UUID.randomUUID();
+        final var userIds = Set.of(user1Id, user2Id);
 
         final var expectedResult = Map.of(
-            post1Id, Post.newBuilder().id(post1Id).build(),
-            post2Id, Post.newBuilder().id(post2Id).build()
+            user1Id, User.newBuilder().id(user1Id).build(),
+            user2Id, User.newBuilder().id(user2Id).build()
         );
 
-        given(postService.findPostsRepresentationsInBatch(any()))
+        given(userService.findUsersRepresentationsInBatch(any()))
             .willReturn(expectedResult);
 
         // When
-        final var result = postRepresentationBatchLoader.load(postIds);
+        final var result = userRepresentationBatchLoader.load(userIds);
 
         // Then
         await()
             .atMost(5, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                then(postService)
+                then(userService)
                     .should()
-                    .findPostsRepresentationsInBatch(postIds);
+                    .findUsersRepresentationsInBatch(userIds);
 
                 assertThat(result)
                     .isCompletedWithValue(expectedResult);
@@ -66,10 +66,10 @@ class PostRepresentationBatchLoaderTest {
         final var postIds = Collections.<UUID>emptySet();
 
         // When
-        final var result = postRepresentationBatchLoader.load(postIds);
+        final var result = userRepresentationBatchLoader.load(postIds);
 
         // Then
-        then(postService)
+        then(userService)
             .shouldHaveNoInteractions();
 
         assertThat(result)

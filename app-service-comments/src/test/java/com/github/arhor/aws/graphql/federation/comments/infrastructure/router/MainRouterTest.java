@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.comments.api.router;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.router;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

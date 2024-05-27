@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.comments.api.router;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.router;
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;

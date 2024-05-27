@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.comments.api.listener;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.listener;
 
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import io.awspring.cloud.test.sqs.SqsTest;

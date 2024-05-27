@@ -1,7 +1,7 @@
-package com.github.arhor.aws.graphql.federation.comments.api.listener;
+package com.github.arhor.aws.graphql.federation.comments.infrastructure.listener;
 
-import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
-import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
+import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
+import com.github.arhor.aws.graphql.federation.common.event.PostEvent;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;
@@ -18,34 +18,34 @@ import static com.github.arhor.aws.graphql.federation.tracing.Utils.withExtended
 @Trace
 @Component
 @RequiredArgsConstructor
-public class UserEventListener {
+public class PostEventListener {
 
-    private final UserRepresentationService userRepresentationService;
+    private final PostRepresentationService postRepresentationService;
 
-    @SqsListener("${app-props.aws.sqs.user-created-events:}")
-    public void handleUserCreatedEvent(
-        @Payload final UserEvent.Created event,
+    @SqsListener("${app-props.aws.sqs.post-created-events:}")
+    public void handlePostCreatedEvent(
+        @Payload final PostEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId,
         @Header(IDEMPOTENT_KEY) final UUID idempotentKey
     ) {
         withExtendedMDC(
             traceId,
-            () -> userRepresentationService.createUserRepresentation(
+            () -> postRepresentationService.createPostRepresentation(
                 event.getId(),
                 idempotentKey
             )
         );
     }
 
-    @SqsListener("${app-props.aws.sqs.user-deleted-events:}")
-    public void handleUserDeletedEvent(
-        @Payload final UserEvent.Deleted event,
+    @SqsListener("${app-props.aws.sqs.post-deleted-events:}")
+    public void handlePostDeletedEvent(
+        @Payload final PostEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId,
         @Header(IDEMPOTENT_KEY) final UUID idempotentKey
     ) {
         withExtendedMDC(
             traceId,
-            () -> userRepresentationService.deleteUserRepresentation(
+            () -> postRepresentationService.deletePostRepresentation(
                 event.getId(),
                 idempotentKey
             )
