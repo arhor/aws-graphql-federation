@@ -9,7 +9,7 @@ import java.util.UUID
 interface TagRepository : ListCrudRepository<TagEntity, UUID> {
 
     @Query(
-        name = "TagEntity.findAllByIdIn",
+        name = "TagEntity.findAllByPostIdIn",
         resultSetExtractorRef = PostIdToTagNamesResultSetExtractor.BEAN_NAME,
     )
     fun findAllByPostIdIn(postIds: Collection<UUID>): Map<UUID, List<String>>

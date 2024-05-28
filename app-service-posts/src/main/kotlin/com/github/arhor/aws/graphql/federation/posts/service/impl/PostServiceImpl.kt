@@ -26,6 +26,7 @@ import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.OptimisticLockingFailureException
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -56,18 +57,11 @@ class PostServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getPostPage(input: PostsLookupInput): PostPage {
-        return postRepository
-            .findAll(PageRequest.of(input.page, input.size))
-            .map(postMapper::mapToPost)
-            .let {
-                PostPage(
-                    data = it.content,
-                    page = input.page,
-                    size = input.size,
-                    hasPrev = it.hasPrevious(),
-                    hasNext = it.hasNext(),
-                )
-            }
+        return if (input.tags == null) {
+            findPostsPageWithoutFilters(input)
+        } else {
+            findPostsPageByTags(input)
+        }
     }
 
     @Transactional(readOnly = true)
@@ -124,6 +118,24 @@ class PostServiceImpl(
                 appEventPublisher.publishEvent(PostEvent.Deleted(id = post.id!!))
                 true
             }
+        }
+    }
+
+    private fun findPostsPageWithoutFilters(input: PostsLookupInput): PostPage {
+        return postRepository
+            .findAll(PageRequest.of(input.page, input.size))
+            .let { postMapper.mapToPostPage(it) }
+    }
+
+    private fun findPostsPageByTags(input: PostsLookupInput): PostPage {
+        val tagNames = input.tags!!.toSet { it.name }
+        val pageable = PageRequest.of(input.page, input.size)
+
+        return postRepository.findPageByTagsContaining(tagNames, pageable.pageSize, pageable.offset).use { stream ->
+            val data = stream.toList()
+            val page = PageImpl(data, pageable, postRepository.countByTagsContaining(tagNames))
+
+            postMapper.mapToPostPage(page)
         }
     }
 

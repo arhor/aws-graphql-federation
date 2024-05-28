@@ -25,6 +25,7 @@ type Mutation {
 input PostsLookupInput {
     page: Int! = 0 @Range(min: 0, max: 2147483647)
     size: Int! = 20 @Range(min: 1, max: 100)
+    tags: [TagInput!]
 }
 
 input CreatePostInput {

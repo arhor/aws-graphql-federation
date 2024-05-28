@@ -5,9 +5,11 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
+import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
 
 @Component
@@ -43,6 +45,26 @@ class PostMapperImpl(
             title = projection.title,
             content = projection.content,
             options = optionsMapper.mapIntoList(projection.options),
+        )
+    }
+
+    override fun mapToPostPage(page: Page<PostEntity>): PostPage {
+        return PostPage(
+            data = page.content.filterNotNull().map(::mapToPost),
+            page = page.number,
+            size = page.size,
+            hasPrev = page.hasPrevious(),
+            hasNext = page.hasNext(),
+        )
+    }
+
+    override fun mapToPostPage(page: Page<PostProjection>): PostPage {
+        return PostPage(
+            data = page.content.filterNotNull().map(::mapToPost),
+            page = page.number,
+            size = page.size,
+            hasPrev = page.hasPrevious(),
+            hasNext = page.hasNext(),
         )
     }
 }
