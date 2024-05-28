@@ -19,13 +19,11 @@ class PostEventListenerTest {
     private val outboxMessageService = mockk<OutboxMessageService>()
     private val postEventListener = PostEventListener(outboxMessageService)
 
-
     @MethodSource
     @ParameterizedTest
     fun `should call OutboxMessageService#storeAsOutboxMessage on any PostEvent`(
         // Given
         event: PostEvent,
-        traceId: UUID,
     ) {
         every { outboxMessageService.storeAsOutboxMessage(any()) } just runs
 
@@ -40,12 +38,11 @@ class PostEventListenerTest {
 
     companion object {
         private val POST_ID = UUID.randomUUID()
-        private val TRACE_ID = UUID.randomUUID()
 
         @JvmStatic
         fun `should call OutboxMessageService#storeAsOutboxMessage on any PostEvent`(): Stream<Arguments> = Stream.of(
-            Arguments.of(PostEvent.Created(id = POST_ID), TRACE_ID),
-            Arguments.of(PostEvent.Deleted(id = POST_ID), TRACE_ID),
+            Arguments.of(PostEvent.Created(id = POST_ID)),
+            Arguments.of(PostEvent.Deleted(id = POST_ID)),
         )
     }
 }

@@ -12,6 +12,6 @@ interface PostMapper {
     fun mapToEntity(input: CreatePostInput, tags: Set<TagEntity>): PostEntity
     fun mapToPost(entity: PostEntity): Post
     fun mapToPost(projection: PostProjection): Post
-    fun mapToPostPage(page: Page<PostEntity>): PostPage
-    fun mapToPostPage(page: Page<PostProjection>): PostPage
+    fun mapToPostPageFromEntity(page: Page<PostEntity>): PostPage
+    fun mapToPostPageFromProjection(page: Page<PostProjection>): PostPage
 }

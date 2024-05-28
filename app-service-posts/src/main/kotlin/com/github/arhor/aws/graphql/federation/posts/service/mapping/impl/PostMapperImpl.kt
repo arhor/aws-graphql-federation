@@ -48,7 +48,7 @@ class PostMapperImpl(
         )
     }
 
-    override fun mapToPostPage(page: Page<PostEntity>): PostPage {
+    override fun mapToPostPageFromEntity(page: Page<PostEntity>): PostPage {
         return PostPage(
             data = page.content.filterNotNull().map(::mapToPost),
             page = page.number,
@@ -58,7 +58,7 @@ class PostMapperImpl(
         )
     }
 
-    override fun mapToPostPage(page: Page<PostProjection>): PostPage {
+    override fun mapToPostPageFromProjection(page: Page<PostProjection>): PostPage {
         return PostPage(
             data = page.content.filterNotNull().map(::mapToPost),
             page = page.number,

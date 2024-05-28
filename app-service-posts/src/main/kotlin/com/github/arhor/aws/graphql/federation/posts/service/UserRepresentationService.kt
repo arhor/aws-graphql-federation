@@ -33,5 +33,5 @@ interface UserRepresentationService {
      * @param input the input object containing the necessary data to switch posts
      * @return `true` if the switch was successful, `false` otherwise
      */
-    fun switchPosts(input: SwitchUserPostsInput): Boolean
+    fun switchUserPosts(input: SwitchUserPostsInput): Boolean
 }

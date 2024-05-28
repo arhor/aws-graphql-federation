@@ -14,7 +14,9 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConsta
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.TagInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
@@ -40,6 +42,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import java.util.Optional
 import java.util.UUID
+import java.util.stream.Stream
 
 class PostServiceImplTest {
 
@@ -79,18 +82,8 @@ class PostServiceImplTest {
         @Test
         fun `should return expected Post when PostEntity exists by passed ID`() {
             // Given
-            val expectedEntity = PostEntity(
-                id = UUID.randomUUID(),
-                userId = UUID.randomUUID(),
-                title = "test-title",
-                content = "test-content",
-            )
-            val expectedPost = Post(
-                id = expectedEntity.id!!,
-                userId = expectedEntity.userId,
-                title = expectedEntity.title,
-                content = expectedEntity.content,
-            )
+            val expectedEntity = createPostEntity()
+            val expectedPost = expectedEntity.toPost()
 
             every { postRepository.findById(any()) } returns Optional.of(expectedEntity)
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
@@ -110,19 +103,17 @@ class PostServiceImplTest {
         @Test
         fun `should throw EntityNotFoundException when PostEntity does not exist by passed ID`() {
             // Given
-            val postId = UUID.randomUUID()
-
             val expectedEntity = POST.TYPE_NAME
-            val expectedCondition = "${POST.Id} = $postId"
+            val expectedCondition = "${POST.Id} = $POST_1_ID"
             val expectedOperation = Operation.LOOKUP
 
             every { postRepository.findById(any()) } returns Optional.empty()
 
             // When
-            val result = catchException { postService.getPostById(postId) }
+            val result = catchException { postService.getPostById(POST_1_ID) }
 
             // Then
-            verify(exactly = 1) { postRepository.findById(postId) }
+            verify(exactly = 1) { postRepository.findById(POST_1_ID) }
 
             assertThat(result)
                 .asInstanceOf(type(EntityNotFoundException::class.java))
@@ -133,57 +124,95 @@ class PostServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: getPosts")
+    @DisplayName("PostService :: getPostPage")
     inner class GetPostsTest {
         @Test
-        fun `should expected list when posts exist calling PostMapper for each PostEntity`() {
+        fun `should expected page when posts exist without any filters`() {
             // Given
             val input = PostsLookupInput()
+            val dataFromDB = listOf(createPostEntity())
+            val expectedPosts = dataFromDB.map { it.toPost() }
+            val expectedPage = PageImpl(dataFromDB)
 
-            val expectedDataFromDB = listOf(
-                PostEntity(
-                    id = UUID.randomUUID(),
-                    userId = UUID.randomUUID(),
-                    title = "test-title",
-                    content = "test-content",
-                    options = PostEntity.Options(),
-                )
-            )
-            val expectedPosts = expectedDataFromDB.map {
-                Post(
-                    id = it.id!!,
-                    userId = it.userId,
-                    title = it.title,
-                    content = it.content,
-                )
-            }
-
-            every { postRepository.findAll(any<Pageable>()) } returns PageImpl(expectedDataFromDB)
-            every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPosts.single()
+            every { postRepository.findAll(any<Pageable>()) } returns expectedPage
+            every { postMapper.mapToPostPageFromEntity(any()) } returns PostPage(data = expectedPosts)
 
             // When
             val result = postService.getPostPage(input)
 
             // Then
             verify(exactly = 1) { postRepository.findAll(PageRequest.of(input.page, input.size)) }
-            verify(exactly = 1) { postMapper.mapToPost(expectedDataFromDB.single()) }
+            verify(exactly = 1) { postMapper.mapToPostPageFromEntity(expectedPage) }
 
             assertThat(result.data)
                 .isEqualTo(expectedPosts)
         }
 
         @Test
-        fun `should return empty list when no posts found without calls to PostMapper`() {
+        fun `should return empty page when no posts found without any filters`() {
             // Given
             val input = PostsLookupInput()
+            val empty = Page.empty<PostEntity>()
 
-            every { postRepository.findAll(any<Pageable>()) } returns Page.empty()
+            every { postRepository.findAll(any<Pageable>()) } returns empty
+            every { postMapper.mapToPostPageFromEntity(any()) } returns PostPage(data = emptyList())
 
             // When
             val result = postService.getPostPage(input)
 
             // Then
             verify(exactly = 1) { postRepository.findAll(PageRequest.of(input.page, input.size)) }
+            verify(exactly = 1) { postMapper.mapToPostPageFromEntity(empty) }
+
+            assertThat(result.data)
+                .isEmpty()
+        }
+
+        @Test
+        fun `should expected page when posts exist with provided set of tags`() {
+            // Given
+            val tags = setOf("test-1", "test-2")
+            val input = PostsLookupInput(tags = tags.map { TagInput(it) })
+            val dataFromDB = listOf(createPostProjection())
+            val expectedPosts = dataFromDB.map { it.toPost() }
+            val request = PageRequest.of(input.page, input.size)
+            val expectedPage = PageImpl(dataFromDB, request, Long.MAX_VALUE)
+
+            every { postRepository.findPageByTagsContaining(any(), any(), any()) } answers { dataFromDB.stream() }
+            every { postRepository.countByTagsContaining(any()) } returns Long.MAX_VALUE
+            every { postMapper.mapToPostPageFromProjection(any()) } returns PostPage(data = expectedPosts)
+
+            // When
+            val result = postService.getPostPage(input)
+
+            // Then
+            verify(exactly = 1) { postRepository.findPageByTagsContaining(tags, request.pageSize, request.offset) }
+            verify(exactly = 1) { postRepository.countByTagsContaining(tags) }
+            verify(exactly = 1) { postMapper.mapToPostPageFromProjection(expectedPage) }
+
+            assertThat(result.data)
+                .isEqualTo(expectedPosts)
+        }
+
+        @Test
+        fun `should return empty page when no posts found with provided set of tags`() {
+            // Given
+            val tags = setOf("test-1", "test-2")
+            val input = PostsLookupInput(tags = tags.map { TagInput(it) })
+            val request = PageRequest.of(input.page, input.size)
+            val empty = PageImpl(emptyList<PostProjection>(), request, Long.MAX_VALUE)
+
+            every { postRepository.findPageByTagsContaining(any(), any(), any()) } returns Stream.empty()
+            every { postRepository.countByTagsContaining(any()) } returns Long.MAX_VALUE
+            every { postMapper.mapToPostPageFromProjection(any()) } returns PostPage(data = emptyList())
+
+            // When
+            val result = postService.getPostPage(input)
+
+            // Then
+            verify(exactly = 1) { postRepository.findPageByTagsContaining(tags, request.pageSize, request.offset) }
+            verify(exactly = 1) { postRepository.countByTagsContaining(tags) }
+            verify(exactly = 1) { postMapper.mapToPostPageFromProjection(empty) }
 
             assertThat(result.data)
                 .isEmpty()
@@ -196,8 +225,8 @@ class PostServiceImplTest {
         @Test
         fun `should return expected posts grouped by user id when they exist in the repository`() {
             // Given
-            val post1Projection = createPostProjection()
-            val post2Projection = createPostProjection()
+            val post1Projection = createPostProjection(postId = POST_1_ID)
+            val post2Projection = createPostProjection(postId = POST_2_ID)
 
             val projections = listOf(post1Projection, post2Projection)
             val posts = projections.map { it.toPost() }
@@ -243,22 +272,12 @@ class PostServiceImplTest {
         fun `should successfully create new post publishing PostEvent#Created to the application`() {
             // Given
             val input = CreatePostInput(
-                userId = UUID.randomUUID(),
+                userId = USER_ID,
                 title = "test-title",
                 content = "test-content",
             )
-            val entity = PostEntity(
-                id = UUID.randomUUID(),
-                userId = input.userId,
-                title = input.title,
-                content = input.content,
-            )
-            val expectedPost = Post(
-                id = entity.id!!,
-                userId = entity.userId,
-                title = entity.title,
-                content = entity.content,
-            )
+            val entity = createPostEntity()
+            val expectedPost = entity.toPost()
 
             every { userRepository.existsById(any()) } returns true
             every { postMapper.mapToEntity(any(), any()) } returns entity
@@ -284,7 +303,7 @@ class PostServiceImplTest {
         fun `should throw EntityNotFoundException when specified user does not exist`() {
             // Given
             val input = CreatePostInput(
-                userId = UUID.randomUUID(),
+                userId = USER_ID,
                 title = "test-title",
                 content = "test-content",
             )
@@ -316,7 +335,7 @@ class PostServiceImplTest {
         @Test
         fun `should throw EntityNotFoundException when specified post does not exist`() {
             // Given
-            val input = UpdatePostInput(id = UUID.randomUUID())
+            val input = UpdatePostInput(id = POST_1_ID)
 
             val expectedEntity = POST.TYPE_NAME
             val expectedCondition = "${POST.Id} = ${input.id}"
@@ -341,21 +360,9 @@ class PostServiceImplTest {
         @Test
         fun `should not call PostRepository#save when there are no updates done to the entity`() {
             // Given
-            val input = UpdatePostInput(
-                id = UUID.randomUUID(),
-            )
-            val entity = PostEntity(
-                id = input.id,
-                userId = UUID.randomUUID(),
-                title = "test-title",
-                content = "test-content",
-            )
-            val expectedPost = Post(
-                id = entity.id!!,
-                userId = entity.userId,
-                title = entity.title,
-                content = entity.content,
-            )
+            val input = UpdatePostInput(id = POST_1_ID)
+            val entity = createPostEntity()
+            val expectedPost = entity.toPost()
 
             every { postRepository.findById(any()) } returns Optional.of(entity)
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
@@ -376,28 +383,15 @@ class PostServiceImplTest {
         fun `should call PostRepository#save when there are updates done to the entity`() {
             // Given
             val input = UpdatePostInput(
-                id = UUID.randomUUID(),
+                id = POST_1_ID,
                 title = "new-test-title",
                 content = "new-test-content",
                 options = emptyList(),
                 tags = emptyList(),
             )
-            val initialEntity = PostEntity(
-                id = input.id,
-                userId = UUID.randomUUID(),
-                title = "test-title",
-                content = "test-content",
-            )
-            val updatedEntity = initialEntity.copy(
-                title = input.title!!,
-                content = input.content!!,
-            )
-            val expectedPost = Post(
-                id = initialEntity.id!!,
-                userId = initialEntity.userId,
-                title = input.title!!,
-                content = input.content!!,
-            )
+            val initialEntity = createPostEntity()
+            val updatedEntity = initialEntity.copy(title = input.title!!, content = input.content!!)
+            val expectedPost = updatedEntity.toPost()
 
             every { postRepository.findById(any()) } returns Optional.of(initialEntity)
             every { optionsMapper.mapFromList(any()) } returns PostEntity.Options()
@@ -427,12 +421,7 @@ class PostServiceImplTest {
         @Test
         fun `should successfully delete existing post publishing PostEvent#Deleted to the application`() {
             // Given
-            val entity = PostEntity(
-                id = UUID.randomUUID(),
-                userId = UUID.randomUUID(),
-                title = "test-title",
-                content = "test-content",
-            )
+            val entity = createPostEntity()
 
             every { postRepository.findById(any()) } returns Optional.of(entity)
             every { postRepository.delete(any()) } just runs
@@ -453,24 +442,29 @@ class PostServiceImplTest {
         @Test
         fun `should return result with success false trying to delete post which does not exist`() {
             // Given
-            val postId = UUID.randomUUID()
-
             every { postRepository.findById(any()) } returns Optional.empty()
 
             // When
-            val result = postService.deletePost(DeletePostInput(id = postId))
+            val result = postService.deletePost(DeletePostInput(id = POST_1_ID))
 
             // Then
-            verify(exactly = 1) { postRepository.findById(postId) }
+            verify(exactly = 1) { postRepository.findById(POST_1_ID) }
 
             assertThat(result)
                 .isFalse()
         }
     }
 
-    private fun createPostProjection() = PostProjection(
-        id = UUID.randomUUID(),
-        userId = UUID.randomUUID(),
+    private fun createPostEntity() = PostEntity(
+        id = POST_1_ID,
+        userId = USER_ID,
+        title = "test-title",
+        content = "test-content",
+    )
+
+    private fun createPostProjection(postId: UUID = POST_1_ID) = PostProjection(
+        id = postId,
+        userId = USER_ID,
         title = "test-title",
         content = "test-content",
         options = PostEntity.Options(),
@@ -483,4 +477,18 @@ class PostServiceImplTest {
         content = content,
         options = options.items.toList(),
     )
+
+    private fun PostEntity.toPost() = Post(
+        id = id!!,
+        userId = userId,
+        title = title,
+        content = content,
+        options = options.items.toList(),
+    )
+
+    companion object {
+        private val POST_1_ID = UUID.randomUUID()
+        private val POST_2_ID = UUID.randomUUID()
+        private val USER_ID = UUID.randomUUID()
+    }
 }

@@ -124,7 +124,7 @@ class PostServiceImpl(
     private fun findPostsPageWithoutFilters(input: PostsLookupInput): PostPage {
         return postRepository
             .findAll(PageRequest.of(input.page, input.size))
-            .let { postMapper.mapToPostPage(it) }
+            .let { postMapper.mapToPostPageFromEntity(it) }
     }
 
     private fun findPostsPageByTags(input: PostsLookupInput): PostPage {
@@ -135,7 +135,7 @@ class PostServiceImpl(
             val data = stream.toList()
             val page = PageImpl(data, pageable, postRepository.countByTagsContaining(tagNames))
 
-            postMapper.mapToPostPage(page)
+            postMapper.mapToPostPageFromProjection(page)
         }
     }
 

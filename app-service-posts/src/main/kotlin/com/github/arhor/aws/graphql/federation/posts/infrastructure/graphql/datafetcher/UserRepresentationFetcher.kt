@@ -35,6 +35,6 @@ class UserRepresentationFetcher(
     @DgsMutation
     @PreAuthorize("hasRole('ADMIN')")
     fun switchUserPosts(@InputArgument input: SwitchUserPostsInput): Boolean {
-        return userService.switchPosts(input)
+        return userService.switchUserPosts(input)
     }
 }

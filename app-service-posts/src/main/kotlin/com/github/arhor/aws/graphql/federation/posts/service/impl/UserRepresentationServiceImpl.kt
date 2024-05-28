@@ -66,7 +66,7 @@ class UserRepresentationServiceImpl(
         }
     }
 
-    override fun switchPosts(input: SwitchUserPostsInput): Boolean {
+    override fun switchUserPosts(input: SwitchUserPostsInput): Boolean {
         val userId = input.userId
         val shouldBeDisabled = input.disabled
 
