@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service.impl
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.convertValue
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
@@ -16,6 +16,7 @@ import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import org.springframework.retry.RetryOperations
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Trace
@@ -34,12 +35,13 @@ class OutboxMessageServiceImpl(
         outboxMessageRepository.save(
             OutboxMessageEntity(
                 type = event.type(),
-                data = objectMapper.convertValue(event),
+                data = objectMapper.convertValue(event, OutboxMessageDataTypeRef),
                 traceId = useContextAttribute(Attributes.TRACING_ID),
             )
         )
     }
 
+    @Transactional
     override fun releaseOutboxMessagesOfType(eventType: UserEvent.Type) {
         val outboxMessages =
             outboxMessageRepository.dequeueOldest(
@@ -73,5 +75,7 @@ class OutboxMessageServiceImpl(
 
     companion object {
         private const val DEFAULT_EVENTS_BATCH_SIZE = 50
+
+        private object OutboxMessageDataTypeRef : TypeReference<Map<String, Any?>>()
     }
 }
