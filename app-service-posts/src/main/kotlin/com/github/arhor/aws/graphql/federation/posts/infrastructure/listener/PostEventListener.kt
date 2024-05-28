@@ -5,8 +5,6 @@ import com.github.arhor.aws.graphql.federation.posts.service.OutboxMessageServic
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Propagation.MANDATORY
-import org.springframework.transaction.annotation.Transactional
 
 @Trace
 @Component
@@ -15,7 +13,6 @@ class PostEventListener(
 ) {
 
     @EventListener(PostEvent::class)
-    @Transactional(propagation = MANDATORY)
     fun onPostEvent(event: PostEvent) {
         outboxMessageService.storeAsOutboxMessage(event)
     }

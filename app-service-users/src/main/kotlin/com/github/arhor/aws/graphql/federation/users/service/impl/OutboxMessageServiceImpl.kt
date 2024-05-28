@@ -16,6 +16,7 @@ import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import org.springframework.retry.RetryOperations
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
@@ -31,6 +32,7 @@ class OutboxMessageServiceImpl(
 
     private val userEventsSnsTopicName = appProps.aws!!.sns!!.userEvents!!
 
+    @Transactional(propagation = Propagation.MANDATORY)
     override fun storeAsOutboxMessage(event: UserEvent) {
         outboxMessageRepository.save(
             OutboxMessageEntity(
