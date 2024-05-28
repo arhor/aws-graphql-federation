@@ -1,6 +1,9 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository
 
+import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.PostEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.TagEntityCallback
@@ -25,7 +28,49 @@ class PostRepositoryTest : RepositoryTestBase() {
     private lateinit var postRepository: PostRepository
 
     @Autowired
-    private lateinit var userRepresentationRepository: UserRepresentationRepository
+    private lateinit var userRepository: UserRepresentationRepository
+
+    @Autowired
+    private lateinit var tagRepository: TagRepository
+
+    @Nested
+    @DisplayName("PostRepository :: findPageByTagsContaining")
+    inner class FindPageByTagsContainingTest {
+        @Test
+        fun `should return list containing expected posts data`() {
+            // Given
+
+            val user = createUser()
+            val tags = createTags("test-1", "test-2", "test-3")
+            val expectedPosts = createPosts(user, tags).map { it.toProjection() }
+
+            // When
+            val result = postRepository
+                .findPageByTagsContaining(tags.toSet { it.name }, 20, 0)
+                .toList()
+
+            // Then
+            assertThat(result)
+                .isNotNull()
+                .isNotEmpty()
+                .containsExactlyInAnyOrderElementsOf(expectedPosts)
+        }
+
+        @Test
+        fun `should return empty list when tags passed as empty list`() {
+            // Given
+            val user = createUser()
+            createPosts(user)
+
+            // When
+            val result = postRepository.findPageByTagsContaining(tags = emptySet(), limit = 20, offset = 0)
+
+            // Then
+            assertThat(result)
+                .isNotNull()
+                .isEmpty()
+        }
+    }
 
     @Nested
     @DisplayName("PostRepository :: findAllByUserIdIn")
@@ -65,7 +110,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
             val user =
-                userRepresentationRepository.save(UserRepresentation(id = UUID.randomUUID(), shouldBePersisted = true))
+                userRepository.save(UserRepresentation(id = UUID.randomUUID(), shouldBePersisted = true))
             createPosts(user)
             val incorrectUserIds = listOf(UUID.randomUUID())
 
@@ -79,19 +124,30 @@ class PostRepositoryTest : RepositoryTestBase() {
         }
     }
 
-    private fun createUser() = userRepresentationRepository.save(
+    private fun createUser() = userRepository.save(
         UserRepresentation(
             id = UUID.randomUUID(),
             shouldBePersisted = true,
         )
     )
 
-    private fun createPosts(user: UserRepresentation, num: Long = 3) = postRepository.saveAll(
+    private fun createTags(vararg names: String) =
+        names.takeIf { it.isNotEmpty() }
+            ?.map { TagEntity(name = it) }
+            ?.let { tagRepository.saveAll(it) }
+            ?: emptyList()
+
+    private fun createPosts(
+        user: UserRepresentation,
+        tags: List<TagEntity> = emptyList(),
+        num: Long = 3,
+    ) = postRepository.saveAll(
         (1..num).map {
             PostEntity(
                 userId = user.id,
                 title = "title-$it",
                 content = "content-$it",
+                tags = tags.toSet(TagRef::from)
             )
         }
     )
