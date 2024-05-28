@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
@@ -8,6 +9,7 @@ import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.data.entity.PredefinedAuthority
+import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
@@ -25,7 +27,6 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.retry.annotation.Retryable
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -107,7 +108,6 @@ class UserServiceImpl(
     }
 
     @Transactional
-    @Retryable(retryFor = [OptimisticLockingFailureException::class])
     override fun updateUser(input: UpdateUserInput): User {
         val initialState = userRepository.findByIdOrNull(input.id) ?: throw EntityNotFoundException(
             entity = USER.TYPE_NAME,
@@ -119,7 +119,7 @@ class UserServiceImpl(
         )
         return userMapper.mapToResult(
             entity = when (currentState != initialState) {
-                true -> userRepository.save(currentState)
+                true -> trySaveHandlingConcurrentUpdates(currentState)
                 else -> initialState
             }
         )
@@ -134,6 +134,20 @@ class UserServiceImpl(
                 eventPublisher.publishEvent(UserEvent.Deleted(id = user.id!!))
                 true
             }
+        }
+    }
+
+    private fun trySaveHandlingConcurrentUpdates(entity: UserEntity): UserEntity {
+        return try {
+            userRepository.save(entity)
+        } catch (e: OptimisticLockingFailureException) {
+            logger.error(e.message, e)
+
+            throw EntityCannotBeUpdatedException(
+                entity = USER.TYPE_NAME,
+                condition = "${USER.Id} = ${entity.id} (updated concurrently)",
+                cause = e,
+            )
         }
     }
 

@@ -1,9 +1,11 @@
 package com.github.arhor.aws.graphql.federation.posts.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
+import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.common.toSet
+import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
@@ -21,11 +23,11 @@ import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapp
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
 import com.github.arhor.aws.graphql.federation.tracing.Trace
+import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -90,7 +92,6 @@ class PostServiceImpl(
     }
 
     @Transactional
-    @Retryable(retryFor = [OptimisticLockingFailureException::class])
     override fun updatePost(input: UpdatePostInput): Post {
         val currentOperation = Operation.UPDATE
         val initialState = postRepository.findByIdOrNull(input.id)
@@ -108,7 +109,7 @@ class PostServiceImpl(
         )
         return postMapper.mapToPost(
             entity = when (currentState != initialState) {
-                true -> postRepository.save(currentState)
+                true -> trySaveHandlingConcurrentUpdates(currentState)
                 else -> initialState
             }
         )
@@ -152,5 +153,23 @@ class PostServiceImpl(
                 operation,
             )
         }
+    }
+
+    private fun trySaveHandlingConcurrentUpdates(entity: PostEntity): PostEntity {
+        return try {
+            postRepository.save(entity)
+        } catch (e: OptimisticLockingFailureException) {
+            logger.error(e.message, e)
+
+            throw EntityCannotBeUpdatedException(
+                entity = POST.TYPE_NAME,
+                condition = "${POST.Id} = ${entity.id} (updated concurrently)",
+                cause = e,
+            )
+        }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 }

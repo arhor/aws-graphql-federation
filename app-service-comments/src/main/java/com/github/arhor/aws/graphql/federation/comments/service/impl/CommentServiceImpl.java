@@ -19,8 +19,8 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
+@Slf4j
 @Trace
 @Service
 @RequiredArgsConstructor
@@ -106,7 +107,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    @Retryable(retryFor = OptimisticLockingFailureException.class)
     public Comment updateComment(final UpdateCommentInput input) {
         final var currentOperation = Operation.UPDATE;
         final var commentId = input.getId();
@@ -127,7 +127,7 @@ public class CommentServiceImpl implements CommentService {
         final var entity =
             initialState.equals(currentState)
                 ? currentState
-                : commentRepository.save(currentState);
+                : trySaveHandlingConcurrentUpdates(currentState);
 
         return commentMapper.mapToDto(entity);
     }
@@ -183,6 +183,20 @@ public class CommentServiceImpl implements CommentService {
                 COMMENT.TYPE_NAME,
                 USER.TYPE_NAME + " with " + USER.Id + " = " + userId + " is not found",
                 operation
+            );
+        }
+    }
+
+    private CommentEntity trySaveHandlingConcurrentUpdates(final CommentEntity entity) {
+        try {
+            return commentRepository.save(entity);
+        } catch (final OptimisticLockingFailureException e) {
+            log.error(e.getMessage(), e);
+
+            throw new EntityCannotBeUpdatedException(
+                COMMENT.TYPE_NAME,
+                COMMENT.Id + " = " + entity.id() + "(updated concurrently)",
+                e
             );
         }
     }
