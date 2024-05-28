@@ -12,6 +12,7 @@ import com.netflix.graphql.dgs.DgsEntityFetcher;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.Map;
 import java.util.UUID;
@@ -39,6 +40,7 @@ public class PostRepresentationFetcher {
     /* ---------- Mutations ---------- */
 
     @DgsMutation
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public boolean switchPostComments(final @InputArgument SwitchPostCommentsInput input) {
         return postService.switchComments(input);
     }

@@ -55,19 +55,19 @@ public class CommentFetcher {
     /* ---------- Mutations ---------- */
 
     @DgsMutation
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
     public Comment createComment(final @InputArgument CreateCommentInput input) {
         return commentService.createComment(input);
     }
 
     @DgsMutation
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
     public Comment updateComment(final @InputArgument UpdateCommentInput input) {
         return commentService.updateComment(input);
     }
 
     @DgsMutation
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
     public boolean deleteComment(final @InputArgument DeleteCommentInput input) {
         return commentService.deleteComment(input);
     }

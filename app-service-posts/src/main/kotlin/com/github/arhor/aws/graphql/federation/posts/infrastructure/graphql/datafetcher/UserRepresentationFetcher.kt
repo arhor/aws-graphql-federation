@@ -11,6 +11,7 @@ import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import com.netflix.graphql.dgs.DgsEntityFetcher
 import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.InputArgument
+import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
@@ -32,6 +33,7 @@ class UserRepresentationFetcher(
     /* ---------- Mutations ---------- */
 
     @DgsMutation
+    @PreAuthorize("hasRole('ADMIN')")
     fun switchUserPosts(@InputArgument input: SwitchUserPostsInput): Boolean {
         return userService.switchPosts(input)
     }

@@ -34,17 +34,16 @@ class UserFetcher(
     /* ---------- Mutations ---------- */
 
     @DgsMutation
-    @PreAuthorize("!isAuthenticated()")
     fun createUser(@InputArgument input: CreateUserInput): User =
         userService.createUser(input)
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated() && hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
     fun updateUser(@InputArgument input: UpdateUserInput): User =
         userService.updateUser(input)
 
     @DgsMutation
-    @PreAuthorize("isAuthenticated() && hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
     fun deleteUser(@InputArgument input: DeleteUserInput): Boolean =
         userService.deleteUser(input)
 }

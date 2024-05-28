@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.datafetcher
 
-import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.PostBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
@@ -9,6 +8,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.PostBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.netflix.graphql.dgs.DgsComponent
@@ -48,17 +48,17 @@ class PostFetcher(
     /* ---------- Mutations ---------- */
 
     @DgsMutation
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
     fun createPost(@InputArgument input: CreatePostInput): Post =
         postService.createPost(input)
 
     @DgsMutation
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
     fun updatePost(@InputArgument input: UpdatePostInput): Post =
         postService.updatePost(input)
 
     @DgsMutation
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("isAuthenticated()")
     fun deletePost(@InputArgument input: DeletePostInput): Boolean =
         postService.deletePost(input)
 }
