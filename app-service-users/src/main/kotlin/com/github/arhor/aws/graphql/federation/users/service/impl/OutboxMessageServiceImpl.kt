@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.tracing.Attributes
-import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
+import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENCY_KEY
 import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.tracing.useContextAttribute
@@ -67,7 +67,7 @@ class OutboxMessageServiceImpl(
             event,
             event.attributes(
                 TRACING_ID_KEY to traceId.toString(),
-                IDEMPOTENT_KEY to idempotencyKey.toString(),
+                IDEMPOTENCY_KEY to idempotencyKey.toString(),
             )
         )
         snsRetryOperations.execute<Unit, Throwable> {

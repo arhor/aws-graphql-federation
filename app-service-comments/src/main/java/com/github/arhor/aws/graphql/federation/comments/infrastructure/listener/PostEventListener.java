@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.IDEMPOTENT_KEY;
+import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.IDEMPOTENCY_KEY;
 import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
 import static com.github.arhor.aws.graphql.federation.tracing.Utils.withExtendedMDC;
 
@@ -26,7 +26,7 @@ public class PostEventListener {
     public void handlePostCreatedEvent(
         @Payload final PostEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId,
-        @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
+        @Header(IDEMPOTENCY_KEY) final UUID idempotencyKey
     ) {
         withExtendedMDC(
             traceId,
@@ -41,7 +41,7 @@ public class PostEventListener {
     public void handlePostDeletedEvent(
         @Payload final PostEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId,
-        @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
+        @Header(IDEMPOTENCY_KEY) final UUID idempotencyKey
     ) {
         withExtendedMDC(
             traceId,
