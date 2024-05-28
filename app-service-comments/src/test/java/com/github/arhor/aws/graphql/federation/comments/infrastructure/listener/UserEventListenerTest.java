@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.IDEMPOTENT_KEY;
 import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
@@ -56,7 +57,7 @@ class UserEventListenerTest extends EventListenerTestBase {
                 event,
                 Map.of(
                     TRACING_ID_KEY, TRACE_ID,
-                    IDEMPOTENCY_KEY, IDEMPOTENCY_KEY
+                    IDEMPOTENT_KEY, IDEMPOTENCY_KEY
                 )
             )
         );
@@ -86,7 +87,7 @@ class UserEventListenerTest extends EventListenerTestBase {
                 event,
                 Map.of(
                     TRACING_ID_KEY, TRACE_ID,
-                    IDEMPOTENCY_KEY, IDEMPOTENCY_KEY
+                    IDEMPOTENT_KEY, IDEMPOTENCY_KEY
                 )
             )
         );

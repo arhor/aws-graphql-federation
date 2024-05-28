@@ -7,7 +7,7 @@ import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.tracing.Attributes
-import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENCY_KEY
+import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.tracing.useContextAttribute
 import io.awspring.cloud.sns.core.SnsNotification
@@ -116,7 +116,7 @@ class OutboxMessageServiceImplTest {
 
             val expectedHeaders = event.attributes(
                 TRACING_ID_KEY to TRACE_ID.toString(),
-                IDEMPOTENCY_KEY to MESSAGE_ID.toString(),
+                IDEMPOTENT_KEY to MESSAGE_ID.toString(),
             )
 
             val actualSnsTopicName = slot<String>()

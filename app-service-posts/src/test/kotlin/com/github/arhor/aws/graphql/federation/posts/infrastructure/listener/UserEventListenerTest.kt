@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
+import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.confirmVerified
@@ -44,7 +45,7 @@ class UserEventListenerTest : SqsListenerTestBase() {
                 event,
                 mapOf(
                     TRACING_ID_KEY to TRACE_ID,
-                    com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENCY_KEY to IDEMPOTENCY_KEY,
+                    IDEMPOTENT_KEY to IDEMPOTENCY_KEY,
                 )
             )
         )
@@ -69,7 +70,7 @@ class UserEventListenerTest : SqsListenerTestBase() {
                 event,
                 mapOf(
                     TRACING_ID_KEY to TRACE_ID,
-                    com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENCY_KEY to IDEMPOTENCY_KEY,
+                    IDEMPOTENT_KEY to IDEMPOTENCY_KEY,
                 )
             )
         )

@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
-import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENCY_KEY
+import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.tracing.withExtendedMDC
@@ -22,7 +22,7 @@ class UserEventListener(
     fun onUserCreatedEvent(
         @Payload event: UserEvent.Created,
         @Header(TRACING_ID_KEY) traceId: UUID,
-        @Header(IDEMPOTENCY_KEY) idempotencyKey: UUID,
+        @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             userRepresentationService.createUserRepresentation(
@@ -36,7 +36,7 @@ class UserEventListener(
     fun onUserDeletedEvent(
         @Payload event: UserEvent.Deleted,
         @Header(TRACING_ID_KEY) traceId: UUID,
-        @Header(IDEMPOTENCY_KEY) idempotencyKey: UUID,
+        @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             userRepresentationService.deleteUserRepresentation(

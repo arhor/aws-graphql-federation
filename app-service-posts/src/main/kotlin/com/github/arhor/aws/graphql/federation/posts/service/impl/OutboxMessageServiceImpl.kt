@@ -8,7 +8,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEn
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.posts.service.OutboxMessageService
 import com.github.arhor.aws.graphql.federation.tracing.Attributes
-import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENCY_KEY
+import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.tracing.useContextAttribute
@@ -67,7 +67,7 @@ class OutboxMessageServiceImpl(
             event,
             event.attributes(
                 TRACING_ID_KEY to traceId.toString(),
-                IDEMPOTENCY_KEY to idempotencyKey.toString(),
+                IDEMPOTENT_KEY to idempotencyKey.toString(),
             )
         )
         snsRetryOperations.execute<Unit, Throwable> {
