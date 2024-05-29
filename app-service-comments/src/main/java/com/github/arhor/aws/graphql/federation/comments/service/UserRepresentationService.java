@@ -36,5 +36,5 @@ public interface UserRepresentationService {
      * @param input the input object containing the necessary data to switch comments
      * @return {@code true} if the switch was successful, {@code false} otherwise
      */
-    boolean switchComments(SwitchUserCommentsInput input);
+    boolean switchUserComments(SwitchUserCommentsInput input);
 }

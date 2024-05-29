@@ -42,6 +42,6 @@ public class UserRepresentationFetcher {
     @DgsMutation
     @PreAuthorize("hasRole('ADMIN')")
     public boolean switchUserComments(final @InputArgument SwitchUserCommentsInput input) {
-        return userService.switchComments(input);
+        return userService.switchUserComments(input);
     }
 }

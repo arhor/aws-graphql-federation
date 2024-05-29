@@ -85,7 +85,7 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     }
 
     @Override
-    public boolean switchComments(final SwitchUserCommentsInput input) {
+    public boolean switchUserComments(final SwitchUserCommentsInput input) {
         final var userId = input.getUserId();
         final var shouldBeDisabled = input.getDisabled();
 

@@ -2,7 +2,12 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchUserCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
+import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
+import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
+import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,15 +19,19 @@ import org.springframework.cache.concurrent.ConcurrentMapCache;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.comments.util.Caches.IDEMPOTENT_ID_SET;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchException;
+import static org.assertj.core.api.Assertions.from;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class UserRepresentationServiceImplTest {
 
@@ -31,16 +40,16 @@ class UserRepresentationServiceImplTest {
 
     private final Cache cache = new ConcurrentMapCache(IDEMPOTENT_ID_SET.name());
     private final CacheManager cacheManager = mock();
-    private final UserRepresentationRepository userRepresentationRepository = mock();
+    private final UserRepresentationRepository userRepository = mock();
 
     private UserRepresentationServiceImpl userService;
 
     @BeforeEach
     void setUp() {
-        when(cacheManager.getCache(IDEMPOTENT_ID_SET.name()))
-            .thenReturn(cache);
+        given(cacheManager.getCache(IDEMPOTENT_ID_SET.name()))
+            .willReturn(cache);
 
-        userService = new UserRepresentationServiceImpl(cacheManager, userRepresentationRepository);
+        userService = new UserRepresentationServiceImpl(cacheManager, userRepository);
         userService.initialize();
     }
 
@@ -66,18 +75,18 @@ class UserRepresentationServiceImplTest {
             );
             final var expectedUserIds = Set.of(USER_ID);
 
-            when(userRepresentationRepository.findAllById(any()))
-                .thenReturn(List.of(userRepresentation));
+            given(userRepository.findAllById(any()))
+                .willReturn(List.of(userRepresentation));
 
             // When
             final var result = userService.findUsersRepresentationsInBatch(expectedUserIds);
 
             // Then
-            then(userRepresentationRepository)
+            then(userRepository)
                 .should()
                 .findAllById(expectedUserIds);
 
-            then(userRepresentationRepository)
+            then(userRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
@@ -96,18 +105,18 @@ class UserRepresentationServiceImplTest {
             );
             final var expectedUserIds = Set.of(USER_ID);
 
-            when(userRepresentationRepository.findAllById(any()))
-                .thenReturn(Collections.emptyList());
+            given(userRepository.findAllById(any()))
+                .willReturn(Collections.emptyList());
 
             // When
             final var result = userService.findUsersRepresentationsInBatch(expectedUserIds);
 
             // Then
-            then(userRepresentationRepository)
+            then(userRepository)
                 .should()
                 .findAllById(expectedUserIds);
 
-            then(userRepresentationRepository)
+            then(userRepository)
                 .shouldHaveNoMoreInteractions();
 
             assertThat(result)
@@ -135,11 +144,11 @@ class UserRepresentationServiceImplTest {
             }
 
             // Then
-            then(userRepresentationRepository)
+            then(userRepository)
                 .should()
                 .save(expectedUserRepresentation);
 
-            then(userRepresentationRepository)
+            then(userRepository)
                 .shouldHaveNoMoreInteractions();
         }
     }
@@ -158,12 +167,106 @@ class UserRepresentationServiceImplTest {
             }
 
             // Then
-            then(userRepresentationRepository)
+            then(userRepository)
                 .should()
                 .deleteById(USER_ID);
 
-            then(userRepresentationRepository)
+            then(userRepository)
                 .shouldHaveNoMoreInteractions();
+        }
+    }
+
+    @Nested
+    @DisplayName("UserService :: switchUserComments")
+    class SwitchUserCommentsTest {
+        @Test
+        void should_call_userRepository_save_when_there_is_update_applied_to_the_user() {
+            // Given
+            final var input =
+                SwitchUserCommentsInput.newBuilder()
+                    .userId(USER_ID)
+                    .disabled(true)
+                    .build();
+            final var user = UserRepresentation.builder()
+                .id(USER_ID)
+                .commentsDisabled(false)
+                .build();
+
+            given(userRepository.findById(any()))
+                .willReturn(Optional.of(user));
+
+            given(userRepository.save(any()))
+                .willAnswer((call) -> call.getArgument(0));
+
+            // When
+            final var result = userService.switchUserComments(input);
+
+            // Then
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
+
+            then(userRepository)
+                .should()
+                .save(user.toBuilder().commentsDisabled(input.getDisabled()).build());
+
+            assertThat(result)
+                .isTrue();
+        }
+
+        @Test
+        void should_not_call_userRepository_save_when_there_is_no_update_applied_to_the_user() {
+            // Given
+            final var input =
+                SwitchUserCommentsInput.newBuilder()
+                    .userId(USER_ID)
+                    .disabled(true)
+                    .build();
+            final var user = UserRepresentation.builder()
+                .id(USER_ID)
+                .commentsDisabled(true)
+                .build();
+
+            given(userRepository.findById(any()))
+                .willReturn(Optional.of(user));
+
+            // When
+            final var result = userService.switchUserComments(input);
+
+            // Then
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
+
+            assertThat(result)
+                .isFalse();
+        }
+
+        @Test
+        void should_throw_EntityNotFoundException_when_there_is_no_user_found_by_the_input_id() {
+            // Given
+            final var input =
+                SwitchUserCommentsInput.newBuilder()
+                    .userId(USER_ID)
+                    .disabled(true)
+                    .build();
+
+            given(userRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+            // When
+            final var result = catchException(() -> userService.switchUserComments(input));
+
+            // Then
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
+
+            assertThat(result)
+                .asInstanceOf(type(EntityNotFoundException.class))
+                .returns(USER.TYPE_NAME, from(EntityConditionException::getEntity))
+                .returns(USER.Id + " = " + USER_ID, from(EntityConditionException::getCondition))
+                .returns(Operation.UPDATE, from(EntityConditionException::getOperation));
         }
     }
 }
