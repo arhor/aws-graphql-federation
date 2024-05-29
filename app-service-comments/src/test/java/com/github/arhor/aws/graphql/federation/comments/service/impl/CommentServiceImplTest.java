@@ -90,7 +90,7 @@ class CommentServiceImplTest {
                 .toList();
 
             given(commentRepository.findAllByPrntIdIn(any()))
-                .willAnswer((__) -> commentEntities);
+                .willAnswer((__) -> commentEntities.stream());
 
             given(commentMapper.mapToDto(any()))
                 .willAnswer((__) -> commentDtos.get(0))
@@ -122,12 +122,12 @@ class CommentServiceImplTest {
         }
 
         @Test
-        void should_not_interact_with_repository_if_userIds_is_empty() {
+        void should_not_interact_with_repository_if_commentIds_is_empty() {
             // Given
-            var userIds = Collections.<UUID>emptyList();
+            var commentIds = Collections.<UUID>emptyList();
 
             // When
-            var result = commentService.getCommentsByUserIds(userIds);
+            var result = commentService.getCommentsChildren(commentIds);
 
             // Then
             assertThat(result)

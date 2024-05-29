@@ -4,7 +4,6 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntit
 import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -19,7 +18,7 @@ public interface CommentRepository extends ListCrudRepository<CommentEntity, UUI
      * @param prntId the collection of parent comment IDs to retrieve comments for
      * @return a stream of comment entities associated with the specified parent comment IDs
      */
-    List<CommentEntity> findAllByPrntIdIn(Collection<UUID> prntId);
+    Stream<CommentEntity> findAllByPrntIdIn(Collection<UUID> prntId);
 
     /**
      * Finds all comment entities for the specified user IDs.
