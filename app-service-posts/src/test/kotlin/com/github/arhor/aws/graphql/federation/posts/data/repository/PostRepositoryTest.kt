@@ -39,21 +39,26 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return list containing expected posts data`() {
             // Given
-
             val user = createUser()
             val tags = createTags("test-1", "test-2", "test-3")
-            val expectedPosts = createPosts(user, tags).map { it.toProjection() }
+
+            val post1 = createPost(user, listOf(tags[0]), 1).toProjection()
+            val post2 = createPost(user, listOf(tags[1]), 2).toProjection()
+            val post3 = createPost(user, listOf(tags[2]), 3).toProjection()
+            val post4 = createPost(user, tags, 4).toProjection()
 
             // When
-            val result = postRepository
-                .findPageByTagsContaining(tags.toSet { it.name }, 20, 0)
-                .toList()
+            val result =
+                postRepository
+                    .findPageByTagsContaining(tags.toSet { it.name }, 20, 0)
+                    .use { it.toList() }
 
             // Then
             assertThat(result)
                 .isNotNull()
                 .isNotEmpty()
-                .containsExactlyInAnyOrderElementsOf(expectedPosts)
+                .doesNotContain(post1, post2, post3)
+                .containsExactly(post4)
         }
 
         @Test
@@ -63,12 +68,52 @@ class PostRepositoryTest : RepositoryTestBase() {
             createPosts(user)
 
             // When
-            val result = postRepository.findPageByTagsContaining(tags = emptySet(), limit = 20, offset = 0)
+            val result =
+                postRepository
+                    .findPageByTagsContaining(tags = emptySet(), limit = 20, offset = 0)
+                    .use { it.toList() }
 
             // Then
             assertThat(result)
                 .isNotNull()
                 .isEmpty()
+        }
+    }
+
+    @Nested
+    @DisplayName("PostRepository :: countByTagsContaining")
+    inner class CountByTagsContainingTest {
+        @Test
+        fun `should return one when there is only one post exists containing all required tags`() {
+            // Given
+            val user = createUser()
+            val tags = createTags("test-1", "test-2", "test-3")
+
+            createPost(user, listOf(tags[0]), 1).toProjection()
+            createPost(user, listOf(tags[1]), 2).toProjection()
+            createPost(user, listOf(tags[2]), 3).toProjection()
+            createPost(user, tags, 4).toProjection()
+
+            // When
+            val result = postRepository.countByTagsContaining(tags.toSet { it.name })
+
+            // Then
+            assertThat(result)
+                .isOne()
+        }
+
+        @Test
+        fun `should return zero when empty set of tags passed`() {
+            // Given
+            val user = createUser()
+            createPosts(user)
+
+            // When
+            val result = postRepository.countByTagsContaining(tags = emptySet())
+
+            // Then
+            assertThat(result)
+                .isZero()
         }
     }
 
@@ -136,6 +181,19 @@ class PostRepositoryTest : RepositoryTestBase() {
             ?.map { TagEntity(name = it) }
             ?.let { tagRepository.saveAll(it) }
             ?: emptyList()
+
+    private fun createPost(
+        user: UserRepresentation,
+        tags: List<TagEntity> = emptyList(),
+        num: Long
+    ) = postRepository.save(
+        PostEntity(
+            userId = user.id,
+            title = "title-$num",
+            content = "content-$num",
+            tags = tags.toSet(TagRef::from)
+        )
+    )
 
     private fun createPosts(
         user: UserRepresentation,

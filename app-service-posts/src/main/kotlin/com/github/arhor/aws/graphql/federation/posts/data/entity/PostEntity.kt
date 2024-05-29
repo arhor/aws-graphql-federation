@@ -5,6 +5,7 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
 import org.springframework.data.annotation.LastModifiedDate
+import org.springframework.data.annotation.PersistenceCreator
 import org.springframework.data.annotation.Version
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.MappedCollection
@@ -15,7 +16,7 @@ import java.util.UUID
 
 @Table(PostEntity.TABLE_NAME)
 @Immutable
-data class PostEntity(
+data class PostEntity @PersistenceCreator constructor(
     @Id
     @Column(COL_ID)
     val id: UUID? = null,
@@ -45,7 +46,7 @@ data class PostEntity(
     val updatedDateTime: LocalDateTime? = null,
 
     @MappedCollection(idColumn = TagRef.COL_POST_ID)
-    val tags: Set<TagRef> = emptySet()
+    val tags: Set<TagRef> = emptySet(),
 ) {
     /**
      * Wrapper class over EnumSet is required to make it available for custom conversions.

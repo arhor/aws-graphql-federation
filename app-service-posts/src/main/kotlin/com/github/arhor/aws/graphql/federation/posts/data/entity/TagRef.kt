@@ -1,13 +1,14 @@
 package com.github.arhor.aws.graphql.federation.posts.data.entity
 
 import org.springframework.data.annotation.Immutable
+import org.springframework.data.annotation.PersistenceCreator
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import java.util.UUID
 
 @Table(TagRef.TABLE_NAME)
 @Immutable
-data class TagRef(
+data class TagRef @PersistenceCreator constructor(
     @Column(COL_TAG_ID)
     val tagId: UUID,
 ) {

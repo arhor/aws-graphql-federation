@@ -23,23 +23,23 @@ type Mutation {
 # ---------- Input Types ----------
 
 input PostsLookupInput {
-    page: Int! = 0 @Range(min: 0, max: 2147483647)
-    size: Int! = 20 @Range(min: 1, max: 100)
-    tags: [TagInput!]
+    page: Int! = 0    @Range(min: 0, max: 2147483647)
+    size: Int! = 20   @Range(min: 1, max: 100)
+    tags: [TagInput!] @NotEmpty
 }
 
 input CreatePostInput {
     userId: UUID!
-    title: String! @NotBlank @Size(min: 1, max: 512)
-    content: String! @NotBlank @Size(min: 1, max: 4096)
+    title: String!     @NotBlank @Size(min: 1, max: 512)
+    content: String!   @NotBlank @Size(min: 1, max: 4096)
     options: [Option!]
     tags: [TagInput!]
 }
 
 input UpdatePostInput {
     id: UUID!
-    title: String @NotBlank @Size(min: 1, max: 512)
-    content: String @NotBlank @Size(min: 1, max: 4096)
+    title: String      @NotBlank @Size(min: 1, max: 512)
+    content: String    @NotBlank @Size(min: 1, max: 4096)
     options: [Option!]
     tags: [TagInput!]
 }
@@ -54,7 +54,7 @@ input SwitchUserPostsInput {
 }
 
 input TagInput {
-    name: String! @NotBlank @Size(min: 1, max: 64)
+    name: String! @NotBlank @Size(min: 1, max: 50)
 }
 
 # ---------- Domain Types ----------
@@ -92,6 +92,10 @@ type User @key(fields: "id") @extends {
 
 directive @NotBlank(
     message: String! = "graphql.validation.NotBlank.message"
+) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @NotEmpty(
+    message: String! = "graphql.validation.NotEmpty.message"
 ) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
 
 directive @Range(
