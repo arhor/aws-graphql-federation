@@ -66,18 +66,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<UUID, List<Comment>> getCommentsChildren(final Collection<UUID> commentIds) {
+    public Map<UUID, List<Comment>> getCommentsReplies(final Collection<UUID> commentIds) {
         if (commentIds.isEmpty()) {
             return Collections.emptyMap();
         }
         final var result = new HashMap<UUID, List<Comment>>(commentIds.size());
 
-        try (final var children = commentRepository.findAllByPrntIdIn(commentIds)) {
-            children.forEach(comment -> {
+        try (final var replies = commentRepository.findAllByPrntIdIn(commentIds)) {
+            replies.forEach(comment -> {
                 final var group = result.computeIfAbsent(comment.prntId(), (__) -> new ArrayList<>());
-                final var child = commentMapper.mapToDto(comment);
+                final var reply = commentMapper.mapToDto(comment);
 
-                group.add(child);
+                group.add(reply);
             });
         }
         return result;

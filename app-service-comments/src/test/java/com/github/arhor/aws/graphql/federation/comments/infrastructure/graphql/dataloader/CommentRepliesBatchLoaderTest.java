@@ -20,12 +20,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
-class CommentChildrenBatchLoaderTest {
+class CommentRepliesBatchLoaderTest {
 
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
     private final CommentService commentService = mock();
 
-    private final CommentChildrenBatchLoader commentChildrenBatchLoader = new CommentChildrenBatchLoader(
+    private final CommentRepliesBatchLoader commentRepliesBatchLoader = new CommentRepliesBatchLoader(
         executor,
         commentService
     );
@@ -42,11 +42,11 @@ class CommentChildrenBatchLoaderTest {
             comment2Id, List.<Comment>of()
         );
 
-        given(commentService.getCommentsChildren(any()))
+        given(commentService.getCommentsReplies(any()))
             .willReturn(expectedResult);
 
         // When
-        final var result = commentChildrenBatchLoader.load(commentIds);
+        final var result = commentRepliesBatchLoader.load(commentIds);
 
         // Then
         await()
@@ -54,7 +54,7 @@ class CommentChildrenBatchLoaderTest {
             .untilAsserted(() -> {
                 then(commentService)
                     .should()
-                    .getCommentsChildren(commentIds);
+                    .getCommentsReplies(commentIds);
 
                 assertThat(result)
                     .isCompletedWithValue(expectedResult);
@@ -67,7 +67,7 @@ class CommentChildrenBatchLoaderTest {
         final var postIds = Collections.<UUID>emptySet();
 
         // When
-        final var result = commentChildrenBatchLoader.load(postIds);
+        final var result = commentRepliesBatchLoader.load(postIds);
 
         // Then
         then(commentService)

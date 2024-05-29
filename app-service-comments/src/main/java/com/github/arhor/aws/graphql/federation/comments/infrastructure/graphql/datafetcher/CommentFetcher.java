@@ -9,7 +9,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
-import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.CommentChildrenBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.CommentRepliesBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserCommentsBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
@@ -38,7 +38,7 @@ public class CommentFetcher {
 
     @DgsData(parentType = COMMENT.TYPE_NAME, field = COMMENT.Replies)
     public CompletableFuture<List<Comment>> commentReplies(final DgsDataFetchingEnvironment dfe) {
-        return loadWith(CommentChildrenBatchLoader.class, dfe, Comment::getId);
+        return loadWith(CommentRepliesBatchLoader.class, dfe, Comment::getId);
     }
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Comments)

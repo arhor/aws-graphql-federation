@@ -12,12 +12,12 @@ import java.util.concurrent.Executor;
 import static org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME;
 
 @DgsDataLoader(maxBatchSize = 50)
-public class CommentChildrenBatchLoader extends AbstractMappedBatchLoader<UUID, List<Comment>> {
+public class CommentRepliesBatchLoader extends AbstractMappedBatchLoader<UUID, List<Comment>> {
 
-    public CommentChildrenBatchLoader(
+    public CommentRepliesBatchLoader(
         final @Qualifier(APPLICATION_TASK_EXECUTOR_BEAN_NAME) Executor executor,
         final CommentService commentService
     ) {
-        super(executor, commentService::getCommentsChildren);
+        super(executor, commentService::getCommentsReplies);
     }
 }

@@ -74,8 +74,8 @@ class CommentServiceImplTest {
     }
 
     @Nested
-    @DisplayName("CommentService :: getCommentsChildren")
-    class GetCommentsChildrenTest {
+    @DisplayName("CommentService :: getCommentsReplies")
+    class GetCommentsRepliesTest {
         @Test
         void should_return_comments_grouped_by_prnt_id() {
             // Given
@@ -97,7 +97,7 @@ class CommentServiceImplTest {
                 .willAnswer((__) -> commentDtos.get(1));
 
             // When
-            var result = commentService.getCommentsChildren(commentIds);
+            var result = commentService.getCommentsReplies(commentIds);
 
             // Then
             then(commentRepository)
@@ -127,7 +127,7 @@ class CommentServiceImplTest {
             var commentIds = Collections.<UUID>emptyList();
 
             // When
-            var result = commentService.getCommentsChildren(commentIds);
+            var result = commentService.getCommentsReplies(commentIds);
 
             // Then
             assertThat(result)
