@@ -85,7 +85,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     }
 
     @Override
-    public boolean switchComments(final SwitchPostCommentsInput input) {
+    public boolean switchPostComments(final SwitchPostCommentsInput input) {
         final var postId = input.getPostId();
         final var shouldBeDisabled = input.getDisabled();
 

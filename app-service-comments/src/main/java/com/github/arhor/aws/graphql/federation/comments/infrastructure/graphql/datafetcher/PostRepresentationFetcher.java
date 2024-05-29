@@ -42,6 +42,6 @@ public class PostRepresentationFetcher {
     @DgsMutation
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public boolean switchPostComments(final @InputArgument SwitchPostCommentsInput input) {
-        return postService.switchComments(input);
+        return postService.switchPostComments(input);
     }
 }

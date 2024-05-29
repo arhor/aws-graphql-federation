@@ -180,17 +180,19 @@ class UserRepresentationServiceImplTest {
     @DisplayName("UserService :: switchUserComments")
     class SwitchUserCommentsTest {
         @Test
-        void should_call_userRepository_save_when_there_is_update_applied_to_the_user() {
+        void should_call_UserRepresentationRepository_save_when_there_is_update_applied_to_the_user() {
             // Given
             final var input =
                 SwitchUserCommentsInput.newBuilder()
                     .userId(USER_ID)
                     .disabled(true)
                     .build();
-            final var user = UserRepresentation.builder()
-                .id(USER_ID)
-                .commentsDisabled(false)
-                .build();
+
+            final var user =
+                UserRepresentation.builder()
+                    .id(USER_ID)
+                    .commentsDisabled(false)
+                    .build();
 
             given(userRepository.findById(any()))
                 .willReturn(Optional.of(user));
@@ -215,17 +217,19 @@ class UserRepresentationServiceImplTest {
         }
 
         @Test
-        void should_not_call_userRepository_save_when_there_is_no_update_applied_to_the_user() {
+        void should_not_call_UserRepresentationRepository_save_when_there_is_no_update_applied_to_the_user() {
             // Given
             final var input =
                 SwitchUserCommentsInput.newBuilder()
                     .userId(USER_ID)
                     .disabled(true)
                     .build();
-            final var user = UserRepresentation.builder()
-                .id(USER_ID)
-                .commentsDisabled(true)
-                .build();
+
+            final var user =
+                UserRepresentation.builder()
+                    .id(USER_ID)
+                    .commentsDisabled(true)
+                    .build();
 
             given(userRepository.findById(any()))
                 .willReturn(Optional.of(user));
