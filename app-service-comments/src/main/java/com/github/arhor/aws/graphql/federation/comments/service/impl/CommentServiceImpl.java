@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
@@ -13,14 +14,15 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
-import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
+import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,8 +102,11 @@ public class CommentServiceImpl implements CommentService {
     public Comment createComment(final CreateCommentInput input) {
         final var currentOperation = Operation.CREATE;
 
-        ensureUserExists(input.getUserId(), currentOperation);
-        ensureCommentsEnabled(input.getPostId(), currentOperation);
+        ensureUserAndPostCommentsEnabled(
+            input.getUserId(),
+            input.getPostId(),
+            currentOperation
+        );
 
         var entity = commentMapper.mapToEntity(input);
         var create = commentRepository.save(entity);
@@ -124,7 +129,11 @@ public class CommentServiceImpl implements CommentService {
                     )
                 );
 
-        ensureCommentsEnabled(initialState.postId(), currentOperation);
+        ensureUserAndPostCommentsEnabled(
+            initialState.userId(),
+            initialState.postId(),
+            currentOperation
+        );
 
         final var currentState = determineCurrentState(initialState, input);
 
@@ -161,31 +170,36 @@ public class CommentServiceImpl implements CommentService {
         return currentStateBuilder.build();
     }
 
-    private void ensureCommentsEnabled(final UUID postId, final Operation operation) {
-        final var post =
-            postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException(
+    private void ensureUserAndPostCommentsEnabled(
+        final UUID userId,
+        final UUID postId,
+        final Operation operation
+    ) {
+        ensureCommentsEnabled(userRepository, operation, USER.TYPE_NAME, USER.Id, userId);
+        ensureCommentsEnabled(postRepository, operation, POST.TYPE_NAME, POST.Id, postId);
+    }
+
+    private <T extends HasComments> void ensureCommentsEnabled(
+        final CrudRepository<T, UUID> commentsContainerSource,
+        final Operation operation,
+        final String entity,
+        final String field,
+        final UUID id
+    ) {
+        final var commentsContainer =
+            commentsContainerSource.findById(id)
+                .orElseThrow(() ->
+                    new EntityNotFoundException(
                         COMMENT.TYPE_NAME,
-                        POST.TYPE_NAME + " with " + POST.Id + " = " + postId + " is not found",
+                        entity + " with " + field + " = " + id + " is not found",
                         operation
                     )
                 );
 
-        if (post.commentsDisabled()) {
-            throw new EntityCannotBeUpdatedException(
+        if (commentsContainer.commentsDisabled()) {
+            throw new EntityOperationRestrictedException(
                 COMMENT.TYPE_NAME,
-                "Comments disabled for the " + POST.TYPE_NAME + " with " + POST.Id + " = " + postId
-            );
-        }
-    }
-
-    private void ensureUserExists(final UUID userId, final Operation operation) {
-        final var userExists = userRepository.existsById(userId);
-
-        if (!userExists) {
-            throw new EntityNotFoundException(
-                COMMENT.TYPE_NAME,
-                USER.TYPE_NAME + " with " + USER.Id + " = " + userId + " is not found",
+                "Comments disabled for the " + entity + " with " + field + " = " + id,
                 operation
             );
         }
@@ -197,9 +211,10 @@ public class CommentServiceImpl implements CommentService {
         } catch (final OptimisticLockingFailureException e) {
             log.error(e.getMessage(), e);
 
-            throw new EntityCannotBeUpdatedException(
+            throw new EntityOperationRestrictedException(
                 COMMENT.TYPE_NAME,
                 COMMENT.Id + " = " + entity.id() + "(updated concurrently)",
+                Operation.UPDATE,
                 e
             );
         }

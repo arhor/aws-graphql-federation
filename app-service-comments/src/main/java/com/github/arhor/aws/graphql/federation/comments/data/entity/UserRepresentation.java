@@ -24,7 +24,7 @@ public record UserRepresentation(
 
     @Transient
     boolean shouldBePersisted
-) implements Persistable<UUID> {
+) implements Persistable<UUID>, HasComments {
 
     @PersistenceCreator
     public UserRepresentation(UUID id, boolean commentsDisabled) {

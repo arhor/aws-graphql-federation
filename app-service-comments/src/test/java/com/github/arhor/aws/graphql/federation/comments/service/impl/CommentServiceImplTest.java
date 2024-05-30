@@ -2,18 +2,20 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
+import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
-import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
+import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -107,6 +109,7 @@ class CommentServiceImplTest {
             then(commentMapper)
                 .should()
                 .mapToDto(commentEntities.get(0));
+
             then(commentMapper)
                 .should()
                 .mapToDto(commentEntities.get(1));
@@ -170,6 +173,7 @@ class CommentServiceImplTest {
             then(commentMapper)
                 .should()
                 .mapToDto(commentEntities.get(0));
+
             then(commentMapper)
                 .should()
                 .mapToDto(commentEntities.get(1));
@@ -233,6 +237,7 @@ class CommentServiceImplTest {
             then(commentMapper)
                 .should()
                 .mapToDto(commentEntities.get(0));
+
             then(commentMapper)
                 .should()
                 .mapToDto(commentEntities.get(1));
@@ -256,11 +261,6 @@ class CommentServiceImplTest {
             var result = commentService.getCommentsByPostIds(postIds);
 
             // Then
-            then(commentRepository)
-                .shouldHaveNoInteractions();
-            then(commentMapper)
-                .shouldHaveNoInteractions();
-
             assertThat(result)
                 .isNotNull()
                 .isEmpty();
@@ -281,18 +281,23 @@ class CommentServiceImplTest {
                     .build();
 
             final var comment = CommentEntity.builder().build();
+            final var user = UserRepresentation.builder().build();
             final var post = PostRepresentation.builder().build();
 
             final var expectedComment = Comment.newBuilder().build();
 
             given(commentMapper.mapToEntity(any()))
                 .willReturn(comment);
+
+            given(userRepository.findById(any()))
+                .willReturn(Optional.of(user));
+
             given(postRepository.findById(any()))
                 .willReturn(Optional.of(post));
-            given(userRepository.existsById(any()))
-                .willReturn(true);
+
             given(commentRepository.save(any()))
                 .willReturn(comment);
+
             given(commentMapper.mapToDto(any()))
                 .willReturn(expectedComment);
 
@@ -303,15 +308,19 @@ class CommentServiceImplTest {
             then(commentMapper)
                 .should()
                 .mapToEntity(input);
+
             then(userRepository)
                 .should()
-                .existsById(input.getUserId());
+                .findById(input.getUserId());
+
             then(postRepository)
                 .should()
                 .findById(input.getPostId());
+
             then(commentRepository)
                 .should()
                 .save(comment);
+
             then(commentMapper)
                 .should()
                 .mapToDto(comment);
@@ -357,19 +366,112 @@ class CommentServiceImplTest {
         }
 
         @Test
-        void should_throw_EntityNotFoundException_when_comment_post_does_not_exist_by_id() {
+        void should_throw_EntityNotFoundException_when_user_does_not_exist_by_id() {
             // Given
             final var input =
                 UpdateCommentInput.newBuilder()
                     .id(COMMENT_1_ID)
                     .build();
-            final var comment = mock(CommentEntity.class);
+            final var comment =
+                CommentEntity.builder()
+                    .userId(USER_ID)
+                    .postId(POST_ID)
+                    .build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
 
-            given(comment.postId())
-                .willReturn(POST_ID);
+            given(userRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+            final var expectedEntity = COMMENT.TYPE_NAME;
+            final var expectedCondition = USER.TYPE_NAME + " with " + USER.Id + " = " + USER_ID + " is not found";
+            final var expectedOperation = Operation.UPDATE;
+
+            // When
+            final var result = catchException(() -> commentService.updateComment(input));
+
+            // Then
+            then(commentRepository)
+                .should()
+                .findById(input.getId());
+
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(type(EntityNotFoundException.class))
+                .returns(expectedEntity, from(EntityNotFoundException::getEntity))
+                .returns(expectedCondition, from(EntityNotFoundException::getCondition))
+                .returns(expectedOperation, from(EntityNotFoundException::getOperation));
+        }
+
+        @Test
+        void should_throw_EntityOperationRestrictedException_when_user_comments_disabled() {
+            // Given
+            final var input =
+                UpdateCommentInput.newBuilder()
+                    .id(COMMENT_1_ID)
+                    .build();
+            final var comment = CommentEntity.builder()
+                .userId(USER_ID)
+                .postId(POST_ID)
+                .build();
+
+            final var user = UserRepresentation.builder().commentsDisabled(true).build();
+
+            given(commentRepository.findById(any()))
+                .willReturn(Optional.of(comment));
+
+            given(userRepository.findById(any()))
+                .willReturn(Optional.of(user));
+
+            final var expectedEntity = COMMENT.TYPE_NAME;
+            final var expectedCondition = "Comments disabled for the " + USER.TYPE_NAME + " with " + USER.Id + " = " + USER_ID;
+            final var expectedOperation = Operation.UPDATE;
+
+            // When
+            final var result = catchException(() -> commentService.updateComment(input));
+
+            // Then
+            then(commentRepository)
+                .should()
+                .findById(input.getId());
+
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(type(EntityOperationRestrictedException.class))
+                .returns(expectedEntity, from(EntityOperationRestrictedException::getEntity))
+                .returns(expectedCondition, from(EntityOperationRestrictedException::getCondition))
+                .returns(expectedOperation, from(EntityOperationRestrictedException::getOperation));
+        }
+
+        @Test
+        void should_throw_EntityNotFoundException_when_post_does_not_exist_by_id() {
+            // Given
+            final var input =
+                UpdateCommentInput.newBuilder()
+                    .id(COMMENT_1_ID)
+                    .build();
+            final var comment =
+                CommentEntity.builder()
+                    .userId(USER_ID)
+                    .postId(POST_ID)
+                    .build();
+
+            final var user = UserRepresentation.builder().build();
+
+            given(commentRepository.findById(any()))
+                .willReturn(Optional.of(comment));
+
+            given(userRepository.findById(any()))
+                .willReturn(Optional.of(user));
 
             given(postRepository.findById(any()))
                 .willReturn(Optional.empty());
@@ -386,6 +488,10 @@ class CommentServiceImplTest {
                 .should()
                 .findById(input.getId());
 
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
+
             then(postRepository)
                 .should()
                 .findById(POST_ID);
@@ -399,26 +505,28 @@ class CommentServiceImplTest {
         }
 
         @Test
-        void should_throw_EntityCannotBeUpdatedException_when_comment_post_comments_disabled() {
+        void should_throw_EntityOperationRestrictedException_when_post_comments_disabled() {
             // Given
             final var input =
                 UpdateCommentInput.newBuilder()
                     .id(COMMENT_1_ID)
                     .build();
-            final var comment = mock(CommentEntity.class);
-            final var post = mock(PostRepresentation.class);
+            final var comment = CommentEntity.builder()
+                .userId(USER_ID)
+                .postId(POST_ID)
+                .build();
+
+            final var user = UserRepresentation.builder().build();
+            final var post = PostRepresentation.builder().commentsDisabled(true).build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
 
-            given(comment.postId())
-                .willReturn(POST_ID);
+            given(userRepository.findById(any()))
+                .willReturn(Optional.of(user));
 
             given(postRepository.findById(any()))
                 .willReturn(Optional.of(post));
-
-            given(post.commentsDisabled())
-                .willReturn(true);
 
             final var expectedEntity = COMMENT.TYPE_NAME;
             final var expectedCondition = "Comments disabled for the " + POST.TYPE_NAME + " with " + POST.Id + " = " + POST_ID;
@@ -432,16 +540,20 @@ class CommentServiceImplTest {
                 .should()
                 .findById(input.getId());
 
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
+
             then(postRepository)
                 .should()
                 .findById(POST_ID);
 
             assertThat(result)
                 .isNotNull()
-                .asInstanceOf(type(EntityCannotBeUpdatedException.class))
-                .returns(expectedEntity, from(EntityCannotBeUpdatedException::getEntity))
-                .returns(expectedCondition, from(EntityCannotBeUpdatedException::getCondition))
-                .returns(expectedOperation, from(EntityCannotBeUpdatedException::getOperation));
+                .asInstanceOf(type(EntityOperationRestrictedException.class))
+                .returns(expectedEntity, from(EntityOperationRestrictedException::getEntity))
+                .returns(expectedCondition, from(EntityOperationRestrictedException::getCondition))
+                .returns(expectedOperation, from(EntityOperationRestrictedException::getOperation));
         }
 
         @Test
@@ -456,17 +568,18 @@ class CommentServiceImplTest {
                     .userId(USER_ID)
                     .postId(POST_ID)
                     .build();
-            final var post = mock(PostRepresentation.class);
-            final var commentDto = mock(Comment.class);
+            final var user = UserRepresentation.builder().build();
+            final var post = PostRepresentation.builder().build();
+            final var commentDto = Comment.newBuilder().build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(commentEntity));
 
+            given(userRepository.findById(any()))
+                .willReturn(Optional.of(user));
+
             given(postRepository.findById(any()))
                 .willReturn(Optional.of(post));
-
-            given(post.commentsDisabled())
-                .willReturn(false);
 
             given(commentMapper.mapToDto(any()))
                 .willReturn(commentDto);
@@ -478,6 +591,10 @@ class CommentServiceImplTest {
             then(commentRepository)
                 .should()
                 .findById(input.getId());
+
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
 
             then(postRepository)
                 .should()
@@ -499,12 +616,8 @@ class CommentServiceImplTest {
         @Test
         void should_return_result_with_success_true_when_comment_is_deleted() {
             // Given
-            final var input =
-                DeleteCommentInput.newBuilder()
-                    .id(COMMENT_1_ID)
-                    .build();
-
-            final var comment = mock(CommentEntity.class);
+            final var input = DeleteCommentInput.newBuilder().id(COMMENT_1_ID).build();
+            final var comment = CommentEntity.builder().build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
@@ -528,10 +641,7 @@ class CommentServiceImplTest {
         @Test
         void should_return_result_with_success_false_when_comment_is_missing_by_id() {
             // Given
-            final var input =
-                DeleteCommentInput.newBuilder()
-                    .id(COMMENT_1_ID)
-                    .build();
+            final var input = DeleteCommentInput.newBuilder().id(COMMENT_1_ID).build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.empty());

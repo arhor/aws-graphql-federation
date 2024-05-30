@@ -1,8 +1,8 @@
 package com.github.arhor.aws.graphql.federation.posts.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
-import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
@@ -77,7 +77,9 @@ class PostServiceImpl(
 
     @Transactional
     override fun createPost(input: CreatePostInput): Post {
-        ensureUserExists(input.userId, Operation.CREATE)
+        val currentOperation = Operation.CREATE
+
+        ensureUserPostsEnabled(input.userId, currentOperation)
 
         return postMapper.mapToEntity(input = input, tags = materialize(input.tags?.map { it.name }))
             .let(postRepository::save)
@@ -94,6 +96,8 @@ class PostServiceImpl(
                 condition = "${POST.Id} = ${input.id}",
                 operation = currentOperation,
             )
+
+        ensureUserPostsEnabled(initialState.userId!!, currentOperation)
 
         val currentState = initialState.copy(
             title = input.title ?: initialState.title,
@@ -155,14 +159,20 @@ class PostServiceImpl(
             else -> emptySet()
         }
 
-    private fun ensureUserExists(userId: UUID, operation: Operation) {
-        val userExists = userRepository.existsById(userId)
+    private fun ensureUserPostsEnabled(userId: UUID, operation: Operation) {
+        val user =
+            userRepository.findByIdOrNull(userId)
+                ?: throw EntityNotFoundException(
+                    POST.TYPE_NAME,
+                    "${USER.TYPE_NAME} with ${USER.Id} = $userId is not found",
+                    operation
+                )
 
-        if (!userExists) {
-            throw EntityNotFoundException(
+        if (user.postsDisabled) {
+            throw EntityOperationRestrictedException(
                 POST.TYPE_NAME,
-                "${USER.TYPE_NAME} with ${USER.Id} = $userId is not found",
-                operation,
+                "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $userId",
+                operation
             )
         }
     }
@@ -173,9 +183,10 @@ class PostServiceImpl(
         } catch (e: OptimisticLockingFailureException) {
             logger.error(e.message, e)
 
-            throw EntityCannotBeUpdatedException(
+            throw EntityOperationRestrictedException(
                 entity = POST.TYPE_NAME,
                 condition = "${POST.Id} = ${entity.id} (updated concurrently)",
+                operation = Operation.UPDATE,
                 cause = e,
             )
         }

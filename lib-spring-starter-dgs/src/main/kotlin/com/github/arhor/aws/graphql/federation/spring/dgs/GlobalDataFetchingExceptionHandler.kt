@@ -1,8 +1,8 @@
 package com.github.arhor.aws.graphql.federation.spring.dgs
 
-import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.netflix.graphql.dgs.exceptions.DefaultDataFetcherExceptionHandler
 import com.netflix.graphql.dgs.exceptions.DgsException
 import com.netflix.graphql.types.errors.TypedGraphQLError
@@ -24,15 +24,15 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DfeHandler) : Dfe
     override fun handleException(params: DfeHandlerParams): CompletableFuture<DfeHandlerResult> =
         when (val throwable = params.exception.unwrap()) {
             is EntityNotFoundException -> {
-                handleEntityNotFoundException(throwable, params)
+                onEntityNotFoundException(throwable, params)
             }
 
             is EntityDuplicateException -> {
-                handleEntityDuplicateException(throwable, params)
+                onEntityDuplicateException(throwable, params)
             }
 
-            is EntityCannotBeUpdatedException -> {
-                handleEntityCannotBeUpdatedException(throwable, params)
+            is EntityOperationRestrictedException -> {
+                onEntityOperationRestrictedException(throwable, params)
             }
 
             else -> {
@@ -46,15 +46,15 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DfeHandler) : Dfe
             else -> this
         }
 
-    private fun handleEntityNotFoundException(e: EntityNotFoundException, params: DfeHandlerParams) =
+    private fun onEntityNotFoundException(e: EntityNotFoundException, params: DfeHandlerParams) =
         TypedGraphQLError.newNotFoundBuilder()
             .createResult(e, params)
 
-    private fun handleEntityDuplicateException(e: EntityDuplicateException, params: DfeHandlerParams) =
+    private fun onEntityDuplicateException(e: EntityDuplicateException, params: DfeHandlerParams) =
         TypedGraphQLError.newConflictBuilder()
             .createResult(e, params)
 
-    private fun handleEntityCannotBeUpdatedException(e: EntityCannotBeUpdatedException, params: DfeHandlerParams) =
+    private fun onEntityOperationRestrictedException(e: EntityOperationRestrictedException, params: DfeHandlerParams) =
         TypedGraphQLError.newPermissionDeniedBuilder()
             .createResult(e, params)
 

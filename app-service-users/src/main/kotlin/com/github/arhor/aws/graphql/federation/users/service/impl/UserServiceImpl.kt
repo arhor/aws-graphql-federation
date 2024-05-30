@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.common.exception.EntityCannotBeUpdatedException
+import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
@@ -143,9 +143,10 @@ class UserServiceImpl(
         } catch (e: OptimisticLockingFailureException) {
             logger.error(e.message, e)
 
-            throw EntityCannotBeUpdatedException(
+            throw EntityOperationRestrictedException(
                 entity = USER.TYPE_NAME,
                 condition = "${USER.Id} = ${entity.id} (updated concurrently)",
+                operation = Operation.UPDATE,
                 cause = e,
             )
         }

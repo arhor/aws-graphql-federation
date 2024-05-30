@@ -25,7 +25,6 @@ class UserEventListenerTest {
     fun `should call OutboxMessageService#storeAsOutboxMessage on any UserEvent`(
         // Given
         event: UserEvent,
-        traceId: UUID,
     ) {
         every { outboxMessageService.storeAsOutboxMessage(any()) } just runs
 
@@ -40,12 +39,11 @@ class UserEventListenerTest {
 
     companion object {
         private val USER_ID = UUID.randomUUID()
-        private val TRACE_ID = UUID.randomUUID()
 
         @JvmStatic
         fun `should call OutboxMessageService#storeAsOutboxMessage on any UserEvent`(): Stream<Arguments> = Stream.of(
-            Arguments.of(UserEvent.Created(id = USER_ID), TRACE_ID),
-            Arguments.of(UserEvent.Deleted(id = USER_ID), TRACE_ID),
+            Arguments.of(UserEvent.Created(id = USER_ID)),
+            Arguments.of(UserEvent.Deleted(id = USER_ID)),
         )
     }
 }

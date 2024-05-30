@@ -2,9 +2,11 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
@@ -36,6 +38,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -276,11 +279,12 @@ class PostServiceImplTest {
                 title = "test-title",
                 content = "test-content",
             )
-            val entity = createPostEntity()
-            val expectedPost = entity.toPost()
+            val post = createPostEntity()
+            val user = UserRepresentation(USER_ID)
+            val expectedPost = post.toPost()
 
-            every { userRepository.existsById(any()) } returns true
-            every { postMapper.mapToEntity(any(), any()) } returns entity
+            every { userRepository.findById(any()) } returns Optional.of(user)
+            every { postMapper.mapToEntity(any(), any()) } returns post
             every { postRepository.save(any()) } answers { firstArg() }
             every { appEventPublisher.publishEvent(any<Any>()) } just runs
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
@@ -289,11 +293,11 @@ class PostServiceImplTest {
             val result = postService.createPost(input)
 
             // Then
-            verify(exactly = 1) { userRepository.existsById(input.userId) }
+            verify(exactly = 1) { userRepository.findById(input.userId) }
             verify(exactly = 1) { postMapper.mapToEntity(input, emptySet()) }
-            verify(exactly = 1) { postRepository.save(entity) }
-            verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Created(id = entity.id!!)) }
-            verify(exactly = 1) { postMapper.mapToPost(entity) }
+            verify(exactly = 1) { postRepository.save(post) }
+            verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Created(id = post.id!!)) }
+            verify(exactly = 1) { postMapper.mapToPost(post) }
 
             assertThat(result)
                 .isNotNull()
@@ -312,13 +316,13 @@ class PostServiceImplTest {
             val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = ${input.userId} is not found"
             val expectedOperation = Operation.CREATE
 
-            every { userRepository.existsById(any()) } returns false
+            every { userRepository.findById(any()) } returns Optional.empty()
 
             // When
             val result = catchException { postService.createPost(input) }
 
             // Then
-            verify(exactly = 1) { userRepository.existsById(input.userId) }
+            verify(exactly = 1) { userRepository.findById(input.userId) }
 
             assertThat(result)
                 .isNotNull()
@@ -358,21 +362,81 @@ class PostServiceImplTest {
         }
 
         @Test
+        fun `should throw EntityNotFoundException when user does not exist`() {
+            // Given
+            val input = UpdatePostInput(id = POST_1_ID)
+            val post = createPostEntity()
+
+            val expectedEntity = POST.TYPE_NAME
+            val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = $USER_ID is not found"
+            val expectedOperation = Operation.UPDATE
+
+            every { postRepository.findById(any()) } returns Optional.of(post)
+            every { userRepository.findById(any()) } returns Optional.empty()
+
+            // When
+            val result = catchException { postService.updatePost(input) }
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(input.id) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(type(EntityNotFoundException::class.java))
+                .returns(expectedEntity, from { it.entity })
+                .returns(expectedCondition, from { it.condition })
+                .returns(expectedOperation, from { it.operation })
+        }
+
+        @Test
+        fun `should throw EntityOperationRestrictedException when user posts disabled`() {
+            // Given
+            val input = UpdatePostInput(id = POST_1_ID)
+            val post = createPostEntity()
+            val user = UserRepresentation(id = USER_ID, postsDisabled = true)
+
+            val expectedEntity = POST.TYPE_NAME
+            val expectedCondition = "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $USER_ID"
+            val expectedOperation = Operation.UPDATE
+
+            every { postRepository.findById(any()) } returns Optional.of(post)
+            every { userRepository.findById(any()) } returns Optional.of(user)
+
+            // When
+            val result = catchException { postService.updatePost(input) }
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(input.id) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(type(EntityOperationRestrictedException::class.java))
+                .returns(expectedEntity, from { it.entity })
+                .returns(expectedCondition, from { it.condition })
+                .returns(expectedOperation, from { it.operation })
+        }
+
+        @Test
         fun `should not call PostRepository#save when there are no updates done to the entity`() {
             // Given
             val input = UpdatePostInput(id = POST_1_ID)
-            val entity = createPostEntity()
-            val expectedPost = entity.toPost()
+            val post = createPostEntity()
+            val user = UserRepresentation(USER_ID)
+            val expectedPost = post.toPost()
 
-            every { postRepository.findById(any()) } returns Optional.of(entity)
+            every { postRepository.findById(any()) } returns Optional.of(post)
+            every { userRepository.findById(any()) } returns Optional.of(user)
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
 
             // When
             val result = postService.updatePost(input)
 
             // Then
-            verify(exactly = 1) { postRepository.findById(input.id) }
-            verify(exactly = 1) { postMapper.mapToPost(entity) }
+            verify(exactly = 1) { postRepository.findById(POST_1_ID) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { postMapper.mapToPost(post) }
 
             assertThat(result)
                 .isNotNull()
@@ -389,11 +453,13 @@ class PostServiceImplTest {
                 options = emptyList(),
                 tags = emptyList(),
             )
-            val initialEntity = createPostEntity()
-            val updatedEntity = initialEntity.copy(title = input.title!!, content = input.content!!)
-            val expectedPost = updatedEntity.toPost()
+            val post = createPostEntity()
+            val user = UserRepresentation(USER_ID)
+            val updatedPost = post.copy(title = input.title!!, content = input.content!!)
+            val expectedPost = updatedPost.toPost()
 
-            every { postRepository.findById(any()) } returns Optional.of(initialEntity)
+            every { postRepository.findById(any()) } returns Optional.of(post)
+            every { userRepository.findById(any()) } returns Optional.of(user)
             every { optionsMapper.mapFromList(any()) } returns PostEntity.Options()
             every { tagMapper.mapToRefs(any()) } returns emptySet()
             every { postRepository.save(any()) } answers { firstArg() }
@@ -403,15 +469,58 @@ class PostServiceImplTest {
             val result = postService.updatePost(input)
 
             // Then
-            verify(exactly = 1) { postRepository.findById(input.id) }
+            verify(exactly = 1) { postRepository.findById(POST_1_ID) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
             verify(exactly = 1) { optionsMapper.mapFromList(any()) }
             verify(exactly = 1) { tagMapper.mapToRefs(any()) }
-            verify(exactly = 1) { postRepository.save(updatedEntity) }
-            verify(exactly = 1) { postMapper.mapToPost(updatedEntity) }
+            verify(exactly = 1) { postRepository.save(updatedPost) }
+            verify(exactly = 1) { postMapper.mapToPost(updatedPost) }
 
             assertThat(result)
                 .isNotNull()
                 .isEqualTo(expectedPost)
+        }
+
+        @Test
+        fun `should throw EntityOperationRestrictedException when concurrent modification of the post occurred`() {
+            // Given
+            val input = UpdatePostInput(
+                id = POST_1_ID,
+                title = "new-test-title",
+                content = "new-test-content",
+                options = emptyList(),
+                tags = emptyList(),
+            )
+            val post = createPostEntity()
+            val user = UserRepresentation(USER_ID)
+            val updatedPost = post.copy(title = input.title!!, content = input.content!!)
+
+            val expectedEntity = POST.TYPE_NAME
+            val expectedCondition = "${POST.Id} = ${post.id} (updated concurrently)"
+            val expectedOperation = Operation.UPDATE
+
+            every { postRepository.findById(any()) } returns Optional.of(post)
+            every { userRepository.findById(any()) } returns Optional.of(user)
+            every { optionsMapper.mapFromList(any()) } returns PostEntity.Options()
+            every { tagMapper.mapToRefs(any()) } returns emptySet()
+            every { postRepository.save(any()) } throws OptimisticLockingFailureException("test")
+
+            // When
+            val result = catchException { postService.updatePost(input) }
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(input.id) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { optionsMapper.mapFromList(any()) }
+            verify(exactly = 1) { tagMapper.mapToRefs(any()) }
+            verify(exactly = 1) { postRepository.save(updatedPost) }
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(type(EntityOperationRestrictedException::class.java))
+                .returns(expectedEntity, from { it.entity })
+                .returns(expectedCondition, from { it.condition })
+                .returns(expectedOperation, from { it.operation })
         }
     }
 
