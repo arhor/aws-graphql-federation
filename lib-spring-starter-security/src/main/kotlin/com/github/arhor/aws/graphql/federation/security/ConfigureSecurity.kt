@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguratio
 import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Lazy
 import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutor
 import java.util.concurrent.Executor
@@ -13,6 +14,7 @@ import java.util.concurrent.Executor
 @AutoConfiguration(before = [TaskExecutionAutoConfiguration::class])
 class ConfigureSecurity {
 
+    @Lazy
     @Bean(
         name = [
             TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
