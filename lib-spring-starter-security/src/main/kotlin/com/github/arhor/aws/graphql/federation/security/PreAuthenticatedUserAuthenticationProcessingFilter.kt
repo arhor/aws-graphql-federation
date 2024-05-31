@@ -10,6 +10,9 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.security.web.util.matcher.RequestMatcher
 
+/**
+ * @see [AbstractPreAuthenticatedProcessingFilter]
+ */
 class PreAuthenticatedUserAuthenticationProcessingFilter(
     matcher: RequestMatcher,
     manager: AuthenticationManager,

@@ -6,24 +6,37 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.stereotype.Component
 
+/**
+ * @see [PreAuthenticatedAuthenticationProvider]
+ */
 @Component
 class PreAuthenticatedUserAuthenticationProvider(
     private val objectMapper: ObjectMapper,
 ) : AuthenticationProvider {
 
-    override fun authenticate(authentication: Authentication): Authentication {
+    override fun authenticate(authentication: Authentication): Authentication? {
+        if (!supports(authentication.javaClass)) {
+            return null
+        }
         try {
             val data = authentication.principal as String
             val user = objectMapper.readValue(data, CurrentUserTypeRef)
 
-            return PreAuthenticatedAuthenticationToken(
-                user.id,
-                null,
-                user.authorities.map(::SimpleGrantedAuthority)
-            )
+            val authorities = user.authorities.map(::SimpleGrantedAuthority)
+            val userUuidStr = user.id.toString()
+
+            val principal =
+                User.builder()
+                    .username(userUuidStr)
+                    .password("N/A")
+                    .authorities(authorities)
+                    .build()
+
+            return PreAuthenticatedAuthenticationToken(principal, principal.password, principal.authorities)
         } catch (e: Exception) {
             throw AccessDeniedException("Invalid authentication token", e)
         }
