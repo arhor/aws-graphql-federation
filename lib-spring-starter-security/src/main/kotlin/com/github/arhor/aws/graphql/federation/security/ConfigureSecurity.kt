@@ -1,53 +1,25 @@
 package com.github.arhor.aws.graphql.federation.security
 
-import com.github.arhor.aws.graphql.federation.security.PreAuthenticatedUserAuthenticationProcessingFilter.Companion.PRE_AUTHENTICATED_USER_HEADER
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
+import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.invoke
-import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
-import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
+import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutor
+import java.util.concurrent.Executor
 
 @ComponentScan
-@AutoConfiguration
-@EnableWebSecurity
-@EnableMethodSecurity
+@AutoConfiguration(before = [TaskExecutionAutoConfiguration::class])
 class ConfigureSecurity {
 
-    @Bean
-    fun defaultSecurityFilterChain(
-        http: HttpSecurity,
-        authConfig: AuthenticationConfiguration,
-    ): SecurityFilterChain {
-        http {
-            csrf { disable() }
-            logout { disable() }
-            httpBasic { disable() }
-            formLogin { disable() }
-
-            sessionManagement {
-                sessionCreationPolicy = STATELESS
-            }
-            authorizeRequests {
-                authorize(anyRequest, permitAll)
-            }
-            addFilterBefore<AnonymousAuthenticationFilter>(
-                PreAuthenticatedUserAuthenticationProcessingFilter(
-                    RequestHeaderRequestMatcher(PRE_AUTHENTICATED_USER_HEADER),
-                    authConfig.authenticationManager,
-                )
-            )
-        }
-        return http.build()
+    @Bean(
+        name = [
+            TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+            AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME,
+        ]
+    )
+    fun applicationTaskExecutor(builder: ThreadPoolTaskExecutorBuilder): Executor {
+        return DelegatingSecurityContextExecutor(builder.build())
     }
-
-    @Bean
-    fun passwordEncoder() = BCryptPasswordEncoder()
 }

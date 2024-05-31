@@ -11,9 +11,9 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.security.web.util.matcher.RequestMatcher
 
 class PreAuthenticatedUserAuthenticationProcessingFilter(
-    requestMatcher: RequestMatcher,
-    authManager: AuthenticationManager,
-) : AbstractAuthenticationProcessingFilter(requestMatcher, authManager) {
+    matcher: RequestMatcher,
+    manager: AuthenticationManager,
+) : AbstractAuthenticationProcessingFilter(matcher, manager) {
 
     override fun attemptAuthentication(
         req: HttpServletRequest,
