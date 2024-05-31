@@ -24,6 +24,7 @@ class PreAuthenticatedUserAuthenticationProcessingFilter(
             ?.let { authenticationManager.authenticate(it) }
     }
 
+    // TODO: do I need this method to be overridden at all?
     override fun successfulAuthentication(
         req: HttpServletRequest,
         res: HttpServletResponse,

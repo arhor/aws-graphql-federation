@@ -40,7 +40,7 @@ input DeleteUserInput {
 
 type User @key(fields: "id") {
     id: UUID!
-    username: String!
+    username: String
     authorities: [String!]
 }
 

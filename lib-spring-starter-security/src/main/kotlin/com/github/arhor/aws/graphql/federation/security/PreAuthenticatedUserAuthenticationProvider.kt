@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.security
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
@@ -15,14 +15,15 @@ class PreAuthenticatedUserAuthenticationProvider(
 ) : AuthenticationProvider {
 
     override fun authenticate(authentication: Authentication): Authentication {
-        return try {
-            objectMapper.readValue<CurrentUser>(authentication.principal as String).let {
-                PreAuthenticatedAuthenticationToken(
-                    it.id,
-                    null,
-                    it.authorities.map(::SimpleGrantedAuthority)
-                )
-            }
+        try {
+            val data = authentication.principal as String
+            val user = objectMapper.readValue(data, CurrentUserTypeRef)
+
+            return PreAuthenticatedAuthenticationToken(
+                user.id,
+                null,
+                user.authorities.map(::SimpleGrantedAuthority)
+            )
         } catch (e: Exception) {
             throw AccessDeniedException("Invalid authentication token", e)
         }
@@ -31,4 +32,6 @@ class PreAuthenticatedUserAuthenticationProvider(
     override fun supports(authentication: Class<*>): Boolean {
         return PreAuthenticatedAuthenticationToken::class.java.isAssignableFrom(authentication)
     }
+
+    private object CurrentUserTypeRef : TypeReference<CurrentUser>()
 }
