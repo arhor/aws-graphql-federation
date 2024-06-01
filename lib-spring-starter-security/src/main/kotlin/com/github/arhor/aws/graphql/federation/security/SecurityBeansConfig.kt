@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.security
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
@@ -11,7 +12,8 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
-import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesUserDetailsService
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -22,6 +24,7 @@ class SecurityBeansConfig {
     fun defaultSecurityFilterChain(
         http: HttpSecurity,
         authConfig: AuthenticationConfiguration,
+        objectMapper: ObjectMapper,
     ): SecurityFilterChain {
         http {
             csrf { disable() }
@@ -36,17 +39,24 @@ class SecurityBeansConfig {
                 authorize(anyRequest, permitAll)
             }
             addFilterBefore<AnonymousAuthenticationFilter>(
-                PreAuthenticatedUserAuthenticationProcessingFilter(
-                    RequestHeaderRequestMatcher(
-                        PreAuthenticatedUserAuthenticationProcessingFilter.PRE_AUTHENTICATED_USER_HEADER
-                    ),
-                    authConfig.authenticationManager,
-                )
+                RequestHeaderPreAuthenticatedProcessingFilter(objectMapper).apply {
+                    setAuthenticationManager(authConfig.authenticationManager)
+                    setAuthenticationDetailsSource(RequestAttributesAuthenticationDetailsSource())
+                }
             )
         }
         return http.build()
     }
 
     @Bean
-    fun passwordEncoder() = BCryptPasswordEncoder()
+    fun passwordEncoder() =
+        BCryptPasswordEncoder()
+
+    @Bean
+    fun preAuthenticatedAuthenticationProvider() =
+        PreAuthenticatedAuthenticationProvider().apply {
+            setPreAuthenticatedUserDetailsService(
+                PreAuthenticatedGrantedAuthoritiesUserDetailsService()
+            )
+        }
 }

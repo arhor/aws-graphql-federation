@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.dat
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.security.ConfigureSecurity
+import com.github.arhor.aws.graphql.federation.security.SubgraphSecurityAutoConfiguration
 import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
@@ -33,7 +33,7 @@ import java.util.UUID
 
 @SpringBootTest(
     classes = [
-        ConfigureSecurity::class,
+        SubgraphSecurityAutoConfiguration::class,
         DgsAutoConfiguration::class,
         DgsExtendedScalarsAutoConfiguration::class,
         GlobalDataFetchingExceptionHandler::class,

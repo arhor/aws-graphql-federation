@@ -1,1 +1,1 @@
-com.github.arhor.aws.graphql.federation.security.ConfigureSecurity
+com.github.arhor.aws.graphql.federation.security.SubgraphSecurityAutoConfiguration
