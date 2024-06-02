@@ -160,7 +160,7 @@ class UserRepresentationServiceImplTest {
         fun `should not call userRepository#save when there is no update applied to the user`() {
             // Given
             val input = SwitchUserPostsInput(userId = USER_ID, disabled = true)
-            val user = UserRepresentation(id = USER_ID, features = Features(Feature.POSTS_DISABLED))
+            val user = UserRepresentation(id = USER_ID, features = Features.of(Feature.POSTS_DISABLED))
 
             every { userRepository.findById(any()) } returns Optional.of(user)
 

@@ -392,7 +392,7 @@ class PostServiceImplTest {
             // Given
             val input = UpdatePostInput(id = POST_1_ID)
             val post = createPostEntity()
-            val user = UserRepresentation(id = USER_ID, features = Features(Feature.POSTS_DISABLED))
+            val user = UserRepresentation(id = USER_ID, features = Features.of(Feature.POSTS_DISABLED))
 
             val expectedEntity = POST.TYPE_NAME
             val expectedCondition = "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $USER_ID"
