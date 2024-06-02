@@ -1,6 +1,5 @@
-package com.github.arhor.aws.graphql.federation.posts.data.converter
+package com.github.arhor.aws.graphql.federation.spring.core.data
 
-import com.github.arhor.aws.graphql.federation.posts.test.ConfigureTestObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

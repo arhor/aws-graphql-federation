@@ -3,7 +3,6 @@
 # noinspection DgsEntityFetcherInspector
 
 scalar UUID
-scalar Upload
 
 # ---------- Root Types (Query/Mutation/Subscription) ----------
 
@@ -30,17 +29,15 @@ input PostsLookupInput {
 
 input CreatePostInput {
     userId: UUID!
-    title: String!     @NotBlank @Size(min: 1, max: 512)
-    content: String!   @NotBlank @Size(min: 1, max: 4096)
-    options: [Option!]
+    title: String!    @NotBlank @Size(min: 1, max: 512)
+    content: String!  @NotBlank @Size(min: 1, max: 4096)
     tags: [TagInput!]
 }
 
 input UpdatePostInput {
     id: UUID!
-    title: String      @NotBlank @Size(min: 1, max: 512)
-    content: String    @NotBlank @Size(min: 1, max: 4096)
-    options: [Option!]
+    title: String     @NotBlank @Size(min: 1, max: 512)
+    content: String   @NotBlank @Size(min: 1, max: 4096)
     tags: [TagInput!]
 }
 
@@ -64,7 +61,6 @@ type Post @key(fields: "id") {
     userId: UUID
     title: String!
     content: String!
-    options: [Option!]
     tags: [String!]
 }
 
@@ -74,10 +70,6 @@ type PostPage {
     size: Int
     hasPrev: Boolean
     hasNext: Boolean
-}
-
-enum Option {
-    NSFW
 }
 
 # ---------- Federated Types ----------

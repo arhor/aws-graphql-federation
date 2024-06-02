@@ -10,7 +10,6 @@ const CREATE_POST = gql`
             userId
             title
             content
-            options
             tags
         }
     }

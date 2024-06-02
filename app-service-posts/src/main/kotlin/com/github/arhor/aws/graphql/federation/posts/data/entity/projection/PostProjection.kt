@@ -8,5 +8,4 @@ data class PostProjection(
     val userId: UUID?,
     val title: String,
     val content: String,
-    val options: PostEntity.Options,
 )

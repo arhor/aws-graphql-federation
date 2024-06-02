@@ -215,6 +215,5 @@ class PostRepositoryTest : RepositoryTestBase() {
         userId = userId,
         title = title,
         content = content,
-        options = options,
     )
 }

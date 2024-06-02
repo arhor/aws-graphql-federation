@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.posts.data.converter
+package com.github.arhor.aws.graphql.federation.spring.core.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.postgresql.util.PGobject

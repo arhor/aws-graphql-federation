@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.SwitchUserPostsInput
@@ -39,7 +40,7 @@ class UserRepresentationServiceImpl(
         for (user in users) {
             result[user.id] = User(
                 id = user.id,
-                postsDisabled = user.postsDisabled,
+                postsDisabled = user.features.check(Feature.POSTS_DISABLED),
             )
         }
         userIds.filter { it !in result.keys }.forEach {
@@ -53,7 +54,6 @@ class UserRepresentationServiceImpl(
             userRepository.save(
                 UserRepresentation(
                     id = userId,
-                    postsDisabled = false,
                     shouldBePersisted = true,
                 )
             )
@@ -78,8 +78,10 @@ class UserRepresentationServiceImpl(
                     Operation.UPDATE
                 )
 
-        return if (user.postsDisabled != shouldBeDisabled) {
-            userRepository.save(user.copy(postsDisabled = shouldBeDisabled))
+        return if (user.features.check(Feature.POSTS_DISABLED) != shouldBeDisabled) {
+            userRepository.save(
+                user.copy(features = user.features + Feature.POSTS_DISABLED)
+            )
             true
         } else {
             false

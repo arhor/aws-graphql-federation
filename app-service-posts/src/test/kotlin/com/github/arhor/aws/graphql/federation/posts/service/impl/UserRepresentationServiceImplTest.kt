@@ -3,11 +3,13 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.SwitchUserPostsInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
+import com.github.arhor.aws.graphql.federation.spring.core.data.Features
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -98,7 +100,6 @@ class UserRepresentationServiceImplTest {
             // Given
             val expectedUser = UserRepresentation(
                 id = USER_ID,
-                postsDisabled = false,
                 shouldBePersisted = true,
             )
 
@@ -139,7 +140,7 @@ class UserRepresentationServiceImplTest {
         fun `should call userRepository#save when there is update applied to the user`() {
             // Given
             val input = SwitchUserPostsInput(userId = USER_ID, disabled = true)
-            val user = UserRepresentation(id = USER_ID, postsDisabled = false)
+            val user = UserRepresentation(id = USER_ID)
 
             every { userRepository.findById(any()) } returns Optional.of(user)
             every { userRepository.save(any()) } answers { firstArg() }
@@ -149,7 +150,7 @@ class UserRepresentationServiceImplTest {
 
             // Then
             verify(exactly = 1) { userRepository.findById(USER_ID) }
-            verify(exactly = 1) { userRepository.save(user.copy(postsDisabled = input.disabled)) }
+            verify(exactly = 1) { userRepository.save(user.copy(features = user.features + Feature.POSTS_DISABLED)) }
 
             assertThat(result)
                 .isTrue()
@@ -159,7 +160,7 @@ class UserRepresentationServiceImplTest {
         fun `should not call userRepository#save when there is no update applied to the user`() {
             // Given
             val input = SwitchUserPostsInput(userId = USER_ID, disabled = true)
-            val user = UserRepresentation(id = USER_ID, postsDisabled = true)
+            val user = UserRepresentation(id = USER_ID, features = Features(Feature.POSTS_DISABLED))
 
             every { userRepository.findById(any()) } returns Optional.of(user)
 

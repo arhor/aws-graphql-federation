@@ -1,7 +1,7 @@
-package com.github.arhor.aws.graphql.federation.posts.data.converter
+package com.github.arhor.aws.graphql.federation.spring.core.data
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.postgresql.util.PGobject
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.convert.ReadingConverter
@@ -10,7 +10,9 @@ import org.springframework.data.convert.ReadingConverter
 class JsonReadingConverter(private val objectMapper: ObjectMapper) : Converter<PGobject, Map<String, Any?>> {
 
     override fun convert(source: PGobject): Map<String, Any?> {
-        return source.value?.let { objectMapper.readValue(it) }
+        return source.value?.let { objectMapper.readValue(it, GenericMapTypeRef) }
             ?: emptyMap()
     }
+
+    private object GenericMapTypeRef : TypeReference<Map<String, Any?>>()
 }

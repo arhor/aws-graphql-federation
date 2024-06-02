@@ -5,7 +5,6 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Option
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.TagBatchLoader
@@ -85,7 +84,6 @@ class PostFetcherTest {
                         POST.UserId to USER_ID.toString(),
                         POST.Title to "test-title",
                         POST.Content to "test-content",
-                        POST.Options to listOf(Option.NSFW.name),
                     )
                 )
 
@@ -95,7 +93,6 @@ class PostFetcherTest {
                     userId = USER_ID,
                     title = "test-title",
                     content = "test-content",
-                    options = listOf(Option.NSFW),
                 )
             }
 
@@ -108,7 +105,6 @@ class PostFetcherTest {
                         userId
                         title
                         content
-                        options
                     }
                 }
                 """,
@@ -144,7 +140,6 @@ class PostFetcherTest {
                         userId
                         title
                         content
-                        options
                     }
                 }
                 """,

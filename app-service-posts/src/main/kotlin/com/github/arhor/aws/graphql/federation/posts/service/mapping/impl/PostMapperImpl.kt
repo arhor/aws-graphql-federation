@@ -6,7 +6,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
-import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
 import org.springframework.data.domain.Page
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class PostMapperImpl(
-    private val optionsMapper: OptionsMapper,
     private val tagMapper: TagMapper,
 ) : PostMapper {
 
@@ -23,7 +21,6 @@ class PostMapperImpl(
             userId = input.userId,
             title = input.title,
             content = input.content,
-            options = optionsMapper.mapFromList(input.options),
             tags = tagMapper.mapToRefs(tags)
         )
     }
@@ -34,7 +31,6 @@ class PostMapperImpl(
             userId = entity.userId,
             title = entity.title,
             content = entity.content,
-            options = optionsMapper.mapIntoList(entity.options),
         )
     }
 
@@ -44,7 +40,6 @@ class PostMapperImpl(
             userId = projection.userId,
             title = projection.title,
             content = projection.content,
-            options = optionsMapper.mapIntoList(projection.options),
         )
     }
 

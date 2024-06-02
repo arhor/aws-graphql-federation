@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
@@ -20,9 +21,9 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.TagInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
-import com.github.arhor.aws.graphql.federation.posts.service.mapping.OptionsMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
+import com.github.arhor.aws.graphql.federation.spring.core.data.Features
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
@@ -54,7 +55,6 @@ class PostServiceImplTest {
     private val postRepository = mockk<PostRepository>()
     private val tagMapper = mockk<TagMapper>()
     private val tagRepository = mockk<TagRepository>()
-    private val optionsMapper = mockk<OptionsMapper>()
     private val userRepository = mockk<UserRepresentationRepository>()
 
     private val postService = PostServiceImpl(
@@ -63,7 +63,6 @@ class PostServiceImplTest {
         postRepository,
         tagMapper,
         tagRepository,
-        optionsMapper,
         userRepository,
     )
 
@@ -75,7 +74,6 @@ class PostServiceImplTest {
             appEventPublisher,
             tagMapper,
             tagRepository,
-            optionsMapper,
         )
     }
 
@@ -394,7 +392,7 @@ class PostServiceImplTest {
             // Given
             val input = UpdatePostInput(id = POST_1_ID)
             val post = createPostEntity()
-            val user = UserRepresentation(id = USER_ID, postsDisabled = true)
+            val user = UserRepresentation(id = USER_ID, features = Features(Feature.POSTS_DISABLED))
 
             val expectedEntity = POST.TYPE_NAME
             val expectedCondition = "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $USER_ID"
@@ -450,7 +448,6 @@ class PostServiceImplTest {
                 id = POST_1_ID,
                 title = "new-test-title",
                 content = "new-test-content",
-                options = emptyList(),
                 tags = emptyList(),
             )
             val post = createPostEntity()
@@ -460,7 +457,6 @@ class PostServiceImplTest {
 
             every { postRepository.findById(any()) } returns Optional.of(post)
             every { userRepository.findById(any()) } returns Optional.of(user)
-            every { optionsMapper.mapFromList(any()) } returns PostEntity.Options()
             every { tagMapper.mapToRefs(any()) } returns emptySet()
             every { postRepository.save(any()) } answers { firstArg() }
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
@@ -471,7 +467,6 @@ class PostServiceImplTest {
             // Then
             verify(exactly = 1) { postRepository.findById(POST_1_ID) }
             verify(exactly = 1) { userRepository.findById(USER_ID) }
-            verify(exactly = 1) { optionsMapper.mapFromList(any()) }
             verify(exactly = 1) { tagMapper.mapToRefs(any()) }
             verify(exactly = 1) { postRepository.save(updatedPost) }
             verify(exactly = 1) { postMapper.mapToPost(updatedPost) }
@@ -488,7 +483,6 @@ class PostServiceImplTest {
                 id = POST_1_ID,
                 title = "new-test-title",
                 content = "new-test-content",
-                options = emptyList(),
                 tags = emptyList(),
             )
             val post = createPostEntity()
@@ -501,7 +495,6 @@ class PostServiceImplTest {
 
             every { postRepository.findById(any()) } returns Optional.of(post)
             every { userRepository.findById(any()) } returns Optional.of(user)
-            every { optionsMapper.mapFromList(any()) } returns PostEntity.Options()
             every { tagMapper.mapToRefs(any()) } returns emptySet()
             every { postRepository.save(any()) } throws OptimisticLockingFailureException("test")
 
@@ -511,7 +504,6 @@ class PostServiceImplTest {
             // Then
             verify(exactly = 1) { postRepository.findById(input.id) }
             verify(exactly = 1) { userRepository.findById(USER_ID) }
-            verify(exactly = 1) { optionsMapper.mapFromList(any()) }
             verify(exactly = 1) { tagMapper.mapToRefs(any()) }
             verify(exactly = 1) { postRepository.save(updatedPost) }
 
@@ -576,7 +568,6 @@ class PostServiceImplTest {
         userId = USER_ID,
         title = "test-title",
         content = "test-content",
-        options = PostEntity.Options(),
     )
 
     private fun PostProjection.toPost() = Post(
@@ -584,7 +575,6 @@ class PostServiceImplTest {
         userId = userId,
         title = title,
         content = content,
-        options = options.items.toList(),
     )
 
     private fun PostEntity.toPost() = Post(
@@ -592,7 +582,6 @@ class PostServiceImplTest {
         userId = userId,
         title = title,
         content = content,
-        options = options.items.toList(),
     )
 
     companion object {
