@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
+import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
@@ -48,7 +49,7 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
                 user.id(),
                 User.newBuilder()
                     .id(user.id())
-                    .commentsDisabled(user.commentsDisabled())
+                    .commentsDisabled(user.features().check(Feature.COMMENTS_DISABLED))
                     .build()
             );
         }
@@ -69,7 +70,6 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
             userRepository.save(
                 UserRepresentation.builder()
                     .id(userId)
-                    .commentsDisabled(false)
                     .shouldBePersisted(true)
                     .build()
             )
@@ -98,10 +98,14 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
                     )
                 );
 
-        if (user.commentsDisabled() != shouldBeDisabled) {
+        if (user.features().check(Feature.COMMENTS_DISABLED) != shouldBeDisabled) {
             userRepository.save(
                 user.toBuilder()
-                    .commentsDisabled(shouldBeDisabled)
+                    .features(
+                        shouldBeDisabled
+                            ? user.features().plus(Feature.COMMENTS_DISABLED)
+                            : user.features().minus(Feature.COMMENTS_DISABLED)
+                    )
                     .build()
             );
             return true;

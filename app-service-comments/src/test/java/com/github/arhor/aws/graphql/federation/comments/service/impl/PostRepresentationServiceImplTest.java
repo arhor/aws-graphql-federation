@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
+import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
@@ -8,6 +9,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
+import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -63,14 +65,13 @@ class PostRepresentationServiceImplTest {
             final var postRepresentation =
                 PostRepresentation.builder()
                     .id(POST_ID)
-                    .commentsDisabled(false)
                     .build();
 
             final var expectedResult = Map.of(
                 POST_ID,
                 Post.newBuilder()
                     .id(postRepresentation.id())
-                    .commentsDisabled(postRepresentation.commentsDisabled())
+                    .commentsDisabled(false)
                     .build()
             );
             final var expectedPostIds = Set.of(POST_ID);
@@ -134,7 +135,6 @@ class PostRepresentationServiceImplTest {
             final var expectedPostRepresentation =
                 PostRepresentation.builder()
                     .id(POST_ID)
-                    .commentsDisabled(false)
                     .shouldBePersisted(true)
                     .build();
 
@@ -191,7 +191,6 @@ class PostRepresentationServiceImplTest {
             final var post =
                 PostRepresentation.builder()
                     .id(POST_ID)
-                    .commentsDisabled(false)
                     .build();
 
             given(postRepository.findById(any()))
@@ -210,7 +209,7 @@ class PostRepresentationServiceImplTest {
 
             then(postRepository)
                 .should()
-                .save(post.toBuilder().commentsDisabled(input.getDisabled()).build());
+                .save(post.toBuilder().features(post.features().plus(Feature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
                 .isTrue();
@@ -228,7 +227,7 @@ class PostRepresentationServiceImplTest {
             final var post =
                 PostRepresentation.builder()
                     .id(POST_ID)
-                    .commentsDisabled(true)
+                    .features(Features.of(Feature.COMMENTS_DISABLED))
                     .build();
 
             given(postRepository.findById(any()))

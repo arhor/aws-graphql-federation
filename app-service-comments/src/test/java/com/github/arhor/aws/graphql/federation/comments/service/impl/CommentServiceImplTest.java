@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
@@ -17,6 +18,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMa
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
+import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -420,7 +422,7 @@ class CommentServiceImplTest {
                 .postId(POST_ID)
                 .build();
 
-            final var user = UserRepresentation.builder().commentsDisabled(true).build();
+            final var user = UserRepresentation.builder().features(Features.of(Feature.COMMENTS_DISABLED)).build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
@@ -517,7 +519,7 @@ class CommentServiceImplTest {
                 .build();
 
             final var user = UserRepresentation.builder().build();
-            final var post = PostRepresentation.builder().commentsDisabled(true).build();
+            final var post = PostRepresentation.builder().features(Features.of(Feature.COMMENTS_DISABLED)).build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));

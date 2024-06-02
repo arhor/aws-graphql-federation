@@ -5,14 +5,13 @@ import java.util.EnumSet
 /**
  * Wrapper class over EnumSet is required to make it available for custom conversions.
  */
-data class Features<E : Enum<E>>(
-    val items: EnumSet<E>,
+data class Features<F : Enum<F>>(
+    val items: EnumSet<F>,
 ) {
-    constructor(item: E, vararg items: E) : this(items = EnumSet.of(item, *items))
 
-    fun check(feature: E): Boolean = feature in items
+    fun check(item: F): Boolean = item in items
 
-    operator fun plus(item: E): Features<E> = Features(
+    operator fun plus(item: F): Features<F> = Features(
         items = if (items.isEmpty()) {
             EnumSet.of(item)
         } else {
@@ -21,4 +20,20 @@ data class Features<E : Enum<E>>(
             }
         }
     )
+
+    operator fun minus(item: F): Features<F> = Features(
+        items = EnumSet.copyOf(items).apply {
+            remove(item)
+        }
+    )
+
+    companion object {
+        @JvmStatic
+        fun <F : Enum<F>> of(item: F, vararg items: F): Features<F> =
+            Features(items = EnumSet.of(item, *items))
+
+        @JvmStatic
+        fun <F : Enum<F>> emptyOf(type: Class<F>): Features<F> =
+            Features(items = EnumSet.noneOf(type))
+    }
 }

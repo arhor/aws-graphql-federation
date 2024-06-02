@@ -80,7 +80,11 @@ class UserRepresentationServiceImpl(
 
         return if (user.features.check(Feature.POSTS_DISABLED) != shouldBeDisabled) {
             userRepository.save(
-                user.copy(features = user.features + Feature.POSTS_DISABLED)
+                if (shouldBeDisabled) {
+                    user.copy(features = user.features + Feature.POSTS_DISABLED)
+                } else {
+                    user.copy(features = user.features - Feature.POSTS_DISABLED)
+                }
             )
             true
         } else {

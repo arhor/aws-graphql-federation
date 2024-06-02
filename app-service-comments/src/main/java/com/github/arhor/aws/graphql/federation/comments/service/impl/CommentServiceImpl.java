@@ -196,7 +196,7 @@ public class CommentServiceImpl implements CommentService {
                     )
                 );
 
-        if (commentsContainer.commentsDisabled()) {
+        if (commentsContainer.features().check(HasComments.Feature.COMMENTS_DISABLED)) {
             throw new EntityOperationRestrictedException(
                 COMMENT.TYPE_NAME,
                 "Comments disabled for the " + entity + " with " + field + " = " + id,

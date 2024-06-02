@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
+import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
@@ -48,7 +49,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                 post.id(),
                 Post.newBuilder()
                     .id(post.id())
-                    .commentsDisabled(post.commentsDisabled())
+                    .commentsDisabled(post.features().check(Feature.COMMENTS_DISABLED))
                     .build()
             );
         }
@@ -69,7 +70,6 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
             postRepository.save(
                 PostRepresentation.builder()
                     .id(postId)
-                    .commentsDisabled(false)
                     .shouldBePersisted(true)
                     .build()
             )
@@ -98,10 +98,14 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                     )
                 );
 
-        if (post.commentsDisabled() != shouldBeDisabled) {
+        if (post.features().check(Feature.COMMENTS_DISABLED) != shouldBeDisabled) {
             postRepository.save(
                 post.toBuilder()
-                    .commentsDisabled(shouldBeDisabled)
+                    .features(
+                        shouldBeDisabled
+                            ? post.features().plus(Feature.COMMENTS_DISABLED)
+                            : post.features().minus(Feature.COMMENTS_DISABLED)
+                    )
                     .build()
             );
             return true;

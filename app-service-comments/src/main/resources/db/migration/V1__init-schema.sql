@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS "user_representations"
 (
-    "id"                UUID    NOT NULL PRIMARY KEY,
-    "comments_disabled" BOOLEAN NOT NULL
+    "id"       UUID NOT NULL PRIMARY KEY,
+    "features" INT  NOT NULL
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "post_representations"
 (
-    "id"                UUID    NOT NULL PRIMARY KEY,
-    "comments_disabled" BOOLEAN NOT NULL
+    "id"       UUID NOT NULL PRIMARY KEY,
+    "features" INT  NOT NULL
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "comments"

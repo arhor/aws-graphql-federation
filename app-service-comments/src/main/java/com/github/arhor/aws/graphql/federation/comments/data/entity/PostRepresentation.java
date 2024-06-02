@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
+import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
 import lombok.Builder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
@@ -19,16 +20,22 @@ public record PostRepresentation(
     @Column("id")
     UUID id,
 
-    @Column("comments_disabled")
-    boolean commentsDisabled,
+    @Column("features")
+    Features<Feature> features,
 
     @Transient
     boolean shouldBePersisted
 ) implements Persistable<UUID>, HasComments {
 
+    public PostRepresentation {
+        if (features == null) {
+            features = Features.emptyOf(Feature.class);
+        }
+    }
+
     @PersistenceCreator
-    public PostRepresentation(UUID id, boolean commentsDisabled) {
-        this(id, commentsDisabled, false);
+    public PostRepresentation(final UUID id, final Features<Feature> features) {
+        this(id, features, false);
     }
 
     @Override

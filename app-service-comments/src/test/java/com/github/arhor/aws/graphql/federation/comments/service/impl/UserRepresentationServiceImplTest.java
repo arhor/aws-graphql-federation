@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
+import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
@@ -8,6 +9,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
+import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -63,14 +65,13 @@ class UserRepresentationServiceImplTest {
             final var userRepresentation =
                 UserRepresentation.builder()
                     .id(USER_ID)
-                    .commentsDisabled(false)
                     .build();
 
             final var expectedResult = Map.of(
                 USER_ID,
                 User.newBuilder()
                     .id(USER_ID)
-                    .commentsDisabled(userRepresentation.commentsDisabled())
+                    .commentsDisabled(false)
                     .build()
             );
             final var expectedUserIds = Set.of(USER_ID);
@@ -134,7 +135,6 @@ class UserRepresentationServiceImplTest {
             final var expectedUserRepresentation =
                 UserRepresentation.builder()
                     .id(USER_ID)
-                    .commentsDisabled(false)
                     .shouldBePersisted(true)
                     .build();
 
@@ -191,7 +191,6 @@ class UserRepresentationServiceImplTest {
             final var user =
                 UserRepresentation.builder()
                     .id(USER_ID)
-                    .commentsDisabled(false)
                     .build();
 
             given(userRepository.findById(any()))
@@ -210,7 +209,7 @@ class UserRepresentationServiceImplTest {
 
             then(userRepository)
                 .should()
-                .save(user.toBuilder().commentsDisabled(input.getDisabled()).build());
+                .save(user.toBuilder().features(user.features().plus(Feature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
                 .isTrue();
@@ -228,7 +227,7 @@ class UserRepresentationServiceImplTest {
             final var user =
                 UserRepresentation.builder()
                     .id(USER_ID)
-                    .commentsDisabled(true)
+                    .features(Features.of(Feature.COMMENTS_DISABLED))
                     .build();
 
             given(userRepository.findById(any()))
