@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   localstack:
+    container_name: localstack
     image: localstack/localstack:3.4
     ports:
       - "127.0.0.1:4566:4566"           # LocalStack Gateway
@@ -14,95 +15,119 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./scripts/localstack:/etc/localstack/init/ready.d/"
       - "./cloudformation:/cloudformation"
+    networks:
+      - default
 
   app-service-users-db:
+    container_name: app-service-users-db
     image: postgres:13-alpine
     ports:
-      - "5501:5432"
+      - "5501:5501"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
       - "./app-service-users/.env"
+    command: -p 5501
+    networks:
+      - default
 
   app-service-users:
+    container_name: app-service-users
     build:
       context: ./app-service-users
     ports:
       - "5001:5001"
     depends_on:
-      app-service-users-db:
-        condition: service_started
-      localstack:
-        condition: service_healthy
+      - app-service-users-db
+      - localstack
     env_file:
-      - "./app-service-users/.env"
       - "./.env"
+      - "./.env.override"
+      - "./app-service-users/.env"
+      - "./app-service-users/.env.override"
     healthcheck:
       test: "curl --fail --silent localhost:5001/actuator/health | grep UP || exit 1"
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - default
 
   app-service-posts-db:
+    container_name: app-service-posts-db
     image: postgres:13-alpine
     ports:
-      - "5502:5432"
+      - "5502:5502"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
       - "./app-service-posts/.env"
+    command: -p 5502
+    networks:
+      - default
 
   app-service-posts:
+    container_name: app-service-posts
     build:
       context: ./app-service-posts
     ports:
       - "5002:5002"
     depends_on:
-      app-service-posts-db:
-        condition: service_started
-      localstack:
-        condition: service_healthy
+      - app-service-posts-db
+      - localstack
     env_file:
-      - "./app-service-posts/.env"
       - "./.env"
+      - "./.env.override"
+      - "./app-service-posts/.env"
+      - "./app-service-posts/.env.override"
     healthcheck:
       test: "curl --fail --silent localhost:5002/actuator/health | grep UP || exit 1"
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - default
 
   app-service-comments-db:
+    container_name: app-service-comments-db
     image: postgres:13-alpine
     ports:
-      - "5503:5432"
+      - "5503:5503"
     tmpfs:
       - "/var/lib/postgresql/data"
     env_file:
       - "./app-service-comments/.env"
+    command: -p 5503
+    networks:
+      - default
 
   app-service-comments:
+    container_name: app-service-comments
     build:
       context: ./app-service-comments
     ports:
       - "5003:5003"
     depends_on:
-      app-service-comments-db:
-        condition: service_started
-      localstack:
-        condition: service_healthy
+      - app-service-comments-db
+      - localstack
     env_file:
-      - "./app-service-comments/.env"
       - "./.env"
+      - "./.env.override"
+      - "./app-service-comments/.env"
+      - "./app-service-comments/.env.override"
     healthcheck:
       test: "curl --fail --silent localhost:5003/actuator/health | grep UP || exit 1"
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    networks:
+      - default
 
   app-gateway:
+    container_name: app-gateway
     build:
       context: ./app-gateway
     ports:
@@ -116,3 +141,10 @@ services:
         condition: service_healthy
     env_file:
       - ./app-gateway/.env
+      - ./app-gateway/.env.override
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

@@ -54,4 +54,4 @@ server.addHook('onRequest', async (req) => {
     }
 });
 
-await server.listen({ port: GATEWAY_PORT });
+await server.listen({ port: GATEWAY_PORT, host: '0.0.0.0' });

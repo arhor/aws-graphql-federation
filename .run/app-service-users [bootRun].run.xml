@@ -31,8 +31,6 @@
     </EXTENSION>
     <DebugAllEnabled>false</DebugAllEnabled>
     <RunAsTest>false</RunAsTest>
-    <method v="2">
-      <option name="RunConfigurationTask" enabled="true" run_configuration_name="docker-compose.dev.yml.app-service-users-db: Compose Deployment" run_configuration_type="docker-deploy" />
-    </method>
+    <method v="2" />
   </configuration>
 </component>
