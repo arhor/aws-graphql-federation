@@ -5,14 +5,8 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
-import io.mockk.confirmVerified
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -20,16 +14,7 @@ import java.util.UUID
 
 class PostMapperImplTest {
 
-    private val tagMapper = mockk<TagMapper>()
-
-    private val postMapper = PostMapperImpl(
-        tagMapper,
-    )
-
-    @AfterEach
-    fun tearDown() {
-        confirmVerified(tagMapper)
-    }
+    private val postMapper = PostMapperImpl()
 
     @Nested
     @DisplayName("PostMapper :: mapToEntity")
@@ -46,14 +31,10 @@ class PostMapperImplTest {
 
             val expectedTagRefs = emptySet<TagRef>()
 
-            every { tagMapper.mapToRefs(any()) } returns expectedTagRefs
-
             // When
             val entity = postMapper.mapToEntity(createPostInput, tags)
 
             // Then
-            verify(exactly = 1) { tagMapper.mapToRefs(tags) }
-
             assertThat(entity)
                 .isNotNull()
                 .returns(createPostInput.userId, from { it.userId })

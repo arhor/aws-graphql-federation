@@ -22,7 +22,6 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.TagInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
-import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
 import com.github.arhor.aws.graphql.federation.spring.core.data.Features
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -53,7 +52,6 @@ class PostServiceImplTest {
     private val appEventPublisher = mockk<ApplicationEventPublisher>()
     private val postMapper = mockk<PostMapper>()
     private val postRepository = mockk<PostRepository>()
-    private val tagMapper = mockk<TagMapper>()
     private val tagRepository = mockk<TagRepository>()
     private val userRepository = mockk<UserRepresentationRepository>()
 
@@ -61,7 +59,6 @@ class PostServiceImplTest {
         appEventPublisher,
         postMapper,
         postRepository,
-        tagMapper,
         tagRepository,
         userRepository,
     )
@@ -72,7 +69,6 @@ class PostServiceImplTest {
             postMapper,
             postRepository,
             appEventPublisher,
-            tagMapper,
             tagRepository,
         )
     }
@@ -457,7 +453,6 @@ class PostServiceImplTest {
 
             every { postRepository.findById(any()) } returns Optional.of(post)
             every { userRepository.findById(any()) } returns Optional.of(user)
-            every { tagMapper.mapToRefs(any()) } returns emptySet()
             every { postRepository.save(any()) } answers { firstArg() }
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
 
@@ -467,7 +462,6 @@ class PostServiceImplTest {
             // Then
             verify(exactly = 1) { postRepository.findById(POST_1_ID) }
             verify(exactly = 1) { userRepository.findById(USER_ID) }
-            verify(exactly = 1) { tagMapper.mapToRefs(any()) }
             verify(exactly = 1) { postRepository.save(updatedPost) }
             verify(exactly = 1) { postMapper.mapToPost(updatedPost) }
 
@@ -495,7 +489,6 @@ class PostServiceImplTest {
 
             every { postRepository.findById(any()) } returns Optional.of(post)
             every { userRepository.findById(any()) } returns Optional.of(user)
-            every { tagMapper.mapToRefs(any()) } returns emptySet()
             every { postRepository.save(any()) } throws OptimisticLockingFailureException("test")
 
             // When
@@ -504,7 +497,6 @@ class PostServiceImplTest {
             // Then
             verify(exactly = 1) { postRepository.findById(input.id) }
             verify(exactly = 1) { userRepository.findById(USER_ID) }
-            verify(exactly = 1) { tagMapper.mapToRefs(any()) }
             verify(exactly = 1) { postRepository.save(updatedPost) }
 
             assertThat(result)

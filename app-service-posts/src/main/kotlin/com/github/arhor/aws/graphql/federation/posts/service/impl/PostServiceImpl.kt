@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
@@ -21,7 +22,6 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
-import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
@@ -39,7 +39,6 @@ class PostServiceImpl(
     private val appEventPublisher: ApplicationEventPublisher,
     private val postMapper: PostMapper,
     private val postRepository: PostRepository,
-    private val tagMapper: TagMapper,
     private val tagRepository: TagRepository,
     private val userRepository: UserRepresentationRepository,
 ) : PostService {
@@ -101,7 +100,7 @@ class PostServiceImpl(
         val currentState = initialState.copy(
             title = input.title ?: initialState.title,
             content = input.content ?: initialState.content,
-            tags = input.tags?.map { it.name }?.let(::materialize)?.let(tagMapper::mapToRefs) ?: initialState.tags
+            tags = input.tags?.map { it.name }?.let(::materialize)?.toSet(TagRef::from) ?: initialState.tags
         )
         return postMapper.mapToPost(
             entity = when (currentState != initialState) {

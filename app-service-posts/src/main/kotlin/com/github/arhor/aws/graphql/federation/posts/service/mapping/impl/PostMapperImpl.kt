@@ -1,27 +1,26 @@
 package com.github.arhor.aws.graphql.federation.posts.service.mapping.impl
 
+import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
-import com.github.arhor.aws.graphql.federation.posts.service.mapping.TagMapper
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
 
 @Component
-class PostMapperImpl(
-    private val tagMapper: TagMapper,
-) : PostMapper {
+class PostMapperImpl : PostMapper {
 
     override fun mapToEntity(input: CreatePostInput, tags: Set<TagEntity>): PostEntity {
         return PostEntity(
             userId = input.userId,
             title = input.title,
             content = input.content,
-            tags = tagMapper.mapToRefs(tags)
+            tags = tags.toSet(TagRef::from)
         )
     }
 
