@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
-@Trace
 @Service
 class OutboxMessageServiceImpl(
     private val appProps: AppProps,
@@ -32,6 +31,7 @@ class OutboxMessageServiceImpl(
 
     private val postEventsSnsTopicName = appProps.aws!!.sns!!.postEvents!!
 
+    @Trace
     @Transactional(propagation = Propagation.MANDATORY)
     override fun storeAsOutboxMessage(event: PostEvent) {
         outboxMessageRepository.save(

@@ -14,11 +14,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./scripts/localstack:/etc/localstack/init/ready.d/"
       - "./cloudformation:/cloudformation"
-    healthcheck:
-      test: [ "CMD", "bash", "-c", "awslocal sns list-topics && awslocal sqs list-queues" ]
-      interval: 5s
-      timeout: 10s
-      start_period: 10s
 
   app-service-users-db:
     image: postgres:13-alpine
@@ -30,7 +25,6 @@ services:
       - "./app-service-users/.env"
 
   app-service-users:
-    image: app-service-users:latest
     build:
       context: ./app-service-users
     ports:
@@ -43,7 +37,6 @@ services:
     env_file:
       - "./app-service-users/.env"
       - "./.env"
-    network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5001/actuator/health | grep UP || exit 1"
       interval: 5s
@@ -61,7 +54,6 @@ services:
       - "./app-service-posts/.env"
 
   app-service-posts:
-    image: app-service-posts:latest
     build:
       context: ./app-service-posts
     ports:
@@ -92,7 +84,6 @@ services:
       - "./app-service-comments/.env"
 
   app-service-comments:
-    image: app-service-comments:latest
     build:
       context: ./app-service-comments
     ports:
@@ -114,7 +105,6 @@ services:
       start_period: 10s
 
   app-gateway:
-    image: app-gateway:latest
     build:
       context: ./app-gateway
     ports:
