@@ -1,0 +1,1 @@
+gradlew :app-service-users:build :app-service-posts:build :app-service-comments:build && docker compose --file "docker-compose.dev.yml" up --build
