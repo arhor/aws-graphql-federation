@@ -10,12 +10,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Profile
 import org.springframework.core.task.TaskDecorator
+import org.springframework.data.auditing.DateTimeProvider
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.context.request.RequestContextHolder
 import java.time.Clock
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
-import java.util.function.Supplier
+import java.util.Optional
 
 @ComponentScan
 @AutoConfiguration
@@ -27,11 +28,11 @@ class ConfigureCoreApplicationComponents {
     }
 
     @Bean
-    fun currentDateTimeSupplier(clockProvider: ClockProvider): Supplier<LocalDateTime> = Supplier {
+    fun currentDateTimeProvider(clockProvider: ClockProvider): DateTimeProvider = DateTimeProvider {
         val currClock = clockProvider.clock
         val timestamp = LocalDateTime.now(currClock)
 
-        timestamp.truncatedTo(ChronoUnit.MILLIS)
+        Optional.of(timestamp.truncatedTo(ChronoUnit.MILLIS))
     }
 
     @Bean
