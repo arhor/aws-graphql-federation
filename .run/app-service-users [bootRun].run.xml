@@ -31,6 +31,8 @@
     </EXTENSION>
     <DebugAllEnabled>false</DebugAllEnabled>
     <RunAsTest>false</RunAsTest>
-    <method v="2" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Deploy Users DB" run_configuration_type="docker-deploy" />
+    </method>
   </configuration>
 </component>
