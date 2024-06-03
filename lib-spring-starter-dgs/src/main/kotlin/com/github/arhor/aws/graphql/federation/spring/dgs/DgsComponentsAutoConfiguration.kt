@@ -5,5 +5,5 @@ import org.springframework.context.annotation.ComponentScan
 
 @ComponentScan
 @AutoConfiguration
-class ConfigureDgsComponents {
+class DgsComponentsAutoConfiguration {
 }

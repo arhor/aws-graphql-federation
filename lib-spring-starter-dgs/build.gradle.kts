@@ -59,6 +59,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.springframework.boot:spring-boot-starter")
 
+    compileOnly("org.springframework.security:spring-security-web")
+
     testImplementation("com.ninja-squad:springmockk")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
