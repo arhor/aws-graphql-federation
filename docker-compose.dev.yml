@@ -66,7 +66,6 @@ services:
     env_file:
       - "./app-service-posts/.env"
       - "./.env"
-    network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5002/actuator/health | grep UP || exit 1"
       interval: 5s
@@ -96,7 +95,6 @@ services:
     env_file:
       - "./app-service-comments/.env"
       - "./.env"
-    network_mode: host
     healthcheck:
       test: "curl --fail --silent localhost:5003/actuator/health | grep UP || exit 1"
       interval: 5s
@@ -116,6 +114,5 @@ services:
         condition: service_healthy
       app-service-comments:
         condition: service_healthy
-    network_mode: host
     env_file:
       - ./app-gateway/.env
