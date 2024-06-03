@@ -113,7 +113,7 @@ all of which are subgraphs in the overall GraphQL federation supergraph.
 
 2. **Start Docker Containers**:
     ```sh
-    docker-compose up
+    ./supergraph-start
     ```
 
 ## Contributing
