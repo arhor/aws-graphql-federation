@@ -4,14 +4,10 @@ import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
 import com.netflix.graphql.dgs.internal.DgsWebMvcRequestData
 import com.netflix.graphql.dgs.internal.method.ArgumentResolver
 import graphql.schema.DataFetchingEnvironment
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.core.MethodParameter
 import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver
-import org.springframework.stereotype.Component
 import org.springframework.web.context.request.NativeWebRequest
 
-@Component
-@ConditionalOnClass(AuthenticationPrincipalArgumentResolver::class)
 class AuthenticationPrincipalDgsArgumentResolver : ArgumentResolver {
 
     private val delegate = AuthenticationPrincipalArgumentResolver()
