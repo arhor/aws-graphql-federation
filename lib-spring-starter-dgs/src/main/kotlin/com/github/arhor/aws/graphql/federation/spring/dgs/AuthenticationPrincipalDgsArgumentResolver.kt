@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.spring.dgs
 
-import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
+import com.netflix.graphql.dgs.context.DgsContext
 import com.netflix.graphql.dgs.internal.DgsWebMvcRequestData
 import com.netflix.graphql.dgs.internal.method.ArgumentResolver
 import graphql.schema.DataFetchingEnvironment
@@ -13,16 +13,14 @@ class AuthenticationPrincipalDgsArgumentResolver : ArgumentResolver {
     private val delegate = AuthenticationPrincipalArgumentResolver()
 
     override fun resolveArgument(parameter: MethodParameter, dfe: DataFetchingEnvironment): Any? {
-        if (dfe is DgsDataFetchingEnvironment) {
-            val context = dfe.getDgsContext()
-            val data = context.requestData
+        val context = dfe.getContext<DgsContext>()
+        val reqData = context.requestData
 
-            if (data is DgsWebMvcRequestData) {
-                val request = data.webRequest
+        if (reqData is DgsWebMvcRequestData) {
+            val request = reqData.webRequest
 
-                if (request is NativeWebRequest) {
-                    return delegate.resolveArgument(parameter, null, request, null)
-                }
+            if (request is NativeWebRequest) {
+                return delegate.resolveArgument(parameter, null, request, null)
             }
         }
         return null
