@@ -1,10 +1,17 @@
 package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.datafetcher
 
+import com.github.arhor.aws.graphql.federation.common.OMNI_UUID_VAL
+import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_STR
+import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.SubgraphSecurityAutoConfiguration
+import com.github.arhor.aws.graphql.federation.spring.dgs.DgsComponentsAutoConfiguration
 import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.MUTATION
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.UPDATEUSERINPUT
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
@@ -22,6 +29,7 @@ import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
+import org.assertj.core.api.InstanceOfAssertFactories.MAP
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -33,10 +41,11 @@ import java.util.UUID
 
 @SpringBootTest(
     classes = [
-        SubgraphSecurityAutoConfiguration::class,
         DgsAutoConfiguration::class,
+        DgsComponentsAutoConfiguration::class,
         DgsExtendedScalarsAutoConfiguration::class,
         GlobalDataFetchingExceptionHandler::class,
+        SubgraphSecurityAutoConfiguration::class,
         UserFetcher::class,
     ]
 )
@@ -235,12 +244,12 @@ class UserFetcherTest {
 
     @Nested
     @DisplayName("mutation { updateUser }")
+    @WithMockUser(username = ZERO_UUID_STR)
     inner class UpdateUserMutationTest {
         @Test
-        @WithMockUser
-        fun `should update existing user and return result object containing updated user data`() {
+        fun `should update existing user and return result containing user data without errors`() {
             // Given
-            val id = UUID.randomUUID()
+            val id = ZERO_UUID_VAL
             val username = "test-username"
             val password = "test-password"
             val expectedUser = User(id, username)
@@ -248,40 +257,64 @@ class UserFetcherTest {
             every { userService.updateUser(any()) } returns expectedUser
 
             // When
-            val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
-                """
-                mutation {
-                    updateUser(
-                        input: {
-                            id: "$id"
-                            password: "$password"
-                        }
-                    ) {
-                        id
-                        username
-                    }
-                }
-                """.trimIndent(),
-                "$.data.updateUser",
-                User::class.java
-            )
+            val result = executeUpdateUserMutation(id, password)
 
             // Then
-            assertThat(result)
-                .returns(expectedUser, from { it })
-
             verify(exactly = 1) { userService.updateUser(UpdateUserInput(id, password)) }
+
+            assertThat(result.errors)
+                .isEmpty()
+
+            assertThat(result.getData<Map<String, Any>>())
+                .isNotNull()
+                .hasEntrySatisfying(MUTATION.UpdateUser) {
+                    assertThat(it)
+                        .asInstanceOf(MAP)
+                        .containsEntry(USER.Id, expectedUser.id.toString())
+                        .containsEntry(USER.Username, expectedUser.username)
+                }
         }
+
+        @Test
+        fun `should return an error trying to update a user different from authenticated one`() {
+            // Given
+            val id = OMNI_UUID_VAL
+            val password = "test-password"
+
+            // When
+            val result = executeUpdateUserMutation(id, password)
+
+            // Then
+            assertThat(result.errors)
+                .isNotEmpty()
+        }
+
+        private fun executeUpdateUserMutation(id: UUID, password: String) = dgsQueryExecutor.execute(
+            """
+            mutation UpdateUserTest(${'$'}id: UUID!, ${'$'}password: String!) {
+                updateUser(
+                    input: {
+                        id: ${'$'}id
+                        password: ${'$'}password
+                    }
+                ) {
+                    id
+                    username
+                }
+            }
+            """.trimIndent(),
+            mapOf(UPDATEUSERINPUT.Id to id, UPDATEUSERINPUT.Password to password)
+        )
     }
 
     @Nested
     @DisplayName("mutation { deleteUser }")
     inner class DeleteUserMutationTest {
         @Test
-        @WithMockUser
+        @WithMockUser(username = ZERO_UUID_STR)
         fun `should delete existing user and return result object containing success field with value true`() {
             // Given
-            val id = UUID.randomUUID()
+            val id = ZERO_UUID_VAL
 
             every { userService.deleteUser(any()) } returns true
 
