@@ -6,6 +6,10 @@ scalar UUID
 
 # ---------- Root Types (Query/Mutation/Subscription) ----------
 
+type Query {
+    comment(id: UUID!): Comment
+}
+
 type Mutation {
     createComment(input: CreateCommentInput!): Comment!
     updateComment(input: UpdateCommentInput!): Comment!

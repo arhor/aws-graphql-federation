@@ -16,6 +16,14 @@ import java.util.UUID;
 public interface CommentService {
 
     /**
+     * Retrieves a comment by its ID.
+     *
+     * @param id the UUID of the comment to retrieve
+     * @return the comment with the specified ID
+     */
+    Comment getCommentById(UUID id);
+
+    /**
      * Retrieves replies for the specified comments IDs.
      *
      * @param commentIds the collection of comment IDs to retrieve reply comments for

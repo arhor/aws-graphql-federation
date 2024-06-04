@@ -67,6 +67,19 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public Comment getCommentById(final UUID id) {
+        return commentRepository.findById(id)
+            .map(commentMapper::mapToDto)
+            .orElseThrow(() ->
+                new EntityNotFoundException(
+                    COMMENT.TYPE_NAME,
+                    COMMENT.Id + " = " + id,
+                    Operation.LOOKUP
+                )
+            );
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Map<UUID, List<Comment>> getCommentsReplies(final Collection<UUID> commentIds) {
         if (commentIds.isEmpty()) {

@@ -18,12 +18,14 @@ import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import com.netflix.graphql.dgs.DgsMutation;
+import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
 import lombok.RequiredArgsConstructor;
 import org.dataloader.MappedBatchLoader;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -35,6 +37,11 @@ public class CommentFetcher {
     private final CommentService commentService;
 
     /* ---------- Queries ---------- */
+
+    @DgsQuery
+    public Comment comment(@InputArgument final UUID id) {
+        return commentService.getCommentById(id);
+    }
 
     @DgsData(parentType = COMMENT.TYPE_NAME, field = COMMENT.Replies)
     public CompletableFuture<List<Comment>> commentReplies(final DgsDataFetchingEnvironment dfe) {
