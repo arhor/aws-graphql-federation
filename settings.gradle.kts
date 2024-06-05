@@ -1,7 +1,7 @@
 includeBuild("lib-platform")
 includeBuild("lib-common")
 includeBuild("lib-starter-core")
-includeBuild("lib-spring-starter-dgs")
+includeBuild("lib-starter-graphql")
 includeBuild("lib-spring-starter-security")
 includeBuild("lib-spring-starter-tracing")
 

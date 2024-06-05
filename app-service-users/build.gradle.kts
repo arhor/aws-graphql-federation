@@ -56,7 +56,7 @@ dependencies {
     implementation(platform(":lib-platform"))
     implementation(":lib-common")
     implementation(":lib-starter-core")
-    implementation(":lib-spring-starter-dgs")
+    implementation(":lib-starter-graphql")
     implementation(":lib-spring-starter-security")
     implementation(":lib-spring-starter-tracing")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
