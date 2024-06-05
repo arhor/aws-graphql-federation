@@ -45,12 +45,12 @@ class FeaturesConvertersTest {
         fun `converters should correctly serialize and deserialize input`(): Stream<Arguments> =
             Stream.of(
                 arguments(Features(EnumSet.noneOf(TEST_FEATURE_CLASS))),
-                arguments(Features(TEST_1)),
-                arguments(Features(TEST_2)),
-                arguments(Features(TEST_3)),
-                arguments(Features(TEST_1, TEST_2)),
-                arguments(Features(TEST_2, TEST_3)),
-                arguments(Features(TEST_3, TEST_1)),
+                arguments(Features.of(TEST_1)),
+                arguments(Features.of(TEST_2)),
+                arguments(Features.of(TEST_3)),
+                arguments(Features.of(TEST_1, TEST_2)),
+                arguments(Features.of(TEST_2, TEST_3)),
+                arguments(Features.of(TEST_3, TEST_1)),
                 arguments(Features(EnumSet.allOf(TEST_FEATURE_CLASS))),
             )
     }
