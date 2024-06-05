@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 includeBuild("../lib-platform")
 
-rootProject.name = "lib-spring-starter-tracing"
+rootProject.name = "lib-starter-tracing"

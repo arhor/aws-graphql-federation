@@ -18,6 +18,6 @@ includeBuild("../lib-common")
 includeBuild("../lib-starter-core")
 includeBuild("../lib-starter-graphql")
 includeBuild("../lib-starter-security")
-includeBuild("../lib-spring-starter-tracing")
+includeBuild("../lib-starter-tracing")
 
 rootProject.name = "app-service-comments"

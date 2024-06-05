@@ -52,7 +52,7 @@ dependencies {
     implementation(":lib-starter-core")
     implementation(":lib-starter-graphql")
     implementation(":lib-starter-security")
-    implementation(":lib-spring-starter-tracing")
+    implementation(":lib-starter-tracing")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-validation")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
