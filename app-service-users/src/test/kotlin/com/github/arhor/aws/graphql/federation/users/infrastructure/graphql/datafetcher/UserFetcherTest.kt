@@ -5,9 +5,9 @@ import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_STR
 import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.security.SubgraphSecurityAutoConfiguration
 import com.github.arhor.aws.graphql.federation.starter.graphql.DgsComponentsAutoConfiguration
 import com.github.arhor.aws.graphql.federation.starter.graphql.GlobalDataFetchingExceptionHandler
+import com.github.arhor.aws.graphql.federation.starter.security.SubgraphSecurityAutoConfiguration
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.MUTATION
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.UPDATEUSERINPUT

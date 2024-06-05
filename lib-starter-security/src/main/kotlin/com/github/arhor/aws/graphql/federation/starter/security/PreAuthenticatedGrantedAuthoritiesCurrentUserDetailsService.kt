@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.security
+package com.github.arhor.aws.graphql.federation.starter.security
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority

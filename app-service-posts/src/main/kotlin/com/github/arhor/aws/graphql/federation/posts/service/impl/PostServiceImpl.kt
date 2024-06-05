@@ -22,8 +22,8 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
-import com.github.arhor.aws.graphql.federation.security.CurrentUserDetails
-import com.github.arhor.aws.graphql.federation.security.ensureSecuredAccess
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails
+import com.github.arhor.aws.graphql.federation.starter.security.ensureSecuredAccess
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher

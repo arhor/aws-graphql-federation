@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.test
 
-import com.github.arhor.aws.graphql.federation.security.CurrentUserDetails
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority

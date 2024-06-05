@@ -5,9 +5,9 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateE
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.security.CurrentUser
-import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
-import com.github.arhor.aws.graphql.federation.security.PredefinedAuthority
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUser
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository

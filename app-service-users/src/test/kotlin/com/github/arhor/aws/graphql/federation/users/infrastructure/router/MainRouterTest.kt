@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.infrastructure.router
 
-import com.github.arhor.aws.graphql.federation.security.CurrentUser
-import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUser
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every

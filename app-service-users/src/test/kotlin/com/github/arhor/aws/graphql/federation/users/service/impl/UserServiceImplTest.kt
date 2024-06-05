@@ -3,7 +3,7 @@ package com.github.arhor.aws.graphql.federation.users.service.impl
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthEntity
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity

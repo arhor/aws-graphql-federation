@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.service
 
-import com.github.arhor.aws.graphql.federation.security.CurrentUser
-import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUser
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput

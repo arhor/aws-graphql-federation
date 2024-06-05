@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.security
+package com.github.arhor.aws.graphql.federation.starter.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest

@@ -6,7 +6,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
-import com.github.arhor.aws.graphql.federation.security.CurrentUserDetails
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails
 import java.util.UUID
 
 /**

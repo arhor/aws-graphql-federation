@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.users.infrastructure.router
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
-import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
 import org.springframework.http.HttpStatus.BAD_REQUEST
