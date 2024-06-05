@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.spring.dgs
+package com.github.arhor.aws.graphql.federation.starter.graphql
 
 import com.netflix.graphql.dgs.context.DgsContext
 import com.netflix.graphql.dgs.internal.DgsWebMvcRequestData

@@ -11,7 +11,7 @@ import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.data
 import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
-import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
+import com.github.arhor.aws.graphql.federation.starter.graphql.GlobalDataFetchingExceptionHandler
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
