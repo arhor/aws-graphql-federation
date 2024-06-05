@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.test.logger)
     alias(libs.plugins.dgs.codegen)
@@ -104,13 +106,15 @@ dependencyManagement {
 
 tasks {
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = javaVersion
-            javaParameters = true
-            freeCompilerArgs = listOf(
-                "-Xjsr305=strict",
-                "-Xjvm-default=all",
-                "-Xcontext-receivers",
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(javaVersion))
+            javaParameters.set(true)
+            freeCompilerArgs.set(
+                listOf(
+                    "-Xjsr305=strict",
+                    "-Xjvm-default=all",
+                    "-Xcontext-receivers",
+                )
             )
         }
     }
