@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.service.impl
 
+import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
@@ -269,26 +270,28 @@ class PostServiceImplTest {
         fun `should successfully create new post publishing PostEvent#Created to the application`() {
             // Given
             val input = CreatePostInput(
-                userId = USER_ID,
                 title = "test-title",
                 content = "test-content",
             )
             val post = createPostEntity()
-            val user = UserRepresentation(USER_ID)
+            val user = UserRepresentation(ZERO_UUID_VAL)
             val expectedPost = post.toPost()
 
             every { userRepository.findById(any()) } returns Optional.of(user)
-            every { postMapper.mapToEntity(any(), any()) } returns post
+            every { postMapper.mapToEntity(any(), any(), any()) } returns post
             every { postRepository.save(any()) } answers { firstArg() }
             every { appEventPublisher.publishEvent(any<Any>()) } just runs
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
 
             // When
-            val result = postService.createPost(input)
+            val result = postService.createPost(input, mockk {
+                every { id } returns ZERO_UUID_VAL
+                every { authorities } returns emptyList()
+            })
 
             // Then
-            verify(exactly = 1) { userRepository.findById(input.userId) }
-            verify(exactly = 1) { postMapper.mapToEntity(input, emptySet()) }
+            verify(exactly = 1) { userRepository.findById(ZERO_UUID_VAL) }
+            verify(exactly = 1) { postMapper.mapToEntity(input, ZERO_UUID_VAL, emptySet()) }
             verify(exactly = 1) { postRepository.save(post) }
             verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Created(id = post.id!!)) }
             verify(exactly = 1) { postMapper.mapToPost(post) }
@@ -301,22 +304,26 @@ class PostServiceImplTest {
         fun `should throw EntityNotFoundException when specified user does not exist`() {
             // Given
             val input = CreatePostInput(
-                userId = USER_ID,
                 title = "test-title",
                 content = "test-content",
             )
 
             val expectedEntity = POST.TYPE_NAME
-            val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = ${input.userId} is not found"
+            val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = $ZERO_UUID_VAL is not found"
             val expectedOperation = Operation.CREATE
 
             every { userRepository.findById(any()) } returns Optional.empty()
 
             // When
-            val result = catchException { postService.createPost(input) }
+            val result = catchException {
+                postService.createPost(input, mockk {
+                    every { id } returns ZERO_UUID_VAL
+                    every { authorities } returns emptyList()
+                })
+            }
 
             // Then
-            verify(exactly = 1) { userRepository.findById(input.userId) }
+            verify(exactly = 1) { userRepository.findById(ZERO_UUID_VAL) }
 
             assertThat(result)
                 .isNotNull()
@@ -342,7 +349,12 @@ class PostServiceImplTest {
             every { postRepository.findById(any()) } returns Optional.empty()
 
             // When
-            val result = catchException { postService.updatePost(input) }
+            val result = catchException {
+                postService.updatePost(input, mockk {
+                    every { id } returns ZERO_UUID_VAL
+                    every { authorities } returns emptyList()
+                })
+            }
 
             // Then
             verify(exactly = 1) { postRepository.findById(input.id) }
@@ -362,18 +374,23 @@ class PostServiceImplTest {
             val post = createPostEntity()
 
             val expectedEntity = POST.TYPE_NAME
-            val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = $USER_ID is not found"
+            val expectedCondition = "${USER.TYPE_NAME} with ${USER.Id} = $ZERO_UUID_VAL is not found"
             val expectedOperation = Operation.UPDATE
 
             every { postRepository.findById(any()) } returns Optional.of(post)
             every { userRepository.findById(any()) } returns Optional.empty()
 
             // When
-            val result = catchException { postService.updatePost(input) }
+            val result = catchException {
+                postService.updatePost(input, mockk {
+                    every { id } returns ZERO_UUID_VAL
+                    every { authorities } returns emptyList()
+                })
+            }
 
             // Then
             verify(exactly = 1) { postRepository.findById(input.id) }
-            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { userRepository.findById(ZERO_UUID_VAL) }
 
             assertThat(result)
                 .isNotNull()
@@ -388,21 +405,26 @@ class PostServiceImplTest {
             // Given
             val input = UpdatePostInput(id = POST_1_ID)
             val post = createPostEntity()
-            val user = UserRepresentation(id = USER_ID, features = Features.of(Feature.POSTS_DISABLED))
+            val user = UserRepresentation(id = ZERO_UUID_VAL, features = Features.of(Feature.POSTS_DISABLED))
 
             val expectedEntity = POST.TYPE_NAME
-            val expectedCondition = "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $USER_ID"
+            val expectedCondition = "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $ZERO_UUID_VAL"
             val expectedOperation = Operation.UPDATE
 
             every { postRepository.findById(any()) } returns Optional.of(post)
             every { userRepository.findById(any()) } returns Optional.of(user)
 
             // When
-            val result = catchException { postService.updatePost(input) }
+            val result = catchException {
+                postService.updatePost(input, mockk {
+                    every { id } returns ZERO_UUID_VAL
+                    every { authorities } returns emptyList()
+                })
+            }
 
             // Then
             verify(exactly = 1) { postRepository.findById(input.id) }
-            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { userRepository.findById(ZERO_UUID_VAL) }
 
             assertThat(result)
                 .isNotNull()
@@ -417,7 +439,7 @@ class PostServiceImplTest {
             // Given
             val input = UpdatePostInput(id = POST_1_ID)
             val post = createPostEntity()
-            val user = UserRepresentation(USER_ID)
+            val user = UserRepresentation(ZERO_UUID_VAL)
             val expectedPost = post.toPost()
 
             every { postRepository.findById(any()) } returns Optional.of(post)
@@ -425,11 +447,14 @@ class PostServiceImplTest {
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
 
             // When
-            val result = postService.updatePost(input)
+            val result = postService.updatePost(input, mockk {
+                every { id } returns ZERO_UUID_VAL
+                every { authorities } returns emptyList()
+            })
 
             // Then
             verify(exactly = 1) { postRepository.findById(POST_1_ID) }
-            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { userRepository.findById(ZERO_UUID_VAL) }
             verify(exactly = 1) { postMapper.mapToPost(post) }
 
             assertThat(result)
@@ -447,7 +472,7 @@ class PostServiceImplTest {
                 tags = emptyList(),
             )
             val post = createPostEntity()
-            val user = UserRepresentation(USER_ID)
+            val user = UserRepresentation(ZERO_UUID_VAL)
             val updatedPost = post.copy(title = input.title!!, content = input.content!!)
             val expectedPost = updatedPost.toPost()
 
@@ -457,11 +482,14 @@ class PostServiceImplTest {
             every { postMapper.mapToPost(any<PostEntity>()) } returns expectedPost
 
             // When
-            val result = postService.updatePost(input)
+            val result = postService.updatePost(input, mockk {
+                every { id } returns ZERO_UUID_VAL
+                every { authorities } returns emptyList()
+            })
 
             // Then
             verify(exactly = 1) { postRepository.findById(POST_1_ID) }
-            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { userRepository.findById(ZERO_UUID_VAL) }
             verify(exactly = 1) { postRepository.save(updatedPost) }
             verify(exactly = 1) { postMapper.mapToPost(updatedPost) }
 
@@ -480,7 +508,7 @@ class PostServiceImplTest {
                 tags = emptyList(),
             )
             val post = createPostEntity()
-            val user = UserRepresentation(USER_ID)
+            val user = UserRepresentation(ZERO_UUID_VAL)
             val updatedPost = post.copy(title = input.title!!, content = input.content!!)
 
             val expectedEntity = POST.TYPE_NAME
@@ -492,11 +520,16 @@ class PostServiceImplTest {
             every { postRepository.save(any()) } throws OptimisticLockingFailureException("test")
 
             // When
-            val result = catchException { postService.updatePost(input) }
+            val result = catchException {
+                postService.updatePost(input, mockk {
+                    every { id } returns ZERO_UUID_VAL
+                    every { authorities } returns emptyList()
+                })
+            }
 
             // Then
             verify(exactly = 1) { postRepository.findById(input.id) }
-            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { userRepository.findById(ZERO_UUID_VAL) }
             verify(exactly = 1) { postRepository.save(updatedPost) }
 
             assertThat(result)
@@ -521,7 +554,10 @@ class PostServiceImplTest {
             every { appEventPublisher.publishEvent(any<PostEvent>()) } just runs
 
             // When
-            val result = postService.deletePost(DeletePostInput(id = entity.id!!))
+            val result = postService.deletePost(DeletePostInput(id = entity.id!!), mockk {
+                every { id } returns ZERO_UUID_VAL
+                every { authorities } returns emptyList()
+            })
 
             // Then
             verify(exactly = 1) { postRepository.findById(entity.id!!) }
@@ -538,7 +574,10 @@ class PostServiceImplTest {
             every { postRepository.findById(any()) } returns Optional.empty()
 
             // When
-            val result = postService.deletePost(DeletePostInput(id = POST_1_ID))
+            val result = postService.deletePost(DeletePostInput(id = POST_1_ID), mockk {
+                every { id } returns ZERO_UUID_VAL
+                every { authorities } returns emptyList()
+            })
 
             // Then
             verify(exactly = 1) { postRepository.findById(POST_1_ID) }
@@ -550,14 +589,14 @@ class PostServiceImplTest {
 
     private fun createPostEntity() = PostEntity(
         id = POST_1_ID,
-        userId = USER_ID,
+        userId = ZERO_UUID_VAL,
         title = "test-title",
         content = "test-content",
     )
 
     private fun createPostProjection(postId: UUID = POST_1_ID) = PostProjection(
         id = postId,
-        userId = USER_ID,
+        userId = ZERO_UUID_VAL,
         title = "test-title",
         content = "test-content",
     )
@@ -579,6 +618,5 @@ class PostServiceImplTest {
     companion object {
         private val POST_1_ID = UUID.randomUUID()
         private val POST_2_ID = UUID.randomUUID()
-        private val USER_ID = UUID.randomUUID()
     }
 }

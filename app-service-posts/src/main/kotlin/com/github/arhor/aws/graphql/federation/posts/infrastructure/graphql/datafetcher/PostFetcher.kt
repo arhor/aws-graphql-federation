@@ -10,6 +10,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Upd
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.PostBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
+import com.github.arhor.aws.graphql.federation.security.CurrentUserDetails
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
@@ -18,6 +19,7 @@ import com.netflix.graphql.dgs.DgsMutation
 import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
@@ -49,16 +51,25 @@ class PostFetcher(
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun createPost(@InputArgument input: CreatePostInput): Post =
-        postService.createPost(input)
+    fun createPost(
+        @InputArgument input: CreatePostInput,
+        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+    ): Post =
+        postService.createPost(input, authenticatedUser)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun updatePost(@InputArgument input: UpdatePostInput): Post =
-        postService.updatePost(input)
+    fun updatePost(
+        @InputArgument input: UpdatePostInput,
+        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+    ): Post =
+        postService.updatePost(input, authenticatedUser)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun deletePost(@InputArgument input: DeletePostInput): Boolean =
-        postService.deletePost(input)
+    fun deletePost(
+        @InputArgument input: DeletePostInput,
+        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+    ): Boolean =
+        postService.deletePost(input, authenticatedUser)
 }

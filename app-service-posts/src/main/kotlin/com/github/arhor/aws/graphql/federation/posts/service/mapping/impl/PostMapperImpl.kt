@@ -11,13 +11,14 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class PostMapperImpl : PostMapper {
 
-    override fun mapToEntity(input: CreatePostInput, tags: Set<TagEntity>): PostEntity {
+    override fun mapToEntity(input: CreatePostInput, userId: UUID, tags: Set<TagEntity>): PostEntity {
         return PostEntity(
-            userId = input.userId,
+            userId = userId,
             title = input.title,
             content = input.content,
             tags = tags.toSet(TagRef::from)

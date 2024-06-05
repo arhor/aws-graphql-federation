@@ -5,7 +5,7 @@ import org.springframework.security.authentication.AuthenticationDetailsSource
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails as PreAuthDetails
 
-class RequestAttributesAuthenticationDetailsSource : AuthenticationDetailsSource<HttpServletRequest, PreAuthDetails> {
+object RequestAttributesAuthenticationDetailsSource : AuthenticationDetailsSource<HttpServletRequest, PreAuthDetails> {
 
     override fun buildDetails(context: HttpServletRequest): PreAuthDetails {
         val authorities =

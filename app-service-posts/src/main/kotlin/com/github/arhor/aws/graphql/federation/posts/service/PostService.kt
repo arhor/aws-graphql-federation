@@ -6,6 +6,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
+import com.github.arhor.aws.graphql.federation.security.CurrentUserDetails
 import java.util.UUID
 
 /**
@@ -41,23 +42,26 @@ interface PostService {
      * Creates a new post.
      *
      * @param input the input object containing the necessary data to create a post
+     * @param actor the user creating post
      * @return the created post
      */
-    fun createPost(input: CreatePostInput): Post
+    fun createPost(input: CreatePostInput, actor: CurrentUserDetails): Post
 
     /**
      * Updates an existing post.
      *
      * @param input the input object containing the necessary data to update the post
+     * @param actor the user updating post
      * @return the updated post
      */
-    fun updatePost(input: UpdatePostInput): Post
+    fun updatePost(input: UpdatePostInput, actor: CurrentUserDetails): Post
 
     /**
      * Deletes a post.
      *
      * @param input the input object containing the necessary data to delete the post
+     * @param actor the user deleting post
      * @return `true` if the post was successfully deleted, `false` otherwise
      */
-    fun deletePost(input: DeletePostInput): Boolean
+    fun deletePost(input: DeletePostInput, actor: CurrentUserDetails): Boolean
 }

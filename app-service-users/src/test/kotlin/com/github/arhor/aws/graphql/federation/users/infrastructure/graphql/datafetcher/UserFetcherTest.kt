@@ -8,7 +8,6 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.SubgraphSecurityAutoConfiguration
 import com.github.arhor.aws.graphql.federation.spring.dgs.DgsComponentsAutoConfiguration
 import com.github.arhor.aws.graphql.federation.spring.dgs.GlobalDataFetchingExceptionHandler
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.MUTATION
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.UPDATEUSERINPUT
@@ -20,6 +19,7 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Use
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
+import com.github.arhor.aws.graphql.federation.users.test.WithMockCurrentUser
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
@@ -35,8 +35,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.security.test.context.support.WithAnonymousUser
-import org.springframework.security.test.context.support.WithMockUser
 import java.util.UUID
 
 @SpringBootTest(
@@ -205,7 +203,6 @@ class UserFetcherTest {
     @DisplayName("mutation { createUser }")
     inner class CreateUserMutationTest {
         @Test
-        @WithAnonymousUser
         fun `should create new user and return result object containing created user data`() {
             // Given
             val id = UUID.randomUUID()
@@ -244,7 +241,7 @@ class UserFetcherTest {
 
     @Nested
     @DisplayName("mutation { updateUser }")
-    @WithMockUser(username = ZERO_UUID_STR)
+    @WithMockCurrentUser(id = ZERO_UUID_STR)
     inner class UpdateUserMutationTest {
         @Test
         fun `should update existing user and return result containing user data without errors`() {
@@ -309,9 +306,9 @@ class UserFetcherTest {
 
     @Nested
     @DisplayName("mutation { deleteUser }")
+    @WithMockCurrentUser(id = ZERO_UUID_STR)
     inner class DeleteUserMutationTest {
         @Test
-        @WithMockUser(username = ZERO_UUID_STR)
         fun `should delete existing user and return result object containing success field with value true`() {
             // Given
             val id = ZERO_UUID_VAL

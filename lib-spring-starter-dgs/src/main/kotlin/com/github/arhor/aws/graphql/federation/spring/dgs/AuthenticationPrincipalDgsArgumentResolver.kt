@@ -13,6 +13,7 @@ class AuthenticationPrincipalDgsArgumentResolver : ArgumentResolver {
     private val delegate = AuthenticationPrincipalArgumentResolver()
 
     override fun resolveArgument(parameter: MethodParameter, dfe: DataFetchingEnvironment): Any? {
+        @Suppress("DEPRECATION")
         val context = dfe.getContext<DgsContext>()
         val reqData = context.requestData
 

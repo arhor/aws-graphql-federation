@@ -13,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesUserDetailsService
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -41,7 +40,7 @@ class SecurityBeansConfig {
             addFilterBefore<AnonymousAuthenticationFilter>(
                 RequestHeaderPreAuthenticatedProcessingFilter(objectMapper).apply {
                     setAuthenticationManager(authConfig.authenticationManager)
-                    setAuthenticationDetailsSource(RequestAttributesAuthenticationDetailsSource())
+                    setAuthenticationDetailsSource(RequestAttributesAuthenticationDetailsSource)
                 }
             )
         }
@@ -56,7 +55,8 @@ class SecurityBeansConfig {
     fun preAuthenticatedAuthenticationProvider() =
         PreAuthenticatedAuthenticationProvider().apply {
             setPreAuthenticatedUserDetailsService(
-                PreAuthenticatedGrantedAuthoritiesUserDetailsService()
+                PreAuthenticatedGrantedAuthoritiesCurrentUserDetailsService
             )
         }
 }
+

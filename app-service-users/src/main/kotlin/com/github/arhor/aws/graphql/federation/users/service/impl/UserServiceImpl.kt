@@ -1,14 +1,14 @@
 package com.github.arhor.aws.graphql.federation.users.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.security.PredefinedAuthority
 import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.users.data.entity.PredefinedAuthority
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.AuthRepository
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository

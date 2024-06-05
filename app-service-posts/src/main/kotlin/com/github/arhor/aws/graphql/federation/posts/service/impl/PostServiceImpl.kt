@@ -22,6 +22,8 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
+import com.github.arhor.aws.graphql.federation.security.CurrentUserDetails
+import com.github.arhor.aws.graphql.federation.security.ensureSecuredAccess
 import com.github.arhor.aws.graphql.federation.tracing.Trace
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
@@ -74,19 +76,19 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun createPost(input: CreatePostInput): Post {
+    override fun createPost(input: CreatePostInput, actor: CurrentUserDetails): Post {
         val currentOperation = Operation.CREATE
 
-        ensureUserPostsEnabled(input.userId, currentOperation)
+        ensureUserPostsEnabled(actor.id, currentOperation)
 
-        return postMapper.mapToEntity(input = input, tags = materialize(input.tags?.map { it.name }))
+        return postMapper.mapToEntity(input = input, userId = actor.id, tags = materialize(input.tags?.map { it.name }))
             .let(postRepository::save)
             .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!)) }
             .let(postMapper::mapToPost)
     }
 
     @Transactional
-    override fun updatePost(input: UpdatePostInput): Post {
+    override fun updatePost(input: UpdatePostInput, actor: CurrentUserDetails): Post {
         val currentOperation = Operation.UPDATE
         val initialState = postRepository.findByIdOrNull(input.id)
             ?: throw EntityNotFoundException(
@@ -95,6 +97,7 @@ class PostServiceImpl(
                 operation = currentOperation,
             )
 
+        ensureSecuredAccess(actor, initialState.userId)
         ensureUserPostsEnabled(initialState.userId!!, currentOperation)
 
         val currentState = initialState.copy(
@@ -111,15 +114,16 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun deletePost(input: DeletePostInput): Boolean {
-        return when (val post = postRepository.findByIdOrNull(input.id)) {
-            null -> false
-            else -> {
-                postRepository.delete(post)
-                appEventPublisher.publishEvent(PostEvent.Deleted(id = post.id!!))
-                true
-            }
-        }
+    override fun deletePost(input: DeletePostInput, actor: CurrentUserDetails): Boolean {
+        val post = postRepository.findByIdOrNull(input.id)
+            ?: return false
+
+        ensureSecuredAccess(actor, post.userId)
+
+        postRepository.delete(post)
+        appEventPublisher.publishEvent(PostEvent.Deleted(id = post.id!!))
+
+        return true
     }
 
     private fun findPostsPageWithoutFilters(input: PostsLookupInput): PostPage {
@@ -160,16 +164,16 @@ class PostServiceImpl(
         val user =
             userRepository.findByIdOrNull(userId)
                 ?: throw EntityNotFoundException(
-                    POST.TYPE_NAME,
-                    "${USER.TYPE_NAME} with ${USER.Id} = $userId is not found",
-                    operation
+                    entity = POST.TYPE_NAME,
+                    condition = "${USER.TYPE_NAME} with ${USER.Id} = $userId is not found",
+                    operation = operation,
                 )
 
         if (user.features.check(Feature.POSTS_DISABLED)) {
             throw EntityOperationRestrictedException(
-                POST.TYPE_NAME,
-                "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $userId",
-                operation
+                entity = POST.TYPE_NAME,
+                condition = "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $userId",
+                operation = operation
             )
         }
     }

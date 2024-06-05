@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.service.mapping.impl
 
+import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
@@ -23,7 +24,6 @@ class PostMapperImplTest {
         fun `should correctly map CreatePostInput to PostEntity calling tags mapper`() {
             // Given
             val createPostInput = CreatePostInput(
-                userId = UUID.randomUUID(),
                 title = "test-title",
                 content = "test-content",
             )
@@ -32,12 +32,12 @@ class PostMapperImplTest {
             val expectedTagRefs = emptySet<TagRef>()
 
             // When
-            val entity = postMapper.mapToEntity(createPostInput, tags)
+            val entity = postMapper.mapToEntity(createPostInput, ZERO_UUID_VAL, tags)
 
             // Then
             assertThat(entity)
                 .isNotNull()
-                .returns(createPostInput.userId, from { it.userId })
+                .returns(ZERO_UUID_VAL, from { it.userId })
                 .returns(createPostInput.title, from { it.title })
                 .returns(createPostInput.content, from { it.content })
                 .returns(expectedTagRefs, from { it.tags })

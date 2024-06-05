@@ -28,7 +28,6 @@ input PostsLookupInput {
 }
 
 input CreatePostInput {
-    userId: UUID!
     title: String!    @NotBlank @Size(min: 1, max: 512)
     content: String!  @NotBlank @Size(min: 1, max: 4096)
     tags: [TagInput!]

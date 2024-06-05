@@ -1,8 +1,9 @@
 package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.datafetcher
 
-import com.github.arhor.aws.graphql.federation.security.securedAccess
+import com.github.arhor.aws.graphql.federation.security.CurrentUserDetails
+import com.github.arhor.aws.graphql.federation.security.PredefinedAuthority.ROLE_ADMIN
+import com.github.arhor.aws.graphql.federation.security.ensureSecuredAccess
 import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.users.data.entity.PredefinedAuthority.ROLE_ADMIN
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
@@ -16,7 +17,6 @@ import com.netflix.graphql.dgs.DgsQuery
 import com.netflix.graphql.dgs.InputArgument
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import java.util.UUID
 
 @Trace
@@ -45,19 +45,19 @@ class UserFetcher(
     @PreAuthorize("isAuthenticated()")
     fun updateUser(
         @InputArgument input: UpdateUserInput,
-        @AuthenticationPrincipal currentUser: UserDetails,
-    ): User =
-        securedAccess(currentUser, input.id) {
-            userService.updateUser(input)
-        }
+        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+    ): User {
+        ensureSecuredAccess(authenticatedUser, input.id)
+        return userService.updateUser(input)
+    }
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
     fun deleteUser(
         @InputArgument input: DeleteUserInput,
-        @AuthenticationPrincipal currentUser: UserDetails,
-    ): Boolean =
-        securedAccess(currentUser, input.id, ROLE_ADMIN.name) {
-            userService.deleteUser(input)
-        }
+        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+    ): Boolean {
+        ensureSecuredAccess(authenticatedUser, input.id, ROLE_ADMIN)
+        return userService.deleteUser(input)
+    }
 }
