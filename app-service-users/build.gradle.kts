@@ -117,6 +117,12 @@ tasks {
         useJUnitPlatform()
     }
 
+    buildNeeded {
+        gradle.includedBuilds.map { it.task(":build") }.forEach {
+            dependsOn(it)
+        }
+    }
+
     processResources {
         filesMatching("application.yml") {
             expand(project.properties)

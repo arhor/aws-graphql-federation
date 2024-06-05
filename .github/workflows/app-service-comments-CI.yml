@@ -35,7 +35,7 @@ jobs:
         uses: gradle/gradle-build-action@v3-beta
 
       - name: Build Comments service
-        run: './gradlew :app-service-comments:build'
+        run: './gradlew :app-service-comments:buildNeeded'
 
       - name: Upload compiled classes and JaCoCo exec
         uses: actions/upload-artifact@v4
