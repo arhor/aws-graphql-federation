@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 
 @ContextConfiguration(
@@ -22,12 +21,6 @@ import org.springframework.test.context.ContextConfiguration
     ]
 )
 class AuthRepositoryTest : RepositoryTestBase() {
-
-    @Autowired
-    private lateinit var authRepository: AuthRepository
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
 
     @Nested
     @DisplayName("AuthRepository :: findAllByUserIdIn")
@@ -42,7 +35,7 @@ class AuthRepositoryTest : RepositoryTestBase() {
                     AuthEntity(name = "test-delete"),
                 )
             )
-            val createdUser = userRepository.createAndSaveTestUser(
+            val createdUser = createAndSaveTestUser(
                 authorities = authorities
                     .map { AuthRef.from(it) }
                     .toSet()
@@ -67,7 +60,7 @@ class AuthRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return map with empty list of authority names fetching authorities for a given user`() {
             // Given
-            val user = userRepository.createAndSaveTestUser()
+            val user = createAndSaveTestUser()
 
             // When
             val result = authRepository.findAllByUserIdIn(listOf(user.id!!))

@@ -4,15 +4,11 @@ import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEn
 import com.github.arhor.aws.graphql.federation.users.data.entity.callback.OutboxMessageEntityCallback
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
 import java.util.UUID
 
 @ContextConfiguration(classes = [OutboxMessageEntityCallback::class])
 class OutboxMessageRepositoryTest : RepositoryTestBase() {
-
-    @Autowired
-    private lateinit var outboxMessageRepository: OutboxMessageRepository
 
     @Test
     fun `should deque existing outbox events removing them from the DB`() {

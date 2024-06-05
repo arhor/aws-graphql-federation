@@ -6,6 +6,7 @@ import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
 import com.github.arhor.aws.graphql.federation.users.test.ConfigureTestObjectMapper
 import org.junit.jupiter.api.Tag
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.test.annotation.DirtiesContext
@@ -30,13 +31,23 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 abstract class RepositoryTestBase {
 
-    protected fun UserRepository.createAndSaveTestUser(authorities: Set<AuthRef> = emptySet()): UserEntity = save(
-        UserEntity(
-            username = "test-username",
-            password = "test-password",
-            authorities = authorities,
+    @Autowired
+    protected lateinit var authRepository: AuthRepository
+
+    @Autowired
+    protected lateinit var userRepository: UserRepository
+
+    @Autowired
+    protected lateinit var outboxMessageRepository: OutboxMessageRepository
+
+    protected fun createAndSaveTestUser(authorities: Set<AuthRef> = emptySet()): UserEntity =
+        userRepository.save(
+            UserEntity(
+                username = "test-username",
+                password = "test-password",
+                authorities = authorities,
+            )
         )
-    )
 
     companion object {
         @JvmStatic

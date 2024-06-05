@@ -63,7 +63,7 @@ tasks {
         )
     }
 
-    test {
+    withType<Test> {
         useJUnitPlatform()
     }
 }
