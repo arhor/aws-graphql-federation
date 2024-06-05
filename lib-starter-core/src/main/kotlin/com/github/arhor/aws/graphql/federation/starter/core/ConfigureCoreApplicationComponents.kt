@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.spring.core
+package com.github.arhor.aws.graphql.federation.starter.core
 
 import jakarta.validation.ClockProvider
 import org.slf4j.LoggerFactory

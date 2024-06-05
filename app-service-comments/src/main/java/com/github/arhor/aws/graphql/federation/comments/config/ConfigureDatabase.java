@@ -1,8 +1,8 @@
 package com.github.arhor.aws.graphql.federation.comments.config;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments;
-import com.github.arhor.aws.graphql.federation.spring.core.data.FeaturesReadingConverter;
-import com.github.arhor.aws.graphql.federation.spring.core.data.FeaturesWritingConverter;
+import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesReadingConverter;
+import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesWritingConverter;
 import jakarta.annotation.Nonnull;
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;

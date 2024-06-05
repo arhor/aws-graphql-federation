@@ -23,7 +23,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.TagInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
-import com.github.arhor.aws.graphql.federation.spring.core.data.Features
+import com.github.arhor.aws.graphql.federation.starter.core.data.Features
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just

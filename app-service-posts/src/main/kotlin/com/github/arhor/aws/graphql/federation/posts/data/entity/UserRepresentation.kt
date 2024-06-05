@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.data.entity
 
-import com.github.arhor.aws.graphql.federation.spring.core.data.Features
+import com.github.arhor.aws.graphql.federation.starter.core.data.Features
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
 import org.springframework.data.annotation.PersistenceCreator

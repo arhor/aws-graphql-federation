@@ -18,7 +18,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMa
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

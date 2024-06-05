@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
-import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 
 public interface HasComments {
 

@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.posts.data.repository
 
 import com.github.arhor.aws.graphql.federation.posts.config.ConfigureDatabase
 import com.github.arhor.aws.graphql.federation.posts.test.ConfigureTestObjectMapper
-import com.github.arhor.aws.graphql.federation.spring.core.ConfigureCoreApplicationComponents
+import com.github.arhor.aws.graphql.federation.starter.core.ConfigureCoreApplicationComponents
 import org.junit.jupiter.api.Tag
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase

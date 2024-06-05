@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.spring.core.data
+package com.github.arhor.aws.graphql.federation.starter.core.data
 
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.convert.WritingConverter

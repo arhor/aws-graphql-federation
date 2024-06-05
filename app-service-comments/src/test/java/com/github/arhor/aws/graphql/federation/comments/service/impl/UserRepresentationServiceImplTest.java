@@ -9,7 +9,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

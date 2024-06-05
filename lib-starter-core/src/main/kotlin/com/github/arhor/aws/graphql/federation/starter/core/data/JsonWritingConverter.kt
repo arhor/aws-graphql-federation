@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.spring.core.data
+package com.github.arhor.aws.graphql.federation.starter.core.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.postgresql.util.PGobject

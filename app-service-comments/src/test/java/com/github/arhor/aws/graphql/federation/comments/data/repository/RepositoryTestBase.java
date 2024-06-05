@@ -6,8 +6,8 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.test.ConfigureTestObjectMapper;
-import com.github.arhor.aws.graphql.federation.spring.core.ConfigureCoreApplicationComponents;
-import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.core.ConfigureCoreApplicationComponents;
+import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest;

@@ -9,7 +9,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConsta
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.SwitchUserPostsInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
-import com.github.arhor.aws.graphql.federation.spring.core.data.Features
+import com.github.arhor.aws.graphql.federation.starter.core.data.Features
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk

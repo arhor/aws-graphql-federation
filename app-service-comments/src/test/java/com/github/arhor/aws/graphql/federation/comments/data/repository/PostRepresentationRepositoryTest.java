@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
-import com.github.arhor.aws.graphql.federation.spring.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

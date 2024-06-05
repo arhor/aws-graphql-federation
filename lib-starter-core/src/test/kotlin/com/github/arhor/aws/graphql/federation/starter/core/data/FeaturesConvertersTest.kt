@@ -1,8 +1,8 @@
-package com.github.arhor.aws.graphql.federation.spring.core.data
+package com.github.arhor.aws.graphql.federation.starter.core.data
 
-import com.github.arhor.aws.graphql.federation.spring.core.data.FeaturesConvertersTest.TestFeature.TEST_1
-import com.github.arhor.aws.graphql.federation.spring.core.data.FeaturesConvertersTest.TestFeature.TEST_2
-import com.github.arhor.aws.graphql.federation.spring.core.data.FeaturesConvertersTest.TestFeature.TEST_3
+import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesConvertersTest.TestFeature.TEST_1
+import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesConvertersTest.TestFeature.TEST_2
+import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesConvertersTest.TestFeature.TEST_3
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
