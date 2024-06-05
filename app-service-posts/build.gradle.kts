@@ -57,7 +57,7 @@ dependencies {
     implementation(":lib-common")
     implementation(":lib-starter-core")
     implementation(":lib-starter-graphql")
-    implementation(":lib-spring-starter-security")
+    implementation(":lib-starter-security")
     implementation(":lib-spring-starter-tracing")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")

@@ -51,7 +51,7 @@ dependencies {
     implementation(":lib-common")
     implementation(":lib-starter-core")
     implementation(":lib-starter-graphql")
-    implementation(":lib-spring-starter-security")
+    implementation(":lib-starter-security")
     implementation(":lib-spring-starter-tracing")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-validation")

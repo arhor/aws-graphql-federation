@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 includeBuild("../lib-platform")
 
-rootProject.name = "lib-spring-starter-security"
+rootProject.name = "lib-starter-security"
