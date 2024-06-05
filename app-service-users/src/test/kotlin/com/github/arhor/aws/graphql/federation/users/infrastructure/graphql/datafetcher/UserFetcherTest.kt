@@ -1,13 +1,14 @@
 package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.datafetcher
 
-import com.github.arhor.aws.graphql.federation.common.OMNI_UUID_VAL
-import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_STR
-import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.starter.graphql.DgsComponentsAutoConfiguration
 import com.github.arhor.aws.graphql.federation.starter.graphql.GlobalDataFetchingExceptionHandler
 import com.github.arhor.aws.graphql.federation.starter.security.SubgraphSecurityAutoConfiguration
+import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.WithMockCurrentUser
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_STR
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.MUTATION
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.UPDATEUSERINPUT
@@ -19,7 +20,6 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Use
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
-import com.github.arhor.aws.graphql.federation.users.test.WithMockCurrentUser
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration

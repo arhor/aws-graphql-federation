@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.common
+package com.github.arhor.aws.graphql.federation.starter.testing
 
 import java.util.UUID
 

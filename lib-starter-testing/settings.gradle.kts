@@ -14,11 +14,5 @@ dependencyResolutionManagement {
 }
 
 includeBuild("../lib-platform")
-includeBuild("../lib-common")
-includeBuild("../lib-starter-core")
-includeBuild("../lib-starter-graphql")
-includeBuild("../lib-starter-security")
-includeBuild("../lib-starter-testing")
-includeBuild("../lib-starter-tracing")
 
-rootProject.name = "app-service-posts"
+rootProject.name = "lib-starter-testing"

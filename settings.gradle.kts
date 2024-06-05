@@ -3,6 +3,7 @@ includeBuild("lib-common")
 includeBuild("lib-starter-core")
 includeBuild("lib-starter-graphql")
 includeBuild("lib-starter-security")
+includeBuild("lib-starter-testing")
 includeBuild("lib-starter-tracing")
 
 includeBuild("app-service-users")

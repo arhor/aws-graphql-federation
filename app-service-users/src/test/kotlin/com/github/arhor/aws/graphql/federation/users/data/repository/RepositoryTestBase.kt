@@ -1,10 +1,10 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
 import com.github.arhor.aws.graphql.federation.starter.core.ConfigureCoreApplicationComponents
+import com.github.arhor.aws.graphql.federation.starter.testing.ConfigureTestObjectMapper
 import com.github.arhor.aws.graphql.federation.users.config.ConfigureDatabase
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
-import com.github.arhor.aws.graphql.federation.users.test.ConfigureTestObjectMapper
 import org.junit.jupiter.api.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.jdbc.DataJdbcTest

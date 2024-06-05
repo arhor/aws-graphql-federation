@@ -84,6 +84,8 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+    testImplementation(platform(":lib-platform"))
+    testImplementation(":lib-starter-testing")
     testImplementation("com.ninja-squad:springmockk")
     testImplementation("com.tngtech.archunit:archunit-junit5")
     testImplementation("io.awspring.cloud:spring-cloud-aws-test")

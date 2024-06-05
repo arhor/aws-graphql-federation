@@ -1,6 +1,5 @@
-package com.github.arhor.aws.graphql.federation.users.test
+package com.github.arhor.aws.graphql.federation.starter.testing
 
-import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_STR
 import org.springframework.core.annotation.AliasFor
 import org.springframework.security.test.context.support.TestExecutionEvent
 import org.springframework.security.test.context.support.WithSecurityContext

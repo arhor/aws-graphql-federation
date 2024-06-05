@@ -1,11 +1,11 @@
 package com.github.arhor.aws.graphql.federation.posts.service.mapping.impl
 
-import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.DisplayName

@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.posts.service.impl
 
-import com.github.arhor.aws.graphql.federation.common.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
@@ -24,6 +23,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Tag
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just

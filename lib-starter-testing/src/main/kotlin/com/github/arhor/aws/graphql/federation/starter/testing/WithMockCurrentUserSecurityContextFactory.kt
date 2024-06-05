@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.posts.test
+package com.github.arhor.aws.graphql.federation.starter.testing
 
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails
 import org.springframework.beans.factory.annotation.Autowired
