@@ -6,10 +6,10 @@ import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
-import com.github.arhor.aws.graphql.federation.tracing.Attributes
-import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
-import com.github.arhor.aws.graphql.federation.tracing.useContextAttribute
+import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
+import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
+import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
+import com.github.arhor.aws.graphql.federation.starter.tracing.useContextAttribute
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import io.mockk.every

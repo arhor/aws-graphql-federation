@@ -10,7 +10,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentati
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import com.github.arhor.aws.graphql.federation.tracing.Trace;
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;

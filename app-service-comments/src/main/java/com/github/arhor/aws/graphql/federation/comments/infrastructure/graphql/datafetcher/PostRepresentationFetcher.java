@@ -1,11 +1,11 @@
 package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.datafetcher;
 
-import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchPostCommentsInput;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
-import com.github.arhor.aws.graphql.federation.tracing.Trace;
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import com.netflix.graphql.dgs.DgsEntityFetcher;

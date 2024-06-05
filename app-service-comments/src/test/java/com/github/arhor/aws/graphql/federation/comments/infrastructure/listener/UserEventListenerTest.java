@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.IDEMPOTENT_KEY;
-import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
+import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.IDEMPOTENT_KEY;
+import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.TRACING_ID_KEY;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
 

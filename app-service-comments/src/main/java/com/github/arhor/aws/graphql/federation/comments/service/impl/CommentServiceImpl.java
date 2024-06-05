@@ -17,7 +17,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMa
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import com.github.arhor.aws.graphql.federation.tracing.Trace;
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

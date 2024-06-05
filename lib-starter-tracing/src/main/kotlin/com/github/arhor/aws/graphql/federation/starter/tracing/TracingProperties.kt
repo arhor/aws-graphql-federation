@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.tracing
+package com.github.arhor.aws.graphql.federation.starter.tracing
 
 import org.slf4j.event.Level
 import org.springframework.boot.context.properties.ConfigurationProperties

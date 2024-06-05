@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.tracing
+package com.github.arhor.aws.graphql.federation.starter.tracing
 
 import kotlin.time.Duration
 import kotlin.time.DurationUnit

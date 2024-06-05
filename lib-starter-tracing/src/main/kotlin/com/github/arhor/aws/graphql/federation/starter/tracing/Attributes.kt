@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.tracing
+package com.github.arhor.aws.graphql.federation.starter.tracing
 
 const val IDEMPOTENT_KEY = "x-idempotency-key"
 const val TRACING_ID_KEY = "x-tracing-id"

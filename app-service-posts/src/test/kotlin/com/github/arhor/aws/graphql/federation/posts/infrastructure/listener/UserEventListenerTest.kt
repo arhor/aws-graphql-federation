@@ -2,8 +2,8 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
-import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
+import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
+import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.confirmVerified
 import io.mockk.every

@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dat
 
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
-import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.netflix.graphql.dgs.DgsDataLoader
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME

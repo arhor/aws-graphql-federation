@@ -5,7 +5,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
-import com.github.arhor.aws.graphql.federation.tracing.Trace;
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import com.netflix.graphql.dgs.DgsEntityFetcher;

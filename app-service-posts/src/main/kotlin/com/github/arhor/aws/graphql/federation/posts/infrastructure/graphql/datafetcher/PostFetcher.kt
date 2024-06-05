@@ -11,7 +11,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Use
 import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.PostBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails
-import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment

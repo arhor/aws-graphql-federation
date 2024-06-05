@@ -1,9 +1,9 @@
 package com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.datafetcher
 
-import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.TagBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
-import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.TagBatchLoader
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment

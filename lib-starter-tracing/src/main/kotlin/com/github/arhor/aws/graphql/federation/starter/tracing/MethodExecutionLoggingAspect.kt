@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.tracing
+package com.github.arhor.aws.graphql.federation.starter.tracing
 
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around

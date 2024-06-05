@@ -1,10 +1,10 @@
-package com.github.arhor.aws.graphql.federation.tracing;
+package com.github.arhor.aws.graphql.federation.starter.tracing;
 
 import org.slf4j.MDC;
 
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
+import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.TRACING_ID_KEY;
 
 public final class Utils {
 

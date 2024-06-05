@@ -3,11 +3,11 @@ package com.github.arhor.aws.graphql.federation.users.service.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.tracing.Attributes
-import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
-import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.tracing.useContextAttribute
+import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
+import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
+import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
+import com.github.arhor.aws.graphql.federation.starter.tracing.useContextAttribute
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository

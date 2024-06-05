@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.dataloader
 
-import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.service.AuthService
 import com.netflix.graphql.dgs.DgsDataLoader
 import org.dataloader.MappedBatchLoader

@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent;
-import com.github.arhor.aws.graphql.federation.tracing.Trace;
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import io.awspring.cloud.sqs.annotation.SqsListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.Header;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.IDEMPOTENT_KEY;
-import static com.github.arhor.aws.graphql.federation.tracing.AttributesKt.TRACING_ID_KEY;
-import static com.github.arhor.aws.graphql.federation.tracing.Utils.withExtendedMDC;
+import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.IDEMPOTENT_KEY;
+import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.TRACING_ID_KEY;
+import static com.github.arhor.aws.graphql.federation.starter.tracing.Utils.withExtendedMDC;
 
 @Trace
 @Component

@@ -2,10 +2,10 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
-import com.github.arhor.aws.graphql.federation.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.tracing.TRACING_ID_KEY
-import com.github.arhor.aws.graphql.federation.tracing.Trace
-import com.github.arhor.aws.graphql.federation.tracing.withExtendedMDC
+import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
+import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
+import com.github.arhor.aws.graphql.federation.starter.tracing.withExtendedMDC
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload

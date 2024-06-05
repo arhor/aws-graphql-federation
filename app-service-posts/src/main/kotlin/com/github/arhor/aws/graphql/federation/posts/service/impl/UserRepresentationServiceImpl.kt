@@ -11,7 +11,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Use
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
 import com.github.arhor.aws.graphql.federation.posts.util.get
-import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import jakarta.annotation.PostConstruct
 import org.springframework.cache.Cache
 import org.springframework.cache.CacheManager

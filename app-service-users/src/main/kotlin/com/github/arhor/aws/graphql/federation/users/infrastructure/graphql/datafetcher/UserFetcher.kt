@@ -3,7 +3,7 @@ package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.dat
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails
 import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority.ROLE_ADMIN
 import com.github.arhor.aws.graphql.federation.starter.security.ensureSecuredAccess
-import com.github.arhor.aws.graphql.federation.tracing.Trace
+import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
