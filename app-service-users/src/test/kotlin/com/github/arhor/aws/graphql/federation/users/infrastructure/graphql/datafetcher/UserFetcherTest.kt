@@ -2,9 +2,7 @@ package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.dat
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.starter.graphql.DgsComponentsAutoConfiguration
-import com.github.arhor.aws.graphql.federation.starter.graphql.GlobalDataFetchingExceptionHandler
-import com.github.arhor.aws.graphql.federation.starter.security.SubgraphSecurityAutoConfiguration
+import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.WithMockCurrentUser
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_STR
@@ -21,8 +19,6 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Use
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.netflix.graphql.dgs.DgsQueryExecutor
-import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
-import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
 import com.ninjasquad.springmockk.MockkBean
 import graphql.GraphQLError
 import io.mockk.every
@@ -34,20 +30,15 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ContextConfiguration
 import java.util.UUID
 
-@SpringBootTest(
+@ContextConfiguration(
     classes = [
-        DgsAutoConfiguration::class,
-        DgsComponentsAutoConfiguration::class,
-        DgsExtendedScalarsAutoConfiguration::class,
-        GlobalDataFetchingExceptionHandler::class,
-        SubgraphSecurityAutoConfiguration::class,
         UserFetcher::class,
     ]
 )
-class UserFetcherTest {
+class UserFetcherTest : GraphQLTestBase() {
 
     @MockkBean
     private lateinit var userService: UserService
@@ -203,8 +194,8 @@ class UserFetcherTest {
         @Test
         fun `should create new user and return result object containing created user data`() {
             // Given
-            val username = "test-username"
-            val password = "test-password"
+            val username = "username"
+            val password = "Password123"
             val expectedUser = User(USER_ID, username)
 
             every { userService.createUser(any()) } returns expectedUser
@@ -244,8 +235,8 @@ class UserFetcherTest {
         fun `should update existing user and return result containing user data without errors`() {
             // Given
             val id = ZERO_UUID_VAL
-            val username = "test-username"
-            val password = "test-password"
+            val username = "username"
+            val password = "Password123"
             val expectedUser = User(id, username)
 
             every { userService.updateUser(any()) } returns expectedUser

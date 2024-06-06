@@ -15,13 +15,10 @@ import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.d
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
-import com.github.arhor.aws.graphql.federation.starter.graphql.DgsComponentsAutoConfiguration;
-import com.github.arhor.aws.graphql.federation.starter.security.SubgraphSecurityAutoConfiguration;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
+import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase;
 import com.github.arhor.aws.graphql.federation.starter.testing.WithMockCurrentUser;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
-import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
-import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 import java.util.Map;
@@ -46,18 +43,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-@SpringBootTest(
+@ContextConfiguration(
     classes = {
         CommentFetcher.class,
-        DgsAutoConfiguration.class,
-        DgsComponentsAutoConfiguration.class,
-        DgsExtendedScalarsAutoConfiguration.class,
         PostRepresentationFetcher.class,
         UserRepresentationFetcher.class,
-        SubgraphSecurityAutoConfiguration.class,
     }
 )
-class CommentFetcherTest {
+class CommentFetcherTest extends GraphQLTestBase {
 
     private static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
     private static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();

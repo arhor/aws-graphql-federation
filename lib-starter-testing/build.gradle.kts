@@ -49,8 +49,12 @@ configurations {
 
 dependencies {
     implementation(platform(":lib-platform"))
+    implementation(":lib-starter-graphql")
     implementation(":lib-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.netflix.graphql.dgs:graphql-dgs-extended-validation")
+    implementation("com.netflix.graphql.dgs:graphql-dgs-extended-scalars")
+    implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.springframework.boot:spring-boot-starter-test")
@@ -59,6 +63,7 @@ dependencies {
 
 dependencyManagement {
     imports {
+        mavenBom(libs.bom.graphql.dgs.get().toString())
         mavenBom(SpringBootPlugin.BOM_COORDINATES)
     }
 }

@@ -11,12 +11,10 @@ import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.data
 import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
-import com.github.arhor.aws.graphql.federation.starter.graphql.GlobalDataFetchingExceptionHandler
+import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.netflix.graphql.dgs.DgsQueryExecutor
-import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration
-import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration
 import com.ninjasquad.springmockk.MockkBean
 import graphql.GraphQLError
 import io.mockk.confirmVerified
@@ -29,20 +27,17 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ContextConfiguration
 import java.util.concurrent.CompletableFuture
 
-@SpringBootTest(
+@ContextConfiguration(
     classes = [
-        DgsAutoConfiguration::class,
-        DgsExtendedScalarsAutoConfiguration::class,
-        UserRepresentationFetcher::class,
-        GlobalDataFetchingExceptionHandler::class,
-        PostFetcher::class,
         TagFetcher::class,
+        PostFetcher::class,
+        UserRepresentationFetcher::class,
     ]
 )
-class PostFetcherTest {
+class PostFetcherTest : GraphQLTestBase() {
 
     @MockkBean
     private lateinit var postService: PostService

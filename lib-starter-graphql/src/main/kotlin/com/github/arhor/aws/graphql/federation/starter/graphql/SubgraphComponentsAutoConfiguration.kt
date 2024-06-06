@@ -11,7 +11,7 @@ import org.springframework.security.web.method.annotation.AuthenticationPrincipa
 
 @ComponentScan
 @AutoConfiguration(before = [DgsAutoConfiguration::class])
-class DgsComponentsAutoConfiguration {
+class SubgraphComponentsAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(AuthenticationPrincipalArgumentResolver::class)
