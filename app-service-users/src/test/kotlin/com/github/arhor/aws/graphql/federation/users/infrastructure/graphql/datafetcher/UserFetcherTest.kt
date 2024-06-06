@@ -61,7 +61,7 @@ class UserFetcherTest {
         @Test
         fun `should return expected user by username without any exceptions`() {
             // Given
-            val expectedId = UUID.randomUUID()
+            val expectedId = USER_ID
             val expectedUsername = "test-username"
 
             val expectedErrors = emptyList<GraphQLError>()
@@ -99,8 +99,6 @@ class UserFetcherTest {
         @Test
         fun `should return GQL error trying to find user by incorrect username`() {
             // Given
-            val id = UUID.randomUUID()
-
             every { userService.getUserById(any()) } answers {
                 throw EntityNotFoundException(
                     entity = USER.TYPE_NAME,
@@ -119,7 +117,7 @@ class UserFetcherTest {
                     }
                 }
                 """,
-                mapOf(USER.Id to id)
+                mapOf(USER.Id to USER_ID)
             )
 
             // Then
@@ -168,7 +166,7 @@ class UserFetcherTest {
         fun `should return successful result containing list with single expected user`() {
             // Given
             val user = User(
-                id = UUID.randomUUID(),
+                id = USER_ID,
                 username = "test-user",
             )
 
@@ -205,10 +203,9 @@ class UserFetcherTest {
         @Test
         fun `should create new user and return result object containing created user data`() {
             // Given
-            val id = UUID.randomUUID()
             val username = "test-username"
             val password = "test-password"
-            val expectedUser = User(id, username)
+            val expectedUser = User(USER_ID, username)
 
             every { userService.createUser(any()) } returns expectedUser
 
@@ -336,5 +333,9 @@ class UserFetcherTest {
 
             verify(exactly = 1) { userService.deleteUser(DeleteUserInput(id)) }
         }
+    }
+
+    companion object {
+        private val USER_ID = ZERO_UUID_VAL
     }
 }

@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,8 +33,8 @@ class UserRepresentationBatchLoaderTest {
     @Test
     void should_return_expected_map_when_not_empty_keys_set_provided() {
         // Given
-        final var user1Id = UUID.randomUUID();
-        final var user2Id = UUID.randomUUID();
+        final var user1Id = ConstantsKt.getTEST_1_UUID_VAL();
+        final var user2Id = ConstantsKt.getTEST_2_UUID_VAL();
         final var userIds = Set.of(user1Id, user2Id);
 
         final var expectedResult = Map.of(

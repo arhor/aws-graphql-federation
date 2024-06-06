@@ -15,6 +15,7 @@ import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.d
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration;
@@ -51,9 +52,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 )
 class CommentFetcherTest {
 
-    private static final UUID COMMENT_ID = UUID.randomUUID();
-    private static final UUID USER_ID = UUID.randomUUID();
-    private static final UUID POST_ID = UUID.randomUUID();
+    private static final UUID COMMENT_ID = ConstantsKt.getTEST_1_UUID_VAL();
+    private static final UUID USER_ID = ConstantsKt.getTEST_2_UUID_VAL();
+    private static final UUID POST_ID = ConstantsKt.getTEST_3_UUID_VAL();
 
     @MockBean
     private CommentService commentService;
@@ -322,7 +323,7 @@ class CommentFetcherTest {
     @Nested
     @DisplayName("mutation { deleteComment }")
     class DeleteCommentMutationTest {
-        @ValueSource(booleans = {true, false})
+        @ValueSource(booleans = { true, false })
         @ParameterizedTest
         void should_return_expected_result_calling_comment_service_with_expected_input(
             // Given

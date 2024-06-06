@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,9 +27,9 @@ class UserEventListenerTest extends EventListenerTestBase {
     private static final String USER_CREATED_TEST_QUEUE = "user-created-test-queue";
     private static final String USER_DELETED_TEST_QUEUE = "user-deleted-test-queue";
 
-    private static final UUID USER_ID = UUID.randomUUID();
-    private static final UUID TRACE_ID = UUID.randomUUID();
-    private static final UUID IDEMPOTENCY_KEY = UUID.randomUUID();
+    private static final UUID USER_ID = ConstantsKt.getTEST_1_UUID_VAL();
+    private static final UUID TRACE_ID = ConstantsKt.getTEST_2_UUID_VAL();
+    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_3_UUID_VAL();
 
     @MockBean
     private UserRepresentationService userRepresentationService;

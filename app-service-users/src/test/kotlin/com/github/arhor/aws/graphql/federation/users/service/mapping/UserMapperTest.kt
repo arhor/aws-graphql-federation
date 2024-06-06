@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.users.service.mapping
 
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthEntity
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
@@ -18,7 +19,6 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.FilterType
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
-import java.util.UUID
 
 @SpringJUnitConfig
 class UserMapperTest {
@@ -70,12 +70,10 @@ class UserMapperTest {
         @Test
         fun `should map UserEntity instance to User without exceptions`() {
             // Given
-            val expectedId = UUID.randomUUID()
             val expectedUsername = "test-username"
-
             val user = mockk<UserEntity>()
 
-            every { user.id } returns expectedId
+            every { user.id } returns USER_ID
             every { user.username } returns expectedUsername
 
             // When
@@ -83,7 +81,7 @@ class UserMapperTest {
 
             // Then
             assertThat(result)
-                .returns(expectedId, from { it.id })
+                .returns(USER_ID, from { it.id })
                 .returns(expectedUsername, from { it.username })
         }
 
@@ -111,11 +109,9 @@ class UserMapperTest {
             // Given
             val user = mockk<UserEntity>()
             val auth = mockk<AuthEntity>()
-
-            val userId = UUID.randomUUID()
             val authName = "test-auth"
 
-            every { user.id } returns userId
+            every { user.id } returns USER_ID
             every { auth.name } returns authName
 
             // When
@@ -124,7 +120,7 @@ class UserMapperTest {
             // Then
             assertThat(result)
                 .isNotNull()
-                .returns(userId, from { it.id })
+                .returns(USER_ID, from { it.id })
                 .returns(listOf(authName), from { it.authorities })
         }
 
@@ -144,5 +140,9 @@ class UserMapperTest {
                 .isNotNull()
                 .isInstanceOf(IllegalArgumentException::class.java)
         }
+    }
+
+    companion object {
+        private val USER_ID = ZERO_UUID_VAL
     }
 }

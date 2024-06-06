@@ -8,13 +8,14 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentat
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.PostEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.TagEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
+import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
-import java.util.UUID
 
 @ContextConfiguration(
     classes = [
@@ -154,13 +155,15 @@ class PostRepositoryTest : RepositoryTestBase() {
         @Test
         fun `should return empty list when offset is greater then number of existing posts`() {
             // Given
-            val user =
-                userRepository.save(UserRepresentation(id = UUID.randomUUID(), shouldBePersisted = true))
-            createPosts(user)
-            val incorrectUserIds = listOf(UUID.randomUUID())
+            userRepository.save(
+                UserRepresentation(
+                    id = USER_ID,
+                    shouldBePersisted = true,
+                )
+            ).also(::createPosts)
 
             // When
-            val result = postRepository.findAllByUserIdIn(incorrectUserIds)
+            val result = postRepository.findAllByUserIdIn(listOf(OMNI_UUID_VAL))
 
             // Then
             assertThat(result)
@@ -171,7 +174,7 @@ class PostRepositoryTest : RepositoryTestBase() {
 
     private fun createUser() = userRepository.save(
         UserRepresentation(
-            id = UUID.randomUUID(),
+            id = USER_ID,
             shouldBePersisted = true,
         )
     )
@@ -216,4 +219,8 @@ class PostRepositoryTest : RepositoryTestBase() {
         title = title,
         content = content,
     )
+
+    companion object {
+        private val USER_ID = ZERO_UUID_VAL
+    }
 }

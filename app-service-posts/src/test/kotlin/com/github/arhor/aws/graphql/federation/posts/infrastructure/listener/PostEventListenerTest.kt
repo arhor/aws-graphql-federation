@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.service.OutboxMessageService
+import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.just
@@ -11,7 +12,6 @@ import io.mockk.verify
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import java.util.UUID
 import java.util.stream.Stream
 
 class PostEventListenerTest {
@@ -37,7 +37,7 @@ class PostEventListenerTest {
     }
 
     companion object {
-        private val POST_ID = UUID.randomUUID()
+        private val POST_ID = OMNI_UUID_VAL
 
         @JvmStatic
         fun `should call OutboxMessageService#storeAsOutboxMessage on any PostEvent`(): Stream<Arguments> = Stream.of(

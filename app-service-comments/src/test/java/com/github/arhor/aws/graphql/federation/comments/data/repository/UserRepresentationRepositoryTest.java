@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,7 +13,7 @@ public class UserRepresentationRepositoryTest extends RepositoryTestBase {
     @Test
     void should_create_user_with_default_features_set_to_not_null() {
         // Given
-        final var userId = createUser().id();
+        final var userId = createUser(ConstantsKt.getZERO_UUID_VAL()).id();
 
         // When
         final var user = userRepository.findById(userId);
@@ -30,7 +31,7 @@ public class UserRepresentationRepositoryTest extends RepositoryTestBase {
     @Test
     void should_create_user_with_defined_features_set_to_not_null() {
         // Given
-        final var userId = createUser(Feature.COMMENTS_DISABLED).id();
+        final var userId = createUser(ConstantsKt.getZERO_UUID_VAL(), Feature.COMMENTS_DISABLED).id();
 
         // When
         final var user = userRepository.findById(userId);

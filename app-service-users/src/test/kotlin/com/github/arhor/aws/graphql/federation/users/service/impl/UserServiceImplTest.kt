@@ -4,6 +4,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateE
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthEntity
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
 import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
@@ -75,7 +76,6 @@ class UserServiceImplTest {
         @Test
         fun `should return an existing user by id`() {
             // Given
-            val userId = UUID.randomUUID()
             val userEntity = mockk<UserEntity>()
             val userResult = mockk<User>()
 
@@ -83,10 +83,10 @@ class UserServiceImplTest {
             every { userMapper.mapToResult(any()) } returns userResult
 
             // When
-            val result = userService.getUserById(userId)
+            val result = userService.getUserById(USER_ID)
 
             // Then
-            verify(exactly = 1) { userRepository.findById(userId) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
             verify(exactly = 1) { userMapper.mapToResult(userEntity) }
 
             assertThat(result)
@@ -97,20 +97,18 @@ class UserServiceImplTest {
         @Test
         fun `should throw EntityNotFoundException trying to get non-existing user by id`() {
             // Given
-            val userId = UUID.randomUUID()
-
             val expectedEntity = USER.TYPE_NAME
             val expectedOperation = Operation.LOOKUP
-            val expectedCondition = "${USER.Id} = $userId"
+            val expectedCondition = "${USER.Id} = $USER_ID"
             val expectedExceptionType = EntityNotFoundException::class.java
 
             every { userRepository.findByIdOrNull(any()) } returns null
 
             // When
-            val result = catchThrowable { userService.getUserById(userId) }
+            val result = catchThrowable { userService.getUserById(USER_ID) }
 
             // Then
-            verify(exactly = 1) { userRepository.findById(userId) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
 
             assertThat(result)
                 .asInstanceOf(throwable(expectedExceptionType))
@@ -223,10 +221,9 @@ class UserServiceImplTest {
         fun `should throw DgsBadRequestException exception trying to get current user with invalid password`() {
             // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
-            val userId = UUID.randomUUID()
             val entity = mockk<UserEntity>()
 
-            every { entity.id } returns userId
+            every { entity.id } returns USER_ID
             every { entity.username } returns request.username
             every { entity.password } returns request.password
             every { userRepository.findByUsername(any()) } returns entity
@@ -252,7 +249,6 @@ class UserServiceImplTest {
         @Test
         fun `should correctly create new user entity and return DTO with assigned id`() {
             // Given
-            val expectedId = UUID.randomUUID()
             val expectedUsername = "test@email.com"
             val expectedPassword = "TestPassword123"
 
@@ -265,7 +261,7 @@ class UserServiceImplTest {
             every { authRepository.findByName(any()) } returns mockk()
             every { passwordEncoder.encode(any()) } answers { firstArg() }
             every { userMapper.mapToEntity(any(), any()) } answers convertingDtoToUser
-            every { userRepository.save(any()) } answers copyingUserWithAssignedId(id = expectedId)
+            every { userRepository.save(any()) } answers copyingUserWithAssignedId(id = USER_ID)
             every { eventPublisher.publishEvent(any<Any>()) } just runs
             every { userMapper.mapToResult(any()) } answers convertingUserToDto
 
@@ -274,7 +270,7 @@ class UserServiceImplTest {
 
             // Then
             assertThat(result)
-                .returns(expectedId, from { it.id })
+                .returns(USER_ID, from { it.id })
                 .returns(expectedUsername, from { it.username })
 
             verify(exactly = 1) { userRepository.existsByUsername(any()) }
@@ -325,7 +321,7 @@ class UserServiceImplTest {
         fun `should save updated user state to repository when there are actual changes`() {
             // Given
             val user = UserEntity(
-                id = UUID.randomUUID(),
+                id = USER_ID,
                 username = "test-username",
                 password = "test-password",
             )
@@ -354,7 +350,7 @@ class UserServiceImplTest {
         fun `should not call save method on repository when there are no changes in user state`() {
             // Given
             val user = UserEntity(
-                id = UUID.randomUUID(),
+                id = USER_ID,
                 username = "test-username",
                 password = "test-password",
             )
@@ -384,14 +380,12 @@ class UserServiceImplTest {
         @Test
         fun `should return expected result deleting user`() {
             // Given
-            val expectedId = UUID.randomUUID()
-
-            every { userRepository.findByIdOrNull(any()) } returns mockk { every { id } returns expectedId }
+            every { userRepository.findByIdOrNull(any()) } returns mockk { every { id } returns USER_ID }
             every { userRepository.delete(any()) } just runs
             every { eventPublisher.publishEvent(any<Any>()) } just runs
 
             // When
-            userService.deleteUser(DeleteUserInput(expectedId))
+            userService.deleteUser(DeleteUserInput(USER_ID))
 
             // Then
             verify(exactly = 1) { userRepository.findByIdOrNull(any()) }
@@ -422,5 +416,9 @@ class UserServiceImplTest {
 
     private fun copyingUserWithAssignedId(id: UUID): MockKAnswerScope<UserEntity, *>.(Call) -> UserEntity = {
         firstArg<UserEntity>().copy(id = id)
+    }
+
+    companion object {
+        private val USER_ID = ZERO_UUID_VAL
     }
 }

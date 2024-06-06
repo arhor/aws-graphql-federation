@@ -2,6 +2,9 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dat
 
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_3_UUID_VAL
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -46,7 +49,7 @@ class PostBatchLoaderTest {
     @Test
     fun `should return expected result calling getPostsByUserIds exactly once with expected keys`() {
         // Given
-        val keys = (1..3).map { UUID.randomUUID() }.toSet()
+        val keys = setOf(TEST_1_UUID_VAL, TEST_2_UUID_VAL, TEST_3_UUID_VAL)
         val expectedPayload = keys.associateWith { listOf(Post(id = it, title = "test", content = "test")) }
 
         every { postService.getPostsByUserIds(any()) } returns expectedPayload

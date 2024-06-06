@@ -2,6 +2,8 @@ package com.github.arhor.aws.graphql.federation.posts.data.repository.mapping
 
 import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostIdToTagNamesResultSetExtractor.Companion.SELECT_COL_POST_ID
 import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostIdToTagNamesResultSetExtractor.Companion.SELECT_COL_TAGS
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -17,8 +19,8 @@ class PostIdToTagNamesResultSetExtractorTest {
     @Test
     fun `should return map with 2 entries each with 3 expected tags`() {
         // Given
-        val post1Id = UUID.randomUUID()
-        val post2Id = UUID.randomUUID()
+        val post1Id = TEST_1_UUID_VAL
+        val post2Id = TEST_2_UUID_VAL
 
         val expectedTags = Array(3) { "test-$it" }
         val resultSet = mockk<ResultSet> {

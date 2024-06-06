@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.users.infrastructure.router
 
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
@@ -16,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
 import java.net.URI
-import java.util.UUID
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(controllers = [MainRouter::class])
@@ -49,7 +49,7 @@ class MainRouterTest {
         val requestURI = URI.create("/api/users/verify")
 
         val expectedReq = CurrentUserRequest(username = "test-username", password = "test-password")
-        val expectedRes = CurrentUser(id = UUID.randomUUID(), authorities = listOf("ROLE_TEST_1", "ROLE_TEST_2"))
+        val expectedRes = CurrentUser(id = ZERO_UUID_VAL, authorities = listOf("ROLE_TEST_1", "ROLE_TEST_2"))
         val expectedContentType = MediaType.APPLICATION_JSON
 
         every { userService.getUserByUsernameAndPassword(any()) } returns expectedRes

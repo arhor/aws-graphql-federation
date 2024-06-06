@@ -10,6 +10,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionE
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -37,8 +38,8 @@ import static org.mockito.Mockito.mock;
 
 class UserRepresentationServiceImplTest {
 
-    private static final UUID USER_ID = UUID.randomUUID();
-    private static final UUID IDEMPOTENCY_KEY = UUID.randomUUID();
+    private static final UUID USER_ID = ConstantsKt.getTEST_1_UUID_VAL();
+    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
     private final Cache cache = new ConcurrentMapCache(IDEMPOTENT_ID_SET.name());
     private final CacheManager cacheManager = mock();

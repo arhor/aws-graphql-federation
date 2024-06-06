@@ -3,6 +3,9 @@ package com.github.arhor.aws.graphql.federation.users.service.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
@@ -28,7 +31,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryOperations
-import java.util.UUID
 import java.util.stream.Stream
 
 private typealias OutboxEventData = TypeReference<Map<String, Any?>>
@@ -154,9 +156,9 @@ class OutboxMessageServiceImplTest {
         private const val USER_EVENTS_METHOD_SOURCE =
             "com.github.arhor.aws.graphql.federation.users.service.impl.OutboxMessageServiceImplTest#userEventsTestFactory"
 
-        private val USER_ID = UUID.randomUUID()
-        private val TRACE_ID = UUID.randomUUID()
-        private val MESSAGE_ID = UUID.randomUUID()
+        private val USER_ID = ZERO_UUID_VAL
+        private val TRACE_ID = TEST_1_UUID_VAL
+        private val MESSAGE_ID = TEST_2_UUID_VAL
 
         @JvmStatic
         fun userEventsTestFactory(): Stream<Arguments> = Stream.of(

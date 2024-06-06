@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.callback.CommentEntityCallback;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -20,11 +21,11 @@ public class CommentRepositoryTest extends RepositoryTestBase {
     @Test
     void should_return_expected_list_of_comments_by_user_ids() {
         // Given
-        final var user1 = createUser();
-        final var user2 = createUser();
-        final var user3 = createUser();
+        final var user1 = createUser(ConstantsKt.getTEST_1_UUID_VAL());
+        final var user2 = createUser(ConstantsKt.getTEST_2_UUID_VAL());
+        final var user3 = createUser(ConstantsKt.getTEST_3_UUID_VAL());
 
-        final var post1 = createPost();
+        final var post1 = createPost(ConstantsKt.getOMNI_UUID_VAL());
 
         final var user1Comments = List.of(
             createComment(user1, post1),
@@ -59,11 +60,11 @@ public class CommentRepositoryTest extends RepositoryTestBase {
     @Test
     void should_return_expected_list_of_comments_by_post_ids() {
         // Given
-        final var user1 = createUser();
+        final var user1 = createUser(ConstantsKt.getZERO_UUID_VAL());
 
-        final var post1 = createPost();
-        final var post2 = createPost();
-        final var post3 = createPost();
+        final var post1 = createPost(ConstantsKt.getTEST_1_UUID_VAL());
+        final var post2 = createPost(ConstantsKt.getTEST_2_UUID_VAL());
+        final var post3 = createPost(ConstantsKt.getTEST_3_UUID_VAL());
 
         final var post1Comments = List.of(
             createComment(user1, post1),

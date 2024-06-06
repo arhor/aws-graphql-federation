@@ -2,6 +2,9 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.ninjasquad.springmockk.MockkBean
@@ -17,7 +20,6 @@ import org.springframework.messaging.support.GenericMessage
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
-import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 @ContextConfiguration(classes = [UserEventListener::class])
@@ -85,9 +87,9 @@ class UserEventListenerTest : SqsListenerTestBase() {
         private const val USER_CREATED_TEST_QUEUE = "user-created-test-queue"
         private const val USER_DELETED_TEST_QUEUE = "user-deleted-test-queue"
 
-        private val USER_ID = UUID.randomUUID()
-        private val TRACE_ID = UUID.randomUUID()
-        private val IDEMPOTENCY_KEY = UUID.randomUUID()
+        private val USER_ID = ZERO_UUID_VAL
+        private val TRACE_ID = TEST_1_UUID_VAL
+        private val IDEMPOTENCY_KEY = TEST_2_UUID_VAL
 
         @JvmStatic
         @DynamicPropertySource

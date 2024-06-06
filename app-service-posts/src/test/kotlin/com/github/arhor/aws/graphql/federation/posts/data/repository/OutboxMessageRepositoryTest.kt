@@ -2,11 +2,11 @@ package com.github.arhor.aws.graphql.federation.posts.data.repository
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.OutboxMessageEntityCallback
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
-import java.util.UUID
 
 @ContextConfiguration(classes = [OutboxMessageEntityCallback::class])
 class OutboxMessageRepositoryTest : RepositoryTestBase() {
@@ -26,7 +26,7 @@ class OutboxMessageRepositoryTest : RepositoryTestBase() {
                 OutboxMessageEntity(
                     type = "test-event",
                     data = emptyMap(),
-                    traceId = UUID.randomUUID(),
+                    traceId = ZERO_UUID_VAL,
                 )
             }
         )

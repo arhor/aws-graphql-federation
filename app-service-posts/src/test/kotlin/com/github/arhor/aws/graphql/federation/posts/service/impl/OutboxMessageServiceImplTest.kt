@@ -6,6 +6,9 @@ import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
+import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
@@ -28,7 +31,6 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryOperations
-import java.util.UUID
 import java.util.stream.Stream
 
 private typealias OutboxEventData = TypeReference<Map<String, Any?>>
@@ -158,9 +160,9 @@ class OutboxMessageServiceImplTest {
         private const val POST_EVENTS_METHOD_SOURCE =
             "com.github.arhor.aws.graphql.federation.posts.service.impl.OutboxMessageServiceImplTest#postEventsTestFactory"
 
-        private val POST_ID = UUID.randomUUID()
-        private val TRACE_ID = UUID.randomUUID()
-        private val MESSAGE_ID = UUID.randomUUID()
+        private val POST_ID = OMNI_UUID_VAL
+        private val TRACE_ID = TEST_1_UUID_VAL
+        private val MESSAGE_ID = TEST_2_UUID_VAL
 
         @JvmStatic
         fun postEventsTestFactory(): Stream<Arguments> = Stream.of(

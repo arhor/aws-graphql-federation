@@ -1,12 +1,12 @@
 package com.github.arhor.aws.graphql.federation.posts.data.entity.callback
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class TagEntityCallbackTest {
 
@@ -32,7 +32,7 @@ class TagEntityCallbackTest {
         @Test
         fun `should not re-assign id to the entity if it is already not null`() {
             // Given
-            val entity = TagEntity(id = UUID.randomUUID(), name = "test")
+            val entity = TagEntity(id = ZERO_UUID_VAL, name = "test")
 
             // When
             val result = tagEntityCallback.onBeforeConvert(entity)

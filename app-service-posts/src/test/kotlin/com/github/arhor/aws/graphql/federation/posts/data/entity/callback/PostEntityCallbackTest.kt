@@ -1,12 +1,12 @@
 package com.github.arhor.aws.graphql.federation.posts.data.entity.callback
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class PostEntityCallbackTest {
 
@@ -32,7 +32,7 @@ class PostEntityCallbackTest {
         @Test
         fun `should not re-assign id to the entity if it is already not null`() {
             // Given
-            val entity = PostEntity(id = UUID.randomUUID(), userId = null, title = "test", content = "test")
+            val entity = PostEntity(id = ZERO_UUID_VAL, userId = null, title = "test", content = "test")
 
             // When
             val result = postEntityCallback.onBeforeConvert(entity)

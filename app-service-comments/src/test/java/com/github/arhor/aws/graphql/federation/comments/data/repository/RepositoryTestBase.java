@@ -50,43 +50,45 @@ abstract class RepositoryTestBase {
 
     @DynamicPropertySource
     public static void registerDynamicProperties(final DynamicPropertyRegistry registry) {
+        com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt.getZERO_UUID_VAL();
+
         registry.add("spring.datasource.url", db::getJdbcUrl);
         registry.add("spring.datasource.username", db::getUsername);
         registry.add("spring.datasource.password", db::getPassword);
     }
 
-    protected UserRepresentation createUser() {
+    protected UserRepresentation createUser(final UUID id) {
         return userRepository.save(
             UserRepresentation.builder()
-                .id(UUID.randomUUID())
+                .id(id)
                 .shouldBePersisted(true)
                 .build()
         );
     }
 
-    protected UserRepresentation createUser(final Feature feature, final Feature... features) {
+    protected UserRepresentation createUser(final UUID id, final Feature feature, final Feature... features) {
         return userRepository.save(
             UserRepresentation.builder()
-                .id(UUID.randomUUID())
+                .id(id)
                 .features(Features.of(feature, features))
                 .shouldBePersisted(true)
                 .build()
         );
     }
 
-    protected PostRepresentation createPost() {
+    protected PostRepresentation createPost(final UUID id) {
         return postRepository.save(
             PostRepresentation.builder()
-                .id(UUID.randomUUID())
+                .id(id)
                 .shouldBePersisted(true)
                 .build()
         );
     }
 
-    protected PostRepresentation createPost(final Feature feature, final Feature... features) {
+    protected PostRepresentation createPost(final UUID id, final Feature feature, final Feature... features) {
         return postRepository.save(
             PostRepresentation.builder()
-                .id(UUID.randomUUID())
+                .id(id)
                 .features(Features.of(feature, features))
                 .shouldBePersisted(true)
                 .build()

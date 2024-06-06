@@ -10,6 +10,8 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Swi
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -26,7 +28,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.cache.CacheManager
 import org.springframework.cache.concurrent.ConcurrentMapCache
 import java.util.Optional
-import java.util.UUID
 
 class UserRepresentationServiceImplTest {
 
@@ -196,7 +197,7 @@ class UserRepresentationServiceImplTest {
     }
 
     companion object {
-        private val USER_ID = UUID.randomUUID()
-        private val IDEMPOTENCY_KEY = UUID.randomUUID()
+        private val USER_ID = ZERO_UUID_VAL
+        private val IDEMPOTENCY_KEY = TEST_1_UUID_VAL
     }
 }

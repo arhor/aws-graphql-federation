@@ -1,12 +1,13 @@
 package com.github.arhor.aws.graphql.federation.posts.data.entity.callback
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class OutboxMessageEntityCallbackTest {
 
@@ -19,7 +20,7 @@ class OutboxMessageEntityCallbackTest {
         fun `should assign id to the entity if it is missing`() {
             // Given
             val entity =
-                OutboxMessageEntity(id = null, type = "test", data = emptyMap(), traceId = UUID.randomUUID())
+                OutboxMessageEntity(id = null, type = "test", data = emptyMap(), traceId = TRACE_ID)
 
             // When
             val result = outboxMessageEntityCallback.onBeforeConvert(entity)
@@ -34,7 +35,7 @@ class OutboxMessageEntityCallbackTest {
         fun `should not re-assign id to the entity if it is already not null`() {
             // Given
             val entity =
-                OutboxMessageEntity(id = UUID.randomUUID(), type = "test", data = emptyMap(), traceId = TRACE_ID)
+                OutboxMessageEntity(id = MESSAGE_ID, type = "test", data = emptyMap(), traceId = TRACE_ID)
 
             // When
             val result = outboxMessageEntityCallback.onBeforeConvert(entity)
@@ -49,6 +50,7 @@ class OutboxMessageEntityCallbackTest {
     }
 
     companion object {
-        private val TRACE_ID = UUID.randomUUID()
+        private val MESSAGE_ID = ZERO_UUID_VAL
+        private val TRACE_ID = OMNI_UUID_VAL
     }
 }

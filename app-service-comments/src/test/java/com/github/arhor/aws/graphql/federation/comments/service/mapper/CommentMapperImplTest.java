@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.comments.service.mapper;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -42,8 +41,8 @@ class CommentMapperImplTest {
             // Given
             final var input =
                 CreateCommentInput.newBuilder()
-                    .userId(UUID.randomUUID())
-                    .postId(UUID.randomUUID())
+                    .userId(ConstantsKt.getZERO_UUID_VAL())
+                    .postId(ConstantsKt.getOMNI_UUID_VAL())
                     .content("user-1 / post-2 / test-comment")
                     .build();
 
@@ -84,9 +83,9 @@ class CommentMapperImplTest {
             // Given
             final var entity =
                 CommentEntity.builder()
-                    .id(UUID.randomUUID())
-                    .userId(UUID.randomUUID())
-                    .postId(UUID.randomUUID())
+                    .id(ConstantsKt.getTEST_1_UUID_VAL())
+                    .userId(ConstantsKt.getZERO_UUID_VAL())
+                    .postId(ConstantsKt.getOMNI_UUID_VAL())
                     .content("user-1 / post-2 / test-comment")
                     .build();
 

@@ -19,6 +19,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,11 +44,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @SuppressWarnings("SequencedCollectionMethodCanBeUsed")
 class CommentServiceImplTest {
 
-    private static final UUID COMMENT_1_ID = UUID.randomUUID();
-    private static final UUID COMMENT_2_ID = UUID.randomUUID();
-    private static final UUID COMMENT_3_ID = UUID.randomUUID();
-    private static final UUID USER_ID = UUID.randomUUID();
-    private static final UUID POST_ID = UUID.randomUUID();
+    private static final UUID COMMENT_1_ID = ConstantsKt.getTEST_1_UUID_VAL();
+    private static final UUID COMMENT_2_ID = ConstantsKt.getTEST_2_UUID_VAL();
+    private static final UUID COMMENT_3_ID = ConstantsKt.getTEST_3_UUID_VAL();
+    private static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
+    private static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
 
     private final CommentRepository commentRepository = mock();
     private final CommentMapper commentMapper = mock();

@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -33,8 +34,8 @@ class PostCommentsBatchLoaderTest {
     @Test
     void should_return_expected_map_when_not_empty_keys_set_provided() {
         // Given
-        final var post1Id = UUID.randomUUID();
-        final var post2Id = UUID.randomUUID();
+        final var post1Id = ConstantsKt.getTEST_1_UUID_VAL();
+        final var post2Id = ConstantsKt.getTEST_2_UUID_VAL();
         final var postIds = Set.of(post1Id, post2Id);
 
         final var expectedResult = Map.of(
