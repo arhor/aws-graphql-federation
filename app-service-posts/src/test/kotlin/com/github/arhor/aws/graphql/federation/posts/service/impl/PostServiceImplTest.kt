@@ -563,7 +563,7 @@ class PostServiceImplTest {
             })
 
             // Then
-            verify(exactly = 1) { userRepository.findById(entity.id!!) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
             verify(exactly = 1) { postRepository.findById(entity.id!!) }
             verify(exactly = 1) { postRepository.delete(entity) }
             verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Deleted(id = entity.id!!)) }
