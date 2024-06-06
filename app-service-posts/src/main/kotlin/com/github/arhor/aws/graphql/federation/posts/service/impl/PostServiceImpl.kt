@@ -19,6 +19,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Del
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.TagInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
@@ -81,7 +82,7 @@ class PostServiceImpl(
 
         ensureUserPostsEnabled(actor.id, currentOperation)
 
-        return postMapper.mapToEntity(input = input, userId = actor.id, tags = materialize(input.tags?.map { it.name }))
+        return postMapper.mapToEntity(input = input, userId = actor.id, tags = convertToRefs(input.tags))
             .let(postRepository::save)
             .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!)) }
             .let(postMapper::mapToPost)
@@ -103,7 +104,7 @@ class PostServiceImpl(
         val currentState = initialState.copy(
             title = input.title ?: initialState.title,
             content = input.content ?: initialState.content,
-            tags = input.tags?.map { it.name }?.let(::materialize)?.toSet(TagRef::from) ?: initialState.tags
+            tags = convertToRefs(input.tags) ?: initialState.tags
         )
         return postMapper.mapToPost(
             entity = when (currentState != initialState) {
@@ -144,20 +145,28 @@ class PostServiceImpl(
         }
     }
 
-    private fun materialize(tags: List<String>?): Set<TagEntity> =
+    private fun convertToRefs(tags: List<TagInput>?): Set<TagRef>? =
         when {
-            !tags.isNullOrEmpty() -> {
-                val presentTags = tagRepository.findAllByNameIn(tags)
-                val missingTags = (tags - presentTags.toSet { it.name }).map { TagEntity(name = it) }
-                val createdTags = tagRepository.saveAll(missingTags)
-
-                HashSet<TagEntity>(presentTags.size + createdTags.size).apply {
-                    addAll(presentTags)
-                    addAll(createdTags)
-                }
+            tags == null -> {
+                null
             }
 
-            else -> emptySet()
+            tags.isEmpty() -> {
+                emptySet()
+            }
+
+            else -> {
+                val tagNames = tags.map { normalizeTag(it.name) }
+
+                val presentTags = tagRepository.findAllByNameIn(tagNames)
+                val missingTags = (tagNames - presentTags.toSet { it.name }).map { TagEntity(name = it) }
+                val createdTags = tagRepository.saveAll(missingTags)
+
+                HashSet<TagRef>(presentTags.size + createdTags.size).apply {
+                    presentTags.forEach { add(TagRef.from(it)) }
+                    createdTags.forEach { add(TagRef.from(it)) }
+                }
+            }
         }
 
     private fun ensureUserPostsEnabled(userId: UUID, operation: Operation) {
@@ -193,7 +202,14 @@ class PostServiceImpl(
         }
     }
 
+    private fun normalizeTag(name: String): String =
+        name.trim()
+            .replace(SEQUENCE_OF_WHITESPACES, SINGLE_SPACE)
+            .lowercase()
+
     companion object {
+        private const val SINGLE_SPACE = " "
+        private val SEQUENCE_OF_WHITESPACES = Regex("\\s+")
         private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 }

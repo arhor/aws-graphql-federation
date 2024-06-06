@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.service.mapping
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
+import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page
 import java.util.UUID
 
 interface PostMapper {
-    fun mapToEntity(input: CreatePostInput, userId: UUID, tags: Set<TagEntity>): PostEntity
+    fun mapToEntity(input: CreatePostInput, userId: UUID, tags: Set<TagRef>?): PostEntity
     fun mapToPost(entity: PostEntity): Post
     fun mapToPost(projection: PostProjection): Post
     fun mapToPostPageFromEntity(page: Page<PostEntity>): PostPage

@@ -1,8 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.service.mapping.impl
 
-import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
@@ -16,12 +14,12 @@ import java.util.UUID
 @Component
 class PostMapperImpl : PostMapper {
 
-    override fun mapToEntity(input: CreatePostInput, userId: UUID, tags: Set<TagEntity>): PostEntity {
+    override fun mapToEntity(input: CreatePostInput, userId: UUID, tags: Set<TagRef>?): PostEntity {
         return PostEntity(
             userId = userId,
             title = input.title,
             content = input.content,
-            tags = tags.toSet(TagRef::from)
+            tags = tags ?: emptySet(),
         )
     }
 
