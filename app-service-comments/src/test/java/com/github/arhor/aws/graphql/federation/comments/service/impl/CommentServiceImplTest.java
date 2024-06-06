@@ -19,6 +19,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -305,7 +306,7 @@ class CommentServiceImplTest {
                 .willReturn(expectedComment);
 
             // When
-            final var createCommentResult = commentService.createComment(input);
+            final var createCommentResult = commentService.createComment(input, actor(USER_ID));
 
             // Then
             then(commentMapper)
@@ -353,7 +354,7 @@ class CommentServiceImplTest {
                 .willReturn(Optional.empty());
 
             // When
-            final var result = catchException(() -> commentService.updateComment(input));
+            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
 
             // Then
             then(commentRepository)
@@ -392,7 +393,7 @@ class CommentServiceImplTest {
             final var expectedOperation = Operation.UPDATE;
 
             // When
-            final var result = catchException(() -> commentService.updateComment(input));
+            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
 
             // Then
             then(commentRepository)
@@ -436,7 +437,7 @@ class CommentServiceImplTest {
             final var expectedOperation = Operation.UPDATE;
 
             // When
-            final var result = catchException(() -> commentService.updateComment(input));
+            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
 
             // Then
             then(commentRepository)
@@ -484,7 +485,7 @@ class CommentServiceImplTest {
             final var expectedOperation = Operation.UPDATE;
 
             // When
-            final var result = catchException(() -> commentService.updateComment(input));
+            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
 
             // Then
             then(commentRepository)
@@ -536,7 +537,7 @@ class CommentServiceImplTest {
             final var expectedOperation = Operation.UPDATE;
 
             // When
-            final var result = catchException(() -> commentService.updateComment(input));
+            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
 
             // Then
             then(commentRepository)
@@ -588,7 +589,7 @@ class CommentServiceImplTest {
                 .willReturn(commentDto);
 
             // When
-            final var result = commentService.updateComment(input);
+            final var result = commentService.updateComment(input, actor(USER_ID));
 
             // Then
             then(commentRepository)
@@ -620,18 +621,34 @@ class CommentServiceImplTest {
         void should_return_result_with_success_true_when_comment_is_deleted() {
             // Given
             final var input = DeleteCommentInput.newBuilder().id(COMMENT_1_ID).build();
-            final var comment = CommentEntity.builder().build();
+            final var comment = CommentEntity.builder().userId(USER_ID).postId(POST_ID).build();
+            final var user = UserRepresentation.builder().id(USER_ID).build();
+            final var post = PostRepresentation.builder().id(POST_ID).build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
 
+            given(userRepository.findById(any()))
+                .willReturn(Optional.of(user));
+
+            given(postRepository.findById(any()))
+                .willReturn(Optional.of(post));
+
             // When
-            final var result = commentService.deleteComment(input);
+            final var result = commentService.deleteComment(input, actor(USER_ID));
 
             // Then
             then(commentRepository)
                 .should()
                 .findById(input.getId());
+
+            then(userRepository)
+                .should()
+                .findById(USER_ID);
+
+            then(postRepository)
+                .should()
+                .findById(POST_ID);
 
             then(commentRepository)
                 .should()
@@ -650,7 +667,7 @@ class CommentServiceImplTest {
                 .willReturn(Optional.empty());
 
             // When
-            final var result = commentService.deleteComment(input);
+            final var result = commentService.deleteComment(input, actor(USER_ID));
 
             // Then
             then(commentRepository)
@@ -660,5 +677,9 @@ class CommentServiceImplTest {
             assertThat(result)
                 .isFalse();
         }
+    }
+
+    private CurrentUserDetails actor(final UUID userId) {
+        return new CurrentUserDetails(userId, List.of());
     }
 }

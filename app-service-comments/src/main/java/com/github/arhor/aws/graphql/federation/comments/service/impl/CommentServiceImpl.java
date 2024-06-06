@@ -17,6 +17,7 @@ import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMa
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static com.github.arhor.aws.graphql.federation.starter.security.UtilsKt.ensureAccessAllowed;
 import static java.util.stream.Collectors.groupingBy;
 
 @Slf4j
@@ -117,10 +119,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Comment createComment(final CreateCommentInput input) {
+    public Comment createComment(final CreateCommentInput input, final CurrentUserDetails actor) {
         final var currentOperation = Operation.CREATE;
 
-        ensureUserAndPostCommentsEnabled(
+        ensureOperationAllowed(
             input.getUserId(),
             input.getPostId(),
             currentOperation
@@ -134,7 +136,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Comment updateComment(final UpdateCommentInput input) {
+    public Comment updateComment(final UpdateCommentInput input, final CurrentUserDetails actor) {
         final var currentOperation = Operation.UPDATE;
         final var commentId = input.getId();
         final var initialState =
@@ -147,10 +149,11 @@ public class CommentServiceImpl implements CommentService {
                     )
                 );
 
-        ensureUserAndPostCommentsEnabled(
+        ensureOperationAllowed(
             initialState.userId(),
             initialState.postId(),
-            currentOperation
+            currentOperation,
+            actor
         );
 
         final var currentState = determineCurrentState(initialState, input);
@@ -165,9 +168,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean deleteComment(final DeleteCommentInput input) {
+    public boolean deleteComment(final DeleteCommentInput input, final CurrentUserDetails actor) {
         return commentRepository.findById(input.getId())
             .map((comment) -> {
+                ensureOperationAllowed(
+                    comment.userId(),
+                    comment.postId(),
+                    Operation.DELETE,
+                    actor
+                );
                 commentRepository.delete(comment);
                 return true;
             })
@@ -188,11 +197,23 @@ public class CommentServiceImpl implements CommentService {
         return currentStateBuilder.build();
     }
 
-    private void ensureUserAndPostCommentsEnabled(
+    private void ensureOperationAllowed(
         final UUID userId,
         final UUID postId,
         final Operation operation
     ) {
+        ensureOperationAllowed(userId, postId, operation, null);
+    }
+
+    private void ensureOperationAllowed(
+        final UUID userId,
+        final UUID postId,
+        final Operation operation,
+        final CurrentUserDetails actor
+    ) {
+        if (actor != null) {
+            ensureAccessAllowed(userId, actor);
+        }
         ensureCommentsEnabled(userRepository, operation, USER.TYPE_NAME, USER.Id, userId);
         ensureCommentsEnabled(postRepository, operation, POST.TYPE_NAME, POST.Id, postId);
     }

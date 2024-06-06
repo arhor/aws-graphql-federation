@@ -14,6 +14,7 @@ import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.d
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsNumberBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserCommentsBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
@@ -24,6 +25,7 @@ import com.netflix.graphql.dgs.InputArgument;
 import lombok.RequiredArgsConstructor;
 import org.dataloader.MappedBatchLoader;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.UUID;
@@ -69,20 +71,29 @@ public class CommentFetcher {
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    public Comment createComment(final @InputArgument CreateCommentInput input) {
-        return commentService.createComment(input);
+    public Comment createComment(
+        final @InputArgument CreateCommentInput input,
+        final @AuthenticationPrincipal CurrentUserDetails actor
+    ) {
+        return commentService.createComment(input, actor);
     }
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    public Comment updateComment(final @InputArgument UpdateCommentInput input) {
-        return commentService.updateComment(input);
+    public Comment updateComment(
+        final @InputArgument UpdateCommentInput input,
+        final @AuthenticationPrincipal CurrentUserDetails actor
+    ) {
+        return commentService.updateComment(input, actor);
     }
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    public boolean deleteComment(final @InputArgument DeleteCommentInput input) {
-        return commentService.deleteComment(input);
+    public boolean deleteComment(
+        final @InputArgument DeleteCommentInput input,
+        final @AuthenticationPrincipal CurrentUserDetails actor
+    ) {
+        return commentService.deleteComment(input, actor);
     }
 
     /* ---------- Internal implementation ---------- */

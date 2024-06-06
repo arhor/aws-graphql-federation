@@ -1,8 +1,7 @@
 package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails
-import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority.ROLE_ADMIN
-import com.github.arhor.aws.graphql.federation.starter.security.ensureSecuredAccess
+import com.github.arhor.aws.graphql.federation.starter.security.ensureAccessAllowed
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
@@ -47,7 +46,7 @@ class UserFetcher(
         @InputArgument input: UpdateUserInput,
         @AuthenticationPrincipal actor: CurrentUserDetails,
     ): User {
-        ensureSecuredAccess(actor, input.id)
+        ensureAccessAllowed(input.id, actor)
         return userService.updateUser(input)
     }
 
@@ -57,7 +56,7 @@ class UserFetcher(
         @InputArgument input: DeleteUserInput,
         @AuthenticationPrincipal actor: CurrentUserDetails,
     ): Boolean {
-        ensureSecuredAccess(actor, input.id, ROLE_ADMIN)
+        ensureAccessAllowed(input.id, actor)
         return userService.deleteUser(input)
     }
 }

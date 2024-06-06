@@ -24,7 +24,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Upd
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails
-import com.github.arhor.aws.graphql.federation.starter.security.ensureSecuredAccess
+import com.github.arhor.aws.graphql.federation.starter.security.ensureAccessAllowed
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
@@ -80,7 +80,7 @@ class PostServiceImpl(
     override fun createPost(input: CreatePostInput, actor: CurrentUserDetails): Post {
         val currentOperation = Operation.CREATE
 
-        ensureUserPostsEnabled(actor.id, currentOperation)
+        ensureOperationAllowed(actor.id, currentOperation)
 
         return postMapper.mapToEntity(input = input, userId = actor.id, tags = convertToRefs(input.tags))
             .let(postRepository::save)
@@ -98,8 +98,7 @@ class PostServiceImpl(
                 operation = currentOperation,
             )
 
-        ensureSecuredAccess(actor, initialState.userId)
-        ensureUserPostsEnabled(initialState.userId!!, currentOperation)
+        ensureOperationAllowed(initialState.userId!!, currentOperation, actor)
 
         val currentState = initialState.copy(
             title = input.title ?: initialState.title,
@@ -116,10 +115,11 @@ class PostServiceImpl(
 
     @Transactional
     override fun deletePost(input: DeletePostInput, actor: CurrentUserDetails): Boolean {
+        val currentOperation = Operation.DELETE
         val post = postRepository.findByIdOrNull(input.id)
             ?: return false
 
-        ensureSecuredAccess(actor, post.userId)
+        ensureOperationAllowed(post.userId!!, currentOperation, actor)
 
         postRepository.delete(post)
         appEventPublisher.publishEvent(PostEvent.Deleted(id = post.id!!))
@@ -168,6 +168,17 @@ class PostServiceImpl(
                 }
             }
         }
+
+    private fun ensureOperationAllowed(
+        userId: UUID,
+        operation: Operation,
+        actor: CurrentUserDetails? = null,
+    ) {
+        if (actor != null) {
+            ensureAccessAllowed(userId, actor)
+        }
+        ensureUserPostsEnabled(userId, operation)
+    }
 
     private fun ensureUserPostsEnabled(userId: UUID, operation: Operation) {
         val user =

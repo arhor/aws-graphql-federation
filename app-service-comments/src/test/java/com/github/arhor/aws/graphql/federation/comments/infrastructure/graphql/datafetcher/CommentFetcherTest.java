@@ -15,7 +15,10 @@ import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.d
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
+import com.github.arhor.aws.graphql.federation.starter.graphql.DgsComponentsAutoConfiguration;
+import com.github.arhor.aws.graphql.federation.starter.security.SubgraphSecurityAutoConfiguration;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
+import com.github.arhor.aws.graphql.federation.starter.testing.WithMockCurrentUser;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.netflix.graphql.dgs.autoconfig.DgsExtendedScalarsAutoConfiguration;
@@ -35,8 +38,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import static com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt.ZERO_UUID_STR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -45,16 +50,18 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
     classes = {
         CommentFetcher.class,
         DgsAutoConfiguration.class,
+        DgsComponentsAutoConfiguration.class,
         DgsExtendedScalarsAutoConfiguration.class,
         PostRepresentationFetcher.class,
         UserRepresentationFetcher.class,
+        SubgraphSecurityAutoConfiguration.class,
     }
 )
 class CommentFetcherTest {
 
+    private static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
+    private static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
     private static final UUID COMMENT_ID = ConstantsKt.getTEST_1_UUID_VAL();
-    private static final UUID USER_ID = ConstantsKt.getTEST_2_UUID_VAL();
-    private static final UUID POST_ID = ConstantsKt.getTEST_3_UUID_VAL();
 
     @MockBean
     private CommentService commentService;
@@ -233,6 +240,7 @@ class CommentFetcherTest {
 
     @Nested
     @DisplayName("mutation { createComment }")
+    @WithMockCurrentUser(id = ZERO_UUID_STR)
     class CreateCommentMutationTest {
         @Test
         void should_create_new_comment_and_return_result_object_containing_created_data() {
@@ -240,7 +248,7 @@ class CommentFetcherTest {
             var content = "test-password";
             var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
 
-            given(commentService.createComment(any()))
+            given(commentService.createComment(any(), any()))
                 .willReturn(expectedComment);
 
             // When
@@ -269,7 +277,7 @@ class CommentFetcherTest {
             // Then
             then(commentService)
                 .should()
-                .createComment(new CreateCommentInput(USER_ID, POST_ID, content));
+                .createComment(eq(new CreateCommentInput(USER_ID, POST_ID, content)), any());
 
             assertThat(result)
                 .isEqualTo(expectedComment);
@@ -278,6 +286,7 @@ class CommentFetcherTest {
 
     @Nested
     @DisplayName("mutation { updateComment }")
+    @WithMockCurrentUser(id = ZERO_UUID_STR)
     class UpdateCommentMutationTest {
         @Test
         void should_update_existing_comment_and_return_result_object_containing_updated_data() {
@@ -285,7 +294,7 @@ class CommentFetcherTest {
             var content = "test-password";
             var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
 
-            given(commentService.updateComment(any()))
+            given(commentService.updateComment(any(), any()))
                 .willReturn(expectedComment);
 
             // When
@@ -313,7 +322,7 @@ class CommentFetcherTest {
             // Then
             then(commentService)
                 .should()
-                .updateComment(new UpdateCommentInput(COMMENT_ID, content));
+                .updateComment(eq(new UpdateCommentInput(COMMENT_ID, content)), any());
 
             assertThat(result)
                 .isEqualTo(expectedComment);
@@ -322,6 +331,7 @@ class CommentFetcherTest {
 
     @Nested
     @DisplayName("mutation { deleteComment }")
+    @WithMockCurrentUser(id = ZERO_UUID_STR)
     class DeleteCommentMutationTest {
         @ValueSource(booleans = { true, false })
         @ParameterizedTest
@@ -331,7 +341,7 @@ class CommentFetcherTest {
         ) {
             final var expectedInput = new DeleteCommentInput(COMMENT_ID);
 
-            given(commentService.deleteComment(any()))
+            given(commentService.deleteComment(any(), any()))
                 .willReturn(expectedResult);
 
             // When
@@ -353,7 +363,7 @@ class CommentFetcherTest {
             // Then
             then(commentService)
                 .should()
-                .deleteComment(expectedInput);
+                .deleteComment(eq(expectedInput), any());
 
             assertThat(result)
                 .isNotNull()

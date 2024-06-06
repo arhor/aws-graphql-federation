@@ -4,6 +4,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 
 import java.util.Collection;
 import java.util.List;
@@ -59,23 +60,26 @@ public interface CommentService {
      * Creates a new comment.
      *
      * @param input the input object containing the necessary data to create the comment
+     * @param actor the user creating comment
      * @return the created comment
      */
-    Comment createComment(CreateCommentInput input);
+    Comment createComment(CreateCommentInput input, CurrentUserDetails actor);
 
     /**
      * Updates an existing comment.
      *
      * @param input the input object containing the necessary data to update the comment
+     * @param actor the user updating comment
      * @return the updated comment
      */
-    Comment updateComment(UpdateCommentInput input);
+    Comment updateComment(UpdateCommentInput input, CurrentUserDetails actor);
 
     /**
      * Deletes a comment.
      *
      * @param input the input object containing the necessary data to delete the comment
+     * @param actor the user deleting comment
      * @return {@code true} if the comment was successfully deleted, {@code false} otherwise
      */
-    boolean deleteComment(DeleteCommentInput input);
+    boolean deleteComment(DeleteCommentInput input, CurrentUserDetails actor);
 }
