@@ -32,7 +32,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3-beta
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build Users service
         run: './gradlew :app-service-users:buildNeeded'
@@ -61,7 +61,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3-beta
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Download compiled classes and JaCoCo exec
         uses: actions/download-artifact@v4
