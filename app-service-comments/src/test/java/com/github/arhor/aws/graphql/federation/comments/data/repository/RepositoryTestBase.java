@@ -99,10 +99,19 @@ abstract class RepositoryTestBase {
         final UserRepresentation user,
         final PostRepresentation post
     ) {
+        return createComment(user, post, null);
+    }
+
+    protected CommentEntity createComment(
+        final UserRepresentation user,
+        final PostRepresentation post,
+        final CommentEntity parent
+    ) {
         return commentRepository.save(
             CommentEntity.builder()
                 .userId(user.id())
                 .postId(post.id())
+                .prntId((parent != null) ? parent.id() : null)
                 .content("user-" + user.id() + " / post-" + post.id())
                 .build()
         );

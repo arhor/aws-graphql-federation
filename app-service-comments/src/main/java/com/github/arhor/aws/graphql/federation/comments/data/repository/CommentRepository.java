@@ -33,12 +33,12 @@ public interface CommentRepository extends ListCrudRepository<CommentEntity, UUI
     Stream<CommentEntity> findAllByUserIdIn(@Nonnull Collection<UUID> userIds);
 
     /**
-     * Finds all comment entities for the specified post IDs.
+     * Finds all top-level (without a parent) comment entities for the specified post IDs.
      *
      * @param postIds the collection of post IDs to retrieve comments for
-     * @return a stream of comment entities associated with the specified post IDs
+     * @return a stream of top-level comment entities associated with the specified post IDs
      */
-    Stream<CommentEntity> findAllByPostIdIn(@Nonnull Collection<UUID> postIds);
+    Stream<CommentEntity> findAllByPrntIdNullAndPostIdIn(@Nonnull Collection<UUID> postIds);
 
     /**
      * Counts all comments for the specified post IDs.

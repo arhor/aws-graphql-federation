@@ -62,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
             Comment::getUserId
         );
         postsCommentsLoader = new GroupingLoader<>(
-            commentRepository::findAllByPostIdIn,
+            commentRepository::findAllByPrntIdNullAndPostIdIn,
             commentMapper::mapToDto,
             Comment::getPostId
         );

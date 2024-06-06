@@ -223,7 +223,7 @@ class CommentServiceImplTest {
                 .map(it -> Comment.newBuilder().id(it.id()).postId(it.postId()).build())
                 .toList();
 
-            given(commentRepository.findAllByPostIdIn(any()))
+            given(commentRepository.findAllByPrntIdNullAndPostIdIn(any()))
                 .willAnswer((__) -> commentEntities.stream());
 
             given(commentMapper.mapToDto(any()))
@@ -236,7 +236,7 @@ class CommentServiceImplTest {
             // Then
             then(commentRepository)
                 .should()
-                .findAllByPostIdIn(postIds);
+                .findAllByPrntIdNullAndPostIdIn(postIds);
 
             then(commentMapper)
                 .should()

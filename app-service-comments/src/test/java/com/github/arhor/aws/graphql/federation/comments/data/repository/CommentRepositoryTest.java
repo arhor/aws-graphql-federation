@@ -80,45 +80,41 @@ public class CommentRepositoryTest extends RepositoryTestBase {
     }
 
     @Nested
-    @DisplayName("CommentRepository :: findAllByPostIdIn")
-    class FindAllByPostIdInTest {
+    @DisplayName("CommentRepository :: findAllByPrntIdNullAndPostIdIn")
+    class FindAllByPrntIdNullAndPostIdInTest {
         @Test
-        void should_return_expected_list_of_comments_by_post_ids() {
+        void should_return_expected_list_of_top_level_comments_by_post_ids() {
             // Given
             final var user1 = createUser(ConstantsKt.getZERO_UUID_VAL());
+            final var user2 = createUser(ConstantsKt.getOMNI_UUID_VAL());
 
             final var post1 = createPost(ConstantsKt.getTEST_1_UUID_VAL());
             final var post2 = createPost(ConstantsKt.getTEST_2_UUID_VAL());
             final var post3 = createPost(ConstantsKt.getTEST_3_UUID_VAL());
 
-            final var post1Comments = List.of(
-                createComment(user1, post1),
-                createComment(user1, post1)
-            );
-            final var post2Comments = List.of(
-                createComment(user1, post2),
-                createComment(user1, post2)
-            );
-            final var post3Comments = List.of(
-                createComment(user1, post3),
-                createComment(user1, post3)
-            );
+            final var post1Comment1 = createComment(user1, post1);
+            final var post1Comment2 = createComment(user2, post1);
 
-            final var expectedComments = Stream.concat(post1Comments.stream(), post2Comments.stream()).toList();
+            final var post2Comment1 = createComment(user1, post2);
+            final var post2Comment2 = createComment(user2, post2, post2Comment1);
+
+            final var post3Comment1 = createComment(user1, post3);
+            final var post3Comment2 = createComment(user2, post3, post3Comment1);
 
             // When
-            final var result = commentRepository.findAllByPostIdIn(
-                expectedComments
-                    .stream()
-                    .map(CommentEntity::postId)
-                    .toList()
-            );
+            final var result =
+                commentRepository.findAllByPrntIdNullAndPostIdIn(
+                    List.of(
+                        post1.id(),
+                        post2.id()
+                    )
+                );
 
             // Then
             assertThat(result)
                 .isNotNull()
-                .containsExactlyElementsOf(expectedComments)
-                .doesNotContainAnyElementsOf(post3Comments);
+                .containsExactly(post1Comment1, post1Comment2, post2Comment1)
+                .doesNotContain(post2Comment2, post3Comment1, post3Comment2);
         }
 
         @Test
@@ -127,7 +123,7 @@ public class CommentRepositoryTest extends RepositoryTestBase {
             final List<UUID> postIds = List.of();
 
             // When
-            final var result = commentRepository.findAllByPostIdIn(postIds);
+            final var result = commentRepository.findAllByPrntIdNullAndPostIdIn(postIds);
 
             // Then
             assertThat(result)
