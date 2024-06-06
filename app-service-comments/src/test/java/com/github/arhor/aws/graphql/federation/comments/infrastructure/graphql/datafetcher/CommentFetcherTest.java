@@ -132,7 +132,7 @@ class CommentFetcherTest {
                 .willReturn(CompletableFuture.completedFuture(Map.of(USER_ID, expectedComments)));
 
             // When
-            var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+            final var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 // language=GraphQL
                 """
                     query ($representations: [_Any!]!) {
@@ -201,7 +201,7 @@ class CommentFetcherTest {
                 .willReturn(CompletableFuture.completedFuture(Map.of(POST_ID, expectedComments)));
 
             // When
-            var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+            final var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 // language=GraphQL
                 """
                     query ($representations: [_Any!]!) {
@@ -245,14 +245,14 @@ class CommentFetcherTest {
         @Test
         void should_create_new_comment_and_return_result_object_containing_created_data() {
             // Given
-            var content = "test-password";
-            var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
+            final var content = "test-password";
+            final var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
 
             given(commentService.createComment(any(), any()))
                 .willReturn(expectedComment);
 
             // When
-            var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+            final var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 // language=GraphQL
                 """
                     mutation($userId: UUID!, $postId: UUID!, $content: String!) {
@@ -291,14 +291,14 @@ class CommentFetcherTest {
         @Test
         void should_update_existing_comment_and_return_result_object_containing_updated_data() {
             // Given
-            var content = "test-password";
-            var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
+            final var content = "test-password";
+            final var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
 
             given(commentService.updateComment(any(), any()))
                 .willReturn(expectedComment);
 
             // When
-            var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+            final var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 // language=GraphQL
                 """
                     mutation($id: UUID!, $content: String!) {
@@ -345,7 +345,7 @@ class CommentFetcherTest {
                 .willReturn(expectedResult);
 
             // When
-            var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+            final var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 // language=GraphQL
                 """
                     mutation($id: UUID!) {
