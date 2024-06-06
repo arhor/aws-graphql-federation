@@ -30,14 +30,14 @@ input PostsLookupInput {
 input CreatePostInput {
     title: String!    @NotBlank @Size(min: 1, max: 512)
     content: String!  @NotBlank @Size(min: 1, max: 4096)
-    tags: [TagInput!]
+    tags: [TagInput!] @Size(min: 0, max: 15)
 }
 
 input UpdatePostInput {
     id: UUID!
     title: String     @NotBlank @Size(min: 1, max: 512)
     content: String   @NotBlank @Size(min: 1, max: 4096)
-    tags: [TagInput!]
+    tags: [TagInput!] @Size(min: 0, max: 15)
 }
 
 input DeletePostInput {
