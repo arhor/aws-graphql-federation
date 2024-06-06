@@ -45,9 +45,9 @@ class UserFetcher(
     @PreAuthorize("isAuthenticated()")
     fun updateUser(
         @InputArgument input: UpdateUserInput,
-        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
     ): User {
-        ensureSecuredAccess(authenticatedUser, input.id)
+        ensureSecuredAccess(actor, input.id)
         return userService.updateUser(input)
     }
 
@@ -55,9 +55,9 @@ class UserFetcher(
     @PreAuthorize("isAuthenticated()")
     fun deleteUser(
         @InputArgument input: DeleteUserInput,
-        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
     ): Boolean {
-        ensureSecuredAccess(authenticatedUser, input.id, ROLE_ADMIN)
+        ensureSecuredAccess(actor, input.id, ROLE_ADMIN)
         return userService.deleteUser(input)
     }
 }

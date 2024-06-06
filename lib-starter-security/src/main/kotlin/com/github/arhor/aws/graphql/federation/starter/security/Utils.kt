@@ -5,7 +5,7 @@ import org.springframework.security.core.GrantedAuthority
 import java.util.UUID
 
 /**
- * Throws  an AccessDeniedException if the acting user has not the necessary
+ * Throws an AccessDeniedException if the acting user has not the necessary
  * authorities and does not have the target user id.
  *
  * @param actingUser   The user details of the acting user attempting to perform

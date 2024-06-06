@@ -53,23 +53,23 @@ class PostFetcher(
     @PreAuthorize("isAuthenticated()")
     fun createPost(
         @InputArgument input: CreatePostInput,
-        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
     ): Post =
-        postService.createPost(input, authenticatedUser)
+        postService.createPost(input, actor)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
     fun updatePost(
         @InputArgument input: UpdatePostInput,
-        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
     ): Post =
-        postService.updatePost(input, authenticatedUser)
+        postService.updatePost(input, actor)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
     fun deletePost(
         @InputArgument input: DeletePostInput,
-        @AuthenticationPrincipal authenticatedUser: CurrentUserDetails,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
     ): Boolean =
-        postService.deletePost(input, authenticatedUser)
+        postService.deletePost(input, actor)
 }
