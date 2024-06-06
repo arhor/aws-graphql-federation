@@ -551,6 +551,7 @@ class PostServiceImplTest {
             // Given
             val entity = createPostEntity()
 
+            every { userRepository.findById(any()) } returns Optional.of(UserRepresentation(id = USER_ID))
             every { postRepository.findById(any()) } returns Optional.of(entity)
             every { postRepository.delete(any()) } just runs
             every { appEventPublisher.publishEvent(any<PostEvent>()) } just runs
@@ -562,6 +563,7 @@ class PostServiceImplTest {
             })
 
             // Then
+            verify(exactly = 1) { userRepository.findById(entity.id!!) }
             verify(exactly = 1) { postRepository.findById(entity.id!!) }
             verify(exactly = 1) { postRepository.delete(entity) }
             verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Deleted(id = entity.id!!)) }
