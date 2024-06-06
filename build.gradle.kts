@@ -16,9 +16,18 @@ tasks {
 
     val fullClean by registering {
         group = "build"
-        description = "Cleanes all included projects"
+        description = "Cleans all included projects"
 
         gradle.includedBuilds.map { it.task(":clean") }.forEach {
+            dependsOn(it)
+        }
+    }
+
+    val fullBuild by registering {
+        group = "build"
+        description = "Builds all included projects"
+
+        gradle.includedBuilds.map { it.task(":build") }.forEach {
             dependsOn(it)
         }
     }
