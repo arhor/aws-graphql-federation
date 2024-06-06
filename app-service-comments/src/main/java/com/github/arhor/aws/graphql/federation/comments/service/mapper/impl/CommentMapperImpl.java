@@ -16,6 +16,7 @@ public class CommentMapperImpl implements CommentMapper {
         return (input == null) ? null : CommentEntity.builder()
             .userId(input.getUserId())
             .postId(input.getPostId())
+            .prntId(input.getPrntId())
             .content(input.getContent())
             .build();
     }
@@ -26,6 +27,7 @@ public class CommentMapperImpl implements CommentMapper {
             .id(Objects.requireNonNull(entity.id(), "Entity must be persisted with assigned id!"))
             .userId(entity.userId())
             .postId(entity.postId())
+            .prntId(entity.prntId())
             .content(entity.content())
             .build();
     }

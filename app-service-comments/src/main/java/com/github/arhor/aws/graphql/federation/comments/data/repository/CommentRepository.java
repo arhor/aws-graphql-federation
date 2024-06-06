@@ -41,6 +41,15 @@ public interface CommentRepository extends ListCrudRepository<CommentEntity, UUI
     Stream<CommentEntity> findAllByPrntIdNullAndPostIdIn(@Nonnull Collection<UUID> postIds);
 
     /**
+     * Checks if a comment exists with the given post ID and parent ID.
+     *
+     * @param postId the UUID of the post to check for existence.
+     * @param prntId the UUID of the parent comment to check for existence.
+     * @return {@code true} if a comment exists with the given post ID and parent ID, {@code false} otherwise.
+     */
+    boolean existsByPostIdAndPrntId(UUID postId, UUID prntId);
+
+    /**
      * Counts all comments for the specified post IDs.
      *
      * @param postIds the collection of post IDs to retrieve number of comments for

@@ -239,7 +239,7 @@ class CommentFetcherTest extends GraphQLTestBase {
         void should_create_new_comment_and_return_result_object_containing_created_data() {
             // Given
             final var content = "test-password";
-            final var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
+            final var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, null, content, null);
 
             given(commentService.createComment(any(), any()))
                 .willReturn(expectedComment);
@@ -270,7 +270,7 @@ class CommentFetcherTest extends GraphQLTestBase {
             // Then
             then(commentService)
                 .should()
-                .createComment(eq(new CreateCommentInput(USER_ID, POST_ID, content)), any());
+                .createComment(eq(new CreateCommentInput(USER_ID, POST_ID, null, content)), any());
 
             assertThat(result)
                 .isEqualTo(expectedComment);
@@ -285,7 +285,7 @@ class CommentFetcherTest extends GraphQLTestBase {
         void should_update_existing_comment_and_return_result_object_containing_updated_data() {
             // Given
             final var content = "test-password";
-            final var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, content, null);
+            final var expectedComment = new Comment(COMMENT_ID, USER_ID, POST_ID, null, content, null);
 
             given(commentService.updateComment(any(), any()))
                 .willReturn(expectedComment);

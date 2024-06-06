@@ -125,6 +125,7 @@ public class CommentServiceImpl implements CommentService {
         ensureOperationAllowed(
             input.getUserId(),
             input.getPostId(),
+            input.getPrntId(),
             currentOperation
         );
 
@@ -200,9 +201,10 @@ public class CommentServiceImpl implements CommentService {
     private void ensureOperationAllowed(
         final UUID userId,
         final UUID postId,
+        final UUID prntId,
         final Operation operation
     ) {
-        ensureOperationAllowed(userId, postId, operation, null);
+        ensureOperationAllowed(userId, postId, prntId, operation, null);
     }
 
     private void ensureOperationAllowed(
@@ -211,11 +213,39 @@ public class CommentServiceImpl implements CommentService {
         final Operation operation,
         final CurrentUserDetails actor
     ) {
+        ensureOperationAllowed(userId, postId, null, operation, actor);
+    }
+
+    private void ensureOperationAllowed(
+        final UUID userId,
+        final UUID postId,
+        final UUID prntId,
+        final Operation operation,
+        final CurrentUserDetails actor
+    ) {
         if (actor != null) {
             ensureAccessAllowed(userId, actor);
         }
+        if (prntId != null) {
+            ensureParentCommentExists(postId, prntId, operation);
+        }
         ensureCommentsEnabled(userRepository, operation, USER.TYPE_NAME, USER.Id, userId);
         ensureCommentsEnabled(postRepository, operation, POST.TYPE_NAME, POST.Id, postId);
+    }
+
+    private void ensureParentCommentExists(
+        final UUID postId,
+        final UUID prntId,
+        final Operation operation
+    ) {
+        if (commentRepository.existsByPostIdAndPrntId(postId, prntId)) {
+            return;
+        }
+        throw new EntityNotFoundException(
+            COMMENT.TYPE_NAME,
+            COMMENT.PostId + " = " + postId + " and " + COMMENT.PrntId + " = " + prntId,
+            operation
+        );
     }
 
     private <T extends HasComments> void ensureCommentsEnabled(
