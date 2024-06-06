@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import java.sql.ResultSet
 import java.util.UUID
 
-@Component
+@Component(PostIdToTagNamesResultSetExtractor.BEAN_NAME)
 class PostIdToTagNamesResultSetExtractor : ResultSetExtractor<Map<UUID, List<String>>> {
 
     override fun extractData(rs: ResultSet): Map<UUID, List<String>> {

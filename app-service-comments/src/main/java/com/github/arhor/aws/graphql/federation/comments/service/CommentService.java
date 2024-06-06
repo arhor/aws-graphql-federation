@@ -48,6 +48,14 @@ public interface CommentService {
     Map<UUID, List<Comment>> getCommentsByPostIds(Collection<UUID> postIds);
 
     /**
+     * Retrieves number of comments for the specified post IDs.
+     *
+     * @param postIds the collection of post IDs to retrieve number of comments for
+     * @return a map where the key is the post ID and the value is a number of comments associated with that post
+     */
+    Map<UUID, Integer> getCommentsNumberByPostIds(Collection<UUID> postIds);
+
+    /**
      * Creates a new comment.
      *
      * @param input the input object containing the necessary data to create the comment

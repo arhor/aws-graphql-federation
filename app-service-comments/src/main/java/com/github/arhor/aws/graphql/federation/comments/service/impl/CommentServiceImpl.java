@@ -111,6 +111,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public Map<UUID, Integer> getCommentsNumberByPostIds(final Collection<UUID> postIds) {
+        return commentRepository.countCommentsByPostIds(postIds);
+    }
+
+    @Override
     @Transactional
     public Comment createComment(final CreateCommentInput input) {
         final var currentOperation = Operation.CREATE;

@@ -61,6 +61,7 @@ type Comment {
 type Post @key(fields: "id") @extends {
     id: UUID! @external
     comments: [Comment!]
+    commentsNumber: Int
     commentsDisabled: Boolean
 }
 

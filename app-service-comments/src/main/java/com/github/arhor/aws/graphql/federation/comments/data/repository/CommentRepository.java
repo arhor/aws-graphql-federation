@@ -1,9 +1,13 @@
 package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.mapping.CommentsNumberByPostIdResultSetExtractor;
+import jakarta.annotation.Nonnull;
+import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -18,7 +22,7 @@ public interface CommentRepository extends ListCrudRepository<CommentEntity, UUI
      * @param prntId the collection of parent comment IDs to retrieve comments for
      * @return a stream of comment entities associated with the specified parent comment IDs
      */
-    Stream<CommentEntity> findAllByPrntIdIn(Collection<UUID> prntId);
+    Stream<CommentEntity> findAllByPrntIdIn(@Nonnull Collection<UUID> prntId);
 
     /**
      * Finds all comment entities for the specified user IDs.
@@ -26,7 +30,7 @@ public interface CommentRepository extends ListCrudRepository<CommentEntity, UUI
      * @param userIds the collection of user IDs to retrieve comments for
      * @return a stream of comment entities associated with the specified user IDs
      */
-    Stream<CommentEntity> findAllByUserIdIn(Collection<UUID> userIds);
+    Stream<CommentEntity> findAllByUserIdIn(@Nonnull Collection<UUID> userIds);
 
     /**
      * Finds all comment entities for the specified post IDs.
@@ -34,5 +38,17 @@ public interface CommentRepository extends ListCrudRepository<CommentEntity, UUI
      * @param postIds the collection of post IDs to retrieve comments for
      * @return a stream of comment entities associated with the specified post IDs
      */
-    Stream<CommentEntity> findAllByPostIdIn(Collection<UUID> postIds);
+    Stream<CommentEntity> findAllByPostIdIn(@Nonnull Collection<UUID> postIds);
+
+    /**
+     * Counts all comments for the specified post IDs.
+     *
+     * @param postIds the collection of post IDs to retrieve number of comments for
+     * @return a map where the key is the post ID and the value is a number of comments associated with that post
+     */
+    @Query(
+        name = "CommentEntity.countCommentsByPostIds",
+        resultSetExtractorRef = CommentsNumberByPostIdResultSetExtractor.BEAN_NAME
+    )
+    Map<UUID, Integer> countCommentsByPostIds(@Nonnull Collection<UUID> postIds);
 }

@@ -11,6 +11,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.CommentRepliesBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsBatchLoader;
+import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostCommentsNumberBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserCommentsBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
@@ -57,6 +58,11 @@ public class CommentFetcher {
     @DgsData(parentType = POST.TYPE_NAME, field = POST.Comments)
     public CompletableFuture<List<Comment>> postComments(final DgsDataFetchingEnvironment dfe) {
         return loadWith(PostCommentsBatchLoader.class, dfe, Post::getId);
+    }
+
+    @DgsData(parentType = POST.TYPE_NAME, field = POST.CommentsNumber)
+    public CompletableFuture<Integer> postCommentsNumber(final DgsDataFetchingEnvironment dfe) {
+        return loadWith(PostCommentsNumberBatchLoader.class, dfe, Post::getId);
     }
 
     /* ---------- Mutations ---------- */
