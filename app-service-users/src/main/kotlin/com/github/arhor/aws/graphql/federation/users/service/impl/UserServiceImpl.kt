@@ -21,12 +21,12 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Use
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.UserService
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
-import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -86,7 +86,7 @@ class UserServiceImpl(
         } else {
             logger.error("Provided incorrect username: {}", username)
         }
-        throw DgsBadRequestException(message = "Bad Credentials")
+        throw UsernameNotFoundException("Bad Credentials")
     }
 
     @Transactional

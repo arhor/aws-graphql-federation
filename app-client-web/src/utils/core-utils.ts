@@ -12,9 +12,11 @@ export function withObjectURL(data: BufferSource, urlConsumer: (arg: string) => 
     const blob = new Blob([data]);
     const href = URL.createObjectURL(blob);
 
-    urlConsumer(href);
-
-    window.URL.revokeObjectURL(href);
+    try {
+        urlConsumer(href);
+    } finally {
+        window.URL.revokeObjectURL(href);
+    }
 }
 
 export function delay(ms: number) {

@@ -2,12 +2,7 @@ import gql from 'graphql-tag';
 import fetcher from 'make-fetch-happen';
 import { ApolloGateway, IntrospectAndCompose, LocalGraphQLDataSource, RemoteGraphQLDataSource } from '@apollo/gateway';
 import { buildSubgraphSchema } from '@apollo/subgraph';
-import {
-    COMMS_SERVICE_GRAPHQL_URL,
-    POSTS_SERVICE_GRAPHQL_URL,
-    USERS_SERVICE_GRAPHQL_URL,
-    USERS_SERVICE_VERIFY_PATH,
-} from '#server/utils/env.js';
+import { COMMS_SERVICE_GRAPHQL_URL, POSTS_SERVICE_GRAPHQL_URL, USERS_SERVICE_GRAPHQL_URL } from '#server/utils/env.js';
 
 export function createGateway(server) {
     return new ApolloGateway({
@@ -50,16 +45,10 @@ function createLocalDataSource({ server }) {
             resolvers: {
                 Mutation: {
                     signIn: async (source, args) => {
-                        const accessToken =
-                            await fetch(USERS_SERVICE_VERIFY_PATH, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(args.input),
-                            })
-                                .then(it => it.json())
-                                .then(it => server.jwt.sign({ payload: it }));
+                        const principal = await vauthenticate(args.input);
+                        const signedJwt = server.jwt.sign({ payload: principal });
 
-                        return { accessToken };
+                        return { accessToken: signedJwt };
                     },
                 },
             },

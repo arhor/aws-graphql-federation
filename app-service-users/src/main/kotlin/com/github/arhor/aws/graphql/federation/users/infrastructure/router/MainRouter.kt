@@ -2,14 +2,15 @@ package com.github.arhor.aws.graphql.federation.users.infrastructure.router
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityDuplicateException
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
+import com.github.arhor.aws.graphql.federation.starter.core.rest.sendError
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.service.UserService
-import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.NO_CONTENT
 import org.springframework.http.HttpStatus.OK
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.function.RouterFunction
 import org.springframework.web.servlet.function.ServerResponse
@@ -28,7 +29,7 @@ class MainRouter(
             .build()
     }
     "/api".nest {
-        POST("/users/verify") {
+        POST("/users/authenticate") {
             val userRequest = it.body<CurrentUserRequest>()
             val currentUser = userService.getUserByUsernameAndPassword(userRequest)
 
@@ -39,16 +40,22 @@ class MainRouter(
 
     /* ---------- Exception Handlers ---------- */
 
-    onError<EntityNotFoundException> { _, _ ->
-        status(NOT_FOUND)
-            .build()
+    onError<EntityNotFoundException> { e, _ ->
+        sendError(
+            status = NOT_FOUND,
+            message = e.message
+        )
     }
-    onError<EntityDuplicateException> { _, _ ->
-        status(CONFLICT)
-            .build()
+    onError<EntityDuplicateException> { e, _ ->
+        sendError(
+            status = CONFLICT,
+            message = e.message
+        )
     }
-    onError<DgsBadRequestException> { _, _ ->
-        status(BAD_REQUEST)
-            .build()
+    onError<UsernameNotFoundException> { e, _ ->
+        sendError(
+            status = BAD_REQUEST,
+            message = e.message
+        )
     }
 })

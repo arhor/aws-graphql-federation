@@ -46,7 +46,7 @@ class MainRouterTest {
     @Test
     fun `should handle user verification request`() {
         // Given
-        val requestURI = URI.create("/api/users/verify")
+        val requestURI = URI.create("/api/users/authenticate")
 
         val expectedReq = CurrentUserRequest(username = "test-username", password = "test-password")
         val expectedRes = CurrentUser(id = ZERO_UUID_VAL, authorities = listOf("ROLE_TEST_1", "ROLE_TEST_2"))

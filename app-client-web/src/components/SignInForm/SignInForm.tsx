@@ -59,25 +59,27 @@ export default function SignInForm() {
                 <Grid container justifyContent="center">
                     <Grid item xs={10}>
                         <TextField
+                            id="username"
+                            name="username"
+                            label="Username"
                             margin="normal"
                             required
                             fullWidth
-                            id="username"
-                            label="Username"
-                            name="username"
                             autoComplete="username"
+                            sx={{ mb: 5 }}
                         />
                     </Grid>
                     <Grid item xs={10}>
                         <TextField
+                            id="password"
+                            name="password"
+                            type="password"
+                            label="Password"
                             margin="normal"
                             required
                             fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
                             autoComplete="current-password"
+                            sx={{ mb: 5 }}
                         />
                     </Grid>
                     <Grid item xs={10}>
@@ -87,7 +89,7 @@ export default function SignInForm() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Sign In
+                            {"Sign In"}
                         </Button>
                     </Grid>
                     <Grid item>
