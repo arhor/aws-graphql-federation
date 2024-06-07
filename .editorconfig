@@ -18,5 +18,8 @@ indent_size = 2
 [*.java]
 ij_java_keep_simple_classes_in_one_line = true
 ij_java_keep_simple_methods_in_one_line = true
+ij_java_keep_simple_lambdas_in_one_line = true
+ij_java_new_line_after_lparen_in_record_header = true
+ij_java_rparen_on_new_line_in_record_header = true
 ij_java_class_count_to_use_import_on_demand = 999
 ij_java_names_count_to_use_import_on_demand = 999

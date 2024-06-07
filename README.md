@@ -64,23 +64,19 @@ all of which are subgraphs in the overall GraphQL federation supergraph.
 1. **Install Java**: Ensure you have Java 8 to 17 installed. Gradle will manage the required version (21) using the
    toolchain.
 
-2. **Build the required service**:
-    ```sh
-    ./gradlew :{service-name}:build
+2. **Build and run the required service**:
+    - Users service:
+    ```shell
+    ./gradlew :app-users-service:bootRun
     ```
-   example:
-   ```shell
-   ./gradlew :app-users-service:build
-   ```
-
-3. **Run the required Service**:
-    ```sh
-    ./gradlew :{service-name}:bootRun
+    - Posts service:
+    ```shell
+    ./gradlew :app-posts-service:bootRun
     ```
-   example:
-   ```shell
-   ./gradlew :app-users-service:bootRun
-   ```
+    - Comments service:
+    ```shell
+    ./gradlew :app-comments-service:bootRun
+    ```
 
 ### Frontend Setup
 
