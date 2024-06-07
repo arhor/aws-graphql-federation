@@ -7,7 +7,7 @@ export async function authenticate({ username, password }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
     });
-    if (response.status !== 200) {
+    if (!response.ok) {
         const error = await response.json();
         throw new GraphQLError(error.message, {
             extensions: {
