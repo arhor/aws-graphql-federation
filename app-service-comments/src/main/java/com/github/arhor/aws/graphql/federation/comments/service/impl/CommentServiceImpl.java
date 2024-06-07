@@ -27,10 +27,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -53,6 +51,7 @@ public class CommentServiceImpl implements CommentService {
 
     private GroupingLoader<CommentEntity, Comment, UUID> usersCommentsLoader;
     private GroupingLoader<CommentEntity, Comment, UUID> postsCommentsLoader;
+    private GroupingLoader<CommentEntity, Comment, UUID> replyCommentsLoader;
 
     @PostConstruct
     public void initialize() {
@@ -65,6 +64,11 @@ public class CommentServiceImpl implements CommentService {
             commentRepository::findAllByPrntIdNullAndPostIdIn,
             commentMapper::mapToDto,
             Comment::getPostId
+        );
+        replyCommentsLoader = new GroupingLoader<>(
+            commentRepository::findAllByPrntIdIn,
+            commentMapper::mapToDto,
+            Comment::getPrntId
         );
     }
 
@@ -84,20 +88,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public Map<UUID, List<Comment>> getCommentsReplies(final Collection<UUID> commentIds) {
-        if (commentIds.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        final var result = new HashMap<UUID, List<Comment>>(commentIds.size());
-
-        try (final var replies = commentRepository.findAllByPrntIdIn(commentIds)) {
-            replies.forEach(comment -> {
-                final var group = result.computeIfAbsent(comment.prntId(), (__) -> new ArrayList<>());
-                final var reply = commentMapper.mapToDto(comment);
-
-                group.add(reply);
-            });
-        }
-        return result;
+        return replyCommentsLoader.loadBy(commentIds);
     }
 
     @Override
@@ -306,7 +297,7 @@ public class CommentServiceImpl implements CommentService {
             if (ids.isEmpty()) {
                 return Collections.emptyMap();
             }
-            try (var data = dataSource.apply(ids)) {
+            try (final var data = dataSource.apply(ids)) {
                 return data
                     .map(dataMapper)
                     .collect(groupingBy(classifier));
