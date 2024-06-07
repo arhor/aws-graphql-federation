@@ -17,7 +17,6 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Upd
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper
-import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
 import io.mockk.Call
 import io.mockk.MockKAnswerScope
 import io.mockk.confirmVerified
@@ -39,6 +38,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import java.util.Optional
 import java.util.UUID
@@ -199,7 +199,7 @@ class UserServiceImplTest {
         }
 
         @Test
-        fun `should throw DgsBadRequestException exception trying to get current user with invalid username`() {
+        fun `should throw UsernameNotFoundException exception trying to get current user with invalid username`() {
             // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
 
@@ -213,12 +213,12 @@ class UserServiceImplTest {
             // Then
             assertThat(result)
                 .isNotNull()
-                .asInstanceOf(throwable(DgsBadRequestException::class.java))
+                .asInstanceOf(throwable(UsernameNotFoundException::class.java))
                 .hasMessage("Bad Credentials")
         }
 
         @Test
-        fun `should throw DgsBadRequestException exception trying to get current user with invalid password`() {
+        fun `should throw UsernameNotFoundException exception trying to get current user with invalid password`() {
             // Given
             val request = CurrentUserRequest(username = "test-username", password = "test-password")
             val entity = mockk<UserEntity>()
@@ -238,7 +238,7 @@ class UserServiceImplTest {
             // Then
             assertThat(result)
                 .isNotNull()
-                .asInstanceOf(throwable(DgsBadRequestException::class.java))
+                .asInstanceOf(throwable(UsernameNotFoundException::class.java))
                 .hasMessage("Bad Credentials")
         }
     }
