@@ -92,7 +92,7 @@ class CommentServiceImplTest {
                 CommentEntity.builder().id(COMMENT_3_ID).userId(USER_ID).prntId(COMMENT_1_ID).build()
             );
             final var commentDtos = commentEntities.stream()
-                .map(it -> Comment.newBuilder().id(it.id()).userId(it.userId()).build())
+                .map(it -> Comment.newBuilder().id(it.id()).userId(it.userId()).prntId(it.prntId()).build())
                 .toList();
 
             given(commentRepository.findAllByPrntIdIn(any()))
