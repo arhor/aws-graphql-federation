@@ -1,8 +1,23 @@
+plugins {
+    idea
+}
+
 val dgsProjects = setOf(
     "app-service-users",
     "app-service-posts",
     "app-service-comments",
 )
+
+idea {
+    module {
+        excludeDirs.addAll(
+            files(
+                "$projectDir/app-client-web/node_modules",
+                "$projectDir/app-gateway/node_modules",
+            )
+        )
+    }
+}
 
 tasks {
     val dgsCodegen by registering {
