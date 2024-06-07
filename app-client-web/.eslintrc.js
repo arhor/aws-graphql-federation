@@ -1,4 +1,6 @@
-{
+
+
+export default {
     "root": true,
     "env": {
         "browser": true,
@@ -76,7 +78,11 @@
         "import/resolver": {
             "typescript": {
                 "project": "tsconfig.json"
-            }
+            },
+            "alias": {
+                "map": [["@", path.resolve(__dirname, "./src")]],
+                "extensions": ['.js', '.jsx', '.ts', '.d.ts', '.tsx'],
+              },
         },
         "import/extensions": [
             ".js",
