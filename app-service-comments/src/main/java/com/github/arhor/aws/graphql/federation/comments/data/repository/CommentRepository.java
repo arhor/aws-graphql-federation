@@ -17,20 +17,20 @@ import java.util.stream.Stream;
 public interface CommentRepository extends ListCrudRepository<CommentEntity, UUID> {
 
     /**
-     * Finds all comment entities for the specified parent comment IDs.
-     *
-     * @param prntId the collection of parent comment IDs to retrieve comments for
-     * @return a stream of comment entities associated with the specified parent comment IDs
-     */
-    Stream<CommentEntity> findAllByPrntIdIn(@Nonnull Collection<UUID> prntId);
-
-    /**
      * Finds all comment entities for the specified user IDs.
      *
      * @param userIds the collection of user IDs to retrieve comments for
      * @return a stream of comment entities associated with the specified user IDs
      */
     Stream<CommentEntity> findAllByUserIdIn(@Nonnull Collection<UUID> userIds);
+
+    /**
+     * Finds all comment entities for the specified parent comment IDs.
+     *
+     * @param prntId the collection of parent comment IDs to retrieve comments for
+     * @return a stream of comment entities associated with the specified parent comment IDs
+     */
+    Stream<CommentEntity> findAllByPrntIdIn(@Nonnull Collection<UUID> prntId);
 
     /**
      * Finds all top-level (without a parent) comment entities for the specified post IDs.
