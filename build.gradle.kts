@@ -42,7 +42,7 @@ tasks {
         group = "build"
         description = "Builds all included projects"
 
-        gradle.includedBuilds.map { it.task(":build") }.forEach {
+        gradle.includedBuilds.map { it.task(":assemble") }.forEach {
             dependsOn(it)
         }
     }

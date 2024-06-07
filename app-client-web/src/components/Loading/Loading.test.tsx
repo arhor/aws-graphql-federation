@@ -17,4 +17,3 @@ describe('Loading component', () => {
         render(<Loading />);
     });
 });
-
