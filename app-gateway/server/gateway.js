@@ -30,6 +30,10 @@ function createLocalDataSource({ server }) {
     return new LocalGraphQLDataSource(
         buildSubgraphSchema({
             typeDefs: gql`
+                type Query {
+                    me: CurrentUser
+                }
+
                 type Mutation {
                     signIn(input: SignInInput!): SignInResult
                 }
@@ -42,8 +46,27 @@ function createLocalDataSource({ server }) {
                 type SignInResult {
                     accessToken: String
                 }
+
+                type CurrentUser {
+                    id: ID
+                    authorities: [String!]
+                    authenticated: Boolean!
+                }
             `,
             resolvers: {
+                Query: {
+                    me: (source, args, context) => {
+                        const { currentUser } = context;
+
+                        return currentUser ? {
+                            id: currentUser.id,
+                            authorities: currentUser.authorities,
+                            authenticated: true,
+                        } : {
+                            authenticated: false,
+                        };
+                    },
+                },
                 Mutation: {
                     signIn: async (source, args) => {
                         const principal = await authenticate(args.input);
