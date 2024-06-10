@@ -2,8 +2,14 @@ import gql from 'graphql-tag';
 import fetcher from 'make-fetch-happen';
 import { ApolloGateway, IntrospectAndCompose, LocalGraphQLDataSource, RemoteGraphQLDataSource } from '@apollo/gateway';
 import { buildSubgraphSchema } from '@apollo/subgraph';
+
 import { authenticate } from "#server/client/user-service-client.js";
-import { COMMS_SERVICE_GRAPHQL_URL, POSTS_SERVICE_GRAPHQL_URL, USERS_SERVICE_GRAPHQL_URL } from '#server/utils/env.js';
+import {
+    ACCESS_TOKEN_COOKIE,
+    COMMS_SERVICE_GRAPHQL_URL,
+    POSTS_SERVICE_GRAPHQL_URL,
+    USERS_SERVICE_GRAPHQL_URL,
+} from '#server/utils/constants.js';
 
 export function createGateway(server) {
     return new ApolloGateway({
@@ -35,16 +41,12 @@ function createLocalDataSource({ server }) {
                 }
 
                 type Mutation {
-                    signIn(input: SignInInput!): SignInResult
+                    signIn(input: SignInInput!): Boolean
                 }
 
                 input SignInInput {
                     username: String!
                     password: String!
-                }
-
-                type SignInResult {
-                    accessToken: String
                 }
 
                 type CurrentUser {
@@ -68,11 +70,18 @@ function createLocalDataSource({ server }) {
                     },
                 },
                 Mutation: {
-                    signIn: async (source, args) => {
+                    signIn: async (source, args, context) => {
                         const principal = await authenticate(args.input);
                         const signedJwt = server.jwt.sign({ payload: principal });
 
-                        return { accessToken: signedJwt };
+                        context.res.setCookie(ACCESS_TOKEN_COOKIE, signedJwt, {
+                            path: '/',
+                            maxAge: 1000 * 60 * 60 * 24,
+                            secure: false,
+                            httpOnly: true,
+                        });
+
+                        return true;
                     },
                 },
             },

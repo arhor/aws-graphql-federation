@@ -11,6 +11,8 @@ export const POSTS_SERVICE_GRAPHQL_URL = `${POSTS_SERVICE_BASE_PATH}${GRAPHQL_EN
 export const COMMS_SERVICE_GRAPHQL_URL = `${COMMS_SERVICE_BASE_PATH}${GRAPHQL_END_POINT}`;
 export const GATEWAY_PORT = Number(process.env['GATEWAY_PORT'] ?? 4000);
 
+export const ACCESS_TOKEN_COOKIE = 'ACCESS_TOKEN';
+
 export function required(variable) {
     return process.env[variable] || (() => {
         throw Error(`Missing env variable: ${variable}`);

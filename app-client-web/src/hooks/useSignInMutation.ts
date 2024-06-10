@@ -7,9 +7,7 @@ import { graphql } from '@/gql';
 
 const AUTHENTICATE = graphql(`
     mutation SignIn($input: SignInInput!) {
-        signIn(input: $input) {
-            accessToken
-        }
+        signIn(input: $input)
     }
 `);
 
@@ -17,9 +15,8 @@ export default function useSignInMutation() {
     const { enqueueSnackbar } = useSnackbar();
     const [signIn, { error }] = useMutation(AUTHENTICATE, {
         onCompleted(data) {
-            if (data?.signIn?.accessToken) {
-                localStorage.setItem('accessToken', data.signIn.accessToken);
-            }
+            // eslint-disable-next-line no-console
+            console.log(data);
         },
     });
 

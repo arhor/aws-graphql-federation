@@ -18,7 +18,7 @@ const documents = {
     "\n    mutation CreateUser($input: CreateUserInput!) {\n        createUser(input: $input) {\n            id\n            username\n        }\n    }\n": types.CreateUserDocument,
     "\n    fragment NewUser on User {\n        id\n        username\n    }\n": types.NewUserFragmentDoc,
     "\n    query GetPostsPage($page: Int!, $size: Int!) {\n        posts(input: { page: $page, size: $size }) {\n            data {\n                id\n                title\n                tags\n            }\n        }\n    }\n": types.GetPostsPageDocument,
-    "\n    mutation SignIn($input: SignInInput!) {\n        signIn(input: $input) {\n            accessToken\n        }\n    }\n": types.SignInDocument,
+    "\n    mutation SignIn($input: SignInInput!) {\n        signIn(input: $input)\n    }\n": types.SignInDocument,
 };
 
 /**
@@ -58,7 +58,7 @@ export function graphql(source: "\n    query GetPostsPage($page: Int!, $size: In
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    mutation SignIn($input: SignInInput!) {\n        signIn(input: $input) {\n            accessToken\n        }\n    }\n"): (typeof documents)["\n    mutation SignIn($input: SignInInput!) {\n        signIn(input: $input) {\n            accessToken\n        }\n    }\n"];
+export function graphql(source: "\n    mutation SignIn($input: SignInInput!) {\n        signIn(input: $input)\n    }\n"): (typeof documents)["\n    mutation SignIn($input: SignInInput!) {\n        signIn(input: $input)\n    }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

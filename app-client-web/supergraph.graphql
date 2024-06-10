@@ -305,7 +305,7 @@ enum ErrorType {
 }
 
 type Mutation {
-    signIn(input: SignInInput!): SignInResult
+    signIn(input: SignInInput!): Boolean
     createComment(input: CreateCommentInput!): Comment!
     deleteComment(input: DeleteCommentInput!): Boolean!
     switchPostComments(input: SwitchPostCommentsInput!): Boolean!
@@ -360,10 +360,6 @@ type Query {
 input SignInInput {
     username: String!
     password: String!
-}
-
-type SignInResult {
-    accessToken: String
 }
 
 input SwitchPostCommentsInput {
