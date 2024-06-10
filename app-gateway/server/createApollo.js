@@ -13,7 +13,7 @@ import {
     USERS_SERVICE_GRAPHQL_URL,
 } from '#server/utils/constants.js';
 
-export async function setUpApollo() {
+export async function createApollo() {
     return async (server) => {
         const apollo = new ApolloServer({
             gateway: createGateway(),
