@@ -59,6 +59,18 @@ all of which are subgraphs in the overall GraphQL federation supergraph.
     cd <repository-directory>
     ```
 
+2. **Install JDK**:
+    You could use any way of installation, for an example [SdkMan](https://sdkman.io/jdks)
+
+3. **Install NVM**:
+   Follow the instructions at [NVM GitHub page](https://github.com/nvm-sh/nvm) (
+   or [NVM for Windows GitHub page](https://github.com/coreybutler/nvm-windows) for Windows users) to install NVM.
+
+4. **Install Node.js**:
+    ```sh
+    nvm install 18.20.2
+    nvm use 18.20.2
+
 ### Backend Setup
 
 1. **Install Java**: Ensure you have Java 8 to 17 installed. Gradle will manage the required version (21) using the
@@ -77,29 +89,38 @@ all of which are subgraphs in the overall GraphQL federation supergraph.
     ```shell
     ./gradlew :app-comments-service:bootRun
     ```
+### Gateway Setup
 
-### Frontend Setup
-
-1. **Install NVM**:
-   Follow the instructions at [NVM GitHub page](https://github.com/nvm-sh/nvm) (
-   or [NVM for Windows GitHub page](https://github.com/coreybutler/nvm-windows) for Windows users) to install NVM.
-
-2. **Install Node.js**:
-    ```sh
-    nvm install 18.20.2
-    nvm use 18.20.2
-    ```
-3. **Change current directory**:
+1. **Change current directory**:
    ```sh
-   cd app-client-web
+   cd app-gateway
    ```
 
-4. **Install Dependencies**:
+2. **Install Dependencies**:
     ```sh
     npm install
     ```
 
-5. **Run the Frontend**:
+3. **Run the gateway**:
+    ```sh
+    npm serve
+    ```
+
+> **_NOTE:_**  Using gateway UI to play with GraphQL unsure that cookies are enabled in settings. 
+
+### Frontend Setup
+
+1. **Change current directory**:
+   ```sh
+   cd app-client-web
+   ```
+
+2. **Install Dependencies**:
+    ```sh
+    npm install
+    ```
+
+3. **Run the Frontend**:
     ```sh
     npm serve
     ```
