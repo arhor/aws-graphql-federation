@@ -1,21 +1,25 @@
 import { useEffect } from 'react';
 
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
-const AUTHENTICATE = gql`
+import { graphql } from '@/gql';
+
+const AUTHENTICATE = graphql(`
     mutation SignIn($input: SignInInput!) {
         signIn(input: $input) {
             accessToken
         }
     }
-`;
+`);
 
 export default function useSignInMutation() {
     const { enqueueSnackbar } = useSnackbar();
     const [signIn, { error }] = useMutation(AUTHENTICATE, {
         onCompleted(data) {
-            localStorage.setItem('accessToken', data.signIn.accessToken);
+            if (data?.signIn?.accessToken) {
+                localStorage.setItem('accessToken', data.signIn.accessToken);
+            }
         },
     });
 

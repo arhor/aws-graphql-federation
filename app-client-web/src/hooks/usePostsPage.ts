@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
-const GET_POSTS_PAGE = gql`
+import { graphql } from '@/gql';
+
+const GET_POSTS_PAGE = graphql(`
     query GetPostsPage($page: Int!, $size: Int!) {
         posts(input: { page: $page, size: $size }) {
             data {
@@ -13,9 +15,9 @@ const GET_POSTS_PAGE = gql`
             }
         }
     }
-`;
+`);
 
-const usePostsPage = () => {
+export default function usePostsPage() {
     const { enqueueSnackbar } = useSnackbar();
     const { loading, error, data, previousData } = useQuery(GET_POSTS_PAGE, {
         variables: {
@@ -35,6 +37,4 @@ const usePostsPage = () => {
     }, [error, enqueueSnackbar]);
 
     return { loading, data, previousData };
-};
-
-export default usePostsPage;
+}

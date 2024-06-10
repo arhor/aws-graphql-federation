@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 
-import { useMutation, gql } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
-const CREATE_POST = gql`
+import { graphql } from '@/gql';
+
+const CREATE_POST = graphql(`
     mutation CreatePost($input: CreatePostInput!) {
         createPost(input: $input) {
             id
@@ -13,13 +15,13 @@ const CREATE_POST = gql`
             tags
         }
     }
-`;
+`);
 
-const POST_FRAGMENT = gql`
+const POST_FRAGMENT = graphql(`
     fragment postFields on Post {
         id
     }
-`;
+`);
 
 export default function useCreatePostMutation() {
     const { enqueueSnackbar } = useSnackbar();

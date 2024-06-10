@@ -1,23 +1,25 @@
 import { useEffect } from 'react';
 
-import { useMutation, gql } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
-const CREATE_USER = gql`
+import { graphql } from '@/gql';
+
+const CREATE_USER = graphql(`
     mutation CreateUser($input: CreateUserInput!) {
         createUser(input: $input) {
             id
             username
         }
     }
-`;
+`);
 
-const USER_FRAGMENT = gql`
+const USER_FRAGMENT = graphql(`
     fragment NewUser on User {
         id
         username
     }
-`;
+`);
 
 export default function useCreateUserMutation() {
     const { enqueueSnackbar } = useSnackbar();
