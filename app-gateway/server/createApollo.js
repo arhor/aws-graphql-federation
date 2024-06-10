@@ -1,7 +1,9 @@
+import { ApolloGateway, IntrospectAndCompose, LocalGraphQLDataSource, RemoteGraphQLDataSource } from '@apollo/gateway';
+import { ApolloServer } from '@apollo/server';
+import { buildSubgraphSchema } from '@apollo/subgraph';
+import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastify';
 import gql from 'graphql-tag';
 import fetcher from 'make-fetch-happen';
-import { ApolloGateway, IntrospectAndCompose, LocalGraphQLDataSource, RemoteGraphQLDataSource } from '@apollo/gateway';
-import { buildSubgraphSchema } from '@apollo/subgraph';
 
 import { authenticate } from "#server/client/user-service-client.js";
 import {
@@ -11,7 +13,27 @@ import {
     USERS_SERVICE_GRAPHQL_URL,
 } from '#server/utils/constants.js';
 
-export function createGateway(server) {
+export async function createApollo() {
+    return async (server) => {
+        const apollo = new ApolloServer({
+            gateway: createGateway(),
+            plugins: [fastifyApolloDrainPlugin(server)],
+        });
+
+        await apollo.start();
+
+        server.register(fastifyApollo(apollo), {
+            context: (req, res) => ({
+                req,
+                res,
+                tracingUuid: req.id,
+                currentUser: req.user?.payload,
+            }),
+        });
+    };
+}
+
+function createGateway() {
     return new ApolloGateway({
         supergraphSdl: new IntrospectAndCompose({
             subgraphs: [
@@ -24,7 +46,7 @@ export function createGateway(server) {
         buildService({ url, name }) {
             switch (name) {
                 case 'auth':
-                    return createLocalDataSource({ server });
+                    return createLocalDataSource();
                 default:
                     return createRemoteDatasource({ url, name });
             }
@@ -32,7 +54,7 @@ export function createGateway(server) {
     });
 }
 
-function createLocalDataSource({ server }) {
+function createLocalDataSource() {
     return new LocalGraphQLDataSource(
         buildSubgraphSchema({
             typeDefs: gql`
@@ -72,7 +94,7 @@ function createLocalDataSource({ server }) {
                 Mutation: {
                     signIn: async (source, args, context) => {
                         const principal = await authenticate(args.input);
-                        const signedJwt = server.jwt.sign({ payload: principal });
+                        const signedJwt = await context.res.jwtSign({ payload: principal });
 
                         context.res.setCookie(ACCESS_TOKEN_COOKIE, signedJwt, {
                             path: '/',

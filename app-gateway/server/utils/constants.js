@@ -1,4 +1,4 @@
-const GRAPHQL_END_POINT = '/graphql';
+export const GRAPHQL_END_POINT = '/graphql';
 
 const USERS_SERVICE_BASE_PATH = String(required('SUBGRAPH_URL_USERS'));
 const POSTS_SERVICE_BASE_PATH = String(required('SUBGRAPH_URL_POSTS'));
