@@ -5,7 +5,7 @@ import fastifyJwt from '@fastify/jwt';
 
 import { ACCESS_TOKEN_COOKIE, GRAPHQL_END_POINT } from '#server/utils/constants.js';
 
-export async function createServer(callback) {
+export async function setUpServer(callback) {
     const server = fastify({
         logger: createLogger(),
         requestIdHeader: 'x-tracing-id',
