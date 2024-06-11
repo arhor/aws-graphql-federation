@@ -3,7 +3,6 @@ import { ApolloServer } from '@apollo/server';
 import { buildSubgraphSchema } from '@apollo/subgraph';
 import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastify';
 import gql from 'graphql-tag';
-import fetcher from 'make-fetch-happen';
 
 import { ACCESS_TOKEN_COOKIE, COMMS_SUBGRAPH_URL, POSTS_SUBGRAPH_URL, USERS_SUBGRAPH_URL } from '#src/constants.js';
 import { authenticate } from "#src/user-service-client.js";
@@ -110,18 +109,6 @@ function createRemoteDatasource({ url, name }) {
     return new RemoteGraphQLDataSource({
         url,
         name,
-        fetcher: fetcher.defaults({
-            retry: {
-                retries: 5,
-                factor: 2,
-                minTimeout: 1000,
-                maxTimeout: 60 * 1000,
-                randomize: true,
-            },
-            onRetry(cause) {
-                console.log('Retrying...', cause);
-            }
-        }),
         willSendRequest({ request, context }) {
             const {
                 tracingUuid,
