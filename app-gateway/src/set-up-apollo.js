@@ -5,7 +5,7 @@ import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastif
 import gql from 'graphql-tag';
 
 import { ACCESS_TOKEN, SUBGRAPH } from '#src/constants.js';
-import { authenticate } from "#src/user-service-client.js";
+import { authenticate } from '#src/user-service-client.js';
 
 export async function createApollo() {
     return async (server) => {

@@ -53,7 +53,7 @@ export default function SignUpForm() {
                 <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-                {"Sign up"}
+                {'Sign up'}
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <Grid container justifyContent="center">
@@ -87,12 +87,12 @@ export default function SignUpForm() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            {"Sign Up"}
+                            {'Sign Up'}
                         </Button>
                     </Grid>
                     <Grid item>
                         <Link to="/sign-in" component={RouterLink} variant="body2">
-                            {"Already have an account? Sign in"}
+                            {'Already have an account? Sign in'}
                         </Link>
                     </Grid>
                 </Grid>

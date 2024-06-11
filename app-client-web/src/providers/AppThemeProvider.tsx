@@ -1,23 +1,10 @@
-import { createContext, ReactNode, useContext, useMemo, useState } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 
+import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-type AppThemeMode = 'light' | 'dark';
-
-type AppThemeControl = {
-    switchColorMode: () => void;
-};
-
-const AppThemeControlContext = createContext({} as AppThemeControl);
-
-export function useAppThemeControl(): AppThemeControl {
-    return useContext(AppThemeControlContext);
-}
-
-function determineColorMode(shouldUseDarkTheme: boolean): AppThemeMode {
-    return shouldUseDarkTheme ? 'dark' : 'light';
-}
+import { AppThemeControlContext, type AppThemeMode } from '@/providers/theme';
 
 export default function AppThemeProvider(props: { children: ReactNode }) {
     const [colorMode, setColorMode] = useState<AppThemeMode>();
@@ -36,8 +23,13 @@ export default function AppThemeProvider(props: { children: ReactNode }) {
     return (
         <AppThemeControlContext.Provider value={{ switchColorMode }}>
             <ThemeProvider theme={theme}>
+                <CssBaseline />
                 {props.children}
             </ThemeProvider>
         </AppThemeControlContext.Provider>
     );
+}
+
+function determineColorMode(shouldUseDarkTheme: boolean): AppThemeMode {
+    return shouldUseDarkTheme ? 'dark' : 'light';
 }

@@ -17,6 +17,7 @@ const documents = {
     "\n    fragment postFields on Post {\n        id\n    }\n": types.PostFieldsFragmentDoc,
     "\n    mutation CreateUser($input: CreateUserInput!) {\n        createUser(input: $input) {\n            id\n            username\n        }\n    }\n": types.CreateUserDocument,
     "\n    fragment NewUser on User {\n        id\n        username\n    }\n": types.NewUserFragmentDoc,
+    "\n    query GetCurrentUserInfo {\n        me {\n            id\n            authorities\n            authenticated\n        }\n    }\n": types.GetCurrentUserInfoDocument,
     "\n    query GetPostsPage($page: Int!, $size: Int!) {\n        posts(input: { page: $page, size: $size }) {\n            data {\n                id\n                title\n                tags\n            }\n        }\n    }\n": types.GetPostsPageDocument,
     "\n    mutation SignIn($input: SignInInput!) {\n        signIn(input: $input)\n    }\n": types.SignInDocument,
     "\n    mutation SignOut {\n        signOut\n    }\n": types.SignOutDocument,
@@ -52,6 +53,10 @@ export function graphql(source: "\n    mutation CreateUser($input: CreateUserInp
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    fragment NewUser on User {\n        id\n        username\n    }\n"): (typeof documents)["\n    fragment NewUser on User {\n        id\n        username\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query GetCurrentUserInfo {\n        me {\n            id\n            authorities\n            authenticated\n        }\n    }\n"): (typeof documents)["\n    query GetCurrentUserInfo {\n        me {\n            id\n            authorities\n            authenticated\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

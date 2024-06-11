@@ -5,9 +5,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { styled, useTheme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography'
+import Typography from '@mui/material/Typography';
 
-import { useAppThemeControl } from '@/theme/AppThemeProvider';
+import { useAppThemeControl } from '@/providers/theme';
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
