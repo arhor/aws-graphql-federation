@@ -305,12 +305,13 @@ enum ErrorType {
 }
 
 type Mutation {
-    signIn(input: SignInInput!): Boolean
     createComment(input: CreateCommentInput!): Comment!
     deleteComment(input: DeleteCommentInput!): Boolean!
     switchPostComments(input: SwitchPostCommentsInput!): Boolean!
     switchUserComments(input: SwitchUserCommentsInput!): Boolean!
     updateComment(input: UpdateCommentInput!): Comment!
+    signIn(input: SignInInput!): Boolean
+    signOut: Boolean
     createPost(input: CreatePostInput!): Post!
     deletePost(input: DeletePostInput!): Boolean!
     switchUserPosts(input: SwitchUserPostsInput!): Boolean!
@@ -349,8 +350,8 @@ input PostsLookupInput {
 
 """ ---------- Root Types (Query/Mutation/Subscription) ----------"""
 type Query {
-    me: CurrentUser
     comment(id: UUID!): Comment
+    me: CurrentUser
     post(id: UUID!): Post
     posts(input: PostsLookupInput! = {page: 0, size: 20}): PostPage
     user(id: UUID!): User

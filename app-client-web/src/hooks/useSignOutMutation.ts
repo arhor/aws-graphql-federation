@@ -5,15 +5,15 @@ import { useSnackbar } from 'notistack';
 
 import { graphql } from '@/gql';
 
-const SIGN_IN = graphql(`
-    mutation SignIn($input: SignInInput!) {
-        signIn(input: $input)
+const SIGN_OUT = graphql(`
+    mutation SignOut {
+        signOut
     }
 `);
 
-export default function useSignInMutation() {
+export default function useSignOutMutation() {
     const { enqueueSnackbar } = useSnackbar();
-    const [signIn, { error }] = useMutation(SIGN_IN);
+    const [signOut, { error }] = useMutation(SIGN_OUT);
 
     useEffect(() => {
         if (error) {
@@ -24,5 +24,5 @@ export default function useSignInMutation() {
         }
     }, [error, enqueueSnackbar]);
 
-    return { signIn };
+    return { signOut };
 }
