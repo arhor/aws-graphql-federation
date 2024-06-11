@@ -3,7 +3,7 @@ import fastify from 'fastify';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
 
-import { ACCESS_TOKEN_COOKIE, GRAPHQL_END_POINT } from '#src/constants.js';
+import { ACCESS_TOKEN, GRAPHQL_END_POINT } from '#src/constants.js';
 
 export async function createServer(callback) {
     const server = fastify({
@@ -16,7 +16,7 @@ export async function createServer(callback) {
     server.register(fastifyJwt, {
         secret: uuid.v4(),
         cookie: {
-            cookieName: ACCESS_TOKEN_COOKIE,
+            cookieName: ACCESS_TOKEN.COOKIE,
             signed: false,
         },
     });
@@ -29,9 +29,14 @@ export async function createServer(callback) {
         res.redirect(GRAPHQL_END_POINT);
     });
 
-    server.addHook('onRequest', async (req) => {
-        if (req.cookies[ACCESS_TOKEN_COOKIE]) {
-            await req.jwtVerify({ onlyCookie: true });
+    server.addHook('onRequest', async (req, res) => {
+        if (req.cookies[ACCESS_TOKEN.COOKIE]) {
+            try {
+                await req.jwtVerify({ onlyCookie: true });
+            } catch (err) {
+                req.log.error('An invalid access token found - removing it from the cookies', err);
+                res.clearCookie(ACCESS_TOKEN.COOKIE);
+            }
         }
     });
 

@@ -4,7 +4,7 @@ import { buildSubgraphSchema } from '@apollo/subgraph';
 import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastify';
 import gql from 'graphql-tag';
 
-import { ACCESS_TOKEN_COOKIE, COMMS_SUBGRAPH_URL, POSTS_SUBGRAPH_URL, USERS_SUBGRAPH_URL } from '#src/constants.js';
+import { ACCESS_TOKEN, SUBGRAPH } from '#src/constants.js';
 import { authenticate } from "#src/user-service-client.js";
 
 export async function createApollo() {
@@ -31,15 +31,15 @@ function createGateway() {
     return new ApolloGateway({
         supergraphSdl: new IntrospectAndCompose({
             subgraphs: [
-                { name: 'auth', url: 'auth' },
-                { url: USERS_SUBGRAPH_URL, name: 'users' },
-                { url: POSTS_SUBGRAPH_URL, name: 'posts' },
-                { url: COMMS_SUBGRAPH_URL, name: 'comments' },
+                { url: SUBGRAPH.LOCAL, name: 'local' },
+                { url: SUBGRAPH.USERS, name: 'users' },
+                { url: SUBGRAPH.POSTS, name: 'posts' },
+                { url: SUBGRAPH.COMMS, name: 'comments' },
             ],
         }),
         buildService({ url, name }) {
             switch (name) {
-                case 'auth':
+                case SUBGRAPH.LOCAL:
                     return createLocalDataSource();
                 default:
                     return createRemoteDatasource({ url, name });
@@ -58,6 +58,7 @@ function createLocalDataSource() {
 
                 type Mutation {
                     signIn(input: SignInInput!): Boolean
+                    signOut: Boolean
                 }
 
                 input SignInInput {
@@ -90,11 +91,18 @@ function createLocalDataSource() {
                         const principal = await authenticate(args.input);
                         const signedJwt = await context.res.jwtSign({ payload: principal });
 
-                        context.res.setCookie(ACCESS_TOKEN_COOKIE, signedJwt, {
+                        context.res.setCookie(ACCESS_TOKEN.COOKIE, signedJwt, {
                             path: '/',
-                            maxAge: 1000 * 60 * 60 * 24,
+                            maxAge: ACCESS_TOKEN.EXPIRE,
                             secure: false,
                             httpOnly: true,
+                        });
+
+                        return true;
+                    },
+                    signOut: (source, args, context) => {
+                        context.res.clearCookie(ACCESS_TOKEN.COOKIE, {
+                            path: '/',
                         });
 
                         return true;
