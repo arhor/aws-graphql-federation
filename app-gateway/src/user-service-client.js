@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 
-import { USERS_SERVICE_VERIFY_PATH } from '#server/utils/constants.js';
+import { USERS_SERVICE_VERIFY_PATH } from '#src/constants.js';
 
 /**
  * Authenticates a user by sending their username and password to the Users service for verification.

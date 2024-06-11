@@ -5,13 +5,8 @@ import fastifyApollo, { fastifyApolloDrainPlugin } from '@as-integrations/fastif
 import gql from 'graphql-tag';
 import fetcher from 'make-fetch-happen';
 
-import { authenticate } from "#server/client/user-service-client.js";
-import {
-    ACCESS_TOKEN_COOKIE,
-    COMMS_SERVICE_GRAPHQL_URL,
-    POSTS_SERVICE_GRAPHQL_URL,
-    USERS_SERVICE_GRAPHQL_URL,
-} from '#server/utils/constants.js';
+import { ACCESS_TOKEN_COOKIE, COMMS_SUBGRAPH_URL, POSTS_SUBGRAPH_URL, USERS_SUBGRAPH_URL } from '#src/constants.js';
+import { authenticate } from "#src/user-service-client.js";
 
 export async function createApollo() {
     return async (server) => {
@@ -38,9 +33,9 @@ function createGateway() {
         supergraphSdl: new IntrospectAndCompose({
             subgraphs: [
                 { name: 'auth', url: 'auth' },
-                { url: USERS_SERVICE_GRAPHQL_URL, name: 'users' },
-                { url: POSTS_SERVICE_GRAPHQL_URL, name: 'posts' },
-                { url: COMMS_SERVICE_GRAPHQL_URL, name: 'comments' },
+                { url: USERS_SUBGRAPH_URL, name: 'users' },
+                { url: POSTS_SUBGRAPH_URL, name: 'posts' },
+                { url: COMMS_SUBGRAPH_URL, name: 'comments' },
             ],
         }),
         buildService({ url, name }) {

@@ -13,7 +13,7 @@
         "serve": "node -r dotenv/config ."
     },
     "imports": {
-        "#server/*": "./server/*"
+        "#src/*": "./src/*"
     },
     "dependencies": {
         "@apollo/gateway": "^2.7.8",

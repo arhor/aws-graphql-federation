@@ -3,7 +3,7 @@ import fastify from 'fastify';
 import fastifyCookie from '@fastify/cookie';
 import fastifyJwt from '@fastify/jwt';
 
-import { ACCESS_TOKEN_COOKIE, GRAPHQL_END_POINT } from '#server/utils/constants.js';
+import { ACCESS_TOKEN_COOKIE, GRAPHQL_END_POINT } from '#src/constants.js';
 
 export async function createServer(callback) {
     const server = fastify({
