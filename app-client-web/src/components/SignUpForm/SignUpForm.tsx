@@ -1,5 +1,6 @@
 import { FormEvent } from 'react';
 
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -16,6 +17,7 @@ import { Optional } from '@/utils/core-utils';
 
 export default function SignUpForm() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const { createUser } = useCreateUserMutation();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -53,7 +55,7 @@ export default function SignUpForm() {
                 <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-                {'Sign up'}
+                {t('Sign up')}
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <Grid container justifyContent="center">
@@ -61,7 +63,7 @@ export default function SignUpForm() {
                         <TextField
                             id="username"
                             name="username"
-                            label="Username"
+                            label={t('Username')}
                             margin="normal"
                             required
                             fullWidth
@@ -73,7 +75,7 @@ export default function SignUpForm() {
                             id="password"
                             name="password"
                             type="password"
-                            label="Password"
+                            label={t('Password')}
                             margin="normal"
                             required
                             fullWidth
@@ -87,12 +89,12 @@ export default function SignUpForm() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            {'Sign Up'}
+                            {t('Sign Up')}
                         </Button>
                     </Grid>
                     <Grid item>
                         <Link to="/sign-in" component={RouterLink} variant="body2">
-                            {'Already have an account? Sign in'}
+                            {t('Already have an account? Sign in')}
                         </Link>
                     </Grid>
                 </Grid>
