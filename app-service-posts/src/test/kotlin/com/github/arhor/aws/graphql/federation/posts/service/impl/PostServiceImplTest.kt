@@ -5,6 +5,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.common.toSet
+import com.github.arhor.aws.graphql.federation.posts.data.entity.LikeRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
@@ -584,6 +585,59 @@ class PostServiceImplTest {
 
             // Then
             verify(exactly = 1) { postRepository.findById(POST_1_ID) }
+
+            assertThat(result)
+                .isFalse()
+        }
+    }
+
+    @Nested
+    @DisplayName("PostService :: togglePostLike")
+    inner class TogglePostLikeTest {
+        @Test
+        fun `should create like on the post from the given acting user`() {
+            // Given
+            val post = createPostEntity()
+            val user = UserRepresentation(USER_ID)
+
+            every { postRepository.findById(any()) } returns Optional.of(post)
+            every { userRepository.findById(any()) } returns Optional.of(user)
+            every { postRepository.save(any()) } answers { firstArg() }
+
+            // When
+            val result = postService.togglePostLike(POST_1_ID, mockk {
+                every { id } returns USER_ID
+            })
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(POST_1_ID) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { postRepository.save(any()) }
+
+            assertThat(result)
+                .isTrue()
+        }
+
+        @Test
+        fun `should delete like on the post from the given acting user`() {
+            // Given
+            val user = UserRepresentation(USER_ID)
+            val like = LikeRef.from(user)
+            val post = createPostEntity().run { copy(likes = likes + like) }
+
+            every { postRepository.findById(any()) } returns Optional.of(post)
+            every { userRepository.findById(any()) } returns Optional.of(user)
+            every { postRepository.save(any()) } answers { firstArg() }
+
+            // When
+            val result = postService.togglePostLike(POST_1_ID, mockk {
+                every { id } returns USER_ID
+            })
+
+            // Then
+            verify(exactly = 1) { postRepository.findById(POST_1_ID) }
+            verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { postRepository.save(any()) }
 
             assertThat(result)
                 .isFalse()
