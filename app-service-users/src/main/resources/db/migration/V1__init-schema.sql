@@ -15,21 +15,21 @@ CREATE TABLE IF NOT EXISTS "authorities"
 
 ) WITH (OIDS = FALSE);
 
-CREATE TABLE IF NOT EXISTS "users_has_authorities"
+CREATE TABLE IF NOT EXISTS "users_have_authorities"
 (
     "user_id" UUID NOT NULL,
     "auth_id" INT  NOT NULL,
 
-    CONSTRAINT "PK__users_has_authorities__user_id__auth_id"
+    CONSTRAINT "PK__users_have_authorities__user_id__auth_id"
         PRIMARY KEY ("user_id", "auth_id"),
 
-    CONSTRAINT "FK__users_has_authorities__users"
+    CONSTRAINT "FK__users_have_authorities__user_id"
         FOREIGN KEY ("user_id")
             REFERENCES "users" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE,
 
-    CONSTRAINT "FK__users_has_authorities__authorities"
+    CONSTRAINT "FK__users_have_authorities__auth_id"
         FOREIGN KEY ("auth_id")
             REFERENCES "authorities" ("id")
             ON UPDATE CASCADE

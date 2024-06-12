@@ -42,7 +42,11 @@ tasks {
         group = "build"
         description = "Builds all included projects"
 
-        gradle.includedBuilds.map { it.task(":assemble") }.forEach {
+        val name = when (project.hasProperty("skip-test")) {
+            true -> ":assemble"
+            else -> ":build"
+        }
+        gradle.includedBuilds.map { it.task(name) }.forEach {
             dependsOn(it)
         }
     }

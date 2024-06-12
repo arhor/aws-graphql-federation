@@ -4,4 +4,4 @@
 # *        Script to build and deploy subgraph services for POSIX          *
 # **************************************************************************
 
-./gradlew :fullBuild && docker compose up --build
+./gradlew :fullBuild -Pskip-test && docker compose up --build

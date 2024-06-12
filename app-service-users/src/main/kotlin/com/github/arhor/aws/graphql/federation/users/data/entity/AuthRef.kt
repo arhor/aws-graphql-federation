@@ -11,7 +11,7 @@ data class AuthRef(
     val authId: Int,
 ) {
     companion object {
-        const val TABLE_NAME = "users_has_authorities"
+        const val TABLE_NAME = "users_have_authorities"
 
         // @formatter:off
         const val COL_USER_ID = "user_id"

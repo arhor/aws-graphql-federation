@@ -13,7 +13,7 @@ data class TagRef @PersistenceCreator constructor(
     val tagId: UUID,
 ) {
     companion object {
-        const val TABLE_NAME = "posts_has_tags"
+        const val TABLE_NAME = "posts_have_tags"
 
         // @formatter:off
         const val COL_POST_ID = "post_id"

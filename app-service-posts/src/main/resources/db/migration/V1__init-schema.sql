@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS "posts"
     "created_date_time" TIMESTAMP    NOT NULL,
     "updated_date_time" TIMESTAMP    NULL,
 
-    CONSTRAINT "FK__posts__user_representations"
+    CONSTRAINT "FK__posts__user_id"
         FOREIGN KEY ("user_id")
             REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
@@ -27,23 +27,45 @@ CREATE TABLE IF NOT EXISTS "tags"
     "name" VARCHAR(50) NOT NULL UNIQUE
 ) WITH (OIDS = FALSE);
 
-CREATE TABLE IF NOT EXISTS "posts_has_tags"
+CREATE TABLE IF NOT EXISTS "posts_have_tags"
 (
     "post_id" UUID NOT NULL,
     "tag_id"  UUID NOT NULL,
 
-    CONSTRAINT "UQ__posts_has_tags__post_id__tag_id"
-        UNIQUE ("post_id", "tag_id"),
+    CONSTRAINT "PK__posts_have_tags__post_id__tag_id"
+        PRIMARY KEY ("post_id", "tag_id"),
 
-    CONSTRAINT "FK__posts_has_tags__posts"
+    CONSTRAINT "FK__posts_have_tags__post_id"
         FOREIGN KEY ("post_id")
             REFERENCES "posts" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE,
 
-    CONSTRAINT "FK__posts_has_tags__tags"
+    CONSTRAINT "FK__posts_have_tags__tag_id"
         FOREIGN KEY ("tag_id")
             REFERENCES "tags" ("id")
+            ON UPDATE CASCADE
+            ON DELETE CASCADE
+) WITH (OIDS = FALSE);
+
+CREATE TABLE IF NOT EXISTS "posts_have_user_likes"
+(
+    "post_id"           UUID      NOT NULL,
+    "user_id"           UUID      NOT NULL,
+    "created_date_time" TIMESTAMP NOT NULL,
+
+    CONSTRAINT "PK__posts_have_user_likes__post_id__user_id"
+        PRIMARY KEY ("post_id", "user_id"),
+
+    CONSTRAINT "FK__posts_have_user_likes__post_id"
+        FOREIGN KEY ("post_id")
+            REFERENCES "posts" ("id")
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+
+    CONSTRAINT "FK__posts_have_user_likes__user_id"
+        FOREIGN KEY ("user_id")
+            REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
 ) WITH (OIDS = FALSE);
