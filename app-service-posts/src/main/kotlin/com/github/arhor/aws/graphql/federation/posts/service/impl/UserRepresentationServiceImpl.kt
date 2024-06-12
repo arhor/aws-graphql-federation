@@ -6,7 +6,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentat
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.SwitchUserPostsInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
@@ -17,6 +16,7 @@ import org.springframework.cache.Cache
 import org.springframework.cache.CacheManager
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Trace
@@ -66,11 +66,9 @@ class UserRepresentationServiceImpl(
         }
     }
 
-    override fun switchUserPosts(input: SwitchUserPostsInput): Boolean {
-        val userId = input.userId
-        val shouldBeDisabled = input.disabled
-
-        val user =
+    @Transactional
+    override fun toggleUserPosts(userId: UUID): Boolean {
+        val presentUser =
             userRepository.findByIdOrNull(userId)
                 ?: throw EntityNotFoundException(
                     USER.TYPE_NAME,
@@ -78,17 +76,13 @@ class UserRepresentationServiceImpl(
                     Operation.UPDATE
                 )
 
-        return if (user.features.check(Feature.POSTS_DISABLED) != shouldBeDisabled) {
-            userRepository.save(
-                if (shouldBeDisabled) {
-                    user.copy(features = user.features + Feature.POSTS_DISABLED)
-                } else {
-                    user.copy(features = user.features - Feature.POSTS_DISABLED)
-                }
+        val updatedUser = userRepository.save(
+            presentUser.copy(
+                features = presentUser.features.toggle(
+                    Feature.POSTS_DISABLED
+                )
             )
-            true
-        } else {
-            false
-        }
+        )
+        return !updatedUser.features.check(Feature.POSTS_DISABLED)
     }
 }

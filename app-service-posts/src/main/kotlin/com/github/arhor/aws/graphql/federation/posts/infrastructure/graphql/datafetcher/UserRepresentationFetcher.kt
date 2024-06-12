@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dat
 
 import com.github.arhor.aws.graphql.federation.common.getUuid
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.SwitchUserPostsInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
@@ -34,7 +33,7 @@ class UserRepresentationFetcher(
 
     @DgsMutation
     @PreAuthorize("hasRole('ADMIN')")
-    fun switchUserPosts(@InputArgument input: SwitchUserPostsInput): Boolean {
-        return userService.switchUserPosts(input)
+    fun toggleUserPosts(@InputArgument userId: UUID): Boolean {
+        return userService.toggleUserPosts(userId)
     }
 }

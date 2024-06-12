@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.posts.service
 
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.SwitchUserPostsInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import java.util.UUID
 
@@ -28,10 +27,10 @@ interface UserRepresentationService {
     fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID)
 
     /**
-     * Switches the posts for the user based on the provided input.
+     * Toggles an ability to operate with posts for the specified user.
      *
-     * @param input the input object containing the necessary data to switch posts
-     * @return `true` if the switch was successful, `false` otherwise
+     * @param userId the id whose posts should be enabled/disabled
+     * @return `true` if the posts enabled, `false` otherwise
      */
-    fun switchUserPosts(input: SwitchUserPostsInput): Boolean
+    fun toggleUserPosts(userId: UUID): Boolean
 }

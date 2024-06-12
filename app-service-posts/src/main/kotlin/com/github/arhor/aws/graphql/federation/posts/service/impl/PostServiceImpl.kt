@@ -5,6 +5,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.common.toSet
+import com.github.arhor.aws.graphql.federation.posts.data.entity.LikeRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
@@ -15,7 +16,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.UserReprese
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
@@ -114,9 +114,9 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun deletePost(input: DeletePostInput, actor: CurrentUserDetails): Boolean {
+    override fun deletePost(id: UUID, actor: CurrentUserDetails): Boolean {
         val currentOperation = Operation.DELETE
-        val post = postRepository.findByIdOrNull(input.id)
+        val post = postRepository.findByIdOrNull(id)
             ?: return false
 
         ensureOperationAllowed(post.userId!!, currentOperation, actor)
@@ -125,6 +125,34 @@ class PostServiceImpl(
         appEventPublisher.publishEvent(PostEvent.Deleted(id = post.id!!))
 
         return true
+    }
+
+    @Transactional
+    override fun togglePostLike(postId: UUID, actor: CurrentUserDetails): Boolean {
+        val post = postRepository.findByIdOrNull(postId)
+            ?: throw EntityNotFoundException(
+                entity = POST.TYPE_NAME,
+                condition = "${POST.Id} = $postId",
+                operation = Operation.UPDATE,
+            )
+        val user = userRepository.findByIdOrNull(actor.id)
+            ?: throw EntityNotFoundException(
+                entity = USER.TYPE_NAME,
+                condition = "${USER.Id} = ${actor.id}",
+                operation = Operation.UPDATE,
+            )
+        val like = LikeRef.from(user)
+
+        val updatedPost = postRepository.save(
+            post.copy(
+                likes = if (like in post.likes) {
+                    post.likes - like
+                } else {
+                    post.likes + like
+                }
+            )
+        )
+        return like in updatedPost.likes
     }
 
     private fun findPostsPageWithoutFilters(input: PostsLookupInput): PostPage {

@@ -27,6 +27,11 @@ data class Features<F : Enum<F>>(
         }
     )
 
+    fun toggle(item: F): Features<F> = when (check(item)) {
+        true -> this - item
+        else -> this + item
+    }
+
     companion object {
         @JvmStatic
         fun <F : Enum<F>> of(item: F, vararg items: F): Features<F> =

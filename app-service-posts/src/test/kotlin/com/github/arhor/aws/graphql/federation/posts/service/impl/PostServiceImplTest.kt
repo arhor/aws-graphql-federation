@@ -15,7 +15,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.UserReprese
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
@@ -557,7 +556,7 @@ class PostServiceImplTest {
             every { appEventPublisher.publishEvent(any<PostEvent>()) } just runs
 
             // When
-            val result = postService.deletePost(DeletePostInput(id = entity.id!!), mockk {
+            val result = postService.deletePost(entity.id!!, mockk {
                 every { id } returns USER_ID
                 every { authorities } returns emptyList()
             })
@@ -578,7 +577,7 @@ class PostServiceImplTest {
             every { postRepository.findById(any()) } returns Optional.empty()
 
             // When
-            val result = postService.deletePost(DeletePostInput(id = POST_1_ID), mockk {
+            val result = postService.deletePost(POST_1_ID, mockk {
                 every { id } returns USER_ID
                 every { authorities } returns emptyList()
             })

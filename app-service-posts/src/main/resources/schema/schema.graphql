@@ -14,9 +14,11 @@ type Query {
 type Mutation {
     createPost(input: CreatePostInput!): Post!
     updatePost(input: UpdatePostInput!): Post!
-    deletePost(input: DeletePostInput!): Boolean!
+    deletePost(id: UUID!): Boolean!
 
-    switchUserPosts(input: SwitchUserPostsInput!): Boolean!
+    togglePostLike(postId: UUID!): Boolean!
+
+    toggleUserPosts(userId: UUID!): Boolean!
 }
 
 # ---------- Input Types ----------
@@ -38,15 +40,6 @@ input UpdatePostInput {
     title: String     @NotBlank @Size(min: 1, max: 512)
     content: String   @NotBlank @Size(min: 1, max: 4096)
     tags: [TagInput!] @Size(min: 0, max: 15)
-}
-
-input DeletePostInput {
-    id: UUID!
-}
-
-input SwitchUserPostsInput {
-    userId: UUID!
-    disabled: Boolean!
 }
 
 input TagInput {

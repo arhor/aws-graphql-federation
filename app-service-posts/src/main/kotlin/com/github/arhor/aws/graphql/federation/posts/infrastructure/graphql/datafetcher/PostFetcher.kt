@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.graphql.dat
 
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
@@ -68,8 +67,16 @@ class PostFetcher(
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
     fun deletePost(
-        @InputArgument input: DeletePostInput,
+        @InputArgument id: UUID,
         @AuthenticationPrincipal actor: CurrentUserDetails,
     ): Boolean =
-        postService.deletePost(input, actor)
+        postService.deletePost(id, actor)
+
+    @DgsMutation
+    @PreAuthorize("isAuthenticated()")
+    fun togglePostLike(
+        @InputArgument postId: UUID,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
+    ): Boolean =
+        postService.togglePostLike(postId, actor)
 }

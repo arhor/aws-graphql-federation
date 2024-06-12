@@ -6,7 +6,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentat
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.SwitchUserPostsInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features
@@ -140,50 +139,48 @@ class UserRepresentationServiceImplTest {
         @Test
         fun `should call userRepository#save when there is update applied to the user`() {
             // Given
-            val input = SwitchUserPostsInput(userId = USER_ID, disabled = true)
             val user = UserRepresentation(id = USER_ID)
 
             every { userRepository.findById(any()) } returns Optional.of(user)
             every { userRepository.save(any()) } answers { firstArg() }
 
             // When
-            val result = userService.switchUserPosts(input)
+            val result = userService.toggleUserPosts(USER_ID)
 
             // Then
             verify(exactly = 1) { userRepository.findById(USER_ID) }
             verify(exactly = 1) { userRepository.save(user.copy(features = user.features + Feature.POSTS_DISABLED)) }
 
             assertThat(result)
-                .isTrue()
+                .isFalse()
         }
 
         @Test
         fun `should not call userRepository#save when there is no update applied to the user`() {
             // Given
-            val input = SwitchUserPostsInput(userId = USER_ID, disabled = true)
             val user = UserRepresentation(id = USER_ID, features = Features.of(Feature.POSTS_DISABLED))
 
             every { userRepository.findById(any()) } returns Optional.of(user)
+            every { userRepository.save(any()) } answers { firstArg() }
 
             // When
-            val result = userService.switchUserPosts(input)
+            val result = userService.toggleUserPosts(USER_ID)
 
             // Then
             verify(exactly = 1) { userRepository.findById(USER_ID) }
+            verify(exactly = 1) { userRepository.save(user.copy(features = user.features - Feature.POSTS_DISABLED)) }
 
             assertThat(result)
-                .isFalse()
+                .isTrue()
         }
 
         @Test
         fun `should throw EntityNotFoundException when there is no user found by the input id`() {
             // Given
-            val input = SwitchUserPostsInput(userId = USER_ID, disabled = true)
-
             every { userRepository.findById(any()) } returns Optional.empty()
 
             // When
-            val result = catchException { userService.switchUserPosts(input) }
+            val result = catchException { userService.toggleUserPosts(USER_ID) }
 
             // Then
             verify(exactly = 1) { userRepository.findById(USER_ID) }

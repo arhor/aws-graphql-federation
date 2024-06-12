@@ -42,6 +42,9 @@ data class PostEntity @PersistenceCreator constructor(
 
     @MappedCollection(idColumn = TagRef.COL_POST_ID)
     val tags: Set<TagRef> = emptySet(),
+
+    @MappedCollection(idColumn = LikeRef.COL_POST_ID)
+    val likes: Set<LikeRef> = emptySet(),
 ) {
 
     companion object {

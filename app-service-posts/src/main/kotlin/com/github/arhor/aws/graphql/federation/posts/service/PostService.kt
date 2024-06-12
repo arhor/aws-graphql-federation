@@ -1,7 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.service
 
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.DeletePostInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
@@ -59,9 +58,18 @@ interface PostService {
     /**
      * Deletes a post.
      *
-     * @param input the input object containing the necessary data to delete the post
+     * @param id    the id of the post to delete
      * @param actor the user deleting post
      * @return `true` if the post was successfully deleted, `false` otherwise
      */
-    fun deletePost(input: DeletePostInput, actor: CurrentUserDetails): Boolean
+    fun deletePost(id: UUID, actor: CurrentUserDetails): Boolean
+
+    /**
+     * Creates/Deletes like on the post for a specified user.
+     *
+     * @param postId the id of a post
+     * @param actor  the actor trying to create/delete like
+     * @return `true` if the posts enabled, `false` otherwise
+     */
+    fun togglePostLike(postId: UUID, actor: CurrentUserDetails): Boolean
 }

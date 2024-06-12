@@ -20,8 +20,8 @@ data class TagRef @PersistenceCreator constructor(
         const val COL_TAG_ID  = "tag_id"
         // @formatter:on
 
-        fun from(entity: TagEntity) = TagRef(
-            tagId = entity.id ?: throw IllegalArgumentException("Referenced entity must have an ID")
+        fun from(tag: TagEntity) = TagRef(
+            tagId = tag.id ?: throw IllegalArgumentException("Referenced tag must have an ID")
         )
     }
 }
