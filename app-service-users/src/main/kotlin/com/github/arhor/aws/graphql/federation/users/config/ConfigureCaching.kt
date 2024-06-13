@@ -3,8 +3,6 @@ package com.github.arhor.aws.graphql.federation.users.config
 import com.github.arhor.aws.graphql.federation.users.util.Caches
 import com.github.arhor.aws.graphql.federation.users.util.get
 import com.github.benmanes.caffeine.cache.Caffeine
-import graphql.ExecutionInput
-import graphql.execution.preparsed.PreparsedDocumentEntry
 import graphql.execution.preparsed.PreparsedDocumentProvider
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer
 import org.springframework.cache.CacheManager
@@ -13,9 +11,6 @@ import org.springframework.cache.caffeine.CaffeineCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.time.Duration
-import java.util.function.Function
-
-private typealias ParsingValidator = Function<ExecutionInput, PreparsedDocumentEntry>
 
 @EnableCaching
 @Configuration(proxyBeanMethods = false)
