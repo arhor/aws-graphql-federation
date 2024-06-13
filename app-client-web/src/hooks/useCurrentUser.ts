@@ -7,7 +7,7 @@ import { graphql } from '@/gql';
 
 const GET_CURRENT_USER_INFO = graphql(`
     query GetCurrentUserInfo {
-        me {
+        currentUser: me {
             id
             authorities
             authenticated
@@ -33,7 +33,7 @@ export default function useCurrentUser() {
     }, [error, enqueueSnackbar]);
 
     useEffect(() => {
-        if (data?.me?.authenticated === false) {
+        if (data?.currentUser?.authenticated === false) {
             enqueueSnackbar('Current user is not authenticated', {
                 variant: 'error',
                 autoHideDuration: 10_000,

@@ -7,7 +7,6 @@ import com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.data
 import com.netflix.graphql.dgs.DgsComponent
 import com.netflix.graphql.dgs.DgsData
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment
-import org.springframework.security.access.prepost.PreAuthorize
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
@@ -17,7 +16,6 @@ class AuthFetcher {
 
     /* ---------- Queries ---------- */
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Authorities)
     fun userAuthorities(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
         val loader = dfe.getDataLoader<UUID, List<String>>(AuthBatchLoader::class.java)

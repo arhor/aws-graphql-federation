@@ -65,7 +65,6 @@ class CommentServiceImplTest {
             postRepository,
             userRepository
         );
-        commentService.initialize();
     }
 
     @AfterEach

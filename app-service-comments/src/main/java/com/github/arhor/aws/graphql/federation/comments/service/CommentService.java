@@ -24,14 +24,6 @@ public interface CommentService {
     Comment getCommentById(UUID id);
 
     /**
-     * Retrieves replies for the specified comments IDs.
-     *
-     * @param commentIds the collection of comment IDs to retrieve reply comments for
-     * @return a map where the key is the comment ID and the value is a list of reply comments associated with that comment
-     */
-    Map<UUID, List<Comment>> getCommentsReplies(Collection<UUID> commentIds);
-
-    /**
      * Retrieves comments for the specified user IDs.
      *
      * @param userIds the collection of user IDs to retrieve comments for
@@ -46,6 +38,14 @@ public interface CommentService {
      * @return a map where the key is the post ID and the value is a list of comments associated with that post
      */
     Map<UUID, List<Comment>> getCommentsByPostIds(Collection<UUID> postIds);
+
+    /**
+     * Retrieves replies for the specified comments IDs.
+     *
+     * @param commentIds the collection of comment IDs to retrieve reply comments for
+     * @return a map where the key is the comment ID and the value is a list of reply comments associated with that comment
+     */
+    Map<UUID, List<Comment>> getCommentsReplies(Collection<UUID> commentIds);
 
     /**
      * Retrieves number of comments for the specified post IDs.

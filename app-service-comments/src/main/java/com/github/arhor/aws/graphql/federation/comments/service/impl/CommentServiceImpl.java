@@ -18,7 +18,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationR
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
-import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -48,29 +48,6 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepresentationRepository postRepository;
     private final UserRepresentationRepository userRepository;
 
-    private GroupingLoader<CommentEntity, Comment, UUID> usersCommentsLoader;
-    private GroupingLoader<CommentEntity, Comment, UUID> postsCommentsLoader;
-    private GroupingLoader<CommentEntity, Comment, UUID> replyCommentsLoader;
-
-    @PostConstruct
-    public void initialize() {
-        usersCommentsLoader = new GroupingLoader<>(
-            commentRepository::findAllByUserIdIn,
-            commentMapper::mapToDto,
-            Comment::getUserId
-        );
-        postsCommentsLoader = new GroupingLoader<>(
-            commentRepository::findAllByPrntIdNullAndPostIdIn,
-            commentMapper::mapToDto,
-            Comment::getPostId
-        );
-        replyCommentsLoader = new GroupingLoader<>(
-            commentRepository::findAllByPrntIdIn,
-            commentMapper::mapToDto,
-            Comment::getPrntId
-        );
-    }
-
     @Override
     public Comment getCommentById(final UUID id) {
         return commentRepository.findById(id)
@@ -86,20 +63,32 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<UUID, List<Comment>> getCommentsReplies(final Collection<UUID> commentIds) {
-        return replyCommentsLoader.loadBy(commentIds);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Map<UUID, List<Comment>> getCommentsByUserIds(final Collection<UUID> userIds) {
-        return usersCommentsLoader.loadBy(userIds);
+        return loadAndGroupBy(
+            commentRepository::findAllByUserIdIn,
+            userIds,
+            Comment::getUserId
+        );
     }
 
     @Override
     @Transactional(readOnly = true)
     public Map<UUID, List<Comment>> getCommentsByPostIds(final Collection<UUID> postIds) {
-        return postsCommentsLoader.loadBy(postIds);
+        return loadAndGroupBy(
+            commentRepository::findAllByPrntIdNullAndPostIdIn,
+            postIds,
+            Comment::getPostId
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<UUID, List<Comment>> getCommentsReplies(final Collection<UUID> commentIds) {
+        return loadAndGroupBy(
+            commentRepository::findAllByPrntIdIn,
+            commentIds,
+            Comment::getPrntId
+        );
     }
 
     @Override
@@ -281,26 +270,27 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * @param dataSource function that will be used to load comments in case ids collection is not empty
-     * @param dataMapper function that converts entities of type T to type D
-     * @param classifier function that will be used to classify object for grouping operation
-     * @param <T>        entity type loaded by datasource
-     * @param <D>        type of output objects
-     * @param <K>        type of key
+     * @param ids        the ids of comments to be loaded
+     * @param classifier function that will be used to classify comment for grouping operation
+     * @return comments grouped by passed comment classifier
      */
-    private record GroupingLoader<T, D, K>(
-        Function<Collection<K>, Stream<T>> dataSource,
-        Function<T, D> dataMapper,
-        Function<D, K> classifier
+    private Map<UUID, List<Comment>> loadAndGroupBy(
+        @Nonnull final Function<Collection<UUID>, Stream<CommentEntity>> dataSource,
+        @Nonnull final Collection<UUID> ids,
+        @Nonnull final Function<Comment, UUID> classifier
     ) {
-        Map<K, List<D>> loadBy(final Collection<K> ids) {
-            if (ids.isEmpty()) {
-                return Collections.emptyMap();
-            }
-            try (final var data = dataSource.apply(ids)) {
-                return data
-                    .map(dataMapper)
+        if (ids.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        try (final var data = dataSource.apply(ids)) {
+
+            final var result =
+                data.map(commentMapper::mapToDto)
                     .collect(groupingBy(classifier));
-            }
+
+            log.debug("Loaded grouped data of size {} for {} ids", result.size(), ids.size());
+
+            return result;
         }
     }
 }
