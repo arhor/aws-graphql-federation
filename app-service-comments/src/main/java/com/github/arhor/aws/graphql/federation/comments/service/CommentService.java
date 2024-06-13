@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.comments.service;
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 

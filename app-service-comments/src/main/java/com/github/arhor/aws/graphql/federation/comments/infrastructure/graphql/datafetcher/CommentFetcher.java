@@ -5,7 +5,6 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
