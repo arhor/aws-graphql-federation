@@ -2,20 +2,13 @@ plugins {
     idea
 }
 
-val dgsProjects = setOf(
-    "app-service-users",
-    "app-service-posts",
-    "app-service-comments",
-)
-
 idea {
     module {
-        excludeDirs.addAll(
-            files(
-                "$projectDir/app-client-web/node_modules",
-                "$projectDir/app-gateway/node_modules",
+        listOf("app-client-web", "app-gateway").forEach {
+            excludeDirs.add(
+                file("$projectDir/$it/node_modules")
             )
-        )
+        }
     }
 }
 
@@ -24,8 +17,8 @@ tasks {
         group = "build"
         description = "Generates all Graphql related code"
 
-        gradle.includedBuilds.filter { it.name in dgsProjects }.map { it.task(":generateJava") }.forEach {
-            dependsOn(it)
+        listOf("app-service-users", "app-service-posts", "app-service-comments").forEach {
+            dependsOn(gradle.includedBuild(it).task(":generateJava"))
         }
     }
 
