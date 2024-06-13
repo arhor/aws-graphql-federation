@@ -55,14 +55,6 @@ export type CurrentUser = {
   id?: Maybe<Scalars['ID']['output']>;
 };
 
-export type DeleteCommentInput = {
-  id: Scalars['UUID']['input'];
-};
-
-export type DeletePostInput = {
-  id: Scalars['UUID']['input'];
-};
-
 export type DeleteUserInput = {
   id: Scalars['UUID']['input'];
 };
@@ -316,9 +308,10 @@ export type Mutation = {
   deleteUser: Scalars['Boolean']['output'];
   signIn?: Maybe<Scalars['Boolean']['output']>;
   signOut?: Maybe<Scalars['Boolean']['output']>;
-  switchPostComments: Scalars['Boolean']['output'];
-  switchUserComments: Scalars['Boolean']['output'];
-  switchUserPosts: Scalars['Boolean']['output'];
+  togglePostComments: Scalars['Boolean']['output'];
+  togglePostLike: Scalars['Boolean']['output'];
+  toggleUserComments: Scalars['Boolean']['output'];
+  toggleUserPosts: Scalars['Boolean']['output'];
   updateComment: Comment;
   updatePost: Post;
   updateUser: User;
@@ -341,12 +334,12 @@ export type MutationCreateUserArgs = {
 
 
 export type MutationDeleteCommentArgs = {
-  input: DeleteCommentInput;
+  id: Scalars['UUID']['input'];
 };
 
 
 export type MutationDeletePostArgs = {
-  input: DeletePostInput;
+  id: Scalars['UUID']['input'];
 };
 
 
@@ -360,18 +353,23 @@ export type MutationSignInArgs = {
 };
 
 
-export type MutationSwitchPostCommentsArgs = {
-  input: SwitchPostCommentsInput;
+export type MutationTogglePostCommentsArgs = {
+  postId: Scalars['UUID']['input'];
 };
 
 
-export type MutationSwitchUserCommentsArgs = {
-  input: SwitchUserCommentsInput;
+export type MutationTogglePostLikeArgs = {
+  postId: Scalars['UUID']['input'];
 };
 
 
-export type MutationSwitchUserPostsArgs = {
-  input: SwitchUserPostsInput;
+export type MutationToggleUserCommentsArgs = {
+  userId: Scalars['UUID']['input'];
+};
+
+
+export type MutationToggleUserPostsArgs = {
+  userId: Scalars['UUID']['input'];
 };
 
 
@@ -462,21 +460,6 @@ export type QueryUsersArgs = {
 export type SignInInput = {
   password: Scalars['String']['input'];
   username: Scalars['String']['input'];
-};
-
-export type SwitchPostCommentsInput = {
-  disabled: Scalars['Boolean']['input'];
-  postId: Scalars['UUID']['input'];
-};
-
-export type SwitchUserCommentsInput = {
-  disabled: Scalars['Boolean']['input'];
-  userId: Scalars['UUID']['input'];
-};
-
-export type SwitchUserPostsInput = {
-  disabled: Scalars['Boolean']['input'];
-  userId: Scalars['UUID']['input'];
 };
 
 export type TagInput = {

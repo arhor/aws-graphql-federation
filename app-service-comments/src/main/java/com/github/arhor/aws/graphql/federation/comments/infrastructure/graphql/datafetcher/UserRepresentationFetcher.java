@@ -1,7 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.datafetcher;
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchUserCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.UserRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
@@ -41,7 +40,7 @@ public class UserRepresentationFetcher {
 
     @DgsMutation
     @PreAuthorize("hasRole('ADMIN')")
-    public boolean switchUserComments(final @InputArgument SwitchUserCommentsInput input) {
-        return userService.switchUserComments(input);
+    public boolean toggleUserComments(final @InputArgument UUID userId) {
+        return userService.toggleUserComments(userId);
     }
 }

@@ -3,7 +3,6 @@ package com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.
 import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.dataloader.PostRepresentationBatchLoader;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchPostCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import com.netflix.graphql.dgs.DgsComponent;
@@ -41,7 +40,7 @@ public class PostRepresentationFetcher {
 
     @DgsMutation
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public boolean switchPostComments(final @InputArgument SwitchPostCommentsInput input) {
-        return postService.switchPostComments(input);
+    public boolean togglePostComments(final @InputArgument UUID postId) {
+        return postService.togglePostComments(postId);
     }
 }

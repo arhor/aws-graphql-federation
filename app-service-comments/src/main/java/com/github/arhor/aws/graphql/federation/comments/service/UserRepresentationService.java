@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.comments.service;
 
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchUserCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 
 import java.util.Map;
@@ -31,10 +30,10 @@ public interface UserRepresentationService {
     void deleteUserRepresentation(UUID userId, UUID idempotencyKey);
 
     /**
-     * Switches the comments for the user based on the provided input.
+     * Toggles an ability to create comments for the specified user.
      *
-     * @param input the input object containing the necessary data to switch comments
-     * @return {@code true} if the switch was successful, {@code false} otherwise
+     * @param userId the id of a user
+     * @return {@code true} if comments enabled, {@code false} otherwise
      */
-    boolean switchUserComments(SwitchUserCommentsInput input);
+    boolean toggleUserComments(UUID userId);
 }

@@ -13,10 +13,10 @@ type Query {
 type Mutation {
     createComment(input: CreateCommentInput!): Comment!
     updateComment(input: UpdateCommentInput!): Comment!
-    deleteComment(input: DeleteCommentInput!): Boolean!
+    deleteComment(id: UUID!): Boolean!
 
-    switchPostComments(input: SwitchPostCommentsInput!): Boolean!
-    switchUserComments(input: SwitchUserCommentsInput!): Boolean!
+    togglePostComments(postId: UUID!): Boolean!
+    toggleUserComments(userId: UUID!): Boolean!
 }
 
 # ---------- Input Types ----------
@@ -31,20 +31,6 @@ input CreateCommentInput {
 input UpdateCommentInput {
     id: UUID!
     content: String @NotBlank @Size(min: 1, max: 1024)
-}
-
-input DeleteCommentInput {
-    id: UUID!
-}
-
-input SwitchPostCommentsInput {
-    postId: UUID!
-    disabled: Boolean!
-}
-
-input SwitchUserCommentsInput {
-    userId: UUID!
-    disabled: Boolean!
 }
 
 # ---------- Domain Types ----------

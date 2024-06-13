@@ -4,7 +4,6 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchUserCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
@@ -27,6 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.github.arhor.aws.graphql.federation.comments.util.Caches.IDEMPOTENT_ID_SET;
+import static com.github.arhor.aws.graphql.federation.starter.testing.MockitoExtKt.withFirstArg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 import static org.assertj.core.api.Assertions.from;
@@ -178,17 +178,11 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: switchUserComments")
+    @DisplayName("UserService :: toggleUserComments")
     class SwitchUserCommentsTest {
         @Test
-        void should_call_UserRepresentationRepository_save_when_there_is_update_applied_to_the_user() {
+        void should_disable_comments_for_a_given_post_when_they_were_enabled() {
             // Given
-            final var input =
-                SwitchUserCommentsInput.newBuilder()
-                    .userId(USER_ID)
-                    .disabled(true)
-                    .build();
-
             final var user =
                 UserRepresentation.builder()
                     .id(USER_ID)
@@ -198,10 +192,10 @@ class UserRepresentationServiceImplTest {
                 .willReturn(Optional.of(user));
 
             given(userRepository.save(any()))
-                .willAnswer((call) -> call.getArgument(0));
+                .willAnswer(withFirstArg());
 
             // When
-            final var result = userService.switchUserComments(input);
+            final var result = userService.toggleUserComments(USER_ID);
 
             // Then
             then(userRepository)
@@ -213,18 +207,12 @@ class UserRepresentationServiceImplTest {
                 .save(user.toBuilder().features(user.features().plus(Feature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
-                .isTrue();
+                .isFalse();
         }
 
         @Test
-        void should_not_call_UserRepresentationRepository_save_when_there_is_no_update_applied_to_the_user() {
+        void should_enable_comments_for_a_given_post_when_they_were_disabled() {
             // Given
-            final var input =
-                SwitchUserCommentsInput.newBuilder()
-                    .userId(USER_ID)
-                    .disabled(true)
-                    .build();
-
             final var user =
                 UserRepresentation.builder()
                     .id(USER_ID)
@@ -234,32 +222,33 @@ class UserRepresentationServiceImplTest {
             given(userRepository.findById(any()))
                 .willReturn(Optional.of(user));
 
+            given(userRepository.save(any()))
+                .willAnswer(withFirstArg());
+
             // When
-            final var result = userService.switchUserComments(input);
+            final var result = userService.toggleUserComments(USER_ID);
 
             // Then
             then(userRepository)
                 .should()
                 .findById(USER_ID);
 
+            then(userRepository)
+                .should()
+                .save(user.toBuilder().features(user.features().minus(Feature.COMMENTS_DISABLED)).build());
+
             assertThat(result)
-                .isFalse();
+                .isTrue();
         }
 
         @Test
         void should_throw_EntityNotFoundException_when_there_is_no_user_found_by_the_input_id() {
             // Given
-            final var input =
-                SwitchUserCommentsInput.newBuilder()
-                    .userId(USER_ID)
-                    .disabled(true)
-                    .build();
-
             given(userRepository.findById(any()))
                 .willReturn(Optional.empty());
 
             // When
-            final var result = catchException(() -> userService.switchUserComments(input));
+            final var result = catchException(() -> userService.toggleUserComments(USER_ID));
 
             // Then
             then(userRepository)

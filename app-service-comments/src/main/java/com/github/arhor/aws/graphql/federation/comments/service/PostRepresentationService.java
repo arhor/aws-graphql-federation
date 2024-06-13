@@ -1,7 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service;
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchPostCommentsInput;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,10 +30,10 @@ public interface PostRepresentationService {
     void deletePostRepresentation(UUID postId, UUID idempotencyKey);
 
     /**
-     * Switches the comments for the post based on the provided input.
+     * Toggles an ability to create comments for the specified post.
      *
-     * @param input the input object containing the necessary data to switch comments
-     * @return {@code true} if the switch was successful, {@code false} otherwise
+     * @param postId the id of a post
+     * @return {@code true} if comments enabled, {@code false} otherwise
      */
-    boolean switchPostComments(SwitchPostCommentsInput input);
+    boolean togglePostComments(UUID postId);
 }

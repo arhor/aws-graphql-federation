@@ -5,7 +5,6 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresen
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchPostCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
@@ -85,10 +84,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     }
 
     @Override
-    public boolean switchPostComments(final SwitchPostCommentsInput input) {
-        final var postId = input.getPostId();
-        final var shouldBeDisabled = input.getDisabled();
-
+    public boolean togglePostComments(final UUID postId) {
         final var post =
             postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -98,19 +94,13 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                     )
                 );
 
-        if (post.features().check(Feature.COMMENTS_DISABLED) != shouldBeDisabled) {
+        final var updatedPost =
             postRepository.save(
                 post.toBuilder()
-                    .features(
-                        shouldBeDisabled
-                            ? post.features().plus(Feature.COMMENTS_DISABLED)
-                            : post.features().minus(Feature.COMMENTS_DISABLED)
-                    )
+                    .features(post.features().toggle(Feature.COMMENTS_DISABLED))
                     .build()
             );
-            return true;
-        } else {
-            return false;
-        }
+
+        return !updatedPost.features().check(Feature.COMMENTS_DISABLED);
     }
 }

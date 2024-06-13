@@ -35,14 +35,6 @@ type CurrentUser {
     authenticated: Boolean!
 }
 
-input DeleteCommentInput {
-    id: UUID!
-}
-
-input DeletePostInput {
-    id: UUID!
-}
-
 input DeleteUserInput {
     id: UUID!
 }
@@ -306,15 +298,16 @@ enum ErrorType {
 
 type Mutation {
     createComment(input: CreateCommentInput!): Comment!
-    deleteComment(input: DeleteCommentInput!): Boolean!
-    switchPostComments(input: SwitchPostCommentsInput!): Boolean!
-    switchUserComments(input: SwitchUserCommentsInput!): Boolean!
+    deleteComment(id: UUID!): Boolean!
+    togglePostComments(postId: UUID!): Boolean!
+    toggleUserComments(userId: UUID!): Boolean!
     updateComment(input: UpdateCommentInput!): Comment!
     signIn(input: SignInInput!): Boolean
     signOut: Boolean
     createPost(input: CreatePostInput!): Post!
-    deletePost(input: DeletePostInput!): Boolean!
-    switchUserPosts(input: SwitchUserPostsInput!): Boolean!
+    deletePost(id: UUID!): Boolean!
+    togglePostLike(postId: UUID!): Boolean!
+    toggleUserPosts(userId: UUID!): Boolean!
     updatePost(input: UpdatePostInput!): Post!
     createUser(input: CreateUserInput!): User!
     deleteUser(input: DeleteUserInput!): Boolean!
@@ -361,21 +354,6 @@ type Query {
 input SignInInput {
     username: String!
     password: String!
-}
-
-input SwitchPostCommentsInput {
-    disabled: Boolean!
-    postId: UUID!
-}
-
-input SwitchUserCommentsInput {
-    disabled: Boolean!
-    userId: UUID!
-}
-
-input SwitchUserPostsInput {
-    disabled: Boolean!
-    userId: UUID!
 }
 
 input TagInput {

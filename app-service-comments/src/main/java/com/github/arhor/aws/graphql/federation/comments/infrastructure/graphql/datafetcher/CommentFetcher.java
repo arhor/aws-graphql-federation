@@ -90,10 +90,10 @@ public class CommentFetcher {
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
     public boolean deleteComment(
-        final @InputArgument DeleteCommentInput input,
+        final @InputArgument UUID id,
         final @AuthenticationPrincipal CurrentUserDetails actor
     ) {
-        return commentService.deleteComment(input, actor);
+        return commentService.deleteComment(id, actor);
     }
 
     /* ---------- Internal implementation ---------- */

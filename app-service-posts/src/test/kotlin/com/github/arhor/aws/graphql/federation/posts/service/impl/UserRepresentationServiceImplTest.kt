@@ -134,7 +134,7 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: switchUserPosts")
+    @DisplayName("UserService :: toggleUserPosts")
     inner class SwitchUserPostsTest {
         @Test
         fun `should call userRepository#save when there is update applied to the user`() {

@@ -4,7 +4,6 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.SwitchUserCommentsInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
@@ -85,10 +84,7 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     }
 
     @Override
-    public boolean switchUserComments(final SwitchUserCommentsInput input) {
-        final var userId = input.getUserId();
-        final var shouldBeDisabled = input.getDisabled();
-
+    public boolean toggleUserComments(final UUID userId) {
         final var user =
             userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -98,19 +94,14 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
                     )
                 );
 
-        if (user.features().check(Feature.COMMENTS_DISABLED) != shouldBeDisabled) {
+        final var updatedUser =
             userRepository.save(
                 user.toBuilder()
-                    .features(
-                        shouldBeDisabled
-                            ? user.features().plus(Feature.COMMENTS_DISABLED)
-                            : user.features().minus(Feature.COMMENTS_DISABLED)
-                    )
+                    .features(user.features().toggle(Feature.COMMENTS_DISABLED))
                     .build()
             );
-            return true;
-        } else {
-            return false;
-        }
+
+        return !updatedUser.features().check(Feature.COMMENTS_DISABLED);
+
     }
 }

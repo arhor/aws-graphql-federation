@@ -4,7 +4,6 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
@@ -332,8 +331,6 @@ class CommentFetcherTest extends GraphQLTestBase {
             // Given
             final boolean expectedResult
         ) {
-            final var expectedInput = new DeleteCommentInput(COMMENT_ID);
-
             given(commentService.deleteComment(any(), any()))
                 .willReturn(expectedResult);
 
@@ -342,11 +339,7 @@ class CommentFetcherTest extends GraphQLTestBase {
                 // language=GraphQL
                 """
                     mutation($id: UUID!) {
-                        deleteComment(
-                            input: {
-                                id: $id
-                            }
-                        )
+                        deleteComment(id: $id)
                     }""".stripIndent(),
                 "$.data.deleteComment",
                 Map.of("id", COMMENT_ID),
@@ -356,7 +349,7 @@ class CommentFetcherTest extends GraphQLTestBase {
             // Then
             then(commentService)
                 .should()
-                .deleteComment(eq(expectedInput), any());
+                .deleteComment(eq(COMMENT_ID), any());
 
             assertThat(result)
                 .isNotNull()

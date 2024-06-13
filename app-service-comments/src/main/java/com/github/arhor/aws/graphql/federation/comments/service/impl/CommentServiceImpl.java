@@ -10,7 +10,6 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.service.CommentService;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
@@ -160,8 +159,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public boolean deleteComment(final DeleteCommentInput input, final CurrentUserDetails actor) {
-        return commentRepository.findById(input.getId())
+    public boolean deleteComment(final UUID id, final CurrentUserDetails actor) {
+        return commentRepository.findById(id)
             .map((comment) -> {
                 ensureOperationAllowed(
                     comment.userId(),

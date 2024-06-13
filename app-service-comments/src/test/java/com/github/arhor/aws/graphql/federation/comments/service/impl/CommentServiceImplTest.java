@@ -12,7 +12,6 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.DeleteCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
@@ -620,7 +619,6 @@ class CommentServiceImplTest {
         @Test
         void should_return_result_with_success_true_when_comment_is_deleted() {
             // Given
-            final var input = DeleteCommentInput.newBuilder().id(COMMENT_1_ID).build();
             final var comment = CommentEntity.builder().userId(USER_ID).postId(POST_ID).build();
             final var user = UserRepresentation.builder().id(USER_ID).build();
             final var post = PostRepresentation.builder().id(POST_ID).build();
@@ -635,12 +633,12 @@ class CommentServiceImplTest {
                 .willReturn(Optional.of(post));
 
             // When
-            final var result = commentService.deleteComment(input, actor(USER_ID));
+            final var result = commentService.deleteComment(COMMENT_1_ID, actor(USER_ID));
 
             // Then
             then(commentRepository)
                 .should()
-                .findById(input.getId());
+                .findById(COMMENT_1_ID);
 
             then(userRepository)
                 .should()
@@ -661,18 +659,16 @@ class CommentServiceImplTest {
         @Test
         void should_return_result_with_success_false_when_comment_is_missing_by_id() {
             // Given
-            final var input = DeleteCommentInput.newBuilder().id(COMMENT_1_ID).build();
-
             given(commentRepository.findById(any()))
                 .willReturn(Optional.empty());
 
             // When
-            final var result = commentService.deleteComment(input, actor(USER_ID));
+            final var result = commentService.deleteComment(COMMENT_1_ID, actor(USER_ID));
 
             // Then
             then(commentRepository)
                 .should()
-                .findById(input.getId());
+                .findById(COMMENT_1_ID);
 
             assertThat(result)
                 .isFalse();

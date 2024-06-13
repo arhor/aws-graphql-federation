@@ -77,9 +77,9 @@ public interface CommentService {
     /**
      * Deletes a comment.
      *
-     * @param input the input object containing the necessary data to delete the comment
+     * @param id    the id of a comment to be deleted
      * @param actor the user deleting comment
      * @return {@code true} if the comment was successfully deleted, {@code false} otherwise
      */
-    boolean deleteComment(DeleteCommentInput input, CurrentUserDetails actor);
+    boolean deleteComment(UUID id, CurrentUserDetails actor);
 }
