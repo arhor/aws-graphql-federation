@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.service;
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
+import jakarta.annotation.Nonnull;
 
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,8 @@ import java.util.UUID;
  */
 public interface PostRepresentationService {
 
-    Map<UUID, Post> findPostsRepresentationsInBatch(Set<UUID> postIds);
+    @Nonnull
+    Map<UUID, Post> findPostsRepresentationsInBatch(@Nonnull Set<UUID> postIds);
 
     /**
      * Creates a new post representation.
@@ -19,7 +21,7 @@ public interface PostRepresentationService {
      * @param postId         the UUID of the post for whom the representation is to be created
      * @param idempotencyKey the UUID used to ensure idempotency of the creation operation
      */
-    void createPostRepresentation(UUID postId, UUID idempotencyKey);
+    void createPostRepresentation(@Nonnull UUID postId, @Nonnull UUID idempotencyKey);
 
     /**
      * Deletes an existing post representation.
@@ -27,7 +29,7 @@ public interface PostRepresentationService {
      * @param postId         the UUID of the post whose representation is to be deleted
      * @param idempotencyKey the UUID used to ensure idempotency of the deletion operation
      */
-    void deletePostRepresentation(UUID postId, UUID idempotencyKey);
+    void deletePostRepresentation(@Nonnull UUID postId, @Nonnull UUID idempotencyKey);
 
     /**
      * Toggles an ability to create comments for the specified post.
@@ -35,5 +37,5 @@ public interface PostRepresentationService {
      * @param postId the id of a post
      * @return {@code true} if comments enabled, {@code false} otherwise
      */
-    boolean togglePostComments(UUID postId);
+    boolean togglePostComments(@Nonnull UUID postId);
 }

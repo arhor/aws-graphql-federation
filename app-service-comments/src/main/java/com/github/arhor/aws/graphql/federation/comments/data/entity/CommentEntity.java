@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
 import lombok.Builder;
+import lombok.experimental.FieldNameConstants;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Table("comments")
 @Immutable
 @Builder(toBuilder = true)
+@FieldNameConstants
 public record CommentEntity(
     @Id
     @Column("id")

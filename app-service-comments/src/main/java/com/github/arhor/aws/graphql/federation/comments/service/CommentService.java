@@ -4,6 +4,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
+import jakarta.annotation.Nonnull;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,7 +22,8 @@ public interface CommentService {
      * @param id the UUID of the comment to retrieve
      * @return the comment with the specified ID
      */
-    Comment getCommentById(UUID id);
+    @Nonnull
+    Comment getCommentById(@Nonnull UUID id);
 
     /**
      * Retrieves comments for the specified user IDs.
@@ -29,7 +31,8 @@ public interface CommentService {
      * @param userIds the collection of user IDs to retrieve comments for
      * @return a map where the key is the user ID and the value is a list of comments associated with that user
      */
-    Map<UUID, List<Comment>> getCommentsByUserIds(Collection<UUID> userIds);
+    @Nonnull
+    Map<UUID, List<Comment>> getCommentsByUserIds(@Nonnull Collection<UUID> userIds);
 
     /**
      * Retrieves comments for the specified post IDs.
@@ -37,7 +40,8 @@ public interface CommentService {
      * @param postIds the collection of post IDs to retrieve comments for
      * @return a map where the key is the post ID and the value is a list of comments associated with that post
      */
-    Map<UUID, List<Comment>> getCommentsByPostIds(Collection<UUID> postIds);
+    @Nonnull
+    Map<UUID, List<Comment>> getCommentsByPostIds(@Nonnull Collection<UUID> postIds);
 
     /**
      * Retrieves replies for the specified comments IDs.
@@ -45,7 +49,8 @@ public interface CommentService {
      * @param commentIds the collection of comment IDs to retrieve reply comments for
      * @return a map where the key is the comment ID and the value is a list of reply comments associated with that comment
      */
-    Map<UUID, List<Comment>> getCommentsReplies(Collection<UUID> commentIds);
+    @Nonnull
+    Map<UUID, List<Comment>> getCommentsReplies(@Nonnull Collection<UUID> commentIds);
 
     /**
      * Retrieves number of comments for the specified post IDs.
@@ -53,7 +58,8 @@ public interface CommentService {
      * @param postIds the collection of post IDs to retrieve number of comments for
      * @return a map where the key is the post ID and the value is a number of comments associated with that post
      */
-    Map<UUID, Integer> getCommentsNumberByPostIds(Collection<UUID> postIds);
+    @Nonnull
+    Map<UUID, Integer> getCommentsNumberByPostIds(@Nonnull Collection<UUID> postIds);
 
     /**
      * Creates a new comment.
@@ -62,7 +68,8 @@ public interface CommentService {
      * @param actor the user creating comment
      * @return the created comment
      */
-    Comment createComment(CreateCommentInput input, CurrentUserDetails actor);
+    @Nonnull
+    Comment createComment(@Nonnull CreateCommentInput input, @Nonnull CurrentUserDetails actor);
 
     /**
      * Updates an existing comment.
@@ -71,7 +78,8 @@ public interface CommentService {
      * @param actor the user updating comment
      * @return the updated comment
      */
-    Comment updateComment(UpdateCommentInput input, CurrentUserDetails actor);
+    @Nonnull
+    Comment updateComment(@Nonnull UpdateCommentInput input, @Nonnull CurrentUserDetails actor);
 
     /**
      * Deletes a comment.
@@ -80,5 +88,5 @@ public interface CommentService {
      * @param actor the user deleting comment
      * @return {@code true} if the comment was successfully deleted, {@code false} otherwise
      */
-    boolean deleteComment(UUID id, CurrentUserDetails actor);
+    boolean deleteComment(@Nonnull UUID id, @Nonnull CurrentUserDetails actor);
 }

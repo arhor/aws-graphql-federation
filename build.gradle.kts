@@ -20,9 +20,9 @@ idea {
 }
 
 tasks {
-    val dgsCodegen by registering {
+    val generateGql by registering {
         group = "build"
-        description = "Generates all DGS related code"
+        description = "Generates all Graphql related code"
 
         gradle.includedBuilds.filter { it.name in dgsProjects }.map { it.task(":generateJava") }.forEach {
             dependsOn(it)

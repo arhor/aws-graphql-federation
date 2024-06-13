@@ -10,6 +10,7 @@ import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
@@ -38,8 +39,11 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
         cache = getCache(cacheManager, Caches.IDEMPOTENT_ID_SET);
     }
 
+    @Nonnull
     @Override
-    public Map<UUID, User> findUsersRepresentationsInBatch(final Set<UUID> userIds) {
+    public Map<UUID, User> findUsersRepresentationsInBatch(
+        @Nonnull final Set<UUID> userIds
+    ) {
         final var result = new HashMap<UUID, User>(userIds.size());
         final var users = userRepository.findAllById(userIds);
 
@@ -52,19 +56,20 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
                     .build()
             );
         }
-        userIds.stream().filter(it -> !result.containsKey(it)).forEach((userId) ->
-            result.put(
-                userId,
-                User.newBuilder()
-                    .id(userId)
-                    .build()
-            )
-        );
+        for (final var userId : userIds) {
+            if (result.containsKey(userId)) {
+                continue;
+            }
+            result.put(userId, User.newBuilder().id(userId).build());
+        }
         return result;
     }
 
     @Override
-    public void createUserRepresentation(final UUID userId, final UUID idempotencyKey) {
+    public void createUserRepresentation(
+        @Nonnull final UUID userId,
+        @Nonnull final UUID idempotencyKey
+    ) {
         cache.get(idempotencyKey, () ->
             userRepository.save(
                 UserRepresentation.builder()
@@ -76,7 +81,10 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     }
 
     @Override
-    public void deleteUserRepresentation(final UUID userId, final UUID idempotencyKey) {
+    public void deleteUserRepresentation(
+        @Nonnull final UUID userId,
+        @Nonnull final UUID idempotencyKey
+    ) {
         cache.get(idempotencyKey, () -> {
             userRepository.deleteById(userId);
             return null;
@@ -84,7 +92,9 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     }
 
     @Override
-    public boolean toggleUserComments(final UUID userId) {
+    public boolean toggleUserComments(
+        @Nonnull final UUID userId
+    ) {
         final var user =
             userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
@@ -102,6 +112,5 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
             );
 
         return !updatedUser.features().check(Feature.COMMENTS_DISABLED);
-
     }
 }

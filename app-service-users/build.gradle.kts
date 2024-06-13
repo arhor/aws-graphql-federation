@@ -142,6 +142,7 @@ tasks {
             "UUID" to "java.util.UUID"
         )
         addGeneratedAnnotation = true
+        snakeCaseConstantNames = true
     }
 
     jacocoTestReport {

@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresen
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.sorting.CommentsSorted;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
@@ -93,7 +94,7 @@ class CommentServiceImplTest {
                 .map(it -> Comment.newBuilder().id(it.id()).userId(it.userId()).prntId(it.prntId()).build())
                 .toList();
 
-            given(commentRepository.findAllByPrntIdIn(any()))
+            given(commentRepository.findAllByPrntIdIn(any(), any()))
                 .willAnswer((__) -> commentEntities.stream());
 
             given(commentMapper.mapToDto(any()))
@@ -106,7 +107,7 @@ class CommentServiceImplTest {
             // Then
             then(commentRepository)
                 .should()
-                .findAllByPrntIdIn(commentIds);
+                .findAllByPrntIdIn(commentIds, CommentsSorted.byCreatedDateTimeAsc());
 
             then(commentMapper)
                 .should()
@@ -157,7 +158,7 @@ class CommentServiceImplTest {
                 .map(it -> Comment.newBuilder().id(it.id()).userId(it.userId()).build())
                 .toList();
 
-            given(commentRepository.findAllByUserIdIn(any()))
+            given(commentRepository.findAllByUserIdIn(any(), any()))
                 .willAnswer((__) -> commentEntities.stream());
 
             given(commentMapper.mapToDto(any()))
@@ -170,7 +171,7 @@ class CommentServiceImplTest {
             // Then
             then(commentRepository)
                 .should()
-                .findAllByUserIdIn(userIds);
+                .findAllByUserIdIn(userIds, CommentsSorted.byCreatedDateTimeDesc());
 
             then(commentMapper)
                 .should()
@@ -221,7 +222,7 @@ class CommentServiceImplTest {
                 .map(it -> Comment.newBuilder().id(it.id()).postId(it.postId()).build())
                 .toList();
 
-            given(commentRepository.findAllByPrntIdNullAndPostIdIn(any()))
+            given(commentRepository.findAllByPrntIdNullAndPostIdIn(any(), any()))
                 .willAnswer((__) -> commentEntities.stream());
 
             given(commentMapper.mapToDto(any()))
@@ -234,7 +235,7 @@ class CommentServiceImplTest {
             // Then
             then(commentRepository)
                 .should()
-                .findAllByPrntIdNullAndPostIdIn(postIds);
+                .findAllByPrntIdNullAndPostIdIn(postIds, CommentsSorted.byCreatedDateTimeAsc());
 
             then(commentMapper)
                 .should()

@@ -10,6 +10,7 @@ import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
@@ -38,8 +39,11 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
         cache = getCache(cacheManager, Caches.IDEMPOTENT_ID_SET);
     }
 
+    @Nonnull
     @Override
-    public Map<UUID, Post> findPostsRepresentationsInBatch(final Set<UUID> postIds) {
+    public Map<UUID, Post> findPostsRepresentationsInBatch(
+        @Nonnull final Set<UUID> postIds
+    ) {
         final var result = new HashMap<UUID, Post>(postIds.size());
         final var posts = postRepository.findAllById(postIds);
 
@@ -52,19 +56,20 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                     .build()
             );
         }
-        postIds.stream().filter(it -> !result.containsKey(it)).forEach((postId) ->
-            result.put(
-                postId,
-                Post.newBuilder()
-                    .id(postId)
-                    .build()
-            )
-        );
+        for (final var postId : postIds) {
+            if (result.containsKey(postId)) {
+                continue;
+            }
+            result.put(postId, Post.newBuilder().id(postId).build());
+        }
         return result;
     }
 
     @Override
-    public void createPostRepresentation(final UUID postId, final UUID idempotencyKey) {
+    public void createPostRepresentation(
+        @Nonnull final UUID postId,
+        @Nonnull final UUID idempotencyKey
+    ) {
         cache.get(idempotencyKey, () ->
             postRepository.save(
                 PostRepresentation.builder()
@@ -76,7 +81,10 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     }
 
     @Override
-    public void deletePostRepresentation(final UUID postId, final UUID idempotencyKey) {
+    public void deletePostRepresentation(
+        @Nonnull final UUID postId,
+        @Nonnull final UUID idempotencyKey
+    ) {
         cache.get(idempotencyKey, () -> {
             postRepository.deleteById(postId);
             return null;
@@ -84,7 +92,9 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     }
 
     @Override
-    public boolean togglePostComments(final UUID postId) {
+    public boolean togglePostComments(
+        @Nonnull final UUID postId
+    ) {
         final var post =
             postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException(

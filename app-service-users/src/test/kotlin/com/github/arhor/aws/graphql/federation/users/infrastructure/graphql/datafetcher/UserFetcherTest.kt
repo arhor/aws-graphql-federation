@@ -9,7 +9,7 @@ import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_STR
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.MUTATION
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.QUERY
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.UPDATEUSERINPUT
+import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.UPDATE_USER_INPUT
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
@@ -288,7 +288,7 @@ class UserFetcherTest : GraphQLTestBase() {
                 }
             }
             """.trimIndent(),
-            mapOf(UPDATEUSERINPUT.Id to id, UPDATEUSERINPUT.Password to password)
+            mapOf(UPDATE_USER_INPUT.Id to id, UPDATE_USER_INPUT.Password to password)
         )
     }
 
