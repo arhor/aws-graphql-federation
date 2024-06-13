@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.from;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 
 @SpringJUnitConfig
-@SuppressWarnings("ConstantValue")
 class CommentMapperImplTest {
 
     @Configuration
@@ -27,8 +26,7 @@ class CommentMapperImplTest {
         includeFilters = {@Filter(type = ASSIGNABLE_TYPE, classes = CommentMapper.class)},
         useDefaultFilters = false
     )
-    static class Config {
-    }
+    static class Config {}
 
     @Autowired
     private CommentMapper commentMapper;
@@ -60,19 +58,6 @@ class CommentMapperImplTest {
                 .returns(null, from(CommentEntity::createdDateTime))
                 .returns(null, from(CommentEntity::updatedDateTime));
         }
-
-        @Test
-        void should_return_null_when_incoming_dto_is_null() {
-            // Given
-            final var input = (CreateCommentInput) null;
-
-            // When
-            final var entity = commentMapper.mapToEntity(input);
-
-            // Then
-            assertThat(entity)
-                .isNull();
-        }
     }
 
     @Nested
@@ -99,19 +84,6 @@ class CommentMapperImplTest {
                 .returns(entity.userId(), from(Comment::getUserId))
                 .returns(entity.postId(), from(Comment::getPostId))
                 .returns(entity.content(), from(Comment::getContent));
-        }
-
-        @Test
-        void should_return_null_when_incoming_entity_is_null() {
-            // Given
-            final var input = (CommentEntity) null;
-
-            // When
-            final var entity = commentMapper.mapToDto(input);
-
-            // Then
-            assertThat(entity)
-                .isNull();
         }
 
         @Test

@@ -20,41 +20,35 @@ public interface CommentRepository extends
     ListCrudRepository<CommentEntity, UUID>,
     ListPagingAndSortingRepository<CommentEntity, UUID> {
 
+    /**
+     * Finds all comments for specified users by their IDs.
+     *
+     * @param userIds collection of user IDs to retrieve comments for
+     * @param sort    order which should be applied to result, provide {@code Sort.unsorted()} if not needed
+     * @return a stream of comment entities associated with the specified user IDs
+     */
+    @Nonnull
     Stream<CommentEntity> findAllByUserIdIn(@Nonnull Collection<UUID> userIds, @Nonnull Sort sort);
 
     /**
-     * Finds all comment entities for the specified user IDs.
+     * Finds all replies for specified parent comments by their IDs.
      *
-     * @param userIds the collection of user IDs to retrieve comments for
-     * @return a stream of comment entities associated with the specified user IDs
+     * @param prntIds the collection of parent comment IDs to retrieve comments for
+     * @param sort    order which should be applied to result, provide {@code Sort.unsorted()} if not needed
+     * @return a stream of comment entities associated with the specified parent comment IDs
      */
-    default Stream<CommentEntity> findAllByUserIdIn(@Nonnull Collection<UUID> userIds) {
-        return findAllByUserIdIn(userIds, Sort.unsorted());
-    }
-
+    @Nonnull
     Stream<CommentEntity> findAllByPrntIdIn(@Nonnull Collection<UUID> prntIds, @Nonnull Sort sort);
 
     /**
-     * Finds all comment entities for the specified parent comment IDs.
-     *
-     * @param prntIds the collection of parent comment IDs to retrieve comments for
-     * @return a stream of comment entities associated with the specified parent comment IDs
-     */
-    default Stream<CommentEntity> findAllByPrntIdIn(@Nonnull Collection<UUID> prntIds) {
-        return findAllByPrntIdIn(prntIds, Sort.unsorted());
-    }
-
-    Stream<CommentEntity> findAllByPrntIdNullAndPostIdIn(@Nonnull Collection<UUID> postIds, @Nonnull Sort sort);
-
-    /**
-     * Finds all top-level (without a parent) comment entities for the specified post IDs.
+     * Finds all top-level (without a parent) comments for specified posts by their IDs.
      *
      * @param postIds the collection of post IDs to retrieve comments for
+     * @param sort    order which should be applied to result, provide {@code Sort.unsorted()} if not needed
      * @return a stream of top-level comment entities associated with the specified post IDs
      */
-    default Stream<CommentEntity> findAllByPrntIdNullAndPostIdIn(@Nonnull Collection<UUID> postIds) {
-        return findAllByPrntIdNullAndPostIdIn(postIds, Sort.unsorted());
-    }
+    @Nonnull
+    Stream<CommentEntity> findAllByPrntIdNullAndPostIdIn(@Nonnull Collection<UUID> postIds, @Nonnull Sort sort);
 
     /**
      * Checks if a comment exists with the given post ID and parent ID.
@@ -75,5 +69,6 @@ public interface CommentRepository extends
         name = "CommentEntity.countCommentsByPostIds",
         resultSetExtractorRef = CommentsNumberByPostIdResultSetExtractor.BEAN_NAME
     )
+    @Nonnull
     Map<UUID, Integer> countCommentsByPostIds(@Nonnull Collection<UUID> postIds);
 }

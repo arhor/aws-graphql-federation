@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
@@ -55,7 +56,8 @@ public class CommentRepositoryTest extends RepositoryTestBase {
                 expectedComments
                     .stream()
                     .map(CommentEntity::userId)
-                    .toList()
+                    .toList(),
+                Sort.unsorted()
             );
 
             // Then
@@ -71,7 +73,7 @@ public class CommentRepositoryTest extends RepositoryTestBase {
             final List<UUID> userIds = List.of();
 
             // When
-            final var result = commentRepository.findAllByUserIdIn(userIds);
+            final var result = commentRepository.findAllByUserIdIn(userIds, Sort.unsorted());
 
             // Then
             assertThat(result)
@@ -107,7 +109,8 @@ public class CommentRepositoryTest extends RepositoryTestBase {
                     List.of(
                         post1.id(),
                         post2.id()
-                    )
+                    ),
+                    Sort.unsorted()
                 );
 
             // Then
@@ -123,7 +126,7 @@ public class CommentRepositoryTest extends RepositoryTestBase {
             final List<UUID> postIds = List.of();
 
             // When
-            final var result = commentRepository.findAllByPrntIdNullAndPostIdIn(postIds);
+            final var result = commentRepository.findAllByPrntIdNullAndPostIdIn(postIds, Sort.unsorted());
 
             // Then
             assertThat(result)
