@@ -1,10 +1,10 @@
 plugins {
+    java
+    jacoco
     alias(libs.plugins.test.logger)
     alias(libs.plugins.dgs.codegen)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
-    jacoco
-    java
 }
 
 val javaVersion: String = libs.versions.java.get()
