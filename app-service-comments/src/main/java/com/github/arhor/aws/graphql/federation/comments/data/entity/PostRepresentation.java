@@ -20,6 +20,9 @@ public record PostRepresentation(
     @Column("id")
     UUID id,
 
+    @Column("user_id")
+    UUID userId,
+
     @Column("features")
     Features<Feature> features,
 
@@ -34,8 +37,8 @@ public record PostRepresentation(
     }
 
     @PersistenceCreator
-    public PostRepresentation(final UUID id, final Features<Feature> features) {
-        this(id, features, false);
+    public PostRepresentation(final UUID id, final UUID userId, final Features<Feature> features) {
+        this(id, userId, features, false);
     }
 
     @Override

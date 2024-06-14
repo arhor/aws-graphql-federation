@@ -7,7 +7,14 @@ CREATE TABLE IF NOT EXISTS "user_representations"
 CREATE TABLE IF NOT EXISTS "post_representations"
 (
     "id"       UUID NOT NULL PRIMARY KEY,
-    "features" INT  NOT NULL
+    "user_id"  UUID NULL,
+    "features" INT  NOT NULL,
+
+    CONSTRAINT "FK__post_representations__user_id"
+        FOREIGN KEY ("user_id")
+            REFERENCES "user_representations" ("id")
+            ON UPDATE CASCADE
+            ON DELETE SET NULL
 ) WITH (OIDS = FALSE);
 
 CREATE TABLE IF NOT EXISTS "comments"

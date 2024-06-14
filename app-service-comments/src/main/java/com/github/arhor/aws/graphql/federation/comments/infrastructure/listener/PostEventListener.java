@@ -32,6 +32,7 @@ public class PostEventListener {
             traceId,
             () -> postRepresentationService.createPostRepresentation(
                 event.getId(),
+                event.getUserId(),
                 idempotencyKey
             )
         );

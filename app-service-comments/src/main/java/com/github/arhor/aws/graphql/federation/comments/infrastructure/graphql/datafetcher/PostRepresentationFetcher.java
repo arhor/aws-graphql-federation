@@ -4,6 +4,7 @@ import com.github.arhor.aws.graphql.federation.comments.infrastructure.graphql.d
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
@@ -12,6 +13,7 @@ import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.Map;
 import java.util.UUID;
@@ -39,8 +41,11 @@ public class PostRepresentationFetcher {
     /* ---------- Mutations ---------- */
 
     @DgsMutation
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public boolean togglePostComments(final @InputArgument UUID postId) {
-        return postService.togglePostComments(postId);
+    @PreAuthorize("isAuthenticated()")
+    public boolean togglePostComments(
+        final @InputArgument UUID postId,
+        final @AuthenticationPrincipal CurrentUserDetails actor
+    ) {
+        return postService.togglePostComments(postId, actor);
     }
 }

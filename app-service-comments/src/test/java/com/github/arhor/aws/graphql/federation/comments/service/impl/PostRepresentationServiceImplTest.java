@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
@@ -45,6 +46,7 @@ class PostRepresentationServiceImplTest {
     private final Cache cache = new ConcurrentMapCache(IDEMPOTENT_ID_SET.name());
     private final CacheManager cacheManager = mock();
     private final PostRepresentationRepository postRepository = mock();
+    private final UserRepresentationRepository userRepository = mock();
 
     private PostRepresentationServiceImpl postService;
 
@@ -53,7 +55,7 @@ class PostRepresentationServiceImplTest {
         when(cacheManager.getCache(IDEMPOTENT_ID_SET.name()))
             .thenReturn(cache);
 
-        postService = new PostRepresentationServiceImpl(cacheManager, postRepository);
+        postService = new PostRepresentationServiceImpl(cacheManager, postRepository, userRepository);
         postService.initialize();
     }
 
@@ -141,7 +143,11 @@ class PostRepresentationServiceImplTest {
 
             // When
             for (int i = 0; i < 3; i++) {
-                postService.createPostRepresentation(expectedPostRepresentation.id(), IDEMPOTENCY_KEY);
+                postService.createPostRepresentation(
+                    expectedPostRepresentation.id(),
+                    expectedPostRepresentation.userId(),
+                    IDEMPOTENCY_KEY
+                );
             }
 
             // Then
@@ -195,7 +201,7 @@ class PostRepresentationServiceImplTest {
                 .willAnswer(withFirstArg());
 
             // When
-            final var result = postService.togglePostComments(POST_ID);
+            final var result = postService.togglePostComments(POST_ID, mock());
 
             // Then
             then(postRepository)
@@ -226,7 +232,7 @@ class PostRepresentationServiceImplTest {
                 .willAnswer(withFirstArg());
 
             // When
-            final var result = postService.togglePostComments(POST_ID);
+            final var result = postService.togglePostComments(POST_ID, mock());
 
             // Then
             then(postRepository)
@@ -248,7 +254,7 @@ class PostRepresentationServiceImplTest {
                 .willReturn(Optional.empty());
 
             // When
-            final var result = catchException(() -> postService.togglePostComments(POST_ID));
+            final var result = catchException(() -> postService.togglePostComments(POST_ID, mock()));
 
             // Then
             then(postRepository)

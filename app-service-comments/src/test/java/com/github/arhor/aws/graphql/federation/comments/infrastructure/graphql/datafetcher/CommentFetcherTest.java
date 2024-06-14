@@ -269,7 +269,7 @@ class CommentFetcherTest extends GraphQLTestBase {
             // Then
             then(commentService)
                 .should()
-                .createComment(eq(new CreateCommentInput(USER_ID, POST_ID, null, content)), any());
+                .createComment(eq(new CreateCommentInput(POST_ID, null, content)), any());
 
             assertThat(result)
                 .isEqualTo(expectedComment);

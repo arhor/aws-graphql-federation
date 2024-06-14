@@ -79,12 +79,13 @@ class PostServiceImpl(
     @Transactional
     override fun createPost(input: CreatePostInput, actor: CurrentUserDetails): Post {
         val currentOperation = Operation.CREATE
+        val userId = actor.id
 
-        ensureOperationAllowed(actor.id, currentOperation)
+        ensureOperationAllowed(userId, currentOperation)
 
-        return postMapper.mapToEntity(input = input, userId = actor.id, tags = convertToRefs(input.tags))
+        return postMapper.mapToEntity(input = input, userId = userId, tags = convertToRefs(input.tags))
             .let(postRepository::save)
-            .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!)) }
+            .also { appEventPublisher.publishEvent(PostEvent.Created(id = it.id!!, userId = userId)) }
             .let(postMapper::mapToPost)
     }
 

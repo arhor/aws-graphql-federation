@@ -8,5 +8,4 @@ import org.springframework.retry.annotation.EnableRetry;
 @EnableRetry
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(AppProps.class)
-public class ConfigureApplication {
-}
+public class ConfigureApplication {}

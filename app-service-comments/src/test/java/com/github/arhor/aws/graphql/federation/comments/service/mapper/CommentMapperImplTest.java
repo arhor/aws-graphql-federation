@@ -39,18 +39,18 @@ class CommentMapperImplTest {
             // Given
             final var input =
                 CreateCommentInput.newBuilder()
-                    .userId(ConstantsKt.getZERO_UUID_VAL())
                     .postId(ConstantsKt.getOMNI_UUID_VAL())
                     .content("user-1 / post-2 / test-comment")
                     .build();
+            final var userId = ConstantsKt.getZERO_UUID_VAL();
 
             // When
-            final var entity = commentMapper.mapToEntity(input);
+            final var entity = commentMapper.mapToEntity(input, userId);
 
             // Then
             assertThat(entity)
                 .isNotNull()
-                .returns(input.getUserId(), from(CommentEntity::userId))
+                .returns(userId, from(CommentEntity::userId))
                 .returns(input.getPostId(), from(CommentEntity::postId))
                 .returns(input.getContent(), from(CommentEntity::content))
                 .returns(null, from(CommentEntity::id))

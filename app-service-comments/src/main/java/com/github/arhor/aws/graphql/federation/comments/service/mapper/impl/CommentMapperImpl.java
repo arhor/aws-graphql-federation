@@ -8,15 +8,16 @@ import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class CommentMapperImpl implements CommentMapper {
 
     @Nonnull
     @Override
-    public CommentEntity mapToEntity(@Nonnull final CreateCommentInput input) {
+    public CommentEntity mapToEntity(@Nonnull final CreateCommentInput input, @Nonnull final UUID userId) {
         return CommentEntity.builder()
-            .userId(input.getUserId())
+            .userId(userId)
             .postId(input.getPostId())
             .prntId(input.getPrntId())
             .content(input.getContent())

@@ -278,7 +278,6 @@ class CommentServiceImplTest {
             // Given
             final var input =
                 CreateCommentInput.newBuilder()
-                    .userId(USER_ID)
                     .postId(POST_ID)
                     .content("test-content")
                     .build();
@@ -289,7 +288,7 @@ class CommentServiceImplTest {
 
             final var expectedComment = Comment.newBuilder().build();
 
-            given(commentMapper.mapToEntity(any()))
+            given(commentMapper.mapToEntity(any(), USER_ID))
                 .willReturn(comment);
 
             given(userRepository.findById(any()))
@@ -310,11 +309,11 @@ class CommentServiceImplTest {
             // Then
             then(commentMapper)
                 .should()
-                .mapToEntity(input);
+                .mapToEntity(input, USER_ID);
 
             then(userRepository)
                 .should()
-                .findById(input.getUserId());
+                .findById(USER_ID);
 
             then(postRepository)
                 .should()

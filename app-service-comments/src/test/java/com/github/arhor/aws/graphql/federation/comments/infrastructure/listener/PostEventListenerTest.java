@@ -21,15 +21,16 @@ import static com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
 
-@ContextConfiguration(classes = {PostEventListener.class})
+@ContextConfiguration(classes = { PostEventListener.class })
 class PostEventListenerTest extends EventListenerTestBase {
 
     private static final String POST_CREATED_TEST_QUEUE = "post-created-test-queue";
     private static final String POST_DELETED_TEST_QUEUE = "post-deleted-test-queue";
 
-    private static final UUID POST_ID = ConstantsKt.getTEST_1_UUID_VAL();
-    private static final UUID TRACE_ID = ConstantsKt.getTEST_2_UUID_VAL();
-    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_3_UUID_VAL();
+    private static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
+    private static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
+    private static final UUID TRACE_ID = ConstantsKt.getTEST_1_UUID_VAL();
+    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
     @MockBean
     private PostRepresentationService postRepresentationService;
@@ -49,7 +50,7 @@ class PostEventListenerTest extends EventListenerTestBase {
     @Test
     void should_call_createPostRepresentation_method_on_post_created_event() {
         // Given
-        final var event = new PostEvent.Created(POST_ID);
+        final var event = new PostEvent.Created(POST_ID, USER_ID);
 
         // When
         sqsTemplate.send(
@@ -69,7 +70,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postRepresentationService)
                     .should()
-                    .createPostRepresentation(event.getId(), IDEMPOTENCY_KEY);
+                    .createPostRepresentation(event.getId(), event.getUserId(), IDEMPOTENCY_KEY);
 
                 then(postRepresentationService)
                     .shouldHaveNoMoreInteractions();

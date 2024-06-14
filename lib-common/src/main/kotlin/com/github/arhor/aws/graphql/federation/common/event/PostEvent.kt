@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 
 sealed interface PostEvent : DomainEvent {
 
-    data class Created(val id: UUID) : PostEvent {
+    data class Created(val id: UUID, val userId: UUID) : PostEvent {
         override fun type(): String = Type.POST_EVENT_CREATED.code
     }
 
