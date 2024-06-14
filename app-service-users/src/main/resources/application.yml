@@ -43,6 +43,8 @@ dgs:
   graphql:
     graphiql:
       enabled: false
+    preparsedDocumentProvider:
+      enabled: true
 
 app-props:
   aws:
