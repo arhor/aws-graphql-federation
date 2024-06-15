@@ -43,24 +43,25 @@ class StateGuardTest {
         given(userRepository.findById(any()))
             .willReturn(Optional.empty());
 
+        final var expectedId = USER_ID;
         final var expectedEntity = COMMENT.TYPE_NAME;
-        final var expectedCondition = USER.TYPE_NAME + " with " + USER.Id + " = " + USER_ID + " is not found";
+        final var expectedCondition = USER.TYPE_NAME + " with " + USER.Id + " = " + expectedId + " is not found";
         final var expectedOperation = Operation.UNKNOWN;
 
         // When
         final var result = catchException(
             () -> stateGuard.ensureCommentsEnabled(
-                COMMENT.TYPE_NAME,
-                Operation.UNKNOWN,
+                expectedEntity,
+                expectedOperation,
                 StateGuard.Type.USER,
-                USER_ID
+                expectedId
             )
         );
 
         // Then
         then(userRepository)
             .should()
-            .findById(USER_ID);
+            .findById(expectedId);
 
         assertThat(result)
             .isNotNull()
@@ -73,7 +74,9 @@ class StateGuardTest {
     @Test
     void should_throw_EntityOperationRestrictedException_when_user_comments_disabled() {
         // Given
+        final var expectedId = USER_ID;
         final var user = UserRepresentation.builder()
+            .id(expectedId)
             .features(Features.of(Commentable.Feature.COMMENTS_DISABLED))
             .build();
 
@@ -81,23 +84,23 @@ class StateGuardTest {
             .willReturn(Optional.of(user));
 
         final var expectedEntity = COMMENT.TYPE_NAME;
-        final var expectedCondition = "Comments disabled for the " + USER.TYPE_NAME + " with " + USER.Id + " = " + USER_ID;
+        final var expectedCondition = "Comments disabled for the " + USER.TYPE_NAME + " with " + USER.Id + " = " + expectedId;
         final var expectedOperation = Operation.UNKNOWN;
 
         // When
         final var result = catchException(
             () -> stateGuard.ensureCommentsEnabled(
-                COMMENT.TYPE_NAME,
-                Operation.UNKNOWN,
+                expectedEntity,
+                expectedOperation,
                 StateGuard.Type.USER,
-                USER_ID
+                expectedId
             )
         );
 
         // Then
         then(userRepository)
             .should()
-            .findById(USER_ID);
+            .findById(expectedId);
 
         assertThat(result)
             .isNotNull()
@@ -113,24 +116,25 @@ class StateGuardTest {
         given(postRepository.findById(any()))
             .willReturn(Optional.empty());
 
+        final var expectedId = POST_ID;
         final var expectedEntity = COMMENT.TYPE_NAME;
-        final var expectedCondition = POST.TYPE_NAME + " with " + POST.Id + " = " + POST_ID + " is not found";
+        final var expectedCondition = POST.TYPE_NAME + " with " + POST.Id + " = " + expectedId + " is not found";
         final var expectedOperation = Operation.UNKNOWN;
 
         // When
         final var result = catchException(
             () -> stateGuard.ensureCommentsEnabled(
-                COMMENT.TYPE_NAME,
-                Operation.UNKNOWN,
+                expectedEntity,
+                expectedOperation,
                 StateGuard.Type.POST,
-                POST_ID
+                expectedId
             )
         );
 
         // Then
         then(postRepository)
             .should()
-            .findById(POST_ID);
+            .findById(expectedId);
 
         assertThat(result)
             .isNotNull()
@@ -150,24 +154,25 @@ class StateGuardTest {
         given(postRepository.findById(any()))
             .willReturn(Optional.of(post));
 
+        final var expectedId = POST_ID;
         final var expectedEntity = COMMENT.TYPE_NAME;
-        final var expectedCondition = "Comments disabled for the " + POST.TYPE_NAME + " with " + POST.Id + " = " + POST_ID;
+        final var expectedCondition = "Comments disabled for the " + POST.TYPE_NAME + " with " + POST.Id + " = " + expectedId;
         final var expectedOperation = Operation.UNKNOWN;
 
         // When
         final var result = catchException(
             () -> stateGuard.ensureCommentsEnabled(
-                COMMENT.TYPE_NAME,
-                Operation.UNKNOWN,
+                expectedEntity,
+                expectedOperation,
                 StateGuard.Type.POST,
-                POST_ID
+                expectedId
             )
         );
 
         // Then
         then(postRepository)
             .should()
-            .findById(POST_ID);
+            .findById(expectedId);
 
         assertThat(result)
             .isNotNull()
