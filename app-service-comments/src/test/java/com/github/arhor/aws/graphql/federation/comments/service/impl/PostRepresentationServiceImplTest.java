@@ -1,15 +1,15 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
+import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,13 +40,14 @@ import static org.mockito.Mockito.when;
 
 class PostRepresentationServiceImplTest {
 
-    private static final UUID POST_ID = ConstantsKt.getTEST_1_UUID_VAL();
+    private static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
+    private static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
     private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
     private final Cache cache = new ConcurrentMapCache(IDEMPOTENT_ID_SET.name());
     private final CacheManager cacheManager = mock();
     private final PostRepresentationRepository postRepository = mock();
-    private final UserRepresentationRepository userRepository = mock();
+    private final StateGuard stateGuard = mock();
 
     private PostRepresentationServiceImpl postService;
 
@@ -55,7 +56,7 @@ class PostRepresentationServiceImplTest {
         when(cacheManager.getCache(IDEMPOTENT_ID_SET.name()))
             .thenReturn(cache);
 
-        postService = new PostRepresentationServiceImpl(cacheManager, postRepository, userRepository);
+        postService = new PostRepresentationServiceImpl(cacheManager, postRepository, stateGuard);
         postService.initialize();
     }
 
@@ -192,7 +193,13 @@ class PostRepresentationServiceImplTest {
             final var post =
                 PostRepresentation.builder()
                     .id(POST_ID)
+                    .userId(USER_ID)
                     .build();
+
+            final var user = mock(CurrentUserDetails.class);
+
+            given(user.getId())
+                .willReturn(USER_ID);
 
             given(postRepository.findById(any()))
                 .willReturn(Optional.of(post));
@@ -201,7 +208,7 @@ class PostRepresentationServiceImplTest {
                 .willAnswer(withFirstArg());
 
             // When
-            final var result = postService.togglePostComments(POST_ID, mock());
+            final var result = postService.togglePostComments(POST_ID, user);
 
             // Then
             then(postRepository)
@@ -222,8 +229,14 @@ class PostRepresentationServiceImplTest {
             final var post =
                 PostRepresentation.builder()
                     .id(POST_ID)
+                    .userId(USER_ID)
                     .features(Features.of(Feature.COMMENTS_DISABLED))
                     .build();
+
+            final var user = mock(CurrentUserDetails.class);
+
+            given(user.getId())
+                .willReturn(USER_ID);
 
             given(postRepository.findById(any()))
                 .willReturn(Optional.of(post));
@@ -232,7 +245,7 @@ class PostRepresentationServiceImplTest {
                 .willAnswer(withFirstArg());
 
             // When
-            final var result = postService.togglePostComments(POST_ID, mock());
+            final var result = postService.togglePostComments(POST_ID, user);
 
             // Then
             then(postRepository)

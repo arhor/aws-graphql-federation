@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
@@ -52,7 +51,7 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
                 user.id(),
                 User.newBuilder()
                     .id(user.id())
-                    .commentsDisabled(user.features().check(Feature.COMMENTS_DISABLED))
+                    .commentsDisabled(user.commentsDisabled())
                     .build()
             );
         }
@@ -95,22 +94,14 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     public boolean toggleUserComments(
         @Nonnull final UUID userId
     ) {
-        final var user =
-            userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        USER.TYPE_NAME,
-                        USER.Id + " = " + userId,
-                        Operation.UPDATE
-                    )
-                );
-
-        final var updatedUser =
-            userRepository.save(
-                user.toBuilder()
-                    .features(user.features().toggle(Feature.COMMENTS_DISABLED))
-                    .build()
+        return userRepository.findById(userId)
+            .map(user -> userRepository.save(user.toggleComments()))
+            .map(user -> !user.commentsDisabled())
+            .orElseThrow(() -> new EntityNotFoundException(
+                    USER.TYPE_NAME,
+                    USER.Id + " = " + userId,
+                    Operation.UPDATE
+                )
             );
-
-        return !updatedUser.features().check(Feature.COMMENTS_DISABLED);
     }
 }

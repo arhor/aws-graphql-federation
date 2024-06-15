@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
@@ -55,6 +55,7 @@ class CommentServiceImplTest {
     private final CommentMapper commentMapper = mock();
     private final PostRepresentationRepository postRepository = mock();
     private final UserRepresentationRepository userRepository = mock();
+    private final StateGuard stateGuard = mock();
 
     private CommentServiceImpl commentService;
 
@@ -64,7 +65,8 @@ class CommentServiceImplTest {
             commentRepository,
             commentMapper,
             postRepository,
-            userRepository
+            userRepository,
+            stateGuard
         );
     }
 

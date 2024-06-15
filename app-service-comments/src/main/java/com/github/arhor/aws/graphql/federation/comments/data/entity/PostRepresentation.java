@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
+import jakarta.annotation.Nonnull;
 import lombok.Builder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
@@ -28,7 +29,7 @@ public record PostRepresentation(
 
     @Transient
     boolean shouldBePersisted
-) implements Persistable<UUID>, HasComments {
+) implements Persistable<UUID>, Commentable<PostRepresentation> {
 
     public PostRepresentation {
         if (features == null) {
@@ -49,5 +50,22 @@ public record PostRepresentation(
     @Override
     public boolean isNew() {
         return shouldBePersisted;
+    }
+
+    @Override
+    public boolean commentsDisabled() {
+        return features.check(Feature.COMMENTS_DISABLED);
+    }
+
+    @Nonnull
+    @Override
+    public PostRepresentation toggleComments() {
+        return this.toBuilder()
+            .features(this.features().toggle(Feature.COMMENTS_DISABLED))
+            .build();
+    }
+
+    public enum Feature {
+        COMMENTS_DISABLED,
     }
 }

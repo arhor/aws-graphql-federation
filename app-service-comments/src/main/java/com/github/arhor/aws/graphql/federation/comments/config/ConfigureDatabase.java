@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.config;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesReadingConverter;
 import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesWritingConverter;
 import jakarta.annotation.Nonnull;
@@ -23,9 +24,14 @@ public class ConfigureDatabase extends AbstractJdbcConfiguration {
     @Nonnull
     @Override
     public List<?> userConverters() {
+        final var userFeatures = UserRepresentation.Feature.class;
+        final var postFeatures = PostRepresentation.Feature.class;
+
         return List.of(
-            new FeaturesReadingConverter<>(HasComments.Feature.class),
-            new FeaturesWritingConverter<>(HasComments.Feature.class)
+            new FeaturesReadingConverter<>(userFeatures),
+            new FeaturesWritingConverter<>(userFeatures),
+            new FeaturesReadingConverter<>(postFeatures),
+            new FeaturesWritingConverter<>(postFeatures)
         );
     }
 

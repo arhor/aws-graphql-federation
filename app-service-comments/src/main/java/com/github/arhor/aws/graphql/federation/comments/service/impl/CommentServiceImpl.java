@@ -1,15 +1,11 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.sorting.CommentsSorted;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
@@ -25,7 +21,6 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +45,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
     private final PostRepresentationRepository postRepository;
     private final UserRepresentationRepository userRepository;
+    private final StateGuard stateGuard;
 
     @Nonnull
     @Override
@@ -248,9 +244,9 @@ public class CommentServiceImpl implements CommentService {
             ensureParentCommentExists(postId, prntId, operation);
         }
         if (userId != null) {
-            ensureCommentsEnabled(userRepository, operation, USER.TYPE_NAME, USER.Id, userId);
+            stateGuard.ensureCommentsEnabled(COMMENT.TYPE_NAME, operation, StateGuard.Type.USER, userId);
         }
-        ensureCommentsEnabled(postRepository, operation, POST.TYPE_NAME, POST.Id, postId);
+        stateGuard.ensureCommentsEnabled(COMMENT.TYPE_NAME, operation, StateGuard.Type.POST, postId);
     }
 
     private void ensureParentCommentExists(
@@ -262,32 +258,6 @@ public class CommentServiceImpl implements CommentService {
             throw new EntityNotFoundException(
                 COMMENT.TYPE_NAME,
                 COMMENT.PostId + " = " + postId + " and " + COMMENT.PrntId + " = " + prntId,
-                operation
-            );
-        }
-    }
-
-    private <T extends HasComments> void ensureCommentsEnabled(
-        @Nonnull final CrudRepository<T, UUID> commentsContainerSource,
-        @Nonnull final Operation operation,
-        @Nonnull final String entity,
-        @Nonnull final String field,
-        @Nonnull final UUID id
-    ) {
-        final var commentsContainer =
-            commentsContainerSource.findById(id)
-                .orElseThrow(() ->
-                    new EntityNotFoundException(
-                        COMMENT.TYPE_NAME,
-                        entity + " with " + field + " = " + id + " is not found",
-                        operation
-                    )
-                );
-
-        if (commentsContainer.features().check(Feature.COMMENTS_DISABLED)) {
-            throw new EntityOperationRestrictedException(
-                COMMENT.TYPE_NAME,
-                "Comments disabled for the " + entity + " with " + field + " = " + id,
                 operation
             );
         }

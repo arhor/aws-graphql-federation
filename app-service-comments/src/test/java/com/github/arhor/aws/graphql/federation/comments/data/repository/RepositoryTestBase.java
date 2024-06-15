@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.config.ConfigureDatabase;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.starter.core.ConfigureCoreApplicationComponents;
@@ -66,7 +65,7 @@ abstract class RepositoryTestBase {
         );
     }
 
-    protected UserRepresentation createUser(final UUID id, final Feature feature, final Feature... features) {
+    protected UserRepresentation createUser(final UUID id, final UserRepresentation.Feature feature, final UserRepresentation.Feature... features) {
         return userRepository.save(
             UserRepresentation.builder()
                 .id(id)
@@ -85,7 +84,7 @@ abstract class RepositoryTestBase {
         );
     }
 
-    protected PostRepresentation createPost(final UUID id, final Feature feature, final Feature... features) {
+    protected PostRepresentation createPost(final UUID id, final PostRepresentation.Feature feature, final PostRepresentation.Feature... features) {
         return postRepository.save(
             PostRepresentation.builder()
                 .id(id)

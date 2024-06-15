@@ -1,12 +1,9 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
 import com.github.arhor.aws.graphql.federation.comments.util.Caches;
@@ -22,7 +19,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -44,7 +40,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
 
     private final CacheManager cacheManager;
     private final PostRepresentationRepository postRepository;
-    private final UserRepresentationRepository userRepository;
+    private final StateGuard stateGuard;
 
     private Cache cache;
 
@@ -66,7 +62,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                 post.id(),
                 Post.newBuilder()
                     .id(post.id())
-                    .commentsDisabled(post.features().check(Feature.COMMENTS_DISABLED))
+                    .commentsDisabled(post.commentsDisabled())
                     .build()
             );
         }
@@ -134,7 +130,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                     .build()
             );
 
-        return !updatedPost.features().check(Feature.COMMENTS_DISABLED);
+        return !updatedPost.commentsDisabled();
     }
 
     private void ensureOperationAllowed(
@@ -144,39 +140,13 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     ) {
         final var operation = Operation.UPDATE;
 
-        if (actingUserId.equals(targetUserId) || authorities.contains(ROLE_ADMIN_AUTH)) {
-            ensureCommentsEnabled(userRepository, operation, USER.TYPE_NAME, USER.Id, actingUserId);
-        }
-        throw new EntityOperationRestrictedException(
-            POST.TYPE_NAME,
-            "Not enough permissions to operate post comments",
-            operation
-        );
-    }
-
-    private <T extends HasComments> void ensureCommentsEnabled(
-        @Nonnull final CrudRepository<T, UUID> commentsContainerSource,
-        @Nonnull final Operation operation,
-        @Nonnull final String entity,
-        @Nonnull final String field,
-        @Nonnull final UUID id
-    ) throws EntityOperationRestrictedException {
-        final var commentsContainer =
-            commentsContainerSource.findById(id)
-                .orElseThrow(() ->
-                    new EntityNotFoundException(
-                        POST.TYPE_NAME,
-                        entity + " with " + field + " = " + id + " is not found",
-                        operation
-                    )
-                );
-
-        if (commentsContainer.features().check(Feature.COMMENTS_DISABLED)) {
+        if (!actingUserId.equals(targetUserId) && !authorities.contains(ROLE_ADMIN_AUTH)) {
             throw new EntityOperationRestrictedException(
                 POST.TYPE_NAME,
-                "Comments disabled for the " + entity + " with " + field + " = " + id,
+                "Not enough permissions to operate post comments",
                 operation
             );
         }
+        stateGuard.ensureCommentsEnabled(POST.TYPE_NAME, operation, StateGuard.Type.USER, actingUserId);
     }
 }

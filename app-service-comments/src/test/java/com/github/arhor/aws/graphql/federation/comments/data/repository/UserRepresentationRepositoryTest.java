@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.HasComments.Feature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable.Feature;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ public class UserRepresentationRepositoryTest extends RepositoryTestBase {
         // Then
         assertThat(user)
             .get()
-            .extracting(HasComments::features)
+            .extracting(Commentable::features)
             .extracting(Features::getItems)
             .satisfies(
                 it -> assertThat(it).isEmpty()
@@ -39,7 +39,7 @@ public class UserRepresentationRepositoryTest extends RepositoryTestBase {
         // Then
         assertThat(user)
             .get()
-            .extracting(HasComments::features)
+            .extracting(Commentable::features)
             .extracting(Features::getItems)
             .satisfies(
                 it -> assertThat(it).isNotEmpty(),
