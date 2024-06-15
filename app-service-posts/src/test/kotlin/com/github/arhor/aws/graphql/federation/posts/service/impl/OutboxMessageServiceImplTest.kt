@@ -6,6 +6,7 @@ import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
+import com.github.arhor.aws.graphql.federation.posts.service.impl.OutboxMessageServiceImpl.Companion.OutboxMessageDataTypeRef
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
@@ -33,8 +34,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryOperations
 import java.util.stream.Stream
-
-private typealias OutboxEventData = TypeReference<Map<String, Any?>>
 
 class OutboxMessageServiceImplTest {
 
@@ -77,7 +76,7 @@ class OutboxMessageServiceImplTest {
             val expectedData = mockk<Map<String, Any?>>()
             val outboxMessageCapturingSlot = slot<OutboxMessageEntity>()
 
-            every { objectMapper.convertValue(any(), any<OutboxEventData>()) } returns expectedData
+            every { objectMapper.convertValue(any(), any<TypeReference<*>>()) } returns expectedData
             every { outboxMessageRepository.save(any()) } returns mockk()
             every { useContextAttribute(any()) } returns TRACE_ID
 
@@ -85,7 +84,7 @@ class OutboxMessageServiceImplTest {
             outboxMessageService.storeAsOutboxMessage(event)
 
             // Then
-            verify(exactly = 1) { objectMapper.convertValue(event, any<OutboxEventData>()) }
+            verify(exactly = 1) { objectMapper.convertValue(event, OutboxMessageDataTypeRef) }
             verify(exactly = 1) { outboxMessageRepository.save(capture(outboxMessageCapturingSlot)) }
             verify(exactly = 1) { useContextAttribute(Attributes.TRACING_ID) }
 
@@ -167,6 +166,7 @@ class OutboxMessageServiceImplTest {
         private val MESSAGE_ID = TEST_2_UUID_VAL
 
         @JvmStatic
+        @Suppress("unused")
         fun postEventsTestFactory(): Stream<Arguments> = Stream.of(
             Arguments.of(PostEvent.Created(id = POST_ID, userId = USER_ID), PostEvent.Type.POST_EVENT_CREATED),
             Arguments.of(PostEvent.Deleted(id = POST_ID), PostEvent.Type.POST_EVENT_DELETED),

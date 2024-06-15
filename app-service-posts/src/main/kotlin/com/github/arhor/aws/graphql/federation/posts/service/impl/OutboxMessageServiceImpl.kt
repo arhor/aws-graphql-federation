@@ -78,6 +78,6 @@ class OutboxMessageServiceImpl(
     companion object {
         private const val DEFAULT_EVENTS_BATCH_SIZE = 50
 
-        private object OutboxMessageDataTypeRef : TypeReference<Map<String, Any?>>()
+        internal object OutboxMessageDataTypeRef : TypeReference<Map<String, Any?>>()
     }
 }
