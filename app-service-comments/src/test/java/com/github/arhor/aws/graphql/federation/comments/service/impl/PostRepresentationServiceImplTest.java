@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable.Feature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
@@ -217,7 +217,7 @@ class PostRepresentationServiceImplTest {
 
             then(postRepository)
                 .should()
-                .save(post.toBuilder().features(post.features().plus(Feature.COMMENTS_DISABLED)).build());
+                .save(post.toBuilder().features(post.features().plus(Commentable.Feature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
                 .isFalse();
@@ -230,7 +230,7 @@ class PostRepresentationServiceImplTest {
                 PostRepresentation.builder()
                     .id(POST_ID)
                     .userId(USER_ID)
-                    .features(Features.of(Feature.COMMENTS_DISABLED))
+                    .features(Features.of(Commentable.Feature.COMMENTS_DISABLED))
                     .build();
 
             final var user = mock(CurrentUserDetails.class);
@@ -254,7 +254,7 @@ class PostRepresentationServiceImplTest {
 
             then(postRepository)
                 .should()
-                .save(post.toBuilder().features(post.features().minus(Feature.COMMENTS_DISABLED)).build());
+                .save(post.toBuilder().features(post.features().minus(Commentable.Feature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
                 .isTrue();

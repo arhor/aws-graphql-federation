@@ -247,10 +247,9 @@ class CommentFetcherTest extends GraphQLTestBase {
             final var result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 // language=GraphQL
                 """
-                    mutation($userId: UUID!, $postId: UUID!, $content: String!) {
+                    mutation($postId: UUID!, $content: String!) {
                         createComment(
                             input: {
-                                userId: $userId
                                 postId: $postId
                                 content: $content
                             }
@@ -262,7 +261,7 @@ class CommentFetcherTest extends GraphQLTestBase {
                         }
                     }""".stripIndent(),
                 "$.data.createComment",
-                Map.of("userId", USER_ID, "postId", POST_ID, "content", content),
+                Map.of("postId", POST_ID, "content", content),
                 Comment.class
             );
 

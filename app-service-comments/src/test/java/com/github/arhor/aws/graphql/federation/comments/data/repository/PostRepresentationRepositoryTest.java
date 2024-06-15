@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
+import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.Feature;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ public class PostRepresentationRepositoryTest extends RepositoryTestBase {
     @Test
     void should_create_post_with_defined_features_set_to_not_null() {
         // Given
-        final var postId = createPost(ConstantsKt.getOMNI_UUID_VAL(), Feature.COMMENTS_DISABLED).id();
+        final var postId = createPost(ConstantsKt.getOMNI_UUID_VAL(), Commentable.Feature.COMMENTS_DISABLED).id();
 
         // When
         final var post = postRepository.findById(postId);
@@ -44,7 +44,7 @@ public class PostRepresentationRepositoryTest extends RepositoryTestBase {
             .satisfies(
                 it -> assertThat(it).isNotEmpty(),
                 it -> assertThat(it).hasSize(1),
-                it -> assertThat(it).containsExactly(Feature.COMMENTS_DISABLED)
+                it -> assertThat(it).containsExactly(Commentable.Feature.COMMENTS_DISABLED)
             );
     }
 }

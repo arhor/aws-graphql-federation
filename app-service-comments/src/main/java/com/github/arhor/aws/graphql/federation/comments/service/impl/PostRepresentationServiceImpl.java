@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
+import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.Feature;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
@@ -126,7 +126,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
         final var updatedPost =
             postRepository.save(
                 post.toBuilder()
-                    .features(post.features().toggle(Feature.COMMENTS_DISABLED))
+                    .features(post.features().toggle(Commentable.Feature.COMMENTS_DISABLED))
                     .build()
             );
 

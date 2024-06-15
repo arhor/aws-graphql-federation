@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import jakarta.annotation.Nonnull;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,7 @@ class StateGuard {
         }
     }
 
+    @Getter
     @RequiredArgsConstructor
     enum Type {
         USER(DgsConstants.USER.TYPE_NAME, DgsConstants.USER.Id),

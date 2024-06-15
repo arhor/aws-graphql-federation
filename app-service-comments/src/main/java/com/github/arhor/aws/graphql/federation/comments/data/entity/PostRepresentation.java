@@ -52,20 +52,11 @@ public record PostRepresentation(
         return shouldBePersisted;
     }
 
-    @Override
-    public boolean commentsDisabled() {
-        return features.check(Feature.COMMENTS_DISABLED);
-    }
-
     @Nonnull
     @Override
     public PostRepresentation toggleComments() {
-        return this.toBuilder()
-            .features(this.features().toggle(Feature.COMMENTS_DISABLED))
+        return toBuilder()
+            .features(features.toggle(Feature.COMMENTS_DISABLED))
             .build();
-    }
-
-    public enum Feature {
-        COMMENTS_DISABLED,
     }
 }

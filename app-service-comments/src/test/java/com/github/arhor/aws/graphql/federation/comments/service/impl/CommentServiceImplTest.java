@@ -1,24 +1,15 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable.Feature;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.sorting.CommentsSorted;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
-import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
-import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.AfterEach;
@@ -53,8 +44,6 @@ class CommentServiceImplTest {
 
     private final CommentRepository commentRepository = mock();
     private final CommentMapper commentMapper = mock();
-    private final PostRepresentationRepository postRepository = mock();
-    private final UserRepresentationRepository userRepository = mock();
     private final StateGuard stateGuard = mock();
 
     private CommentServiceImpl commentService;
@@ -64,8 +53,6 @@ class CommentServiceImplTest {
         commentService = new CommentServiceImpl(
             commentRepository,
             commentMapper,
-            postRepository,
-            userRepository,
             stateGuard
         );
     }
@@ -75,8 +62,7 @@ class CommentServiceImplTest {
         verifyNoMoreInteractions(
             commentRepository,
             commentMapper,
-            postRepository,
-            userRepository
+            stateGuard
         );
     }
 
@@ -283,21 +269,11 @@ class CommentServiceImplTest {
                     .postId(POST_ID)
                     .content("test-content")
                     .build();
-
             final var comment = CommentEntity.builder().build();
-            final var user = UserRepresentation.builder().build();
-            final var post = PostRepresentation.builder().build();
-
             final var expectedComment = Comment.newBuilder().build();
 
-            given(commentMapper.mapToEntity(any(), USER_ID))
+            given(commentMapper.mapToEntity(any(), any()))
                 .willReturn(comment);
-
-            given(userRepository.findById(any()))
-                .willReturn(Optional.of(user));
-
-            given(postRepository.findById(any()))
-                .willReturn(Optional.of(post));
 
             given(commentRepository.save(any()))
                 .willReturn(comment);
@@ -313,13 +289,13 @@ class CommentServiceImplTest {
                 .should()
                 .mapToEntity(input, USER_ID);
 
-            then(userRepository)
+            then(stateGuard)
                 .should()
-                .findById(USER_ID);
+                .ensureCommentsEnabled(COMMENT.TYPE_NAME, Operation.CREATE, StateGuard.Type.USER, USER_ID);
 
-            then(postRepository)
+            then(stateGuard)
                 .should()
-                .findById(input.getPostId());
+                .ensureCommentsEnabled(COMMENT.TYPE_NAME, Operation.CREATE, StateGuard.Type.POST, POST_ID);
 
             then(commentRepository)
                 .should()
@@ -370,197 +346,6 @@ class CommentServiceImplTest {
         }
 
         @Test
-        void should_throw_EntityNotFoundException_when_user_does_not_exist_by_id() {
-            // Given
-            final var input =
-                UpdateCommentInput.newBuilder()
-                    .id(COMMENT_1_ID)
-                    .build();
-            final var comment =
-                CommentEntity.builder()
-                    .userId(USER_ID)
-                    .postId(POST_ID)
-                    .build();
-
-            given(commentRepository.findById(any()))
-                .willReturn(Optional.of(comment));
-
-            given(userRepository.findById(any()))
-                .willReturn(Optional.empty());
-
-            final var expectedEntity = COMMENT.TYPE_NAME;
-            final var expectedCondition = USER.TYPE_NAME + " with " + USER.Id + " = " + USER_ID + " is not found";
-            final var expectedOperation = Operation.UPDATE;
-
-            // When
-            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
-
-            // Then
-            then(commentRepository)
-                .should()
-                .findById(input.getId());
-
-            then(userRepository)
-                .should()
-                .findById(USER_ID);
-
-            assertThat(result)
-                .isNotNull()
-                .asInstanceOf(type(EntityNotFoundException.class))
-                .returns(expectedEntity, from(EntityNotFoundException::getEntity))
-                .returns(expectedCondition, from(EntityNotFoundException::getCondition))
-                .returns(expectedOperation, from(EntityNotFoundException::getOperation));
-        }
-
-        @Test
-        void should_throw_EntityOperationRestrictedException_when_user_comments_disabled() {
-            // Given
-            final var input =
-                UpdateCommentInput.newBuilder()
-                    .id(COMMENT_1_ID)
-                    .build();
-            final var comment = CommentEntity.builder()
-                .userId(USER_ID)
-                .postId(POST_ID)
-                .build();
-
-            final var user = UserRepresentation.builder().features(Features.of(Feature.COMMENTS_DISABLED)).build();
-
-            given(commentRepository.findById(any()))
-                .willReturn(Optional.of(comment));
-
-            given(userRepository.findById(any()))
-                .willReturn(Optional.of(user));
-
-            final var expectedEntity = COMMENT.TYPE_NAME;
-            final var expectedCondition = "Comments disabled for the " + USER.TYPE_NAME + " with " + USER.Id + " = " + USER_ID;
-            final var expectedOperation = Operation.UPDATE;
-
-            // When
-            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
-
-            // Then
-            then(commentRepository)
-                .should()
-                .findById(input.getId());
-
-            then(userRepository)
-                .should()
-                .findById(USER_ID);
-
-            assertThat(result)
-                .isNotNull()
-                .asInstanceOf(type(EntityOperationRestrictedException.class))
-                .returns(expectedEntity, from(EntityOperationRestrictedException::getEntity))
-                .returns(expectedCondition, from(EntityOperationRestrictedException::getCondition))
-                .returns(expectedOperation, from(EntityOperationRestrictedException::getOperation));
-        }
-
-        @Test
-        void should_throw_EntityNotFoundException_when_post_does_not_exist_by_id() {
-            // Given
-            final var input =
-                UpdateCommentInput.newBuilder()
-                    .id(COMMENT_1_ID)
-                    .build();
-            final var comment =
-                CommentEntity.builder()
-                    .userId(USER_ID)
-                    .postId(POST_ID)
-                    .build();
-
-            final var user = UserRepresentation.builder().build();
-
-            given(commentRepository.findById(any()))
-                .willReturn(Optional.of(comment));
-
-            given(userRepository.findById(any()))
-                .willReturn(Optional.of(user));
-
-            given(postRepository.findById(any()))
-                .willReturn(Optional.empty());
-
-            final var expectedEntity = COMMENT.TYPE_NAME;
-            final var expectedCondition = POST.TYPE_NAME + " with " + POST.Id + " = " + POST_ID + " is not found";
-            final var expectedOperation = Operation.UPDATE;
-
-            // When
-            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
-
-            // Then
-            then(commentRepository)
-                .should()
-                .findById(input.getId());
-
-            then(userRepository)
-                .should()
-                .findById(USER_ID);
-
-            then(postRepository)
-                .should()
-                .findById(POST_ID);
-
-            assertThat(result)
-                .isNotNull()
-                .asInstanceOf(type(EntityNotFoundException.class))
-                .returns(expectedEntity, from(EntityNotFoundException::getEntity))
-                .returns(expectedCondition, from(EntityNotFoundException::getCondition))
-                .returns(expectedOperation, from(EntityNotFoundException::getOperation));
-        }
-
-        @Test
-        void should_throw_EntityOperationRestrictedException_when_post_comments_disabled() {
-            // Given
-            final var input =
-                UpdateCommentInput.newBuilder()
-                    .id(COMMENT_1_ID)
-                    .build();
-            final var comment = CommentEntity.builder()
-                .userId(USER_ID)
-                .postId(POST_ID)
-                .build();
-
-            final var user = UserRepresentation.builder().build();
-            final var post = PostRepresentation.builder().features(Features.of(Feature.COMMENTS_DISABLED)).build();
-
-            given(commentRepository.findById(any()))
-                .willReturn(Optional.of(comment));
-
-            given(userRepository.findById(any()))
-                .willReturn(Optional.of(user));
-
-            given(postRepository.findById(any()))
-                .willReturn(Optional.of(post));
-
-            final var expectedEntity = COMMENT.TYPE_NAME;
-            final var expectedCondition = "Comments disabled for the " + POST.TYPE_NAME + " with " + POST.Id + " = " + POST_ID;
-            final var expectedOperation = Operation.UPDATE;
-
-            // When
-            final var result = catchException(() -> commentService.updateComment(input, actor(USER_ID)));
-
-            // Then
-            then(commentRepository)
-                .should()
-                .findById(input.getId());
-
-            then(userRepository)
-                .should()
-                .findById(USER_ID);
-
-            then(postRepository)
-                .should()
-                .findById(POST_ID);
-
-            assertThat(result)
-                .isNotNull()
-                .asInstanceOf(type(EntityOperationRestrictedException.class))
-                .returns(expectedEntity, from(EntityOperationRestrictedException::getEntity))
-                .returns(expectedCondition, from(EntityOperationRestrictedException::getCondition))
-                .returns(expectedOperation, from(EntityOperationRestrictedException::getOperation));
-        }
-
-        @Test
         void should_not_call_CommentRepository_save_when_existing_comment_was_not_modified() {
             // Given
             final var input =
@@ -572,18 +357,11 @@ class CommentServiceImplTest {
                     .userId(USER_ID)
                     .postId(POST_ID)
                     .build();
-            final var user = UserRepresentation.builder().build();
-            final var post = PostRepresentation.builder().build();
+
             final var commentDto = Comment.newBuilder().build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(commentEntity));
-
-            given(userRepository.findById(any()))
-                .willReturn(Optional.of(user));
-
-            given(postRepository.findById(any()))
-                .willReturn(Optional.of(post));
 
             given(commentMapper.mapToDto(any()))
                 .willReturn(commentDto);
@@ -596,13 +374,13 @@ class CommentServiceImplTest {
                 .should()
                 .findById(input.getId());
 
-            then(userRepository)
+            then(stateGuard)
                 .should()
-                .findById(USER_ID);
+                .ensureCommentsEnabled(COMMENT.TYPE_NAME, Operation.UPDATE, StateGuard.Type.USER, USER_ID);
 
-            then(postRepository)
+            then(stateGuard)
                 .should()
-                .findById(POST_ID);
+                .ensureCommentsEnabled(COMMENT.TYPE_NAME, Operation.UPDATE, StateGuard.Type.POST, POST_ID);
 
             then(commentMapper)
                 .should()
@@ -621,17 +399,9 @@ class CommentServiceImplTest {
         void should_return_result_with_success_true_when_comment_is_deleted() {
             // Given
             final var comment = CommentEntity.builder().userId(USER_ID).postId(POST_ID).build();
-            final var user = UserRepresentation.builder().id(USER_ID).build();
-            final var post = PostRepresentation.builder().id(POST_ID).build();
 
             given(commentRepository.findById(any()))
                 .willReturn(Optional.of(comment));
-
-            given(userRepository.findById(any()))
-                .willReturn(Optional.of(user));
-
-            given(postRepository.findById(any()))
-                .willReturn(Optional.of(post));
 
             // When
             final var result = commentService.deleteComment(COMMENT_1_ID, actor(USER_ID));
@@ -641,13 +411,13 @@ class CommentServiceImplTest {
                 .should()
                 .findById(COMMENT_1_ID);
 
-            then(userRepository)
+            then(stateGuard)
                 .should()
-                .findById(USER_ID);
+                .ensureCommentsEnabled(COMMENT.TYPE_NAME, Operation.DELETE, StateGuard.Type.USER, USER_ID);
 
-            then(postRepository)
+            then(stateGuard)
                 .should()
-                .findById(POST_ID);
+                .ensureCommentsEnabled(COMMENT.TYPE_NAME, Operation.DELETE, StateGuard.Type.POST, POST_ID);
 
             then(commentRepository)
                 .should()
