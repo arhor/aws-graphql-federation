@@ -9,6 +9,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessa
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
@@ -160,13 +161,14 @@ class OutboxMessageServiceImplTest {
         private const val POST_EVENTS_METHOD_SOURCE =
             "com.github.arhor.aws.graphql.federation.posts.service.impl.OutboxMessageServiceImplTest#postEventsTestFactory"
 
+        private val USER_ID = ZERO_UUID_VAL
         private val POST_ID = OMNI_UUID_VAL
         private val TRACE_ID = TEST_1_UUID_VAL
         private val MESSAGE_ID = TEST_2_UUID_VAL
 
         @JvmStatic
         fun postEventsTestFactory(): Stream<Arguments> = Stream.of(
-            Arguments.of(PostEvent.Created(id = POST_ID), PostEvent.Type.POST_EVENT_CREATED),
+            Arguments.of(PostEvent.Created(id = POST_ID, userId = USER_ID), PostEvent.Type.POST_EVENT_CREATED),
             Arguments.of(PostEvent.Deleted(id = POST_ID), PostEvent.Type.POST_EVENT_DELETED),
         )
     }

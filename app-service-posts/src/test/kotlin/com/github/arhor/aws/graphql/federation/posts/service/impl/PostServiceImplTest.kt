@@ -295,7 +295,7 @@ class PostServiceImplTest {
             verify(exactly = 1) { userRepository.findById(USER_ID) }
             verify(exactly = 1) { postMapper.mapToEntity(input, USER_ID, null) }
             verify(exactly = 1) { postRepository.save(post) }
-            verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Created(id = post.id!!)) }
+            verify(exactly = 1) { appEventPublisher.publishEvent(PostEvent.Created(id = post.id!!, userId = USER_ID)) }
             verify(exactly = 1) { postMapper.mapToPost(post) }
 
             assertThat(result)
