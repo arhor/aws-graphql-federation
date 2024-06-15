@@ -15,7 +15,6 @@ input CreateCommentInput {
     content: String!
     postId: UUID!
     prntId: UUID
-    userId: UUID!
 }
 
 input CreatePostInput {
