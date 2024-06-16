@@ -7,4 +7,4 @@ import org.springframework.context.annotation.ComponentScan
 @AutoConfiguration
 @ComponentScan
 @ConfigurationPropertiesScan
-class SubgraphTracingAutoconfiguration
+class TracingComponentsAutoconfiguration
