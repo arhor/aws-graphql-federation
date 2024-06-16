@@ -41,9 +41,8 @@ public class ConfigureDatabase extends AbstractJdbcConfiguration {
         // class declaration.
         return List.of(
             new FeaturesReadingConverter<>(UserFeature.class, UserFeatures::new) {},
-            new FeaturesWritingConverter<UserFeatures, UserFeature>() {},
             new FeaturesReadingConverter<>(PostFeature.class, PostFeatures::new) {},
-            new FeaturesWritingConverter<PostFeatures, PostFeature>() {}
+            new FeaturesWritingConverter()
         );
     }
 
