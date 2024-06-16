@@ -12,7 +12,7 @@ import java.util.concurrent.Executor
 
 @ComponentScan
 @AutoConfiguration(before = [TaskExecutionAutoConfiguration::class])
-class SubgraphSecurityAutoConfiguration {
+class SecurityComponentsAutoConfiguration {
 
     @Lazy
     @Bean(
