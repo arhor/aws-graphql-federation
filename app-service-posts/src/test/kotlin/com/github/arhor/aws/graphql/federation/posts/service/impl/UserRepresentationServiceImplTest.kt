@@ -3,12 +3,12 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeature
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeatures
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.util.Caches
-import com.github.arhor.aws.graphql.federation.starter.core.data.Features
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import io.mockk.every
@@ -149,7 +149,7 @@ class UserRepresentationServiceImplTest {
 
             // Then
             verify(exactly = 1) { userRepository.findById(USER_ID) }
-            verify(exactly = 1) { userRepository.save(user.copy(features = user.features + Feature.POSTS_DISABLED)) }
+            verify(exactly = 1) { userRepository.save(user.copy(features = user.features + UserFeature.POSTS_DISABLED)) }
 
             assertThat(result)
                 .isFalse()
@@ -158,7 +158,7 @@ class UserRepresentationServiceImplTest {
         @Test
         fun `should not call userRepository#save when there is no update applied to the user`() {
             // Given
-            val user = UserRepresentation(id = USER_ID, features = Features.of(Feature.POSTS_DISABLED))
+            val user = UserRepresentation(id = USER_ID, features = UserFeatures(UserFeature.POSTS_DISABLED))
 
             every { userRepository.findById(any()) } returns Optional.of(user)
             every { userRepository.save(any()) } answers { firstArg() }
@@ -168,7 +168,7 @@ class UserRepresentationServiceImplTest {
 
             // Then
             verify(exactly = 1) { userRepository.findById(USER_ID) }
-            verify(exactly = 1) { userRepository.save(user.copy(features = user.features - Feature.POSTS_DISABLED)) }
+            verify(exactly = 1) { userRepository.save(user.copy(features = user.features - UserFeature.POSTS_DISABLED)) }
 
             assertThat(result)
                 .isTrue()

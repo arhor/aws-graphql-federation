@@ -19,7 +19,7 @@ data class UserRepresentation @PersistenceCreator constructor(
     private val id: UUID,
 
     @Column("features")
-    val features: Features<Feature> = Features(items = EnumSet.noneOf(Feature::class.java)),
+    val features: UserFeatures = UserFeatures(),
 
     @Transient
     val shouldBePersisted: Boolean = false,
@@ -29,8 +29,26 @@ data class UserRepresentation @PersistenceCreator constructor(
 
     override fun isNew(): Boolean = shouldBePersisted
 
-    enum class Feature {
+    fun togglePosts(): UserRepresentation {
+        return copy(features = features.toggle(UserFeature.POSTS_DISABLED))
+    }
+
+    fun postsDisabled(): Boolean {
+        return features.check(UserFeature.POSTS_DISABLED);
+    }
+
+    enum class UserFeature {
         POSTS_DISABLED,
+    }
+
+    class UserFeatures(items: EnumSet<UserFeature>) : Features<UserFeatures, UserFeature>(items) {
+        constructor()
+            : this(EnumSet.noneOf(UserFeature::class.java))
+
+        constructor(feature: UserFeature, vararg features: UserFeature)
+            : this(EnumSet.of(feature, *features))
+
+        override fun create(items: EnumSet<UserFeature>) = UserFeatures(items)
     }
 
     companion object {

@@ -3,7 +3,6 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
@@ -40,7 +39,7 @@ class UserRepresentationServiceImpl(
         for (user in users) {
             result[user.id] = User(
                 id = user.id,
-                postsDisabled = user.features.check(Feature.POSTS_DISABLED),
+                postsDisabled = user.postsDisabled(),
             )
         }
         userIds.filter { it !in result.keys }.forEach {
@@ -76,13 +75,8 @@ class UserRepresentationServiceImpl(
                     Operation.UPDATE
                 )
 
-        val updatedUser = userRepository.save(
-            presentUser.copy(
-                features = presentUser.features.toggle(
-                    Feature.POSTS_DISABLED
-                )
-            )
-        )
-        return !updatedUser.features.check(Feature.POSTS_DISABLED)
+        val updatedUser = userRepository.save(presentUser.togglePosts())
+
+        return !updatedUser.postsDisabled()
     }
 }

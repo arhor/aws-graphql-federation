@@ -8,7 +8,8 @@ import com.github.arhor.aws.graphql.federation.common.toSet
 import com.github.arhor.aws.graphql.federation.posts.data.entity.LikeRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeature
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeatures
 import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
@@ -22,7 +23,6 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Pos
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.TagInput
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.UpdatePostInput
 import com.github.arhor.aws.graphql.federation.posts.service.mapping.PostMapper
-import com.github.arhor.aws.graphql.federation.starter.core.data.Features
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
@@ -407,7 +407,7 @@ class PostServiceImplTest {
             // Given
             val input = UpdatePostInput(id = POST_1_ID)
             val post = createPostEntity()
-            val user = UserRepresentation(id = USER_ID, features = Features.of(Feature.POSTS_DISABLED))
+            val user = UserRepresentation(id = USER_ID, features = UserFeatures(UserFeature.POSTS_DISABLED))
 
             val expectedEntity = POST.TYPE_NAME
             val expectedCondition = "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $USER_ID"

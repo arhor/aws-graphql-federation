@@ -1,7 +1,8 @@
 package com.github.arhor.aws.graphql.federation.posts.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeature
+import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeatures
 import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesReadingConverter
 import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesWritingConverter
 import com.github.arhor.aws.graphql.federation.starter.core.data.JsonReadingConverter
@@ -23,8 +24,8 @@ class ConfigureDatabase(private val objectMapper: ObjectMapper) : AbstractJdbcCo
     override fun userConverters() = listOf(
         JsonReadingConverter(objectMapper),
         JsonWritingConverter(objectMapper),
-        FeaturesReadingConverter(UserRepresentation.Feature::class.java),
-        FeaturesWritingConverter(UserRepresentation.Feature::class.java),
+        FeaturesReadingConverter(UserFeature::class.java, ::UserFeatures),
+        FeaturesWritingConverter(),
     )
 
     @Bean

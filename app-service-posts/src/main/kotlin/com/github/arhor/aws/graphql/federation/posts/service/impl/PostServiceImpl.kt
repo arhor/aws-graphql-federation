@@ -9,7 +9,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.LikeRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.Feature
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
@@ -218,7 +217,7 @@ class PostServiceImpl(
                     operation = operation,
                 )
 
-        if (user.features.check(Feature.POSTS_DISABLED)) {
+        if (user.postsDisabled()) {
             throw EntityOperationRestrictedException(
                 entity = POST.TYPE_NAME,
                 condition = "Posts disabled for the ${USER.TYPE_NAME} with ${USER.Id} = $userId",
