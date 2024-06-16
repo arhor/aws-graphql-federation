@@ -2,11 +2,13 @@ package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.config.ConfigureDatabase;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeatures;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeatures;
 import com.github.arhor.aws.graphql.federation.starter.core.ConfigureCoreApplicationComponents;
-import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConfigureTestObjectMapper;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 @Tag("integration")
@@ -66,11 +69,11 @@ abstract class RepositoryTestBase {
         );
     }
 
-    protected UserRepresentation createUser(final UUID id, final Commentable.Feature feature, final Commentable.Feature... features) {
+    protected UserRepresentation createUser(final UUID id, final UserFeature feature, final UserFeature... features) {
         return userRepository.save(
             UserRepresentation.builder()
                 .id(id)
-                .features(Features.of(feature, features))
+                .features(new UserFeatures(EnumSet.of(feature, features)))
                 .shouldBePersisted(true)
                 .build()
         );
@@ -85,11 +88,11 @@ abstract class RepositoryTestBase {
         );
     }
 
-    protected PostRepresentation createPost(final UUID id, final Commentable.Feature feature, final Commentable.Feature... features) {
+    protected PostRepresentation createPost(final UUID id, final PostFeature feature, final PostFeature... features) {
         return postRepository.save(
             PostRepresentation.builder()
                 .id(id)
-                .features(Features.of(feature, features))
+                .features(new PostFeatures(feature, features))
                 .shouldBePersisted(true)
                 .build()
         );

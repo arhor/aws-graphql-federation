@@ -5,13 +5,15 @@ import java.util.EnumSet
 /**
  * Wrapper class over EnumSet is required to make it available for custom conversions.
  */
-data class Features<F : Enum<F>>(
-    val items: EnumSet<F>,
+abstract class Features<F : Features<F, E>, E : Enum<E>>(
+    val items: EnumSet<E>,
 ) {
 
-    fun check(item: F): Boolean = item in items
+    protected abstract fun create(items: EnumSet<E>): F
 
-    operator fun plus(item: F): Features<F> = Features(
+    fun check(item: E): Boolean = item in items
+
+    operator fun plus(item: E): F = create(
         items = if (items.isEmpty()) {
             EnumSet.of(item)
         } else {
@@ -21,24 +23,37 @@ data class Features<F : Enum<F>>(
         }
     )
 
-    operator fun minus(item: F): Features<F> = Features(
+    operator fun minus(item: E): F = create(
         items = EnumSet.copyOf(items).apply {
             remove(item)
         }
     )
 
-    fun toggle(item: F): Features<F> = when (check(item)) {
+    fun toggle(item: E): F = when (check(item)) {
         true -> this - item
         else -> this + item
     }
 
-    companion object {
-        @JvmStatic
-        fun <F : Enum<F>> of(item: F, vararg items: F): Features<F> =
-            Features(items = EnumSet.of(item, *items))
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-        @JvmStatic
-        fun <F : Enum<F>> emptyOf(type: Class<F>): Features<F> =
-            Features(items = EnumSet.noneOf(type))
+        other as Features<*, *>
+
+        return items == other.items
     }
+
+    override fun hashCode(): Int {
+        return items.hashCode()
+    }
+
+//    companion object {
+//        @JvmStatic
+//        fun <F : Enum<F>> of(item: F, vararg items: F): Features<F> =
+//            Features(items = EnumSet.of(item, *items))
+//
+//        @JvmStatic
+//        fun <F : Enum<F>> emptyOf(type: Class<F>): Features<F> =
+//            Features(items = EnumSet.noneOf(type))
+//    }
 }

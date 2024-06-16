@@ -1,14 +1,14 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeatures;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +19,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -204,7 +205,7 @@ class UserRepresentationServiceImplTest {
 
             then(userRepository)
                 .should()
-                .save(user.toBuilder().features(user.features().plus(Commentable.Feature.COMMENTS_DISABLED)).build());
+                .save(user.toBuilder().features(user.features().plus(UserFeature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
                 .isFalse();
@@ -216,7 +217,7 @@ class UserRepresentationServiceImplTest {
             final var user =
                 UserRepresentation.builder()
                     .id(USER_ID)
-                    .features(Features.of(Commentable.Feature.COMMENTS_DISABLED))
+                    .features(new UserFeatures(EnumSet.of(UserFeature.COMMENTS_DISABLED)))
                     .build();
 
             given(userRepository.findById(any()))
@@ -235,7 +236,7 @@ class UserRepresentationServiceImplTest {
 
             then(userRepository)
                 .should()
-                .save(user.toBuilder().features(user.features().minus(Commentable.Feature.COMMENTS_DISABLED)).build());
+                .save(user.toBuilder().features(user.features().minus(UserFeature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
                 .isTrue();

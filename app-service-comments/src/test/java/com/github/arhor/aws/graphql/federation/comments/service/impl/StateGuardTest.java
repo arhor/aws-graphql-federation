@@ -1,8 +1,11 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeatures;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeatures;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
@@ -11,10 +14,10 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.Test;
 
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -77,7 +80,7 @@ class StateGuardTest {
         final var expectedId = USER_ID;
         final var user = UserRepresentation.builder()
             .id(expectedId)
-            .features(Features.of(Commentable.Feature.COMMENTS_DISABLED))
+            .features(new UserFeatures(EnumSet.of(UserFeature.COMMENTS_DISABLED)))
             .build();
 
         given(userRepository.findById(any()))
@@ -148,7 +151,7 @@ class StateGuardTest {
     void should_throw_EntityOperationRestrictedException_when_post_comments_disabled() {
         // Given
         final var post = PostRepresentation.builder()
-            .features(Features.of(Commentable.Feature.COMMENTS_DISABLED))
+            .features(new PostFeatures(PostFeature.COMMENTS_DISABLED))
             .build();
 
         given(postRepository.findById(any()))

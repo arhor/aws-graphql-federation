@@ -11,6 +11,7 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 @Table("post_representations")
@@ -25,7 +26,7 @@ public record PostRepresentation(
     UUID userId,
 
     @Column("features")
-    Features<Feature> features,
+    PostFeatures features,
 
     @Transient
     boolean shouldBePersisted
@@ -33,12 +34,12 @@ public record PostRepresentation(
 
     public PostRepresentation {
         if (features == null) {
-            features = Features.emptyOf(Feature.class);
+            features = new PostFeatures();
         }
     }
 
     @PersistenceCreator
-    public PostRepresentation(final UUID id, final UUID userId, final Features<Feature> features) {
+    public PostRepresentation(final UUID id, final UUID userId, final PostFeatures features) {
         this(id, userId, features, false);
     }
 
@@ -56,7 +57,38 @@ public record PostRepresentation(
     @Override
     public PostRepresentation toggleComments() {
         return toBuilder()
-            .features(features.toggle(Feature.COMMENTS_DISABLED))
+            .features(features.toggle(PostFeature.COMMENTS_DISABLED))
             .build();
+    }
+
+    @Override
+    public boolean commentsDisabled() {
+        return features().check(PostFeature.COMMENTS_DISABLED);
+    }
+
+    public enum PostFeature {
+        COMMENTS_DISABLED,
+    }
+
+    public static final class PostFeatures extends Features<PostFeatures, PostFeature> {
+
+        public PostFeatures() {
+            super(EnumSet.noneOf(PostFeature.class));
+        }
+
+        public PostFeatures(final PostFeature feature, final PostFeature... features) {
+            super(EnumSet.of(feature, features));
+        }
+
+
+        public PostFeatures(@Nonnull final EnumSet<PostFeature> items) {
+            super(EnumSet.copyOf(items));
+        }
+
+        @Nonnull
+        @Override
+        protected PostFeatures create(@Nonnull final EnumSet<PostFeature> items) {
+            return new PostFeatures(items);
+        }
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 @Table("user_representations")
@@ -22,7 +23,7 @@ public record UserRepresentation(
     UUID id,
 
     @Column("features")
-    Features<Feature> features,
+    UserFeatures features,
 
     @Transient
     boolean shouldBePersisted
@@ -30,12 +31,12 @@ public record UserRepresentation(
 
     public UserRepresentation {
         if (features == null) {
-            features = Features.emptyOf(Feature.class);
+            features = new UserFeatures();
         }
     }
 
     @PersistenceCreator
-    public UserRepresentation(final UUID id, final Features<Feature> features) {
+    public UserRepresentation(final UUID id, final UserFeatures features) {
         this(id, features, false);
     }
 
@@ -53,7 +54,33 @@ public record UserRepresentation(
     @Override
     public UserRepresentation toggleComments() {
         return toBuilder()
-            .features(features.toggle(Feature.COMMENTS_DISABLED))
+            .features(features.toggle(UserFeature.COMMENTS_DISABLED))
             .build();
+    }
+
+    @Override
+    public boolean commentsDisabled() {
+        return features().check(UserFeature.COMMENTS_DISABLED);
+    }
+
+    public enum UserFeature {
+        COMMENTS_DISABLED,
+    }
+
+    public static final class UserFeatures extends Features<UserFeatures, UserFeature> {
+
+        public UserFeatures() {
+            super(EnumSet.noneOf(UserFeature.class));
+        }
+
+        public UserFeatures(@Nonnull final EnumSet<UserFeature> items) {
+            super(EnumSet.copyOf(items));
+        }
+
+        @Nonnull
+        @Override
+        protected UserFeatures create(@Nonnull final EnumSet<UserFeature> items) {
+            return new UserFeatures(items);
+        }
     }
 }

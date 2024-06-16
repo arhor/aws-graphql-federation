@@ -1,14 +1,14 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.Commentable;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeatures;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityConditionException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.BeforeEach;
@@ -217,7 +217,7 @@ class PostRepresentationServiceImplTest {
 
             then(postRepository)
                 .should()
-                .save(post.toBuilder().features(post.features().plus(Commentable.Feature.COMMENTS_DISABLED)).build());
+                .save(post.toBuilder().features(post.features().plus(PostFeature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
                 .isFalse();
@@ -230,7 +230,7 @@ class PostRepresentationServiceImplTest {
                 PostRepresentation.builder()
                     .id(POST_ID)
                     .userId(USER_ID)
-                    .features(Features.of(Commentable.Feature.COMMENTS_DISABLED))
+                    .features(new PostFeatures(PostFeature.COMMENTS_DISABLED))
                     .build();
 
             final var user = mock(CurrentUserDetails.class);
@@ -254,7 +254,7 @@ class PostRepresentationServiceImplTest {
 
             then(postRepository)
                 .should()
-                .save(post.toBuilder().features(post.features().minus(Commentable.Feature.COMMENTS_DISABLED)).build());
+                .save(post.toBuilder().features(post.features().minus(PostFeature.COMMENTS_DISABLED)).build());
 
             assertThat(result)
                 .isTrue();
