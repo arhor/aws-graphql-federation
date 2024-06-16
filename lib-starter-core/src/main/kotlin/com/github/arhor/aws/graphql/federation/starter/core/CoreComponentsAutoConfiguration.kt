@@ -20,7 +20,7 @@ import java.util.Optional
 
 @ComponentScan
 @AutoConfiguration
-class ConfigureCoreApplicationComponents {
+class CoreComponentsAutoConfiguration {
 
     @Bean
     fun clockProvider(): ClockProvider = ClockProvider {

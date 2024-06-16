@@ -8,7 +8,7 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresen
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeature;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeatures;
-import com.github.arhor.aws.graphql.federation.starter.core.ConfigureCoreApplicationComponents;
+import com.github.arhor.aws.graphql.federation.starter.core.CoreComponentsAutoConfiguration;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConfigureTestObjectMapper;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import java.util.UUID;
 @Testcontainers(disabledWithoutDocker = true)
 @ContextConfiguration(
     classes = {
-        ConfigureCoreApplicationComponents.class,
+        CoreComponentsAutoConfiguration.class,
         ConfigureDatabase.class,
         ConfigureTestObjectMapper.class,
     }

@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
-import com.github.arhor.aws.graphql.federation.starter.core.ConfigureCoreApplicationComponents
+import com.github.arhor.aws.graphql.federation.starter.core.CoreComponentsAutoConfiguration
 import com.github.arhor.aws.graphql.federation.starter.testing.ConfigureTestObjectMapper
 import com.github.arhor.aws.graphql.federation.users.config.ConfigureDatabase
 import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @Testcontainers(disabledWithoutDocker = true)
 @ContextConfiguration(
     classes = [
-        ConfigureCoreApplicationComponents::class,
+        CoreComponentsAutoConfiguration::class,
         ConfigureDatabase::class,
         ConfigureTestObjectMapper::class,
     ]
