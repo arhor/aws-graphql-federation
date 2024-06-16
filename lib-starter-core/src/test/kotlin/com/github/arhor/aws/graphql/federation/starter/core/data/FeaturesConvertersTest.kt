@@ -13,14 +13,14 @@ import java.util.stream.Stream
 
 class FeaturesConvertersTest {
 
-    private val featuresWritingConverter = FeaturesWritingConverter(TEST_FEATURE_CLASS)
-    private val featuresReadingConverter = FeaturesReadingConverter(TEST_FEATURE_CLASS)
+    private val featuresWritingConverter = FeaturesWritingConverter()
+    private val featuresReadingConverter = FeaturesReadingConverter(TestFeature::class.java, ::TestFeatures)
 
     @MethodSource
     @ParameterizedTest
     fun `converters should correctly serialize and deserialize input`(
         // Given
-        initialData: Features<TestFeature>,
+        initialData: TestFeatures,
     ) {
         // When
         val result = initialData
@@ -38,20 +38,22 @@ class FeaturesConvertersTest {
         TEST_3,
     }
 
-    companion object {
-        private val TEST_FEATURE_CLASS = TestFeature::class.java
+    class TestFeatures(items: EnumSet<TestFeature>) : Features<TestFeatures, TestFeature>(items) {
+        override fun create(items: EnumSet<TestFeature>) = TestFeatures(items)
+    }
 
+    companion object {
         @JvmStatic
         fun `converters should correctly serialize and deserialize input`(): Stream<Arguments> =
             Stream.of(
-                arguments(Features(EnumSet.noneOf(TEST_FEATURE_CLASS))),
-                arguments(Features.of(TEST_1)),
-                arguments(Features.of(TEST_2)),
-                arguments(Features.of(TEST_3)),
-                arguments(Features.of(TEST_1, TEST_2)),
-                arguments(Features.of(TEST_2, TEST_3)),
-                arguments(Features.of(TEST_3, TEST_1)),
-                arguments(Features(EnumSet.allOf(TEST_FEATURE_CLASS))),
+                arguments(TestFeatures(EnumSet.noneOf(TestFeature::class.java))),
+                arguments(TestFeatures(EnumSet.of(TEST_1))),
+                arguments(TestFeatures(EnumSet.of(TEST_2))),
+                arguments(TestFeatures(EnumSet.of(TEST_3))),
+                arguments(TestFeatures(EnumSet.of(TEST_1, TEST_2))),
+                arguments(TestFeatures(EnumSet.of(TEST_2, TEST_3))),
+                arguments(TestFeatures(EnumSet.of(TEST_3, TEST_1))),
+                arguments(TestFeatures(EnumSet.allOf(TestFeature::class.java))),
             )
     }
 }
