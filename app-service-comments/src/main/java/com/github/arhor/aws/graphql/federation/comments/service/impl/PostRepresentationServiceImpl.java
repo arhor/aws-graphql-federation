@@ -12,10 +12,10 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.core.GrantedAuthority;
@@ -48,10 +48,10 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
         cache = getCache(cacheManager, Caches.IDEMPOTENT_ID_SET);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Map<UUID, Post> findPostsRepresentationsInBatch(
-        @Nonnull final Set<UUID> postIds
+        @NotNull final Set<UUID> postIds
     ) {
         final var result = new HashMap<UUID, Post>(postIds.size());
         final var posts = postRepository.findAllById(postIds);
@@ -76,9 +76,9 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
 
     @Override
     public void createPostRepresentation(
-        @Nonnull final UUID postId,
-        @Nonnull final UUID userId,
-        @Nonnull final UUID idempotencyKey
+        @NotNull final UUID postId,
+        @NotNull final UUID userId,
+        @NotNull final UUID idempotencyKey
     ) {
         cache.get(idempotencyKey, () ->
             postRepository.save(
@@ -93,8 +93,8 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
 
     @Override
     public void deletePostRepresentation(
-        @Nonnull final UUID postId,
-        @Nonnull final UUID idempotencyKey
+        @NotNull final UUID postId,
+        @NotNull final UUID idempotencyKey
     ) {
         cache.get(idempotencyKey, () -> {
             postRepository.deleteById(postId);
@@ -104,8 +104,8 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
 
     @Override
     public boolean togglePostComments(
-        @Nonnull final UUID postId,
-        @Nonnull final CurrentUserDetails actor
+        @NotNull final UUID postId,
+        @NotNull final CurrentUserDetails actor
     ) {
         final var post =
             postRepository.findById(postId)
@@ -129,8 +129,8 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
 
     private void ensureOperationAllowed(
         @Nullable final UUID targetUserId,
-        @Nonnull final UUID actingUserId,
-        @Nonnull final Collection<GrantedAuthority> authorities
+        @NotNull final UUID actingUserId,
+        @NotNull final Collection<GrantedAuthority> authorities
     ) {
         final var operation = Operation.UPDATE;
 

@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.service;
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
-import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Set;
@@ -13,8 +13,8 @@ import java.util.UUID;
  */
 public interface PostRepresentationService {
 
-    @Nonnull
-    Map<UUID, Post> findPostsRepresentationsInBatch(@Nonnull Set<UUID> postIds);
+    @NotNull
+    Map<UUID, Post> findPostsRepresentationsInBatch(@NotNull Set<UUID> postIds);
 
     /**
      * Creates a new post representation.
@@ -23,7 +23,7 @@ public interface PostRepresentationService {
      * @param userId         the UUID of the user for whom the representation is to be created
      * @param idempotencyKey the UUID used to ensure idempotency of the creation operation
      */
-    void createPostRepresentation(@Nonnull UUID postId, @Nonnull UUID userId, @Nonnull UUID idempotencyKey);
+    void createPostRepresentation(@NotNull UUID postId, @NotNull UUID userId, @NotNull UUID idempotencyKey);
 
     /**
      * Deletes an existing post representation.
@@ -31,7 +31,7 @@ public interface PostRepresentationService {
      * @param postId         the UUID of the post whose representation is to be deleted
      * @param idempotencyKey the UUID used to ensure idempotency of the deletion operation
      */
-    void deletePostRepresentation(@Nonnull UUID postId, @Nonnull UUID idempotencyKey);
+    void deletePostRepresentation(@NotNull UUID postId, @NotNull UUID idempotencyKey);
 
     /**
      * Toggles an ability to create comments for the specified post.
@@ -40,5 +40,5 @@ public interface PostRepresentationService {
      * @param actor  the user trying to toggle comments on a post
      * @return {@code true} if comments enabled, {@code false} otherwise
      */
-    boolean togglePostComments(@Nonnull UUID postId, @Nonnull CurrentUserDetails actor);
+    boolean togglePostComments(@NotNull UUID postId, @NotNull CurrentUserDetails actor);
 }

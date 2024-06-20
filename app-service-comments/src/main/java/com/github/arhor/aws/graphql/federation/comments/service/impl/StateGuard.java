@@ -6,9 +6,9 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsCon
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
-import jakarta.annotation.Nonnull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -21,10 +21,10 @@ class StateGuard {
     private final UserRepresentationRepository userRepository;
 
     void ensureCommentsEnabled(
-        @Nonnull final String parentEntity,
-        @Nonnull final Operation operation,
-        @Nonnull final Type type,
-        @Nonnull final UUID id
+        @NotNull final String parentEntity,
+        @NotNull final Operation operation,
+        @NotNull final Type type,
+        @NotNull final UUID id
     ) {
         final var commentableRepository = switch (type) {
             case USER -> userRepository;
@@ -55,9 +55,9 @@ class StateGuard {
         USER(DgsConstants.USER.TYPE_NAME, DgsConstants.USER.Id),
         POST(DgsConstants.POST.TYPE_NAME, DgsConstants.POST.Id),
         ;
-        @Nonnull
+        @NotNull
         private final String entity;
-        @Nonnull
+        @NotNull
         private final String field;
     }
 }

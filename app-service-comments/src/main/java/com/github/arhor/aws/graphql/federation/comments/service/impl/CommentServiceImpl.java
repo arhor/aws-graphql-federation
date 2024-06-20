@@ -14,10 +14,10 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationR
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,10 +43,10 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
     private final StateGuard stateGuard;
 
-    @Nonnull
+    @NotNull
     @Override
     public Comment getCommentById(
-        @Nonnull final UUID id
+        @NotNull final UUID id
     ) {
         return commentRepository.findById(id)
             .map(commentMapper::mapToDto)
@@ -59,11 +59,11 @@ public class CommentServiceImpl implements CommentService {
             );
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @Transactional(readOnly = true)
     public Map<UUID, List<Comment>> getCommentsByUserIds(
-        @Nonnull final Collection<UUID> userIds
+        @NotNull final Collection<UUID> userIds
     ) {
         return loadAndGroupBy(
             ids -> commentRepository.findAllByUserIdIn(
@@ -75,11 +75,11 @@ public class CommentServiceImpl implements CommentService {
         );
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @Transactional(readOnly = true)
     public Map<UUID, List<Comment>> getCommentsByPostIds(
-        @Nonnull final Collection<UUID> postIds
+        @NotNull final Collection<UUID> postIds
     ) {
         return loadAndGroupBy(
             ids -> commentRepository.findAllByPrntIdNullAndPostIdIn(
@@ -91,11 +91,11 @@ public class CommentServiceImpl implements CommentService {
         );
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @Transactional(readOnly = true)
     public Map<UUID, List<Comment>> getCommentsReplies(
-        @Nonnull final Collection<UUID> commentIds
+        @NotNull final Collection<UUID> commentIds
     ) {
         return loadAndGroupBy(
             ids -> commentRepository.findAllByPrntIdIn(
@@ -107,20 +107,20 @@ public class CommentServiceImpl implements CommentService {
         );
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Map<UUID, Integer> getCommentsNumberByPostIds(
-        @Nonnull final Collection<UUID> postIds
+        @NotNull final Collection<UUID> postIds
     ) {
         return commentRepository.countCommentsByPostIds(postIds);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @Transactional
     public Comment createComment(
-        @Nonnull final CreateCommentInput input,
-        @Nonnull final CurrentUserDetails actor
+        @NotNull final CreateCommentInput input,
+        @NotNull final CurrentUserDetails actor
     ) {
         final var currentOperation = Operation.CREATE;
         final var userId = actor.getId();
@@ -138,12 +138,12 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.mapToDto(create);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @Transactional
     public Comment updateComment(
-        @Nonnull final UpdateCommentInput input,
-        @Nonnull final CurrentUserDetails actor
+        @NotNull final UpdateCommentInput input,
+        @NotNull final CurrentUserDetails actor
     ) {
         final var currentOperation = Operation.UPDATE;
         final var commentId = input.getId();
@@ -177,8 +177,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public boolean deleteComment(
-        @Nonnull final UUID id,
-        @Nonnull final CurrentUserDetails actor
+        @NotNull final UUID id,
+        @NotNull final CurrentUserDetails actor
     ) {
         return commentRepository.findById(id)
             .map((comment) -> {
@@ -195,8 +195,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private CommentEntity determineCurrentState(
-        @Nonnull final CommentEntity initialState,
-        @Nonnull final UpdateCommentInput input
+        @NotNull final CommentEntity initialState,
+        @NotNull final UpdateCommentInput input
     ) {
         final var currentStateBuilder = initialState.toBuilder();
         {
@@ -209,28 +209,28 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void ensureOperationAllowed(
-        @Nonnull final UUID userId,
-        @Nonnull final UUID postId,
-        @Nonnull final UUID prntId,
-        @Nonnull final Operation operation
+        @NotNull final UUID userId,
+        @NotNull final UUID postId,
+        @NotNull final UUID prntId,
+        @NotNull final Operation operation
     ) {
         ensureOperationAllowed(userId, postId, prntId, operation, null);
     }
 
     private void ensureOperationAllowed(
         @Nullable final UUID userId,
-        @Nonnull final UUID postId,
-        @Nonnull final Operation operation,
-        @Nonnull final CurrentUserDetails actor
+        @NotNull final UUID postId,
+        @NotNull final Operation operation,
+        @NotNull final CurrentUserDetails actor
     ) {
         ensureOperationAllowed(userId, postId, null, operation, actor);
     }
 
     private void ensureOperationAllowed(
         @Nullable final UUID userId,
-        @Nonnull final UUID postId,
+        @NotNull final UUID postId,
         @Nullable final UUID prntId,
-        @Nonnull final Operation operation,
+        @NotNull final Operation operation,
         @Nullable final CurrentUserDetails actor
     ) {
         if (actor != null) {
@@ -246,9 +246,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void ensureParentCommentExists(
-        @Nonnull final UUID postId,
-        @Nonnull final UUID prntId,
-        @Nonnull final Operation operation
+        @NotNull final UUID postId,
+        @NotNull final UUID prntId,
+        @NotNull final Operation operation
     ) {
         if (!commentRepository.existsByPostIdAndPrntId(postId, prntId)) {
             throw new EntityNotFoundException(
@@ -259,7 +259,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
-    private CommentEntity trySaveHandlingConcurrentUpdates(@Nonnull final CommentEntity entity) {
+    private CommentEntity trySaveHandlingConcurrentUpdates(@NotNull final CommentEntity entity) {
         try {
             return commentRepository.save(entity);
         } catch (final OptimisticLockingFailureException e) {
@@ -281,9 +281,9 @@ public class CommentServiceImpl implements CommentService {
      * @return comments grouped by passed comment classifier
      */
     private Map<UUID, List<Comment>> loadAndGroupBy(
-        @Nonnull final Function<Collection<UUID>, Stream<CommentEntity>> dataSource,
-        @Nonnull final Collection<UUID> ids,
-        @Nonnull final Function<Comment, UUID> classifier
+        @NotNull final Function<Collection<UUID>, Stream<CommentEntity>> dataSource,
+        @NotNull final Collection<UUID> ids,
+        @NotNull final Function<Comment, UUID> classifier
     ) {
         if (ids.isEmpty()) {
             return Collections.emptyMap();

@@ -3,7 +3,7 @@ package com.github.arhor.aws.graphql.federation.comments.service.mapper;
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
-import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -19,8 +19,8 @@ public interface CommentMapper {
      * @param userId the ID of a user creating comment
      * @return the mapped comment entity
      */
-    @Nonnull
-    CommentEntity mapToEntity(@Nonnull CreateCommentInput input, @Nonnull UUID userId);
+    @NotNull
+    CommentEntity mapToEntity(@NotNull CreateCommentInput input, @NotNull UUID userId);
 
     /**
      * Maps a CommentEntity to a Comment DTO.
@@ -28,6 +28,6 @@ public interface CommentMapper {
      * @param entity the comment entity to map
      * @return the mapped comment DTO
      */
-    @Nonnull
-    Comment mapToDto(@Nonnull CommentEntity entity);
+    @NotNull
+    Comment mapToDto(@NotNull CommentEntity entity);
 }

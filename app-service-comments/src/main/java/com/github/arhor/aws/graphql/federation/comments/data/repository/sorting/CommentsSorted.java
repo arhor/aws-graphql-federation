@@ -1,19 +1,19 @@
 package com.github.arhor.aws.graphql.federation.comments.data.repository.sorting;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Sort;
 
 public final class CommentsSorted {
 
     private CommentsSorted() { /* Constants holder. Should not be instantiated */ }
 
-    @Nonnull
+    @NotNull
     public static Sort byCreatedDateTimeAsc() {
         return LazyHolder.BY_CREATED_DATE_TIME_ASC;
     }
 
-    @Nonnull
+    @NotNull
     public static Sort byCreatedDateTimeDesc() {
         return LazyHolder.BY_CREATED_DATE_TIME_DESC;
     }

@@ -4,7 +4,7 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntit
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;
-import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -13,9 +13,9 @@ import java.util.UUID;
 @Component
 public class CommentMapperImpl implements CommentMapper {
 
-    @Nonnull
+    @NotNull
     @Override
-    public CommentEntity mapToEntity(@Nonnull final CreateCommentInput input, @Nonnull final UUID userId) {
+    public CommentEntity mapToEntity(@NotNull final CreateCommentInput input, @NotNull final UUID userId) {
         return CommentEntity.builder()
             .userId(userId)
             .postId(input.getPostId())
@@ -24,9 +24,9 @@ public class CommentMapperImpl implements CommentMapper {
             .build();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Comment mapToDto(@Nonnull final CommentEntity entity) {
+    public Comment mapToDto(@NotNull final CommentEntity entity) {
         return Comment.newBuilder()
             .id(Objects.requireNonNull(entity.id(), "Entity must be persisted with assigned id!"))
             .userId(entity.userId())

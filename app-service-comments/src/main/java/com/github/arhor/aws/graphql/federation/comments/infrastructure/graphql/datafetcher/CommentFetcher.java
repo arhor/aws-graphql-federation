@@ -21,9 +21,9 @@ import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
-import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import org.dataloader.MappedBatchLoader;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
@@ -107,11 +107,11 @@ public class CommentFetcher {
      * @param <V>        expected result of the data loading
      * @return delayed result of the data loader invocation
      */
-    @Nonnull
+    @NotNull
     private <T, K, V> CompletableFuture<V> loadWith(
-        @Nonnull final Class<? extends MappedBatchLoader<K, V>> loaderType,
-        @Nonnull final DgsDataFetchingEnvironment dfe,
-        @Nonnull final Function<T, K> extractKey
+        @NotNull final Class<? extends MappedBatchLoader<K, V>> loaderType,
+        @NotNull final DgsDataFetchingEnvironment dfe,
+        @NotNull final Function<T, K> extractKey
     ) {
         var loader = dfe.<K, V>getDataLoader(loaderType);
         var entity = dfe.<T>getSource();

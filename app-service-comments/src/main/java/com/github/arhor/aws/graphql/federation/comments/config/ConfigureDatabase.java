@@ -6,7 +6,7 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresen
 import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeatures;
 import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesReadingConverter;
 import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesWritingConverter;
-import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ import java.util.List;
 @EnableTransactionManagement
 public class ConfigureDatabase extends AbstractJdbcConfiguration {
 
-    @Nonnull
+    @NotNull
     @Override
     public List<?> userConverters() {
         // The reason to use anonymous classes.

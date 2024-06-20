@@ -9,9 +9,9 @@ import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
-import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
@@ -38,10 +38,10 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
         cache = getCache(cacheManager, Caches.IDEMPOTENT_ID_SET);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Map<UUID, User> findUsersRepresentationsInBatch(
-        @Nonnull final Set<UUID> userIds
+        @NotNull final Set<UUID> userIds
     ) {
         final var result = new HashMap<UUID, User>(userIds.size());
         final var users = userRepository.findAllById(userIds);
@@ -66,8 +66,8 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
 
     @Override
     public void createUserRepresentation(
-        @Nonnull final UUID userId,
-        @Nonnull final UUID idempotencyKey
+        @NotNull final UUID userId,
+        @NotNull final UUID idempotencyKey
     ) {
         cache.get(idempotencyKey, () ->
             userRepository.save(
@@ -81,8 +81,8 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
 
     @Override
     public void deleteUserRepresentation(
-        @Nonnull final UUID userId,
-        @Nonnull final UUID idempotencyKey
+        @NotNull final UUID userId,
+        @NotNull final UUID idempotencyKey
     ) {
         cache.get(idempotencyKey, () -> {
             userRepository.deleteById(userId);
@@ -92,7 +92,7 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
 
     @Override
     public boolean toggleUserComments(
-        @Nonnull final UUID userId
+        @NotNull final UUID userId
     ) {
         return userRepository.findById(userId)
             .map(user -> userRepository.save(user.toggleComments()))

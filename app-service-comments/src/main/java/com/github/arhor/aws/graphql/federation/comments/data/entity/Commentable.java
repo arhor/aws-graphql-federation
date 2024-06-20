@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
-import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Immutable;
 
 @Immutable
@@ -12,7 +12,7 @@ public interface Commentable<T> {
      *
      * @return a copy of a given entity with updated state
      */
-    @Nonnull
+    @NotNull
     T toggleComments();
 
     /**

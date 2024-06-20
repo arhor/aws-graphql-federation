@@ -1,8 +1,8 @@
 package com.github.arhor.aws.graphql.federation.comments.data.entity;
 
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
-import jakarta.annotation.Nonnull;
 import lombok.Builder;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -53,7 +53,7 @@ public record PostRepresentation(
         return shouldBePersisted;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PostRepresentation toggleComments() {
         return toBuilder()
@@ -81,13 +81,13 @@ public record PostRepresentation(
         }
 
 
-        public PostFeatures(@Nonnull final EnumSet<PostFeature> items) {
+        public PostFeatures(@NotNull final EnumSet<PostFeature> items) {
             super(EnumSet.copyOf(items));
         }
 
-        @Nonnull
+        @NotNull
         @Override
-        protected PostFeatures create(@Nonnull final EnumSet<PostFeature> items) {
+        protected PostFeatures create(@NotNull final EnumSet<PostFeature> items) {
             return new PostFeatures(items);
         }
     }

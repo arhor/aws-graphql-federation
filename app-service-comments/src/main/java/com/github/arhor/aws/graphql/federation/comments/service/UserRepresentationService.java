@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.service;
 
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
-import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Set;
@@ -12,8 +12,8 @@ import java.util.UUID;
  */
 public interface UserRepresentationService {
 
-    @Nonnull
-    Map<UUID, User> findUsersRepresentationsInBatch(@Nonnull Set<UUID> userIds);
+    @NotNull
+    Map<UUID, User> findUsersRepresentationsInBatch(@NotNull Set<UUID> userIds);
 
     /**
      * Creates a new user representation.
@@ -21,7 +21,7 @@ public interface UserRepresentationService {
      * @param userId         the UUID of the user for whom the representation is to be created
      * @param idempotencyKey the UUID used to ensure idempotency of the creation operation
      */
-    void createUserRepresentation(@Nonnull UUID userId, @Nonnull UUID idempotencyKey);
+    void createUserRepresentation(@NotNull UUID userId, @NotNull UUID idempotencyKey);
 
     /**
      * Deletes an existing user representation.
@@ -29,7 +29,7 @@ public interface UserRepresentationService {
      * @param userId         the UUID of the user whose representation is to be deleted
      * @param idempotencyKey the UUID used to ensure idempotency of the deletion operation
      */
-    void deleteUserRepresentation(@Nonnull UUID userId, @Nonnull UUID idempotencyKey);
+    void deleteUserRepresentation(@NotNull UUID userId, @NotNull UUID idempotencyKey);
 
     /**
      * Toggles an ability to create comments for the specified user.
@@ -37,5 +37,5 @@ public interface UserRepresentationService {
      * @param userId the id of a user
      * @return {@code true} if comments enabled, {@code false} otherwise
      */
-    boolean toggleUserComments(@Nonnull UUID userId);
+    boolean toggleUserComments(@NotNull UUID userId);
 }

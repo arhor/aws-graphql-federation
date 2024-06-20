@@ -4,7 +4,7 @@ import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.UpdateCommentInput;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
-import jakarta.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,8 +22,8 @@ public interface CommentService {
      * @param id the UUID of the comment to retrieve
      * @return the comment with the specified ID
      */
-    @Nonnull
-    Comment getCommentById(@Nonnull UUID id);
+    @NotNull
+    Comment getCommentById(@NotNull UUID id);
 
     /**
      * Retrieves comments for the specified user IDs.
@@ -31,8 +31,8 @@ public interface CommentService {
      * @param userIds the collection of user IDs to retrieve comments for
      * @return a map where the key is the user ID and the value is a list of comments associated with that user
      */
-    @Nonnull
-    Map<UUID, List<Comment>> getCommentsByUserIds(@Nonnull Collection<UUID> userIds);
+    @NotNull
+    Map<UUID, List<Comment>> getCommentsByUserIds(@NotNull Collection<UUID> userIds);
 
     /**
      * Retrieves comments for the specified post IDs.
@@ -40,8 +40,8 @@ public interface CommentService {
      * @param postIds the collection of post IDs to retrieve comments for
      * @return a map where the key is the post ID and the value is a list of comments associated with that post
      */
-    @Nonnull
-    Map<UUID, List<Comment>> getCommentsByPostIds(@Nonnull Collection<UUID> postIds);
+    @NotNull
+    Map<UUID, List<Comment>> getCommentsByPostIds(@NotNull Collection<UUID> postIds);
 
     /**
      * Retrieves replies for the specified comments IDs.
@@ -49,8 +49,8 @@ public interface CommentService {
      * @param commentIds the collection of comment IDs to retrieve reply comments for
      * @return a map where the key is the comment ID and the value is a list of reply comments associated with that comment
      */
-    @Nonnull
-    Map<UUID, List<Comment>> getCommentsReplies(@Nonnull Collection<UUID> commentIds);
+    @NotNull
+    Map<UUID, List<Comment>> getCommentsReplies(@NotNull Collection<UUID> commentIds);
 
     /**
      * Retrieves number of comments for the specified post IDs.
@@ -58,8 +58,8 @@ public interface CommentService {
      * @param postIds the collection of post IDs to retrieve number of comments for
      * @return a map where the key is the post ID and the value is a number of comments associated with that post
      */
-    @Nonnull
-    Map<UUID, Integer> getCommentsNumberByPostIds(@Nonnull Collection<UUID> postIds);
+    @NotNull
+    Map<UUID, Integer> getCommentsNumberByPostIds(@NotNull Collection<UUID> postIds);
 
     /**
      * Creates a new comment.
@@ -68,8 +68,8 @@ public interface CommentService {
      * @param actor the user creating comment
      * @return the created comment
      */
-    @Nonnull
-    Comment createComment(@Nonnull CreateCommentInput input, @Nonnull CurrentUserDetails actor);
+    @NotNull
+    Comment createComment(@NotNull CreateCommentInput input, @NotNull CurrentUserDetails actor);
 
     /**
      * Updates an existing comment.
@@ -78,8 +78,8 @@ public interface CommentService {
      * @param actor the user updating comment
      * @return the updated comment
      */
-    @Nonnull
-    Comment updateComment(@Nonnull UpdateCommentInput input, @Nonnull CurrentUserDetails actor);
+    @NotNull
+    Comment updateComment(@NotNull UpdateCommentInput input, @NotNull CurrentUserDetails actor);
 
     /**
      * Deletes a comment.
@@ -88,5 +88,5 @@ public interface CommentService {
      * @param actor the user deleting comment
      * @return {@code true} if the comment was successfully deleted, {@code false} otherwise
      */
-    boolean deleteComment(@Nonnull UUID id, @Nonnull CurrentUserDetails actor);
+    boolean deleteComment(@NotNull UUID id, @NotNull CurrentUserDetails actor);
 }
