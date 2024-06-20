@@ -14,7 +14,8 @@ import java.util.stream.Stream
 class FeaturesConvertersTest {
 
     private val featuresWritingConverter = FeaturesWritingConverter()
-    private val featuresReadingConverter = FeaturesReadingConverter(TestFeature::class.java, ::TestFeatures)
+    private val featuresReadingConverter =
+        object : FeaturesReadingConverter<TestFeatures, TestFeature>(TestFeature::class.java, ::TestFeatures) {}
 
     @MethodSource
     @ParameterizedTest

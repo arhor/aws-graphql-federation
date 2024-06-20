@@ -8,8 +8,7 @@ import static com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
 
 public final class Utils {
 
-    private Utils() {
-    }
+    private Utils() {}
 
     public static void withExtendedMDC(final UUID traceId, final Runnable block) {
         MDC.put(TRACING_ID_KEY, traceId.toString());
