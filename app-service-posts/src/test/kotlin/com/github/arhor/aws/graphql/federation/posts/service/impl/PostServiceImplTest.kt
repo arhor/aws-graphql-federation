@@ -14,6 +14,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.Post
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
+import com.github.arhor.aws.graphql.federation.posts.data.repository.sorting.Posts
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
@@ -133,6 +134,7 @@ class PostServiceImplTest {
             val dataFromDB = listOf(createPostEntity())
             val expectedPosts = dataFromDB.map { it.toPost() }
             val expectedPage = PageImpl(dataFromDB)
+            val expectedRequest = PageRequest.of(input.page, input.size, Posts.sortedByCreatedDateTimeDesc)
 
             every { postRepository.findAll(any<Pageable>()) } returns expectedPage
             every { postMapper.mapToPostPageFromEntity(any()) } returns PostPage(data = expectedPosts)
@@ -141,7 +143,7 @@ class PostServiceImplTest {
             val result = postService.getPostPage(input)
 
             // Then
-            verify(exactly = 1) { postRepository.findAll(PageRequest.of(input.page, input.size)) }
+            verify(exactly = 1) { postRepository.findAll(expectedRequest) }
             verify(exactly = 1) { postMapper.mapToPostPageFromEntity(expectedPage) }
 
             assertThat(result.data)
@@ -153,6 +155,7 @@ class PostServiceImplTest {
             // Given
             val input = PostsLookupInput()
             val empty = Page.empty<PostEntity>()
+            val expectedRequest = PageRequest.of(input.page, input.size, Posts.sortedByCreatedDateTimeDesc)
 
             every { postRepository.findAll(any<Pageable>()) } returns empty
             every { postMapper.mapToPostPageFromEntity(any()) } returns PostPage(data = emptyList())
@@ -161,7 +164,7 @@ class PostServiceImplTest {
             val result = postService.getPostPage(input)
 
             // Then
-            verify(exactly = 1) { postRepository.findAll(PageRequest.of(input.page, input.size)) }
+            verify(exactly = 1) { postRepository.findAll(expectedRequest) }
             verify(exactly = 1) { postMapper.mapToPostPageFromEntity(empty) }
 
             assertThat(result.data)

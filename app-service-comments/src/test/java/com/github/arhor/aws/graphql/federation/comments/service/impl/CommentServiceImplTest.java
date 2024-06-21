@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.sorting.CommentsSorted;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.sorting.Comments;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
@@ -95,7 +95,7 @@ class CommentServiceImplTest {
             // Then
             then(commentRepository)
                 .should()
-                .findAllByPrntIdIn(commentIds, CommentsSorted.byCreatedDateTimeAsc());
+                .findAllByPrntIdIn(commentIds, Comments.sortedByCreatedDateTimeAsc());
 
             then(commentMapper)
                 .should()
@@ -159,7 +159,7 @@ class CommentServiceImplTest {
             // Then
             then(commentRepository)
                 .should()
-                .findAllByUserIdIn(userIds, CommentsSorted.byCreatedDateTimeDesc());
+                .findAllByUserIdIn(userIds, Comments.sortedByCreatedDateTimeDesc());
 
             then(commentMapper)
                 .should()
@@ -223,7 +223,7 @@ class CommentServiceImplTest {
             // Then
             then(commentRepository)
                 .should()
-                .findAllByPrntIdNullAndPostIdIn(postIds, CommentsSorted.byCreatedDateTimeAsc());
+                .findAllByPrntIdNullAndPostIdIn(postIds, Comments.sortedByCreatedDateTimeAsc());
 
             then(commentMapper)
                 .should()

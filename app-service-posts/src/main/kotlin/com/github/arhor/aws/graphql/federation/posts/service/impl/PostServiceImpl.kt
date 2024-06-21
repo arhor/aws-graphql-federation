@@ -12,6 +12,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
+import com.github.arhor.aws.graphql.federation.posts.data.repository.sorting.Posts
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
@@ -157,7 +158,7 @@ class PostServiceImpl(
 
     private fun findPostsPageWithoutFilters(input: PostsLookupInput): PostPage {
         return postRepository
-            .findAll(PageRequest.of(input.page, input.size))
+            .findAll(PageRequest.of(input.page, input.size, Posts.sortedByCreatedDateTimeDesc))
             .let { postMapper.mapToPostPageFromEntity(it) }
     }
 

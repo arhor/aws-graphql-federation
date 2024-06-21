@@ -4,17 +4,17 @@ import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntit
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Sort;
 
-public final class CommentsSorted {
+public final class Comments {
 
-    private CommentsSorted() { /* Constants holder. Should not be instantiated */ }
+    private Comments() { /* Constants holder. Should not be instantiated */ }
 
     @NotNull
-    public static Sort byCreatedDateTimeAsc() {
+    public static Sort sortedByCreatedDateTimeAsc() {
         return LazyHolder.BY_CREATED_DATE_TIME_ASC;
     }
 
     @NotNull
-    public static Sort byCreatedDateTimeDesc() {
+    public static Sort sortedByCreatedDateTimeDesc() {
         return LazyHolder.BY_CREATED_DATE_TIME_DESC;
     }
 

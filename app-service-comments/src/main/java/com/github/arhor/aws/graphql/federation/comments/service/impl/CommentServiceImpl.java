@@ -2,7 +2,7 @@ package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
 import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
-import com.github.arhor.aws.graphql.federation.comments.data.repository.sorting.CommentsSorted;
+import com.github.arhor.aws.graphql.federation.comments.data.repository.sorting.Comments;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
@@ -68,10 +68,10 @@ public class CommentServiceImpl implements CommentService {
         return loadAndGroupBy(
             ids -> commentRepository.findAllByUserIdIn(
                 ids,
-                CommentsSorted.byCreatedDateTimeDesc()
+                Comments.sortedByCreatedDateTimeDesc()
             ),
-            userIds,
-            Comment::getUserId
+            Comment::getUserId,
+            userIds
         );
     }
 
@@ -84,10 +84,10 @@ public class CommentServiceImpl implements CommentService {
         return loadAndGroupBy(
             ids -> commentRepository.findAllByPrntIdNullAndPostIdIn(
                 ids,
-                CommentsSorted.byCreatedDateTimeAsc()
+                Comments.sortedByCreatedDateTimeAsc()
             ),
-            postIds,
-            Comment::getPostId
+            Comment::getPostId,
+            postIds
         );
     }
 
@@ -95,15 +95,15 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public Map<UUID, List<Comment>> getCommentsReplies(
-        @NotNull final Collection<UUID> commentIds
+        @NotNull final Collection<UUID> prntIds
     ) {
         return loadAndGroupBy(
             ids -> commentRepository.findAllByPrntIdIn(
                 ids,
-                CommentsSorted.byCreatedDateTimeAsc()
+                Comments.sortedByCreatedDateTimeAsc()
             ),
-            commentIds,
-            Comment::getPrntId
+            Comment::getPrntId,
+            prntIds
         );
     }
 
@@ -276,14 +276,14 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * @param dataSource function that will be used to load comments in case ids collection is not empty
-     * @param ids        the ids of comments to be loaded
      * @param classifier function that will be used to classify comment for grouping operation
+     * @param ids        the ids of comments to be loaded
      * @return comments grouped by passed comment classifier
      */
     private Map<UUID, List<Comment>> loadAndGroupBy(
         @NotNull final Function<Collection<UUID>, Stream<CommentEntity>> dataSource,
-        @NotNull final Collection<UUID> ids,
-        @NotNull final Function<Comment, UUID> classifier
+        @NotNull final Function<Comment, UUID> classifier,
+        @NotNull final Collection<UUID> ids
     ) {
         if (ids.isEmpty()) {
             return Collections.emptyMap();
