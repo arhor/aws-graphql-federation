@@ -165,10 +165,11 @@ class PostServiceImpl(
     private fun findPostsPageByTags(input: PostsLookupInput): PostPage {
         val tagNames = input.tags!!.toSet { it.name }
         val pageable = PageRequest.of(input.page, input.size)
+        val totalNumberOfTaggedPosts = postRepository.countByTagsContaining(tagNames)
 
         return postRepository.findPageByTagsContaining(tagNames, pageable.pageSize, pageable.offset).use { stream ->
             val data = stream.toList()
-            val page = PageImpl(data, pageable, postRepository.countByTagsContaining(tagNames))
+            val page = PageImpl(data, pageable, totalNumberOfTaggedPosts)
 
             postMapper.mapToPostPageFromProjection(page)
         }
