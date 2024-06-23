@@ -15,13 +15,7 @@ import org.springframework.stereotype.Component
 import java.sql.ResultSet
 import java.time.LocalDateTime
 import java.util.UUID
-import kotlin.Any
 import kotlin.Array
-import kotlin.ByteArray
-import kotlin.IllegalArgumentException
-import kotlin.Int
-import kotlin.String
-import kotlin.let
 import java.sql.Array as SqlArray
 
 @Component(PostEntityCustomRowMapper.BEAN_NAME)
@@ -40,7 +34,7 @@ class PostEntityCustomRowMapper : RowMapper<PostEntity> {
             likes = extractUUIDs(rs.getArray(COL_LIKE_IDS), ::LikeRef),
         )
 
-    private inline fun <R> extractUUIDs(data: SqlArray, crossinline ref: (UUID) -> R): Set<R> =
+    private final inline fun <R> extractUUIDs(data: SqlArray, crossinline ref: (UUID) -> R): Set<R> =
         data.let { it.array as Array<*> }
             .asSequence()
             .filterNotNull()
@@ -48,7 +42,7 @@ class PostEntityCustomRowMapper : RowMapper<PostEntity> {
             .map { ref(it) }
             .toSet()
 
-    private tailrec fun extractUUID(value: Any): UUID =
+    private final tailrec fun extractUUID(value: Any): UUID =
         when (value) {
             is UUID -> {
                 value
