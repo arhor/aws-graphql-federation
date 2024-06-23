@@ -171,7 +171,7 @@ class PostServiceImpl(
             val data = stream.toList()
             val page = PageImpl(data, pageable, totalNumberOfTaggedPosts)
 
-            postMapper.mapToPostPageFromProjection(page)
+            postMapper.mapToPostPageFromEntity(page)
         }
     }
 

@@ -54,6 +54,7 @@ type Post @key(fields: "id") {
     title: String!
     content: String!
     tags: [String!]
+    likedBy: [User!]
 }
 
 type PostPage {

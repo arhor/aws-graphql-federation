@@ -10,7 +10,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeature
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeatures
-import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
@@ -176,14 +175,14 @@ class PostServiceImplTest {
             // Given
             val tags = setOf("test-1", "test-2")
             val input = PostsLookupInput(tags = tags.map { TagInput(it) })
-            val dataFromDB = listOf(createPostProjection())
+            val dataFromDB = listOf(createPostEntity())
             val expectedPosts = dataFromDB.map { it.toPost() }
             val request = PageRequest.of(input.page, input.size)
             val expectedPage = PageImpl(dataFromDB, request, Long.MAX_VALUE)
 
             every { postRepository.findPageByTagsContaining(any(), any(), any()) } answers { dataFromDB.stream() }
             every { postRepository.countByTagsContaining(any()) } returns Long.MAX_VALUE
-            every { postMapper.mapToPostPageFromProjection(any()) } returns PostPage(data = expectedPosts)
+            every { postMapper.mapToPostPageFromEntity(any()) } returns PostPage(data = expectedPosts)
 
             // When
             val result = postService.getPostPage(input)
@@ -191,7 +190,7 @@ class PostServiceImplTest {
             // Then
             verify(exactly = 1) { postRepository.findPageByTagsContaining(tags, request.pageSize, request.offset) }
             verify(exactly = 1) { postRepository.countByTagsContaining(tags) }
-            verify(exactly = 1) { postMapper.mapToPostPageFromProjection(expectedPage) }
+            verify(exactly = 1) { postMapper.mapToPostPageFromEntity(expectedPage) }
 
             assertThat(result.data)
                 .isEqualTo(expectedPosts)
@@ -203,11 +202,11 @@ class PostServiceImplTest {
             val tags = setOf("test-1", "test-2")
             val input = PostsLookupInput(tags = tags.map { TagInput(it) })
             val request = PageRequest.of(input.page, input.size)
-            val empty = PageImpl(emptyList<PostProjection>(), request, Long.MAX_VALUE)
+            val empty = PageImpl(emptyList<PostEntity>(), request, Long.MAX_VALUE)
 
             every { postRepository.findPageByTagsContaining(any(), any(), any()) } returns Stream.empty()
             every { postRepository.countByTagsContaining(any()) } returns Long.MAX_VALUE
-            every { postMapper.mapToPostPageFromProjection(any()) } returns PostPage(data = emptyList())
+            every { postMapper.mapToPostPageFromEntity(any()) } returns PostPage(data = emptyList())
 
             // When
             val result = postService.getPostPage(input)
@@ -215,7 +214,7 @@ class PostServiceImplTest {
             // Then
             verify(exactly = 1) { postRepository.findPageByTagsContaining(tags, request.pageSize, request.offset) }
             verify(exactly = 1) { postRepository.countByTagsContaining(tags) }
-            verify(exactly = 1) { postMapper.mapToPostPageFromProjection(empty) }
+            verify(exactly = 1) { postMapper.mapToPostPageFromEntity(empty) }
 
             assertThat(result.data)
                 .isEmpty()
@@ -228,8 +227,8 @@ class PostServiceImplTest {
         @Test
         fun `should return expected posts grouped by user id when they exist in the repository`() {
             // Given
-            val post1Projection = createPostProjection(postId = POST_1_ID)
-            val post2Projection = createPostProjection(postId = POST_2_ID)
+            val post1Projection = createPostEntity(id = POST_1_ID)
+            val post2Projection = createPostEntity(id = POST_2_ID)
 
             val projections = listOf(post1Projection, post2Projection)
             val posts = projections.map { it.toPost() }
@@ -238,7 +237,7 @@ class PostServiceImplTest {
             val expectedResult = posts.groupBy { it.userId }
 
             every { postRepository.findAllByUserIdIn(any()) } returns projections
-            every { postMapper.mapToPost(any<PostProjection>()) } returnsMany posts
+            every { postMapper.mapToPost(any()) } returnsMany posts
 
             // When
             val result = postService.getPostsByUserIds(expectedUserIds)
@@ -647,25 +646,11 @@ class PostServiceImplTest {
         }
     }
 
-    private fun createPostEntity() = PostEntity(
-        id = POST_1_ID,
-        userId = USER_ID,
-        title = "test-title",
-        content = "test-content",
-    )
-
-    private fun createPostProjection(postId: UUID = POST_1_ID) = PostProjection(
-        id = postId,
-        userId = USER_ID,
-        title = "test-title",
-        content = "test-content",
-    )
-
-    private fun PostProjection.toPost() = Post(
+    private fun createPostEntity(id: UUID = POST_1_ID) = PostEntity(
         id = id,
-        userId = userId,
-        title = title,
-        content = content,
+        userId = USER_ID,
+        title = "test-title",
+        content = "test-content",
     )
 
     private fun PostEntity.toPost() = Post(

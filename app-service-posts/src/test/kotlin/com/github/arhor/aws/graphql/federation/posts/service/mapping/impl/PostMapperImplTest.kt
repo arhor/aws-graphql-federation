@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.posts.service.mapping.impl
 
 import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
-import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
@@ -91,28 +90,6 @@ class PostMapperImplTest {
                 .returns(entity.title, from { it.title })
                 .returns(entity.content, from { it.content })
         }
-
-        @Test
-        fun `should correctly map PostProjection to Post`() {
-            // Given
-            val projection = PostProjection(
-                id = POST_ID,
-                userId = USER_ID,
-                title = "test-title",
-                content = "test-content",
-            )
-
-            // When
-            val result = postMapper.mapToPost(projection)
-
-            // Then
-            assertThat(result)
-                .isNotNull()
-                .returns(projection.id, from { it.id })
-                .returns(projection.userId, from { it.userId })
-                .returns(projection.title, from { it.title })
-                .returns(projection.content, from { it.content })
-        }
     }
 
     @Nested
@@ -140,34 +117,6 @@ class PostMapperImplTest {
                 .returns(entity.userId, from { it.userId })
                 .returns(entity.title, from { it.title })
                 .returns(entity.content, from { it.content })
-        }
-    }
-
-    @Nested
-    @DisplayName("PostMapper :: mapToPostPageFromProjection")
-    inner class MapToPostPageFromProjectionTest {
-        @Test
-        fun `should correctly map PostProjection to PostPage`() {
-            // Given
-            val projection = PostProjection(
-                id = POST_ID,
-                userId = USER_ID,
-                title = "test-title",
-                content = "test-content",
-            )
-            val page = PageImpl(listOf(projection))
-
-            // When
-            val result = postMapper.mapToPostPageFromProjection(page)
-
-            // Then
-            assertThat(result.data)
-                .isNotNull()
-                .singleElement()
-                .returns(projection.id, from { it.id })
-                .returns(projection.userId, from { it.userId })
-                .returns(projection.title, from { it.title })
-                .returns(projection.content, from { it.content })
         }
     }
 

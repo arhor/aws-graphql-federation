@@ -7,7 +7,6 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.PostEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.TagEntityCallback
-import com.github.arhor.aws.graphql.federation.posts.data.entity.projection.PostProjection
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
@@ -43,10 +42,10 @@ class PostRepositoryTest : RepositoryTestBase() {
             val user = createUser()
             val tags = createTags("test-1", "test-2", "test-3")
 
-            val post1 = createPost(user, listOf(tags[0]), 1).toProjection()
-            val post2 = createPost(user, listOf(tags[1]), 2).toProjection()
-            val post3 = createPost(user, listOf(tags[2]), 3).toProjection()
-            val post4 = createPost(user, tags, 4).toProjection()
+            val post1 = createPost(user, listOf(tags[0]), 1)
+            val post2 = createPost(user, listOf(tags[1]), 2)
+            val post3 = createPost(user, listOf(tags[2]), 3)
+            val post4 = createPost(user, tags, 4)
 
             // When
             val result =
@@ -90,10 +89,10 @@ class PostRepositoryTest : RepositoryTestBase() {
             val user = createUser()
             val tags = createTags("test-1", "test-2", "test-3")
 
-            createPost(user, listOf(tags[0]), 1).toProjection()
-            createPost(user, listOf(tags[1]), 2).toProjection()
-            createPost(user, listOf(tags[2]), 3).toProjection()
-            createPost(user, tags, 4).toProjection()
+            createPost(user, listOf(tags[0]), 1)
+            createPost(user, listOf(tags[1]), 2)
+            createPost(user, listOf(tags[2]), 3)
+            createPost(user, tags, 4)
 
             // When
             val result = postRepository.countByTagsContaining(tags.toSet { it.name })
@@ -125,7 +124,7 @@ class PostRepositoryTest : RepositoryTestBase() {
         fun `should return list containing expected posts data`() {
             // Given
             val user = createUser()
-            val expectedPosts = createPosts(user).map { it.toProjection() }
+            val expectedPosts = createPosts(user)
 
             // When
             val result = postRepository.findAllByUserIdIn(expectedPosts.map { it.userId!! })
@@ -211,13 +210,6 @@ class PostRepositoryTest : RepositoryTestBase() {
                 tags = tags.toSet(TagRef::from)
             )
         }
-    )
-
-    private fun PostEntity.toProjection() = PostProjection(
-        id = id!!,
-        userId = userId,
-        title = title,
-        content = content,
     )
 
     companion object {
