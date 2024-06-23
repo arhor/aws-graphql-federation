@@ -7,6 +7,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
 import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.PostEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.TagEntityCallback
+import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostEntityCustomRowMapper
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
@@ -19,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration
 @ContextConfiguration(
     classes = [
         PostEntityCallback::class,
+        PostEntityCustomRowMapper::class,
         TagEntityCallback::class,
     ]
 )
@@ -124,10 +126,20 @@ class PostRepositoryTest : RepositoryTestBase() {
         fun `should return list containing expected posts data`() {
             // Given
             val user = createUser()
-            val expectedPosts = createPosts(user)
+            val tags = createTags("test-1", "test-2", "test-3")
+
+            val post1 = createPost(user, listOf(tags[0]), 1)
+            val post2 = createPost(user, listOf(tags[1]), 2)
+            val post3 = createPost(user, listOf(tags[2]), 3)
+            val post4 = createPost(user, tags, 4)
+
+            val expectedPosts = listOf(post1, post2, post3, post4)
 
             // When
-            val result = postRepository.findAllByUserIdIn(expectedPosts.map { it.userId!! })
+            val result =
+                postRepository
+                    .findAllByUserIdIn(expectedPosts.map { it.userId!! })
+                    .use { it.toList() }
 
             // Then
             assertThat(result)

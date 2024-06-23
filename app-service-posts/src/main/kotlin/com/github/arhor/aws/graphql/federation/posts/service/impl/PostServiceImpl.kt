@@ -35,6 +35,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
+import java.util.stream.Collectors.groupingBy
 
 @Trace
 @Service
@@ -68,9 +69,10 @@ class PostServiceImpl(
     @Transactional(readOnly = true)
     override fun getPostsByUserIds(userIds: Set<UUID>): Map<UUID, List<Post>> = when {
         userIds.isNotEmpty() -> {
-            postRepository
-                .findAllByUserIdIn(userIds)
-                .groupBy({ it.userId!! }, postMapper::mapToPost)
+            postRepository.findAllByUserIdIn(userIds).use { data ->
+                data.map(postMapper::mapToPost)
+                    .collect(groupingBy { it.userId })
+            }
         }
 
         else -> emptyMap()

@@ -15,15 +15,15 @@ public class CommentsNumberByPostIdResultSetExtractor implements ResultSetExtrac
 
     public static final String BEAN_NAME = "commentsNumberByPostIdResultSetExtractor";
 
-    private static final String SELECT_COL_POST_ID = "post_id";
-    private static final String SELECT_COL_COMMENTS_NUMBER = "comments_number";
+    private static final String COL_POST_ID = "post_id";
+    private static final String COL_COMMENTS_NUMBER = "comments_number";
 
     @Override
     public Map<UUID, Integer> extractData(final ResultSet rs) throws SQLException, DataAccessException {
         final var result = new HashMap<UUID, Integer>();
         while (rs.next()) {
-            final var postId = rs.getObject(SELECT_COL_POST_ID, UUID.class);
-            final var commentsNumber = rs.getInt(SELECT_COL_COMMENTS_NUMBER);
+            final var postId = rs.getObject(COL_POST_ID, UUID.class);
+            final var commentsNumber = rs.getInt(COL_COMMENTS_NUMBER);
 
             final var prev = result.put(postId, commentsNumber);
 

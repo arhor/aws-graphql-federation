@@ -236,7 +236,7 @@ class PostServiceImplTest {
             val expectedUserIds = projections.toSet { it.userId!! }
             val expectedResult = posts.groupBy { it.userId }
 
-            every { postRepository.findAllByUserIdIn(any()) } returns projections
+            every { postRepository.findAllByUserIdIn(any()) } answers { projections.stream() }
             every { postMapper.mapToPost(any()) } returnsMany posts
 
             // When

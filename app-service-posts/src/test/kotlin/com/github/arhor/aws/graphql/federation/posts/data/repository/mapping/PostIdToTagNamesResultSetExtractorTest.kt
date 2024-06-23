@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository.mapping
 
-import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostIdToTagNamesResultSetExtractor.Companion.SELECT_COL_POST_ID
-import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostIdToTagNamesResultSetExtractor.Companion.SELECT_COL_TAGS
+import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostIdToTagNamesResultSetExtractor.Companion.COL_POST_ID
+import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostIdToTagNamesResultSetExtractor.Companion.COL_TAG_IDS
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
 import io.mockk.every
@@ -41,7 +41,7 @@ class PostIdToTagNamesResultSetExtractorTest {
             .hasEntrySatisfying(post1Id) { assertThat(it).containsExactly(*expectedTags) }
             .hasEntrySatisfying(post2Id) { assertThat(it).containsExactly(*expectedTags) }
 
-        verify(exactly = 2) { resultSet.getObject(SELECT_COL_POST_ID, UUID::class.java) }
-        verify(exactly = 2) { resultSet.getArray(SELECT_COL_TAGS) }
+        verify(exactly = 2) { resultSet.getObject(COL_POST_ID, UUID::class.java) }
+        verify(exactly = 2) { resultSet.getArray(COL_TAG_IDS) }
     }
 }

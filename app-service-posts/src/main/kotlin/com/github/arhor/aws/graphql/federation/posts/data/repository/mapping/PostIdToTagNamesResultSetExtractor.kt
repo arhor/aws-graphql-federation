@@ -11,10 +11,10 @@ class PostIdToTagNamesResultSetExtractor : ResultSetExtractor<Map<UUID, List<Str
     override fun extractData(rs: ResultSet): Map<UUID, List<String>> {
         val result = HashMap<UUID, List<String>>()
         while (rs.next()) {
-            val post = rs.getObject(SELECT_COL_POST_ID, UUID::class.java)
-            val tags = rs.getArray(SELECT_COL_TAGS)
+            val post = rs.getObject(COL_POST_ID, UUID::class.java)
+            val tags = rs.getArray(COL_TAG_IDS)
 
-            result[post] = (tags.array as Array<*>).mapNotNull { it.toString() }
+            result[post] = (tags.array as Array<*>).mapNotNull { it?.toString() }
         }
         return result
     }
@@ -22,7 +22,7 @@ class PostIdToTagNamesResultSetExtractor : ResultSetExtractor<Map<UUID, List<Str
     companion object {
         const val BEAN_NAME = "postIdToTagNamesResultSetExtractor"
 
-        const val SELECT_COL_POST_ID = "post_id"
-        const val SELECT_COL_TAGS = "tags"
+        const val COL_POST_ID = "post_id"
+        const val COL_TAG_IDS = "tag_ids"
     }
 }
