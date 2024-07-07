@@ -4,6 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -14,7 +15,7 @@ import java.util.concurrent.CompletionStage
 @Component
 @ConditionalOnProperty(prefix = "tracing.method-execution-logging", name = ["enabled"], havingValue = "true")
 class MethodExecutionLoggingAspect(
-    private val tracingProperties: TracingProperties,
+    tracingProperties: TracingProperties,
 ) {
     private val logLevel: Level = tracingProperties.methodExecutionLogging.level
 
@@ -36,27 +37,41 @@ class MethodExecutionLoggingAspect(
 
         return if (logger.isEnabledForLevel(logLevel)) {
             Timer.start {
-                when (val result = jPoint.proceed()) {
-                    is CompletionStage<*> -> {
-                        result.whenComplete { success, failure ->
-                            if (failure != null) {
-                                logger.atLevel(logLevel).log(EXECUTION_ERROR, methodName, failure, elapsedTime)
-                            } else {
-                                logger.atLevel(logLevel).log(EXECUTION_CLOSE, methodName, success, elapsedTime)
+                try {
+                    when (val result = jPoint.proceed()) {
+                        is CompletionStage<*> -> {
+                            result.whenComplete { success, failure ->
+                                if (failure != null) {
+                                    logger.failure(methodName, failure)
+                                } else {
+                                    logger.success(methodName, success)
+                                }
                             }
                         }
-                    }
 
-                    else -> {
-                        result.also {
-                            logger.atLevel(logLevel).log(EXECUTION_CLOSE, methodName, it, elapsedTime)
+                        else -> {
+                            logger.success(methodName, result)
+                            result
                         }
                     }
+                } catch (error: Throwable) {
+                    logger.failure(methodName, error)
+                    throw error
                 }
             }
         } else {
             jPoint.proceed()
         }
+    }
+
+    context(Timer)
+    private fun Logger.success(methodName: String, value: Any?) {
+        atLevel(logLevel).log(EXECUTION_CLOSE, methodName, value, elapsedTime)
+    }
+
+    context(Timer)
+    private fun Logger.failure(methodName: String, error: Throwable) {
+        atLevel(logLevel).log(EXECUTION_ERROR, methodName, error, elapsedTime)
     }
 
     companion object {
