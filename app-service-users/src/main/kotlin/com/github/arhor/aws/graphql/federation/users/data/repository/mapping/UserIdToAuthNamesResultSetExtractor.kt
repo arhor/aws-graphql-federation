@@ -23,8 +23,8 @@ class UserIdToAuthNamesResultSetExtractor : ResultSetExtractor<Map<UUID, List<St
         const val BEAN_NAME = "userIdToAuthNamesResultSetExtractor"
 
         // @formatter:off
-        private const val COL_USER_ID     = "user_id"
-        private const val COL_AUTHORITIES = "authorities"
+        const val COL_USER_ID     = "user_id"
+        const val COL_AUTHORITIES = "authorities"
         // @formatter:on
     }
 }
