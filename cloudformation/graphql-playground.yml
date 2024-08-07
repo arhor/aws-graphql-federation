@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 
 Resources:
-  # SNS Topics
+  ##################################################### SNS Topics #####################################################
 
   UserEventsTopic:
     Type: AWS::SNS::Topic
@@ -13,12 +13,13 @@ Resources:
     Properties:
       TopicName: post-events
 
-  # SQS Queues
+  ##################################################### SQS Queues #####################################################
 
   UserCreatedEventsForPostsQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: user-created-events-for-posts
+
   UserDeletedEventsForPostsQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -28,6 +29,7 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: user-created-events-for-comments
+
   UserDeletedEventsForCommentsQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -37,12 +39,13 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: post-created-events-for-comments
+
   PostDeletedEventsForCommentsQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: post-deleted-events-for-comments
 
-  # SQS Queue Policies
+  ################################################# SQS Queue Policies #################################################
 
   UserEventsQueuesPolicy:
     Type: AWS::SQS::QueuePolicy
@@ -86,7 +89,7 @@ Resources:
               ArnEquals:
                 aws:SourceArn: !Ref PostEventsTopic
 
-  # SQS -> SNS Subscriptions
+  ########################################## SQS -> SNS Subscriptions ##################################################
 
   UserCreatedEventsForPostsQueueSubscription:
     Type: AWS::SNS::Subscription
