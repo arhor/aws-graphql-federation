@@ -49,7 +49,7 @@ dgs:
 app-props:
   aws:
     sns:
-      user-events: \${AWS_SNS_USER_EVENTS}
+      app-events: \${APP_PROPS_AWS_SNS_APP_EVENTS}
   jwt:
     expire: \${JWT_EXPIRE}
   retry:

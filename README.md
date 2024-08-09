@@ -132,7 +132,7 @@ all of which are subgraphs in the overall GraphQL federation supergraph.
 
 2. **Start Docker Containers**:
     ```sh
-    ./supergraph-start
+    ./start-supergraph
     ```
 
 ## Contributing

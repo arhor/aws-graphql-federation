@@ -14,7 +14,13 @@ services:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./scripts/localstack:/etc/localstack/init/ready.d/"
-      - "./cloudformation:/cloudformation"
+      - "./.build:/.build"
+    healthcheck:
+      test: "curl --silent --fail http://localhost:4566/_localstack/init/ready | grep '\"completed\": true' || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
     networks:
       - default
 
@@ -46,7 +52,7 @@ services:
       - "./app-service-users/.env"
       - "./app-service-users/.env.override"
     healthcheck:
-      test: "curl --fail --silent localhost:5001/actuator/health | grep UP || exit 1"
+      test: "curl --silent --fail http://localhost:5001/actuator/health | grep UP || exit 1"
       interval: 10s
       timeout: 10s
       retries: 10
@@ -82,7 +88,7 @@ services:
       - "./app-service-posts/.env"
       - "./app-service-posts/.env.override"
     healthcheck:
-      test: "curl --fail --silent localhost:5002/actuator/health | grep UP || exit 1"
+      test: "curl --silent --fail http://localhost:5002/actuator/health | grep UP || exit 1"
       interval: 10s
       timeout: 10s
       retries: 10
@@ -118,7 +124,7 @@ services:
       - "./app-service-comments/.env"
       - "./app-service-comments/.env.override"
     healthcheck:
-      test: "curl --fail --silent localhost:5003/actuator/health | grep UP || exit 1"
+      test: "curl --silent --fail http://localhost:5003/actuator/health | grep UP || exit 1"
       interval: 10s
       timeout: 10s
       retries: 10

@@ -4,4 +4,14 @@
 # *        Script to build and deploy subgraph services for POSIX          *
 # **************************************************************************
 
-./gradlew :fullBuild -Pskip-test && docker compose up --build
+SKIP_TEST="-Pskip-test"
+
+for arg in "$@"
+do
+  if [ "$arg" = "--test" ]; then
+    SKIP_TEST=""
+    break
+  fi
+done
+
+./gradlew :fullBuild $SKIP_TEST && docker compose up --build

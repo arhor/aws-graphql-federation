@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.testcontainers.containers.Container.ExecResult
 import org.testcontainers.containers.localstack.LocalStackContainer
 import org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS
 import org.testcontainers.junit.jupiter.Container
@@ -39,9 +40,8 @@ abstract class SqsListenerTestBase {
         }
 
         @JvmStatic
-        protected fun createdQueue(queueName: String) {
+        protected fun createdQueue(queueName: String): ExecResult =
             localStack.execInContainer("awslocal", "sqs", "create-queue", "--queue-name", queueName)
-        }
     }
 }
 

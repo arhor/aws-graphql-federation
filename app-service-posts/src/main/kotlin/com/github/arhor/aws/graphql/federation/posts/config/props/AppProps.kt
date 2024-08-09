@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate", "Unused")
+
 package com.github.arhor.aws.graphql.federation.posts.config.props
 
 import jakarta.validation.Valid
@@ -12,7 +14,7 @@ import org.springframework.validation.annotation.Validated
 import java.math.BigDecimal
 
 @Validated
-@ConfigurationProperties(prefix = "app-props")
+@ConfigurationProperties(prefix = AppProps.PATH)
 data class AppProps(
     @field:Valid
     @field:NotNull
@@ -33,16 +35,31 @@ data class AppProps(
     ) {
         data class Sns(
             @field:NotBlank
-            val postEvents: String?,
-        )
+            val appEvents: String?,
+        ) {
+            companion object {
+                const val PATH = "${AppProps.Aws.PATH}.sns"
+                const val APP_EVENTS = "$PATH.app-events"
+            }
+        }
 
         data class Sqs(
             @field:NotBlank
-            val userCreatedEvents: String?,
+            val syncPostsOnUserCreatedEvent: String?,
 
             @field:NotBlank
-            val userDeletedEvents: String?,
-        )
+            val syncPostsOnUserDeletedEvent: String?,
+        ) {
+            companion object {
+                const val PATH = "${AppProps.Aws.PATH}.sqs"
+                const val SYNC_POSTS_ON_USER_CREATED_EVENT = "$PATH.sync-posts-on-user-created-event"
+                const val SYNC_POSTS_ON_USER_DELETED_EVENT = "$PATH.sync-posts-on-user-deleted-event"
+            }
+        }
+
+        companion object {
+            const val PATH = "${AppProps.PATH}.aws"
+        }
     }
 
     data class Retry(
@@ -61,5 +78,17 @@ data class AppProps(
         @field:DecimalMin((1.2).toString())
         @field:DecimalMax((3.0).toString())
         val multiplier: BigDecimal = (1.5).toBigDecimal(),
-    )
+    ) {
+        companion object {
+            const val PATH = "${AppProps.PATH}.retry"
+            const val MIN_INTERVAL = "$PATH.min-interval"
+            const val MAX_INTERVAL = "$PATH.max-interval"
+            const val MAX_ATTEMPTS = "$PATH.max-attempts"
+            const val MULTIPLIER = "$PATH.multiplier"
+        }
+    }
+
+    companion object {
+        const val PATH = "app-props"
+    }
 }

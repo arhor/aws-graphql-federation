@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  ##################################################### SNS Topics #####################################################
+
+  ApplicationEventBus:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: app-events
+
+  ##################################################### SQS Queues #####################################################
+  # naming pattern: [producer]--[event]--[action]--[consumer]                                                          #
+  ######################################################################################################################
+
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: dead-letter-queue
+
+  SynchronizePostsOnUserCreatedEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: app-events--user-created--sync--posts
+      RedrivePolicy:
+        deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
+        maxReceiveCount: 15
+
+  SynchronizePostsOnUserDeletedEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: app-events--user-deleted--sync--posts
+      RedrivePolicy:
+        deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
+        maxReceiveCount: 15
+
+  SynchronizeCommentsOnUserCreatedEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: app-events--user-created--sync--comments
+      RedrivePolicy:
+        deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
+        maxReceiveCount: 15
+
+  SynchronizeCommentsOnUserDeletedEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: app-events--user-deleted--sync--comments
+      RedrivePolicy:
+        deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
+        maxReceiveCount: 15
+
+  SynchronizeCommentsOnPostCreatedEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: app-events--post-created--sync--comments
+      RedrivePolicy:
+        deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
+        maxReceiveCount: 15
+
+  SynchronizeCommentsOnPostDeletedEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: app-events--post-deleted--sync--comments
+      RedrivePolicy:
+        deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
+        maxReceiveCount: 15
+
+  ################################################# SQS Queue Policies #################################################
+
+  CombinedQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref SynchronizePostsOnUserCreatedEventQueue
+        - !Ref SynchronizePostsOnUserDeletedEventQueue
+        - !Ref SynchronizeCommentsOnUserCreatedEventQueue
+        - !Ref SynchronizeCommentsOnUserDeletedEventQueue
+        - !Ref SynchronizeCommentsOnPostCreatedEventQueue
+        - !Ref SynchronizeCommentsOnPostDeletedEventQueue
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sqs:SendMessage
+            Resource: '*'
+            Principal: '*'
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref ApplicationEventBus
+
+  ########################################## SQS -> SNS Subscriptions ##################################################
+
+  SynchronizePostsOnUserCreatedEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref ApplicationEventBus
+      Endpoint: !GetAtt SynchronizePostsOnUserCreatedEventQueue.Arn
+      FilterPolicy:
+        x-event-type:
+          - UserEvent::Created
+      RawMessageDelivery: true
+
+  SynchronizePostsOnUserDeletedEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref ApplicationEventBus
+      Endpoint: !GetAtt SynchronizePostsOnUserDeletedEventQueue.Arn
+      FilterPolicy:
+        x-event-type:
+          - UserEvent::Deleted
+      RawMessageDelivery: true
+
+  SynchronizeCommentsOnUserCreatedEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref ApplicationEventBus
+      Endpoint: !GetAtt SynchronizeCommentsOnUserCreatedEventQueue.Arn
+      FilterPolicy:
+        x-event-type:
+          - UserEvent::Created
+      RawMessageDelivery: true
+
+  SynchronizeCommentsOnUserDeletedEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref ApplicationEventBus
+      Endpoint: !GetAtt SynchronizeCommentsOnUserDeletedEventQueue.Arn
+      FilterPolicy:
+        x-event-type:
+          - UserEvent::Deleted
+      RawMessageDelivery: true
+
+  SynchronizeCommentsOnPostCreatedEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref ApplicationEventBus
+      Endpoint: !GetAtt SynchronizeCommentsOnPostCreatedEventQueue.Arn
+      FilterPolicy:
+        x-event-type:
+          - PostEvent::Created
+      RawMessageDelivery: true
+
+  SynchronizeCommentsOnPostDeletedEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref ApplicationEventBus
+      Endpoint: !GetAtt SynchronizeCommentsOnPostDeletedEventQueue.Arn
+      FilterPolicy:
+        x-event-type:
+          - PostEvent::Deleted
+      RawMessageDelivery: true

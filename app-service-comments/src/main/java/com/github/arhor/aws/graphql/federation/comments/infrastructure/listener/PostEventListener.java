@@ -22,8 +22,8 @@ public class PostEventListener {
 
     private final PostRepresentationService postRepresentationService;
 
-    @SqsListener("${app-props.aws.sqs.post-created-events:}")
-    public void handlePostCreatedEvent(
+    @SqsListener("${app-props.aws.sqs.sync-comments-on-post-created-event}")
+    public void syncCommentsOnPostCreatedEvent(
         @Payload final PostEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId,
         @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
@@ -38,8 +38,8 @@ public class PostEventListener {
         );
     }
 
-    @SqsListener("${app-props.aws.sqs.post-deleted-events:}")
-    public void handlePostDeletedEvent(
+    @SqsListener("${app-props.aws.sqs.sync-comments-on-post-deleted-event}")
+    public void syncCommentsOnPostDeletedEvent(
         @Payload final PostEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId,
         @Header(IDEMPOTENT_KEY) final UUID idempotencyKey

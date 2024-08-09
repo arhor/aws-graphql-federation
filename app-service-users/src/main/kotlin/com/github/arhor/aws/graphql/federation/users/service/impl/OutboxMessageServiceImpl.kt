@@ -29,7 +29,7 @@ class OutboxMessageServiceImpl(
     private val sns: SnsOperations,
 ) : OutboxMessageService {
 
-    private val userEventsSnsTopicName = appProps.aws!!.sns!!.userEvents!!
+    private val appEventsTopicName = appProps.aws!!.sns!!.appEvents!!
 
     @Trace
     @Transactional(propagation = Propagation.MANDATORY)
@@ -71,7 +71,7 @@ class OutboxMessageServiceImpl(
             )
         )
         snsRetryOperations.execute<Unit, Throwable> {
-            sns.sendNotification(userEventsSnsTopicName, notification)
+            sns.sendNotification(appEventsTopicName, notification)
         }
     }
 

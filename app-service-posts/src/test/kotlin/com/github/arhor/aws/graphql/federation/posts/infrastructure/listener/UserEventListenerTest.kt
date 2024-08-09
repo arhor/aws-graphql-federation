@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
@@ -37,20 +38,12 @@ class UserEventListenerTest : SqsListenerTestBase() {
     fun `should call createUserRepresentation on UserEvent#Created`() {
         // Given
         val event = UserEvent.Created(id = USER_ID)
+        val message = GenericMessage(event, MESSAGE_HEADERS)
 
         every { userRepresentationService.createUserRepresentation(any(), any()) } just runs
 
         // When
-        sqsTemplate.send(
-            USER_CREATED_TEST_QUEUE,
-            GenericMessage(
-                event,
-                mapOf(
-                    TRACING_ID_KEY to TRACE_ID,
-                    IDEMPOTENT_KEY to IDEMPOTENCY_KEY,
-                )
-            )
-        )
+        sqsTemplate.send(USER_CREATED_TEST_QUEUE, message)
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
@@ -62,20 +55,12 @@ class UserEventListenerTest : SqsListenerTestBase() {
     fun `should call deleteUserRepresentation on UserEvent#Deleted`() {
         // Given
         val event = UserEvent.Deleted(id = USER_ID)
+        val message = GenericMessage(event, MESSAGE_HEADERS)
 
         every { userRepresentationService.deleteUserRepresentation(any(), any()) } just runs
 
         // When
-        sqsTemplate.send(
-            USER_DELETED_TEST_QUEUE,
-            GenericMessage(
-                event,
-                mapOf(
-                    TRACING_ID_KEY to TRACE_ID,
-                    IDEMPOTENT_KEY to IDEMPOTENCY_KEY,
-                )
-            )
-        )
+        sqsTemplate.send(USER_DELETED_TEST_QUEUE, message)
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
@@ -84,25 +69,33 @@ class UserEventListenerTest : SqsListenerTestBase() {
     }
 
     companion object {
-        private const val USER_CREATED_TEST_QUEUE = "user-created-test-queue"
-        private const val USER_DELETED_TEST_QUEUE = "user-deleted-test-queue"
+        private const val USER_CREATED_TEST_QUEUE = "sync-posts-on-user-created-event-test"
+        private const val USER_DELETED_TEST_QUEUE = "sync-posts-on-user-deleted-event-test"
 
         private val USER_ID = ZERO_UUID_VAL
         private val TRACE_ID = TEST_1_UUID_VAL
         private val IDEMPOTENCY_KEY = TEST_2_UUID_VAL
 
+        private val MESSAGE_HEADERS = mapOf(
+            TRACING_ID_KEY to TRACE_ID,
+            IDEMPOTENT_KEY to IDEMPOTENCY_KEY,
+        )
+
         @JvmStatic
         @DynamicPropertySource
         fun registerDynamicProperties(registry: DynamicPropertyRegistry) = with(registry) {
-            add("app-props.aws.sqs.user-created-events") { USER_CREATED_TEST_QUEUE }
-            add("app-props.aws.sqs.user-deleted-events") { USER_DELETED_TEST_QUEUE }
+            add(AppProps.Aws.Sqs.SYNC_POSTS_ON_USER_CREATED_EVENT) { USER_CREATED_TEST_QUEUE }
+            add(AppProps.Aws.Sqs.SYNC_POSTS_ON_USER_DELETED_EVENT) { USER_DELETED_TEST_QUEUE }
         }
 
         @JvmStatic
         @BeforeAll
         fun createdTestQueues() {
-            createdQueue(USER_CREATED_TEST_QUEUE)
-            createdQueue(USER_DELETED_TEST_QUEUE)
+            val result1 = createdQueue(USER_CREATED_TEST_QUEUE)
+            val result2 = createdQueue(USER_DELETED_TEST_QUEUE)
+
+            println(result1)
+            println(result2)
         }
     }
 }

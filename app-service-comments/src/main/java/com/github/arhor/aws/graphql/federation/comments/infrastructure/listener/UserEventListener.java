@@ -22,8 +22,8 @@ public class UserEventListener {
 
     private final UserRepresentationService userRepresentationService;
 
-    @SqsListener("${app-props.aws.sqs.user-created-events:}")
-    public void handleUserCreatedEvent(
+    @SqsListener("${app-props.aws.sqs.sync-comments-on-user-created-event}")
+    public void syncCommentsOnUserCreatedEvent(
         @Payload final UserEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId,
         @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
@@ -37,8 +37,8 @@ public class UserEventListener {
         );
     }
 
-    @SqsListener("${app-props.aws.sqs.user-deleted-events:}")
-    public void handleUserDeletedEvent(
+    @SqsListener("${app-props.aws.sqs.sync-comments-on-user-deleted-event}")
+    public void syncCommentsOnUserDeletedEvent(
         @Payload final UserEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId,
         @Header(IDEMPOTENT_KEY) final UUID idempotencyKey

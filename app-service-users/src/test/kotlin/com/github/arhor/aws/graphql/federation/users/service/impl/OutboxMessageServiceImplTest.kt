@@ -40,7 +40,7 @@ class OutboxMessageServiceImplTest {
     private val appProps = AppProps(
         aws = AppProps.Aws(
             sns = AppProps.Aws.Sns(
-                userEvents = TEST_USER_EVENTS
+                appEvents = TEST_USER_EVENTS
             )
         ),
         retry = AppProps.Retry()

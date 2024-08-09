@@ -25,16 +25,16 @@ public record AppProps(
     ) {
         public record Sqs(
             @NotBlank
-            String userCreatedEvents,
+            String syncCommentsOnPostCreatedEvent,
 
             @NotBlank
-            String userDeletedEvents,
+            String syncCommentsOnPostDeletedEvent,
 
             @NotBlank
-            String postCreatedEvents,
+            String syncCommentsOnUserCreatedEvent,
 
             @NotBlank
-            String postDeletedEvents
+            String syncCommentsOnUserDeletedEvent
         ) {}
     }
 }

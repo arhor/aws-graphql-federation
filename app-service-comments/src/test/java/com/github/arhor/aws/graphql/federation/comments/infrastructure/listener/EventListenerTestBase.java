@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.infrastructure.listener;
 
+import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import io.awspring.cloud.test.sqs.SqsTest;
 import org.junit.jupiter.api.Tag;
@@ -13,7 +14,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
 
+import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.IDEMPOTENT_KEY;
+import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.TRACING_ID_KEY;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS;
 
 @Tag("integration")
@@ -21,6 +26,16 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 @DirtiesContext
 @Testcontainers(disabledWithoutDocker = true)
 abstract class EventListenerTestBase {
+
+    static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
+    static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
+    static final UUID TRACE_ID = ConstantsKt.getTEST_1_UUID_VAL();
+    static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
+
+    static final Map<String, Object> MESSAGE_HEADERS = Map.of(
+        TRACING_ID_KEY, TRACE_ID,
+        IDEMPOTENT_KEY, IDEMPOTENCY_KEY
+    );
 
     @Container
     private final static LocalStackContainer localStack = new LocalStackContainer(

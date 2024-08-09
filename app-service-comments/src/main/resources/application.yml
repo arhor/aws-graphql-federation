@@ -49,10 +49,10 @@ dgs:
 app-props:
   aws:
     sqs:
-      user-created-events: \${AWS_SQS_USER_CREATED_EVENTS_FOR_COMMENTS}
-      user-deleted-events: \${AWS_SQS_USER_DELETED_EVENTS_FOR_COMMENTS}
-      post-created-events: \${AWS_SQS_POST_CREATED_EVENTS_FOR_COMMENTS}
-      post-deleted-events: \${AWS_SQS_POST_DELETED_EVENTS_FOR_COMMENTS}
+      sync-comments-on-user-created-event: \${APP_PROPS_AWS_SQS_SYNC_COMMENTS_ON_USER_CREATED_EVENT}
+      sync-comments-on-user-deleted-event: \${APP_PROPS_AWS_SQS_SYNC_COMMENTS_ON_USER_DELETED_EVENT}
+      sync-comments-on-post-created-event: \${APP_PROPS_AWS_SQS_SYNC_COMMENTS_ON_POST_CREATED_EVENT}
+      sync-comments-on-post-deleted-event: \${APP_PROPS_AWS_SQS_SYNC_COMMENTS_ON_POST_DELETED_EVENT}
   retry-attempts: 5
 
 ---

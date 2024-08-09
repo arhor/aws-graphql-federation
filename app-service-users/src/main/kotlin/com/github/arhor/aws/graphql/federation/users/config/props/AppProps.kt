@@ -29,7 +29,7 @@ data class AppProps(
     ) {
         data class Sns(
             @field:NotBlank
-            val userEvents: String?,
+            val appEvents: String?,
         )
     }
 

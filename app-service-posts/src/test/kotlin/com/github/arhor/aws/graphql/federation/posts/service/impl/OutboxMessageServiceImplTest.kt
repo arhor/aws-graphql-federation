@@ -40,11 +40,11 @@ class OutboxMessageServiceImplTest {
     private val appProps = AppProps(
         aws = AppProps.Aws(
             sns = AppProps.Aws.Sns(
-                postEvents = TEST_POST_EVENTS
+                appEvents = TEST_APPLICATION_EVENT_BUS
             ),
             sqs = AppProps.Aws.Sqs(
-                userCreatedEvents = "test-user-created-events",
-                userDeletedEvents = "test-user-deleted-events",
+                syncPostsOnUserCreatedEvent = "test-user-created-events",
+                syncPostsOnUserDeletedEvent = "test-user-deleted-events",
             )
         ),
         retry = AppProps.Retry()
@@ -144,7 +144,7 @@ class OutboxMessageServiceImplTest {
 
 
             assertThat(actualSnsTopicName.captured)
-                .isEqualTo(TEST_POST_EVENTS)
+                .isEqualTo(TEST_APPLICATION_EVENT_BUS)
 
             assertThat(actualNotification.captured)
                 .satisfies(
@@ -155,8 +155,8 @@ class OutboxMessageServiceImplTest {
     }
 
     companion object {
-        private const val TEST_POST_EVENTS =
-            "test-post-events"
+        private const val TEST_APPLICATION_EVENT_BUS =
+            "test-app-events"
         private const val POST_EVENTS_METHOD_SOURCE =
             "com.github.arhor.aws.graphql.federation.posts.service.impl.OutboxMessageServiceImplTest#postEventsTestFactory"
 

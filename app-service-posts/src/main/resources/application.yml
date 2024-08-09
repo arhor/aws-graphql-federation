@@ -49,10 +49,10 @@ dgs:
 app-props:
   aws:
     sns:
-      post-events: \${AWS_SNS_POST_EVENTS}
+      app-events: \${APP_PROPS_AWS_SNS_APP_EVENTS}
     sqs:
-      user-created-events: \${AWS_SQS_USER_CREATED_EVENTS_FOR_POSTS}
-      user-deleted-events: \${AWS_SQS_USER_DELETED_EVENTS_FOR_POSTS}
+      sync-posts-on-user-created-event: \${APP_PROPS_AWS_SQS_SYNC_POSTS_ON_USER_CREATED_EVENT}
+      sync-posts-on-user-deleted-event: \${APP_PROPS_AWS_SQS_SYNC_POSTS_ON_USER_DELETED_EVENT}
   retry:
     min-interval: \${RETRY_MIN_INTERVAL:1000}
     max-interval: \${RETRY_MAX_INTERVAL:10000}

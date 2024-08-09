@@ -2,8 +2,8 @@ package com.github.arhor.aws.graphql.federation.comments.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent;
-import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.messaging.support.GenericMessage;
@@ -12,32 +12,24 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.IDEMPOTENT_KEY;
-import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.TRACING_ID_KEY;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.BDDMockito.then;
 
 @ContextConfiguration(classes = {UserEventListener.class})
 class UserEventListenerTest extends EventListenerTestBase {
 
-    private static final String USER_CREATED_TEST_QUEUE = "user-created-test-queue";
-    private static final String USER_DELETED_TEST_QUEUE = "user-deleted-test-queue";
-
-    private static final UUID USER_ID = ConstantsKt.getTEST_1_UUID_VAL();
-    private static final UUID TRACE_ID = ConstantsKt.getTEST_2_UUID_VAL();
-    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_3_UUID_VAL();
+    private static final String USER_CREATED_TEST_QUEUE = "sync-comments-on-user-created-event-test-queue";
+    private static final String USER_DELETED_TEST_QUEUE = "sync-comments-on-user-deleted-event-test-queue";
 
     @MockBean
     private UserRepresentationService userRepresentationService;
 
     @DynamicPropertySource
     static void registerDynamicProperties(final DynamicPropertyRegistry registry) {
-        registry.add("app-props.aws.sqs.user-created-events", () -> USER_CREATED_TEST_QUEUE);
-        registry.add("app-props.aws.sqs.user-deleted-events", () -> USER_DELETED_TEST_QUEUE);
+        registry.add("app-props.aws.sqs.sync-comments-on-user-created-event", () -> USER_CREATED_TEST_QUEUE);
+        registry.add("app-props.aws.sqs.sync-comments-on-user-deleted-event", () -> USER_DELETED_TEST_QUEUE);
     }
 
     @BeforeAll
@@ -47,21 +39,14 @@ class UserEventListenerTest extends EventListenerTestBase {
     }
 
     @Test
+    @DisplayName("should call createUserRepresentation method on user created event")
     void should_call_createUserRepresentation_method_on_user_created_event() {
         // Given
         final var event = new UserEvent.Created(USER_ID);
+        final var message = new GenericMessage<>(event, MESSAGE_HEADERS);
 
         // When
-        sqsTemplate.send(
-            USER_CREATED_TEST_QUEUE,
-            new GenericMessage<>(
-                event,
-                Map.of(
-                    TRACING_ID_KEY, TRACE_ID,
-                    IDEMPOTENT_KEY, IDEMPOTENCY_KEY
-                )
-            )
-        );
+        sqsTemplate.send(USER_CREATED_TEST_QUEUE, message);
 
         // Then
         await()
@@ -77,21 +62,14 @@ class UserEventListenerTest extends EventListenerTestBase {
     }
 
     @Test
+    @DisplayName("should call deleteUserRepresentation method on user deleted event")
     void should_call_deleteUserRepresentation_method_on_user_deleted_event() {
         // Given
         final var event = new UserEvent.Deleted(USER_ID);
+        final var message = new GenericMessage<>(event, MESSAGE_HEADERS);
 
         // When
-        sqsTemplate.send(
-            USER_DELETED_TEST_QUEUE,
-            new GenericMessage<>(
-                event,
-                Map.of(
-                    TRACING_ID_KEY, TRACE_ID,
-                    IDEMPOTENT_KEY, IDEMPOTENCY_KEY
-                )
-            )
-        );
+        sqsTemplate.send(USER_DELETED_TEST_QUEUE, message);
 
         // Then
         await()
