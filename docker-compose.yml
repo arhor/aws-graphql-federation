@@ -44,8 +44,10 @@ services:
     ports:
       - "5001:5001"
     depends_on:
-      - app-service-users-db
-      - localstack
+      app-service-users-db:
+        condition: service_started
+      localstack:
+        condition: service_healthy
     env_file:
       - "./.env"
       - "./.env.override"
@@ -80,8 +82,10 @@ services:
     ports:
       - "5002:5002"
     depends_on:
-      - app-service-posts-db
-      - localstack
+      app-service-posts-db:
+        condition: service_started
+      localstack:
+        condition: service_healthy
     env_file:
       - "./.env"
       - "./.env.override"
@@ -116,8 +120,10 @@ services:
     ports:
       - "5003:5003"
     depends_on:
-      - app-service-comments-db
-      - localstack
+      app-service-comments-db:
+        condition: service_started
+      localstack:
+        condition: service_healthy
     env_file:
       - "./.env"
       - "./.env.override"
