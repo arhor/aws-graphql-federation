@@ -5,13 +5,24 @@
 # **************************************************************************
 
 SKIP_TEST="-Pskip-test"
+GRADLE_BUILD_COMMAND=""
+DOCKER_BUILD_COMMAND=""
 
 for arg in "$@"
 do
-  if [ "$arg" = "--test" ]; then
-    SKIP_TEST=""
-    break
-  fi
+    case $arg in
+        --test)
+            SKIP_TEST=""
+            ;;
+        --build)
+            GRADLE_BUILD_COMMAND="./gradlew :fullBuild"
+            DOCKER_BUILD_COMMAND="--build"
+            ;;
+    esac
 done
 
-./gradlew :fullBuild $SKIP_TEST && docker compose up --build
+if [ -n "$GRADLE_BUILD_COMMAND" ]; then
+    GRADLE_BUILD_COMMAND="$GRADLE_BUILD_COMMAND $SKIP_TEST &&"
+fi
+
+eval "$GRADLE_BUILD_COMMAND docker compose up $DOCKER_BUILD_COMMAND"
