@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.common.event
 
-interface DomainEvent {
+interface AppEvent {
 
     fun type(): String
 

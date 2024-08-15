@@ -4,7 +4,7 @@ import java.time.Instant
 import java.util.UUID
 import kotlin.reflect.KClass
 
-sealed interface ScheduledTaskEvent : DomainEvent {
+sealed interface ScheduledTaskEvent : AppEvent {
 
     data class Created(val id: UUID, val timestamp: Instant, val type: String, val data: String) : ScheduledTaskEvent {
         override fun type(): String = Type.SCHEDULED_TASK_EVENT_CREATED.code

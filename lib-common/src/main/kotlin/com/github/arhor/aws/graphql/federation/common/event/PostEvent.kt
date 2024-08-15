@@ -3,7 +3,7 @@ package com.github.arhor.aws.graphql.federation.common.event
 import java.util.UUID
 import kotlin.reflect.KClass
 
-sealed interface PostEvent : DomainEvent {
+sealed interface PostEvent : AppEvent {
 
     data class Created(val id: UUID, val userId: UUID) : PostEvent {
         override fun type(): String = Type.POST_EVENT_CREATED.code
