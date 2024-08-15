@@ -106,5 +106,5 @@ jobs:
 
       - name: Add the code coverage info to build summary
         if: github.event_name != 'workflow_dispatch'
-        run: .github/scripts/print-test-coverage.sh
+        run: ./.github/scripts/print-test-coverage.sh
         shell: bash
