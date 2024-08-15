@@ -1,4 +1,4 @@
-name: Users service CI
+name: Scheduled Tasks service CI
 
 on:
   push:
@@ -44,7 +44,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build Users service
+      - name: Build Scheduled Tasks service
         run: './gradlew :app-service-scheduled-tasks:buildNeeded'
 
       - name: Upload compiled classes and JaCoCo exec
