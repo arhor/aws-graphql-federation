@@ -65,6 +65,22 @@ Resources:
         deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
         maxReceiveCount: 15
 
+  CreateScheduledTaskEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: app-events--task-scheduled--create--scheduled-tasks
+      RedrivePolicy:
+        deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
+        maxReceiveCount: 15
+
+  DeleteScheduledTaskEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: app-events--task-scheduled--delete--scheduled-tasks
+      RedrivePolicy:
+        deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
+        maxReceiveCount: 15
+
   ################################################# SQS Queue Policies #################################################
 
   CombinedQueuePolicy:
@@ -77,6 +93,8 @@ Resources:
         - !Ref SynchronizeCommentsOnUserDeletedEventQueue
         - !Ref SynchronizeCommentsOnPostCreatedEventQueue
         - !Ref SynchronizeCommentsOnPostDeletedEventQueue
+        - !Ref CreateScheduledTaskEventQueue
+        - !Ref CreateScheduledTaskEventQueue
       PolicyDocument:
         Statement:
           - Effect: Allow
@@ -153,4 +171,26 @@ Resources:
       FilterPolicy:
         x-event-type:
           - PostEvent::Deleted
+      RawMessageDelivery: true
+
+  CreateScheduledTaskEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref ApplicationEventBus
+      Endpoint: !GetAtt CreateScheduledTaskEventQueue.Arn
+      FilterPolicy:
+        x-event-type:
+          - ScheduledTask::Created
+      RawMessageDelivery: true
+
+  DeleteScheduledTaskEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref ApplicationEventBus
+      Endpoint: !GetAtt DeleteScheduledTaskEventQueue.Arn
+      FilterPolicy:
+        x-event-type:
+          - ScheduledTask::Deleted
       RawMessageDelivery: true

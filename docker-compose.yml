@@ -138,6 +138,44 @@ services:
     networks:
       - default
 
+  app-service-scheduled-events-db:
+    container_name: app-service-scheduled-events-db
+    image: postgres:13-alpine
+    ports:
+      - "5504:5504"
+    tmpfs:
+      - "/var/lib/postgresql/data"
+    env_file:
+      - "./app-service-scheduled-events/.env"
+    command: -p 5504
+    networks:
+      - default
+
+  app-service-scheduled-events:
+    container_name: app-service-scheduled-events
+    build:
+      context: ./app-service-scheduled-events
+    ports:
+      - "5004:5004"
+    depends_on:
+      app-service-scheduled-events-db:
+        condition: service_started
+      localstack:
+        condition: service_healthy
+    env_file:
+      - "./.env"
+      - "./.env.override"
+      - "./app-service-scheduled-events/.env"
+      - "./app-service-scheduled-events/.env.override"
+    healthcheck:
+      test: "curl --silent --fail http://localhost:5004/actuator/health | grep UP || exit 1"
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+    networks:
+      - default
+
   app-gateway:
     container_name: app-gateway
     build:
@@ -150,6 +188,8 @@ services:
       app-service-posts:
         condition: service_healthy
       app-service-comments:
+        condition: service_healthy
+      app-service-scheduled-events:
         condition: service_healthy
     env_file:
       - ./app-gateway/.env
