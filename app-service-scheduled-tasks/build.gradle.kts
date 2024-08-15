@@ -168,7 +168,7 @@ fun shouldApplyExclusionsTo(classDirectories: ConfigurableFileCollection) {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "com/github/arhor/aws/graphql/federation/scheduledEvents/**/config/",
+                        "com/github/arhor/aws/graphql/federation/scheduledTasks/**/config/",
                     )
                 }
             }

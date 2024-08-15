@@ -1,11 +1,11 @@
-package com.github.arhor.aws.graphql.federation.scheduledEvents
+package com.github.arhor.aws.graphql.federation.scheduledTasks
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ScheduledEventsServiceRunner
+class ScheduledTasksServiceRunner
 
 fun main(args: Array<String>) {
-    runApplication<ScheduledEventsServiceRunner>(*args)
+    runApplication<ScheduledTasksServiceRunner>(*args)
 }

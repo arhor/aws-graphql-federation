@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: app-service-scheduled-events
+    name: app-service-scheduled-tasks
   aop:
     proxy-target-class: false
   profiles:
