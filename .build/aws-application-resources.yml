@@ -181,7 +181,7 @@ Resources:
       Endpoint: !GetAtt CreateScheduledTaskEventQueue.Arn
       FilterPolicy:
         x-event-type:
-          - ScheduledTask::Created
+          - ScheduledTaskEvent::Created
       RawMessageDelivery: true
 
   DeleteScheduledTaskEventQueueSubscription:
@@ -192,5 +192,5 @@ Resources:
       Endpoint: !GetAtt DeleteScheduledTaskEventQueue.Arn
       FilterPolicy:
         x-event-type:
-          - ScheduledTask::Deleted
+          - ScheduledTaskEvent::Deleted
       RawMessageDelivery: true
