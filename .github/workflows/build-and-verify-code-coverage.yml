@@ -1,4 +1,4 @@
-name: Cloudformation deploy
+name: Build & Code Coverage Verification
 
 on:
   workflow_call:
@@ -46,7 +46,7 @@ jobs:
             ${{ github.workspace }}/${{ inputs.APP_SERVICE_NAME }}/build/jacoco
           retention-days: 1
 
-  code-coverage:
+  verify-code-coverage:
     name: Code Coverage Verification
     runs-on: ubuntu-latest
     needs: [ build ]
