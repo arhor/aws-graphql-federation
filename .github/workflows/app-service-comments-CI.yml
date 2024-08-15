@@ -105,10 +105,5 @@ jobs:
 
       - name: Add the code coverage info to build summary
         if: github.event_name != 'workflow_dispatch'
-        run: |
-          echo "### JaCoCo Test Coverage Summary"                                        >> $GITHUB_STEP_SUMMARY
-          echo "|     Type      |                      Coverage                       |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------------|-----------------------------------------------------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Overall files | ${{ steps.jacoco.outputs.coverage-overall }}%       |" >> $GITHUB_STEP_SUMMARY
-          echo "| Changed files | ${{ steps.jacoco.outputs.coverage-changed-files }}% |" >> $GITHUB_STEP_SUMMARY
-          echo "---"                                                                     >> $GITHUB_STEP_SUMMARY
+        run: .github/scripts/print-test-coverage.sh
+        shell: bash
