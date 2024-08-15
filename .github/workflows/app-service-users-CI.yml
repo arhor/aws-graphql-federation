@@ -6,6 +6,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/app-service-users-CI.yml'
+      - '.github/workflows/build-and-verify-code-coverage.yml'
       - 'app-service-users/**'
       - 'lib-*/**'
   pull_request:
@@ -13,6 +14,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/app-service-users-CI.yml'
+      - '.github/workflows/build-and-verify-code-coverage.yml'
       - 'app-service-users/**'
       - 'lib-*/**'
   workflow_dispatch:
