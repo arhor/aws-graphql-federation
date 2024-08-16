@@ -22,7 +22,7 @@ import java.util.UUID
 
 @Service
 class OutboxMessageServiceImpl(
-    private val appProps: AppProps,
+    appProps: AppProps,
     private val objectMapper: ObjectMapper,
     private val outboxMessageRepository: OutboxMessageRepository,
     private val snsRetryOperations: RetryOperations,
