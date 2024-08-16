@@ -1,9 +1,9 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
 import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority
-import com.github.arhor.aws.graphql.federation.users.data.entity.AuthEntity
-import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
-import com.github.arhor.aws.graphql.federation.users.data.entity.callback.UserEntityCallback
+import com.github.arhor.aws.graphql.federation.users.data.model.AuthEntity
+import com.github.arhor.aws.graphql.federation.users.data.model.AuthRef
+import com.github.arhor.aws.graphql.federation.users.data.model.callback.UserEntityCallback
 import com.github.arhor.aws.graphql.federation.users.data.repository.mapping.UserIdToAuthNamesResultSetExtractor
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from

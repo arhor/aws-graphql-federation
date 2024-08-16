@@ -1,8 +1,8 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
-import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
-import com.github.arhor.aws.graphql.federation.users.data.entity.callback.OutboxMessageEntityCallback
+import com.github.arhor.aws.graphql.federation.users.data.model.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.users.data.model.callback.OutboxMessageEntityCallback
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ContextConfiguration

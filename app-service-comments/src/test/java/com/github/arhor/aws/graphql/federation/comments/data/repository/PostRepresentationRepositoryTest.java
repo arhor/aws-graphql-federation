@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.model.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.model.PostRepresentation.PostFeature;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.Test;

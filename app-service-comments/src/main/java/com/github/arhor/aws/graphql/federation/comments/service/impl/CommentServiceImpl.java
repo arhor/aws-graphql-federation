@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.model.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.CommentRepository;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.sorting.Comments;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.COMMENT;

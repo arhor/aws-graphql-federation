@@ -26,21 +26,18 @@ class StateGuard {
         @NotNull final Type type,
         @NotNull final UUID id
     ) {
-        final var commentableRepository = switch (type) {
+        final var repository = switch (type) {
             case USER -> userRepository;
             case POST -> postRepository;
         };
-        final var commentable = commentableRepository
-            .findById(id)
-            .orElseThrow(() ->
-                new EntityNotFoundException(
-                    parentEntity,
-                    type.entity + " with " + type.field + " = " + id + " is not found",
-                    operation
-                )
-            );
-
-        if (commentable.commentsDisabled()) {
+        final var entity = repository.findById(id).orElseThrow(() ->
+            new EntityNotFoundException(
+                parentEntity,
+                type.entity + " with " + type.field + " = " + id + " is not found",
+                operation
+            )
+        );
+        if (entity.commentsDisabled()) {
             throw new EntityOperationRestrictedException(
                 parentEntity,
                 "Comments disabled for the " + type.entity + " with " + type.field + " = " + id,

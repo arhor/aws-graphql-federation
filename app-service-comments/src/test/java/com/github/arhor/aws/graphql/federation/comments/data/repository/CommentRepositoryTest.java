@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.callback.CommentEntityCallback;
+import com.github.arhor.aws.graphql.federation.comments.data.model.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.model.callback.CommentEntityCallback;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.mapping.CommentsNumberByPostIdResultSetExtractor;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.DisplayName;

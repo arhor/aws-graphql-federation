@@ -1,9 +1,9 @@
 package com.github.arhor.aws.graphql.federation.comments.config;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeature;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeatures;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeature;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeatures;
+import com.github.arhor.aws.graphql.federation.comments.data.model.PostRepresentation.PostFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.model.PostRepresentation.PostFeatures;
+import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation.UserFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation.UserFeatures;
 import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesReadingConverter;
 import com.github.arhor.aws.graphql.federation.starter.core.data.FeaturesWritingConverter;
 import org.jetbrains.annotations.NotNull;

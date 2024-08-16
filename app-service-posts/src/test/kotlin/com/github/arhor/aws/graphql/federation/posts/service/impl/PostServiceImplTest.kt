@@ -5,11 +5,11 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.common.toSet
-import com.github.arhor.aws.graphql.federation.posts.data.entity.LikeRef
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeature
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeatures
+import com.github.arhor.aws.graphql.federation.posts.data.model.LikeRef
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentation
+import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentation.UserFeature
+import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentation.UserFeatures
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository

@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.service.mapping.impl
 
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.TagRef
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.CreatePostInput
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL

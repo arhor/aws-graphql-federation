@@ -1,6 +1,6 @@
-package com.github.arhor.aws.graphql.federation.comments.data.entity.callback;
+package com.github.arhor.aws.graphql.federation.comments.data.model.callback;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.model.CommentEntity;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback;
 import org.springframework.stereotype.Component;

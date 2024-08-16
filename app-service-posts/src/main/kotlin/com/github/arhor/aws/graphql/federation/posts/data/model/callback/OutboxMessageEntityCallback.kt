@@ -1,6 +1,6 @@
-package com.github.arhor.aws.graphql.federation.users.data.entity.callback
+package com.github.arhor.aws.graphql.federation.posts.data.model.callback
 
-import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.OutboxMessageEntity
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback
 import org.springframework.stereotype.Component
 import java.util.UUID

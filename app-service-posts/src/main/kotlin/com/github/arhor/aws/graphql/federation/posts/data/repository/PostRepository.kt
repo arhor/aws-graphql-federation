@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository
 
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostEntityCustomRowMapper
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.ListCrudRepository

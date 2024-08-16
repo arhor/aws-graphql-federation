@@ -1,15 +1,15 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository.mapping
 
-import com.github.arhor.aws.graphql.federation.posts.data.entity.LikeRef
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity.Companion.COL_CONTENT
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity.Companion.COL_CREATED_DATE_TIME
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity.Companion.COL_ID
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity.Companion.COL_TITLE
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity.Companion.COL_UPDATED_DATE_TIME
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity.Companion.COL_USER_ID
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity.Companion.COL_VERSION
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
+import com.github.arhor.aws.graphql.federation.posts.data.model.LikeRef
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity.Companion.COL_CONTENT
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity.Companion.COL_CREATED_DATE_TIME
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity.Companion.COL_ID
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity.Companion.COL_TITLE
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity.Companion.COL_UPDATED_DATE_TIME
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity.Companion.COL_USER_ID
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity.Companion.COL_VERSION
+import com.github.arhor.aws.graphql.federation.posts.data.model.TagRef
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import java.sql.ResultSet

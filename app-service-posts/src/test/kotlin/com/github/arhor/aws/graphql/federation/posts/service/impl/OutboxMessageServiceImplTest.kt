@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
-import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.posts.service.impl.OutboxMessageServiceImpl.Companion.OutboxMessageDataTypeRef
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL

@@ -2,9 +2,9 @@ package com.github.arhor.aws.graphql.federation.users.service.mapping.impl
 
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
-import com.github.arhor.aws.graphql.federation.users.data.entity.AuthEntity
-import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
-import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
+import com.github.arhor.aws.graphql.federation.users.data.model.AuthEntity
+import com.github.arhor.aws.graphql.federation.users.data.model.AuthRef
+import com.github.arhor.aws.graphql.federation.users.data.model.UserEntity
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.service.mapping.UserMapper

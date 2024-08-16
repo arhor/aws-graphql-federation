@@ -2,9 +2,9 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeature
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation.UserFeatures
+import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentation
+import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentation.UserFeature
+import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentation.UserFeatures
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User

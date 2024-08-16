@@ -1,6 +1,6 @@
-package com.github.arhor.aws.graphql.federation.posts.data.entity.callback
+package com.github.arhor.aws.graphql.federation.posts.data.model.callback
 
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.TagEntity
 import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback
 import org.springframework.stereotype.Component
 import java.util.UUID

@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.posts.data.entity
+package com.github.arhor.aws.graphql.federation.posts.data.model
 
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features
 import org.springframework.data.annotation.Id

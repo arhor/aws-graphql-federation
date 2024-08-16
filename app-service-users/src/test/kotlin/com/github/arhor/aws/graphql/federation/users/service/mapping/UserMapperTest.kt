@@ -1,9 +1,9 @@
 package com.github.arhor.aws.graphql.federation.users.service.mapping
 
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
-import com.github.arhor.aws.graphql.federation.users.data.entity.AuthEntity
-import com.github.arhor.aws.graphql.federation.users.data.entity.AuthRef
-import com.github.arhor.aws.graphql.federation.users.data.entity.UserEntity
+import com.github.arhor.aws.graphql.federation.users.data.model.AuthEntity
+import com.github.arhor.aws.graphql.federation.users.data.model.AuthRef
+import com.github.arhor.aws.graphql.federation.users.data.model.UserEntity
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
 import io.mockk.every
 import io.mockk.mockk

@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository.sorting
 
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity
 import org.springframework.data.domain.Sort
 
 object Posts {

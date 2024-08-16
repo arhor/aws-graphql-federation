@@ -1,12 +1,12 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository
 
 import com.github.arhor.aws.graphql.federation.common.toSet
-import com.github.arhor.aws.graphql.federation.posts.data.entity.PostEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagRef
-import com.github.arhor.aws.graphql.federation.posts.data.entity.UserRepresentation
-import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.PostEntityCallback
-import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.TagEntityCallback
+import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.TagEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.TagRef
+import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentation
+import com.github.arhor.aws.graphql.federation.posts.data.model.callback.PostEntityCallback
+import com.github.arhor.aws.graphql.federation.posts.data.model.callback.TagEntityCallback
 import com.github.arhor.aws.graphql.federation.posts.data.repository.mapping.PostEntityCustomRowMapper
 import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL

@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.data.entity
+package com.github.arhor.aws.graphql.federation.users.data.model
 
 import org.springframework.data.annotation.Immutable
 import org.springframework.data.relational.core.mapping.Column

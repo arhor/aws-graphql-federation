@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.comments.data.entity;
+package com.github.arhor.aws.graphql.federation.comments.data.model;
 
 import lombok.Builder;
 import lombok.experimental.FieldNameConstants;

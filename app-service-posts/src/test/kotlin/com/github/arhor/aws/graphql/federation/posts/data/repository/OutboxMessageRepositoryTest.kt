@@ -1,7 +1,7 @@
 package com.github.arhor.aws.graphql.federation.posts.data.repository
 
-import com.github.arhor.aws.graphql.federation.posts.data.entity.OutboxMessageEntity
-import com.github.arhor.aws.graphql.federation.posts.data.entity.callback.OutboxMessageEntityCallback
+import com.github.arhor.aws.graphql.federation.posts.data.model.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.callback.OutboxMessageEntityCallback
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

@@ -1,6 +1,6 @@
-package com.github.arhor.aws.graphql.federation.posts.data.entity.callback
+package com.github.arhor.aws.graphql.federation.posts.data.model.callback
 
-import com.github.arhor.aws.graphql.federation.posts.data.entity.TagEntity
+import com.github.arhor.aws.graphql.federation.posts.data.model.TagEntity
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from

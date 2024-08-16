@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.mapper.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.model.CommentEntity;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Comment;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.CreateCommentInput;
 import com.github.arhor.aws.graphql.federation.comments.service.mapper.CommentMapper;

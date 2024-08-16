@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.posts.data.entity
+package com.github.arhor.aws.graphql.federation.posts.data.model
 
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id

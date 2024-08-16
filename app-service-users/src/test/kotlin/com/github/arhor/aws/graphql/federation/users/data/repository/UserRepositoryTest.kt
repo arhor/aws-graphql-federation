@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
-import com.github.arhor.aws.graphql.federation.users.data.entity.callback.UserEntityCallback
+import com.github.arhor.aws.graphql.federation.users.data.model.callback.UserEntityCallback
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ContextConfiguration

@@ -11,7 +11,7 @@ import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.useContextAttribute
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
-import com.github.arhor.aws.graphql.federation.users.data.entity.OutboxMessageEntity
+import com.github.arhor.aws.graphql.federation.users.data.model.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessageRepository
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations

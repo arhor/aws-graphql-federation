@@ -1,13 +1,13 @@
 package com.github.arhor.aws.graphql.federation.comments.data.repository;
 
 import com.github.arhor.aws.graphql.federation.comments.config.ConfigureDatabase;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.CommentEntity;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeature;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation.PostFeatures;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeature;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeatures;
+import com.github.arhor.aws.graphql.federation.comments.data.model.CommentEntity;
+import com.github.arhor.aws.graphql.federation.comments.data.model.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.model.PostRepresentation.PostFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.model.PostRepresentation.PostFeatures;
+import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation.UserFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation.UserFeatures;
 import com.github.arhor.aws.graphql.federation.starter.core.CoreComponentsAutoConfiguration;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConfigureTestObjectMapper;
 import org.junit.jupiter.api.Tag;

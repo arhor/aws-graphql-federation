@@ -1,6 +1,6 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.PostRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.model.PostRepresentation;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;

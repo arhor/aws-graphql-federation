@@ -1,8 +1,8 @@
 package com.github.arhor.aws.graphql.federation.comments.service.impl;
 
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeature;
-import com.github.arhor.aws.graphql.federation.comments.data.entity.UserRepresentation.UserFeatures;
+import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation;
+import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation.UserFeature;
+import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation.UserFeatures;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
