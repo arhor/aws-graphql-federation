@@ -65,18 +65,18 @@ Resources:
         deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
         maxReceiveCount: 15
 
-  CreateScheduledTaskEventQueue:
+  CreateScheduledEventQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: app-events--task-scheduled--create--scheduled-tasks
+      QueueName: app-events--events-scheduled--create--scheduled-events
       RedrivePolicy:
         deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
         maxReceiveCount: 15
 
-  DeleteScheduledTaskEventQueue:
+  DeleteScheduledEventQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: app-events--task-scheduled--delete--scheduled-tasks
+      QueueName: app-events--events-scheduled--delete--scheduled-events
       RedrivePolicy:
         deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
         maxReceiveCount: 15
@@ -93,8 +93,8 @@ Resources:
         - !Ref SynchronizeCommentsOnUserDeletedEventQueue
         - !Ref SynchronizeCommentsOnPostCreatedEventQueue
         - !Ref SynchronizeCommentsOnPostDeletedEventQueue
-        - !Ref CreateScheduledTaskEventQueue
-        - !Ref CreateScheduledTaskEventQueue
+        - !Ref CreateScheduledEventQueue
+        - !Ref CreateScheduledEventQueue
       PolicyDocument:
         Statement:
           - Effect: Allow
@@ -173,24 +173,24 @@ Resources:
           - PostEvent::Deleted
       RawMessageDelivery: true
 
-  CreateScheduledTaskEventQueueSubscription:
+  CreateScheduledEventQueueSubscription:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: sqs
       TopicArn: !Ref ApplicationEventBus
-      Endpoint: !GetAtt CreateScheduledTaskEventQueue.Arn
+      Endpoint: !GetAtt CreateScheduledEventQueue.Arn
       FilterPolicy:
         x-event-type:
-          - ScheduledTaskEvent::Created
+          - ScheduledEvent::Created
       RawMessageDelivery: true
 
-  DeleteScheduledTaskEventQueueSubscription:
+  DeleteScheduledEventQueueSubscription:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: sqs
       TopicArn: !Ref ApplicationEventBus
-      Endpoint: !GetAtt DeleteScheduledTaskEventQueue.Arn
+      Endpoint: !GetAtt DeleteScheduledEventQueue.Arn
       FilterPolicy:
         x-event-type:
-          - ScheduledTaskEvent::Deleted
+          - ScheduledEvent::Deleted
       RawMessageDelivery: true

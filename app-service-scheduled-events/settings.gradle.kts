@@ -12,4 +12,4 @@ includeBuild("../lib-starter-core")
 includeBuild("../lib-starter-testing")
 includeBuild("../lib-starter-tracing")
 
-rootProject.name = "app-service-scheduled-tasks"
+rootProject.name = "app-service-scheduled-events"

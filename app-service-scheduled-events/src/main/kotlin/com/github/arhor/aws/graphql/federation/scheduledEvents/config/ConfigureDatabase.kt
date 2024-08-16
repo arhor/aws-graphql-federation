@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.scheduledTasks.config
+package com.github.arhor.aws.graphql.federation.scheduledEvents.config
 
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer
 import org.springframework.context.annotation.Bean
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @Configuration(proxyBeanMethods = false)
 @EnableJdbcAuditing(modifyOnCreate = false, dateTimeProviderRef = "currentDateTimeProvider")
-@EnableJdbcRepositories(basePackages = ["com.github.arhor.aws.graphql.federation.scheduledTasks.data.repository"])
+@EnableJdbcRepositories(basePackages = ["com.github.arhor.aws.graphql.federation.scheduledEvents.data.repository"])
 @EnableTransactionManagement
 class ConfigureDatabase {
 

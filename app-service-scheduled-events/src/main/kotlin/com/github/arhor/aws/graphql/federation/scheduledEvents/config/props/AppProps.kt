@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.scheduledTasks.config.props
+package com.github.arhor.aws.graphql.federation.scheduledEvents.config.props
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
@@ -29,10 +29,10 @@ data class AppProps(
 
         data class Source(
             @field:NotBlank
-            val createScheduledTaskEvents: String?,
+            val createScheduledEvent: String?,
 
             @field:NotBlank
-            val deleteScheduledTaskEvents: String?,
+            val deleteScheduledEvent: String?,
         )
     }
 }

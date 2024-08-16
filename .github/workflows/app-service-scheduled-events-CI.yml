@@ -1,21 +1,21 @@
-name: Scheduled Tasks service CI
+name: Scheduled Events service CI
 
 on:
   push:
     branches:
       - 'master'
     paths:
-      - '.github/workflows/app-service-scheduled-tasks-CI.yml'
+      - '.github/workflows/app-service-scheduled-events-CI.yml'
       - '.github/workflows/build-and-verify-code-coverage.yml'
-      - 'app-service-scheduled-tasks/**'
+      - 'app-service-scheduled-events/**'
       - 'lib-*/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - '.github/workflows/app-service-scheduled-tasks-CI.yml'
+      - '.github/workflows/app-service-scheduled-events-CI.yml'
       - '.github/workflows/build-and-verify-code-coverage.yml'
-      - 'app-service-scheduled-tasks/**'
+      - 'app-service-scheduled-events/**'
       - 'lib-*/**'
   workflow_dispatch:
 
@@ -24,4 +24,4 @@ jobs:
     name: Test and Build
     uses: ./.github/workflows/build-and-verify-code-coverage.yml
     with:
-      APP_SERVICE_NAME: 'app-service-scheduled-tasks'
+      APP_SERVICE_NAME: 'app-service-scheduled-events'
