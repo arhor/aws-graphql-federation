@@ -15,7 +15,7 @@ import java.util.UUID
 @Component
 class ScheduledTaskEventListener {
 
-    @SqsListener("\${app-props.aws.sqs.create-scheduled-task-event}")
+    @SqsListener("\${app-props.events.source.create-scheduled-task-events}")
     fun syncPostsOnUserCreatedEvent(
         @Payload event: ScheduledTaskEvent.Created,
         @Header(TRACING_ID_KEY) traceId: UUID,
@@ -26,7 +26,7 @@ class ScheduledTaskEventListener {
         }
     }
 
-    @SqsListener("\${app-props.aws.sqs.delete-scheduled-task-event}")
+    @SqsListener("\${app-props.events.source.delete-scheduled-task-events}")
     fun syncPostsOnUserDeletedEvent(
         @Payload event: ScheduledTaskEvent.Deleted,
         @Header(TRACING_ID_KEY) traceId: UUID,
