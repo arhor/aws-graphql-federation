@@ -21,7 +21,7 @@ on:
 
 jobs:
   test_and_build:
-    name: Test and Build
+    name: Build and Test
     uses: ./.github/workflows/build-and-verify-code-coverage.yml
     with:
       APP_SERVICE_NAME: 'app-service-comments'

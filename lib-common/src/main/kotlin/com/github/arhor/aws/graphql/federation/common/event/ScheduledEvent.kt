@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 
 sealed interface ScheduledEvent : AppEvent {
 
-    data class Created(val id: UUID, val timestamp: Instant, val type: String, val data: String) : ScheduledEvent {
+    data class Created(val id: UUID, val type: String, val data: String, val timestamp: Instant) : ScheduledEvent {
         override fun type(): String = Type.SCHEDULED_EVENT_CREATED.code
     }
 

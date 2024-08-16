@@ -10,4 +10,4 @@
         process it
       ```
 - adjust build caches on CI to work properly
-- redis for caching and storing idempotency keys
+- redis for caching and storing idempotency keys and properly handle
