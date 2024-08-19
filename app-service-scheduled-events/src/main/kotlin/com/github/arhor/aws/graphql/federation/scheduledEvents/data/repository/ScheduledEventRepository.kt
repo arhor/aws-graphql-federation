@@ -3,15 +3,15 @@ package com.github.arhor.aws.graphql.federation.scheduledEvents.data.repository
 import com.github.arhor.aws.graphql.federation.scheduledEvents.data.model.ScheduledEventEntity
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.CrudRepository
-import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.UUID
 
 interface ScheduledEventRepository : CrudRepository<ScheduledEventEntity, UUID> {
 
-    @Query(name = "ScheduledEventEntity.findEventsByReleaseTimestampBefore")
-    fun findEventsByReleaseTimestampBefore(
+    @Query(name = "ScheduledEventEntity.findEventsByReleaseDateTimeBefore")
+    fun findEventsByReleaseDateTimeBefore(
         limit: Int,
-        before: Instant,
+        before: OffsetDateTime,
         withLock: Boolean = false,
     ): List<ScheduledEventEntity>
 }

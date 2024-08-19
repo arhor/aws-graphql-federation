@@ -8,7 +8,8 @@ import org.springframework.data.annotation.Transient
 import org.springframework.data.domain.Persistable
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
-import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 
 @Table(ScheduledEventEntity.TABLE_NAME)
@@ -24,11 +25,12 @@ data class ScheduledEventEntity @PersistenceCreator constructor(
     @Column("data")
     val data: String,
 
-    @Column("created_timestamp")
-    val createdTimestamp: Instant,
+    @Column("release_date_time")
+    val releaseDateTime: OffsetDateTime,
 
-    @Column("release_timestamp")
-    val releaseTimestamp: Instant,
+    @Column("created_date_time")
+    @CreatedDate
+    val createdDateTime: OffsetDateTime? = null,
 
     @Transient
     val shouldBePersisted: Boolean = false,

@@ -14,6 +14,8 @@ import org.springframework.retry.RetryOperations
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 
 @Service
@@ -33,8 +35,7 @@ class ScheduledEventServiceImpl(
                 event.id,
                 event.type,
                 data = event.data,
-                createdTimestamp = Instant.now(),
-                releaseTimestamp = event.timestamp,
+                releaseDateTime = event.timestamp.atOffset(ZoneOffset.UTC),
                 shouldBePersisted = true,
             )
         )
@@ -45,10 +46,10 @@ class ScheduledEventServiceImpl(
     }
 
     override fun publishMatureEvents() {
-        val scheduledEvents = scheduledEventRepository.findEventsByReleaseTimestampBefore(
+        val scheduledEvents = scheduledEventRepository.findEventsByReleaseDateTimeBefore(
             limit = 50,
-            before = Instant.now(),
-            withLock = true
+            before = OffsetDateTime.now(ZoneOffset.UTC),
+            withLock = true,
         )
         val sentEvents = ArrayList<ScheduledEventEntity>(scheduledEvents.size)
 
