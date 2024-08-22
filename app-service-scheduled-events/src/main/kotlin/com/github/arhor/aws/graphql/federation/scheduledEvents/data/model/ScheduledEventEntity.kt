@@ -17,7 +17,7 @@ import java.util.UUID
 data class ScheduledEventEntity @PersistenceCreator constructor(
     @Id
     @Column("id")
-    val id: UUID,
+    private val id: UUID,
 
     @Column("type")
     val type: String,

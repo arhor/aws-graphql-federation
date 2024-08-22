@@ -6,11 +6,12 @@ This is a pet project aimed at gaining practical experience with GraphQL Federat
 microservices architecture, where users can write posts and leave comments. The system consists of the following
 services:
 
-| Name                 | Description                                            | Status                                                                                                                     |
-|----------------------|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| **Users Service**    | Manages user information and authentication            | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-users-CI.yml/badge.svg)    |
-| **Posts Service**    | Handles the creation, updating, and retrieval of posts | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-posts-CI.yml/badge.svg)    |
-| **Comments Service** | Manages comments on posts                              | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-comments-CI.yml/badge.svg) |
+| Name                         | Description                                            | Status                                                                                                                             |
+|------------------------------|--------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| **Users Service**            | Manages user information and authentication            | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-users-CI.yml/badge.svg)            |
+| **Posts Service**            | Handles the creation, updating, and retrieval of posts | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-posts-CI.yml/badge.svg)            |
+| **Comments Service**         | Manages comments on posts                              | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-comments-CI.yml/badge.svg)         |
+| **Scheduled Events Service** | Manages scheduled events                               | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-scheduled-events-CI.yml/badge.svg) |
 
 all of which are subgraphs in the overall GraphQL federation supergraph.
 
@@ -88,6 +89,10 @@ all of which are subgraphs in the overall GraphQL federation supergraph.
     - Comments service:
     ```shell
     ./gradlew :app-comments-service:bootRun
+    ```
+    - Scheduled Events service:
+    ```shell
+    ./gradlew :app-scheduled-events-service:bootRun
     ```
 ### Gateway Setup
 
