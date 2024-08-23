@@ -6,6 +6,9 @@ inputs:
   application-name:
     description: 'Name of the service to verify'
     required: true
+  github-token:
+    description: 'Github access token'
+    required: true
 
 runs:
   using: 'composite'
@@ -43,7 +46,7 @@ runs:
       uses: madrapps/jacoco-report@v1.6.1
       with:
         paths: ${{ github.workspace }}/${{ inputs.application-name }}/build/reports/jacoco/test/jacocoTestReport.xml
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ inputs.github-token }}
         min-coverage-overall: 40
         min-coverage-changed-files: 80
         title: ${{ inputs.application-name }} code coverage

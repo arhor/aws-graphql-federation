@@ -20,8 +20,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test_and_build:
+  build-and-test:
     name: Build and Test
-    uses: ./.github/actions/build-and-verify-code-coverage.yml
+    uses: ./.github/workflows/build-and-verify-code-coverage.yml
     with:
-      APP_SERVICE_NAME: 'app-service-users'
+      application-name: 'app-service-users'
