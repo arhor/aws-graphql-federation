@@ -28,6 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -113,13 +114,9 @@ public class CommentFetcher {
         @NotNull final DgsDataFetchingEnvironment dfe,
         @NotNull final Function<T, K> extractKey
     ) {
-        final var entity = dfe.<T>getSource();
-
-        if (entity == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        final var loader = dfe.<K, V>getDataLoader(loaderType);
-
-        return loader.load(extractKey.apply(entity));
+        return Optional.ofNullable(dfe.<T>getSource())
+            .map(extractKey)
+            .map(key -> dfe.<K, V>getDataLoader(loaderType).load(key))
+            .orElseGet(() -> CompletableFuture.completedFuture(null));
     }
 }
