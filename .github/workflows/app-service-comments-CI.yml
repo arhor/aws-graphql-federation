@@ -1,21 +1,24 @@
 name: Comments service CI
 
+env:
+  APPLICATION_NAME: 'app-service-comments'
+
 on:
   push:
     branches:
       - 'master'
     paths:
-      - '.github/workflows/app-service-comments-CI.yml'
+      - '.github/workflows/${{ env.APPLICATION_NAME }}-CI.yml'
       - '.github/actions/**'
-      - 'app-service-comments/**'
+      - '${{ env.APPLICATION_NAME }}/**'
       - 'lib-*/**'
   pull_request:
     branches:
       - 'master'
     paths:
-      - '.github/workflows/app-service-comments-CI.yml'
+      - '.github/workflows/${{ env.APPLICATION_NAME }}-CI.yml'
       - '.github/actions/**'
-      - 'app-service-comments/**'
+      - '${{ env.APPLICATION_NAME }}/**'
       - 'lib-*/**'
   workflow_dispatch:
 
@@ -24,4 +27,4 @@ jobs:
     name: Build and Test
     uses: ./.github/workflows/build-and-verify-code-coverage.yml
     with:
-      application-name: 'app-service-comments'
+      application-name: ${{ env.APPLICATION_NAME }}
