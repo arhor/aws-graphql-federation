@@ -1,4 +1,4 @@
-name: Build & Code Coverage Verification
+name: Build and verify code coverage
 
 on:
   workflow_call:
