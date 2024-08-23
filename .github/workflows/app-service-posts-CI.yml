@@ -6,7 +6,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/app-service-posts-CI.yml'
-      - '.github/workflows/build-and-verify-code-coverage.yml'
+      - '.github/actions/build-and-verify-code-coverage.yml'
       - 'app-service-posts/**'
       - 'lib-*/**'
   pull_request:
@@ -14,7 +14,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/app-service-posts-CI.yml'
-      - '.github/workflows/build-and-verify-code-coverage.yml'
+      - '.github/actions/build-and-verify-code-coverage.yml'
       - 'app-service-posts/**'
       - 'lib-*/**'
   workflow_dispatch:
@@ -22,6 +22,6 @@ on:
 jobs:
   test_and_build:
     name: Build and Test
-    uses: ./.github/workflows/build-and-verify-code-coverage.yml
+    uses: ./.github/actions/build-and-verify-code-coverage.yml
     with:
       APP_SERVICE_NAME: 'app-service-posts'
