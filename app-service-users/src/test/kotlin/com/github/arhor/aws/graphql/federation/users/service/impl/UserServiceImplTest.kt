@@ -71,7 +71,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: getUserById")
+    @DisplayName("Method getUserById")
     inner class GetUserByIdTest {
         @Test
         fun `should return an existing user by id`() {
@@ -121,7 +121,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: getAllUsers")
+    @DisplayName("Method getAllUsers")
     inner class GetAllUsersTest {
         @Test
         fun `should return an expected list of users`() {
@@ -167,7 +167,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: getUserByUsernameAndPassword")
+    @DisplayName("Method getUserByUsernameAndPassword")
     inner class GetUserByUsernameAndPasswordTest {
         @Test
         fun `should return current user for a valid pair of username and password`() {
@@ -244,7 +244,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: createUser")
+    @DisplayName("Method createUser")
     inner class CreateUserTest {
         @Test
         fun `should correctly create new user entity and return DTO with assigned id`() {
@@ -315,7 +315,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: updateUser")
+    @DisplayName("Method updateUser")
     inner class UpdateUserTest {
         @Test
         fun `should save updated user state to repository when there are actual changes`() {
@@ -375,7 +375,7 @@ class UserServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: deleteUser")
+    @DisplayName("Method deleteUser")
     inner class DeleteUserTest {
         @Test
         fun `should return expected result deleting user`() {

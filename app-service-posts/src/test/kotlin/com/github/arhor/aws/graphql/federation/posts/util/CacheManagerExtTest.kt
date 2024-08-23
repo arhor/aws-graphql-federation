@@ -19,7 +19,7 @@ class CacheManagerExtTest {
     private val cache = mockk<Cache>()
 
     @Nested
-    @DisplayName("CacheManager :: get")
+    @DisplayName("Method get")
     inner class GetTest {
         @EnumSource
         @ParameterizedTest

@@ -14,7 +14,7 @@ class OutboxMessageEntityCallbackTest {
     private val outboxMessageEntityCallback = OutboxMessageEntityCallback()
 
     @Nested
-    @DisplayName("OutboxMessageEntityCallback :: onBeforeConvert")
+    @DisplayName("Method onBeforeConvert")
     inner class OnBeforeConvertTest {
         @Test
         fun `should assign id to the entity if it is missing`() {

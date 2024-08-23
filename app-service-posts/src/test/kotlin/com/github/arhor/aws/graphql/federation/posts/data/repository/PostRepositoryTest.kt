@@ -36,7 +36,7 @@ class PostRepositoryTest : RepositoryTestBase() {
     private lateinit var tagRepository: TagRepository
 
     @Nested
-    @DisplayName("PostRepository :: findPageByTagsContaining")
+    @DisplayName("Method findPageByTagsContaining")
     inner class FindPageByTagsContainingTest {
         @Test
         fun `should return list containing expected posts data`() {
@@ -83,7 +83,7 @@ class PostRepositoryTest : RepositoryTestBase() {
     }
 
     @Nested
-    @DisplayName("PostRepository :: countByTagsContaining")
+    @DisplayName("Method countByTagsContaining")
     inner class CountByTagsContainingTest {
         @Test
         fun `should return one when there is only one post exists containing all required tags`() {
@@ -120,7 +120,7 @@ class PostRepositoryTest : RepositoryTestBase() {
     }
 
     @Nested
-    @DisplayName("PostRepository :: findAllByUserIdIn")
+    @DisplayName("Method findAllByUserIdIn")
     inner class FindAllByUserIdInTest {
         @Test
         fun `should return list containing expected posts data`() {

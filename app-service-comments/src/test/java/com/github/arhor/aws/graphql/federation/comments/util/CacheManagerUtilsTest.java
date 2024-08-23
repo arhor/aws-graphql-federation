@@ -21,7 +21,7 @@ class CacheManagerUtilsTest {
     private final Cache cache = mock();
 
     @Nested
-    @DisplayName("CacheManager :: get")
+    @DisplayName("Method get")
     class GetTest {
         @EnumSource
         @ParameterizedTest

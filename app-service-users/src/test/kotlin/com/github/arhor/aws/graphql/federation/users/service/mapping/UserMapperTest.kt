@@ -36,7 +36,7 @@ class UserMapperTest {
     private lateinit var userMapper: UserMapper
 
     @Nested
-    @DisplayName("UserMapper :: mapToEntity")
+    @DisplayName("Method mapToEntity")
     inner class MapToEntityTest {
         @Test
         fun `should map CreateUserInput instance to UserEntity without exceptions`() {
@@ -65,7 +65,7 @@ class UserMapperTest {
     }
 
     @Nested
-    @DisplayName("UserMapper :: mapToResult")
+    @DisplayName("Method mapToResult")
     inner class MapToResultTest {
         @Test
         fun `should map UserEntity instance to User without exceptions`() {
@@ -102,7 +102,7 @@ class UserMapperTest {
     }
 
     @Nested
-    @DisplayName("UserMapper :: mapToCurrentUser")
+    @DisplayName("Method mapToCurrentUser")
     inner class MapToCurrentUserTest {
         @Test
         fun `should correctly map user with authorities to CurrentUser object`() {

@@ -24,7 +24,7 @@ class PostEventProcessorTest {
     }
 
     @Nested
-    @DisplayName("PostEventProcessor :: processPostCreatedEvents")
+    @DisplayName("Method processPostCreatedEvents")
     inner class ProcessPostCreatedEventsTest {
         @Test
         fun `should publish PostEvent#Created using PostEventPublisher instance`() {
@@ -40,7 +40,7 @@ class PostEventProcessorTest {
     }
 
     @Nested
-    @DisplayName("PostEventProcessor :: processPostDeletedEvents")
+    @DisplayName("Method processPostDeletedEvents")
     inner class ProcessPostDeletedEventsTest {
         @Test
         fun `should publish PostEvent#Deleted using PostEventPublisher instance`() {

@@ -29,7 +29,7 @@ class TagServiceImplTest {
     }
 
     @Nested
-    @DisplayName("TagService :: getTagsByPostIds")
+    @DisplayName("Method getTagsByPostIds")
     inner class GetTagsByPostIdsTest {
         @Test
         fun `should return expected map when postIds is not empty calling TagRepository`() {

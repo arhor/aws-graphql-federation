@@ -72,7 +72,7 @@ class OutboxMessageServiceImplTest {
     }
 
     @Nested
-    @DisplayName("OutboxMessageService :: storeAsOutboxMessage")
+    @DisplayName("Method storeAsOutboxMessage")
     inner class StoreAsOutboxMessageTest {
         @MethodSource(USER_EVENTS_METHOD_SOURCE)
         @ParameterizedTest

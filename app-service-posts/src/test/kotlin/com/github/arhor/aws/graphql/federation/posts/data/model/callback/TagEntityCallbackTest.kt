@@ -13,7 +13,7 @@ class TagEntityCallbackTest {
     private val tagEntityCallback = TagEntityCallback()
 
     @Nested
-    @DisplayName("TagEntityCallback :: onBeforeConvert")
+    @DisplayName("Method onBeforeConvert")
     inner class OnBeforeConvertTest {
         @Test
         fun `should assign id to the entity if it is missing`() {

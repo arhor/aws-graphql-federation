@@ -77,7 +77,7 @@ class PostServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: getPostById")
+    @DisplayName("Method getPostById")
     inner class GetPostByIdTest {
         @Test
         fun `should return expected Post when PostEntity exists by passed ID`() {
@@ -124,7 +124,7 @@ class PostServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: getPostPage")
+    @DisplayName("Method getPostPage")
     inner class GetPostsTest {
         @Test
         fun `should expected page when posts exist without any filters`() {
@@ -222,7 +222,7 @@ class PostServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: getPostsByUserIds")
+    @DisplayName("Method getPostsByUserIds")
     inner class GetPostsByUserIdsTest {
         @Test
         fun `should return expected posts grouped by user id when they exist in the repository`() {
@@ -268,7 +268,7 @@ class PostServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: createPost")
+    @DisplayName("Method createPost")
     inner class CreatePostTest {
         @Test
         fun `should successfully create new post publishing PostEvent#Created to the application`() {
@@ -339,7 +339,7 @@ class PostServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: updatePost")
+    @DisplayName("Method updatePost")
     inner class UpdatePostTest {
         @Test
         fun `should throw EntityNotFoundException when specified post does not exist`() {
@@ -546,7 +546,7 @@ class PostServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: deletePost")
+    @DisplayName("Method deletePost")
     inner class DeletePostTest {
         @Test
         fun `should successfully delete existing post publishing PostEvent#Deleted to the application`() {
@@ -594,7 +594,7 @@ class PostServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: togglePostLike")
+    @DisplayName("Method togglePostLike")
     inner class TogglePostLikeTest {
         @Test
         fun `should create like on the post from the given acting user`() {

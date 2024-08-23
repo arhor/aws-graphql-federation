@@ -17,7 +17,7 @@ class PostMapperImplTest {
     private val postMapper = PostMapperImpl()
 
     @Nested
-    @DisplayName("PostMapper :: mapToEntity")
+    @DisplayName("Method mapToEntity")
     inner class MapToEntityTest {
         @Test
         fun `should correctly map CreatePostInput with empty tags to PostEntity`() {
@@ -67,7 +67,7 @@ class PostMapperImplTest {
     }
 
     @Nested
-    @DisplayName("PostMapper :: mapToPost")
+    @DisplayName("Method mapToPost")
     inner class MapToPostTest {
         @Test
         fun `should correctly map PostEntity to Post`() {
@@ -93,7 +93,7 @@ class PostMapperImplTest {
     }
 
     @Nested
-    @DisplayName("PostMapper :: mapToPostPageFromEntity")
+    @DisplayName("Method mapToPostPageFromEntity")
     inner class MapToPostPageFromEntityTest {
         @Test
         fun `should correctly map PostEntity to PostPage`() {

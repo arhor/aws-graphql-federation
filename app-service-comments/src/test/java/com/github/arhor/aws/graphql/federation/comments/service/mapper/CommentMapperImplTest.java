@@ -32,7 +32,7 @@ class CommentMapperImplTest {
     private CommentMapper commentMapper;
 
     @Nested
-    @DisplayName("CommentMapper :: mapToEntity")
+    @DisplayName("Method mapToEntity")
     class MapToEntityTest {
         @Test
         void should_correctly_map_create_comment_input_dto_to_entity() {
@@ -61,7 +61,7 @@ class CommentMapperImplTest {
     }
 
     @Nested
-    @DisplayName("CommentMapper :: mapToDto")
+    @DisplayName("Method mapToDto")
     class MapToDtoTest {
         @Test
         void should_correctly_map_comment_entity_to_dto() {

@@ -23,7 +23,7 @@ import org.springframework.test.context.ContextConfiguration
 class AuthRepositoryTest : RepositoryTestBase() {
 
     @Nested
-    @DisplayName("AuthRepository :: findAllByUserIdIn")
+    @DisplayName("Method findAllByUserIdIn")
     inner class FindAllByUserIdInTest {
         @Test
         fun `should return map with non-empty list of authority names fetching authorities for a given user`() {
@@ -78,7 +78,7 @@ class AuthRepositoryTest : RepositoryTestBase() {
     }
 
     @Nested
-    @DisplayName("AuthRepository :: findByName")
+    @DisplayName("Method findByName")
     inner class FindByNameTest {
         @EnumSource
         @ParameterizedTest

@@ -24,7 +24,7 @@ class UserEventProcessorTest {
     }
 
     @Nested
-    @DisplayName("UserEventProcessor :: processUserCreatedEvents")
+    @DisplayName("Method processUserCreatedEvents")
     inner class ProcessUserCreatedEventsTest {
         @Test
         fun `should publish UserEvent#Created using UserEventPublisher instance`() {
@@ -40,7 +40,7 @@ class UserEventProcessorTest {
     }
 
     @Nested
-    @DisplayName("UserEventProcessor :: processUserDeletedEvents")
+    @DisplayName("Method processUserDeletedEvents")
     inner class ProcessUserDeletedEventsTest {
         @Test
         fun `should publish UserEvent#Deleted using UserEventPublisher instance`() {
