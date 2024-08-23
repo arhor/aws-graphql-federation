@@ -6,7 +6,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/app-service-scheduled-events-CI.yml'
-      - '.github/actions/build-and-verify-code-coverage.yml'
+      - '.github/actions/**'
       - 'app-service-scheduled-events/**'
       - 'lib-*/**'
   pull_request:
@@ -14,7 +14,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/app-service-scheduled-events-CI.yml'
-      - '.github/actions/build-and-verify-code-coverage.yml'
+      - '.github/actions/**'
       - 'app-service-scheduled-events/**'
       - 'lib-*/**'
   workflow_dispatch:

@@ -6,7 +6,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/app-service-comments-CI.yml'
-      - '.github/actions/build-and-verify-code-coverage.yml'
+      - '.github/actions/**'
       - 'app-service-comments/**'
       - 'lib-*/**'
   pull_request:
@@ -14,7 +14,7 @@ on:
       - 'master'
     paths:
       - '.github/workflows/app-service-comments-CI.yml'
-      - '.github/actions/build-and-verify-code-coverage.yml'
+      - '.github/actions/**'
       - 'app-service-comments/**'
       - 'lib-*/**'
   workflow_dispatch:
@@ -24,4 +24,4 @@ jobs:
     name: Build and Test
     uses: ./.github/workflows/build-and-verify-code-coverage.yml
     with:
-      application-name: 'app-service-posts'
+      application-name: 'app-service-comments'

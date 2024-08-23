@@ -18,7 +18,7 @@ jobs:
       - name: Build service
         uses: ./.github/actions/build-service-action
         with:
-          application-name: 'app-service-comments'
+          application-name: ${{ inputs.application-name }}
 
   verify-code-coverage:
     name: Code Coverage Verification
