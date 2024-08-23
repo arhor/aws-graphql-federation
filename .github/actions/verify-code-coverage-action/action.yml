@@ -14,7 +14,7 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Gradle environment
-      uses: ./.github/actions/setup-gradle-action
+      uses: ./.github/actions/setup-gradle-env-action
 
     - name: Download compiled classes and JaCoCo exec
       uses: actions/download-artifact@v4

@@ -11,7 +11,7 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Gradle environment
-      uses: ./.github/actions/setup-gradle-action
+      uses: ./.github/actions/setup-gradle-env-action
 
     - name: Build service
       run: ./gradlew :${{ inputs.application-name }}:buildNeeded
