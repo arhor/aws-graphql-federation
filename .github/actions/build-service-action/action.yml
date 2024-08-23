@@ -1,0 +1,43 @@
+name: 'Build service'
+
+description: 'Builds specified service'
+
+inputs:
+  application-name:
+    description: 'Name of the service to build'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'corretto'
+        cache: gradle
+
+    - uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Build service
+      run: ./gradlew :${{ inputs.application-name }}:buildNeeded
+      shell: bash
+
+    - name: Upload compiled classes and JaCoCo exec
+      uses: actions/upload-artifact@v4
+      with:
+        name: build
+        path: |
+          ${{ github.workspace }}/${{ inputs.application-name }}/build/classes
+          ${{ github.workspace }}/${{ inputs.application-name }}/build/jacoco
+        retention-days: 1
