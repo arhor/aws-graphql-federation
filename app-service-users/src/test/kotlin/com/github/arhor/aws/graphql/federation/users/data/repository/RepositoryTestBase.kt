@@ -37,9 +37,6 @@ abstract class RepositoryTestBase {
     @Autowired
     protected lateinit var userRepository: UserRepository
 
-    @Autowired
-    protected lateinit var outboxMessageRepository: OutboxMessageRepository
-
     protected fun createAndSaveTestUser(authorities: Set<AuthRef> = emptySet()): UserEntity =
         userRepository.save(
             UserEntity(

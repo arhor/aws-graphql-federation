@@ -7,6 +7,6 @@ import java.util.UUID
 
 interface OutboxMessageRepository : CrudRepository<OutboxMessageEntity, UUID> {
 
-    @Query(name = "OutboxMessageEntity.dequeueOldest")
-    fun dequeueOldest(messageType: String, messagesNum: Int): List<OutboxMessageEntity>
+    @Query(name = "OutboxMessageEntity.findOldestMessagesWithLock")
+    fun findOldestMessagesWithLock(type: String, limit: Int): List<OutboxMessageEntity>
 }

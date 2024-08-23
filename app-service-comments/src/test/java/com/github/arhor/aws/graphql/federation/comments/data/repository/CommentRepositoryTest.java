@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommentRepositoryTest extends RepositoryTestBase {
 
     @Nested
-    @DisplayName("CommentRepository :: findAllByUserIdIn")
+    @DisplayName("Method findAllByUserIdIn")
     class FindAllByUserIdInTest {
         @Test
         void should_return_expected_list_of_comments_by_user_ids() {
@@ -82,7 +82,7 @@ public class CommentRepositoryTest extends RepositoryTestBase {
     }
 
     @Nested
-    @DisplayName("CommentRepository :: findAllByPrntIdNullAndPostIdIn")
+    @DisplayName("Method findAllByPrntIdNullAndPostIdIn")
     class FindAllByPrntIdNullAndPostIdInTest {
         @Test
         void should_return_expected_list_of_top_level_comments_by_post_ids() {
@@ -135,7 +135,7 @@ public class CommentRepositoryTest extends RepositoryTestBase {
     }
 
     @Nested
-    @DisplayName("CommentRepository :: countCommentsByPostIds")
+    @DisplayName("Method countCommentsByPostIds")
     class CountCommentsByPostIdsTest {
         @Test
         void should_return_expected_number_of_comments_for_a_given_post_ids() {

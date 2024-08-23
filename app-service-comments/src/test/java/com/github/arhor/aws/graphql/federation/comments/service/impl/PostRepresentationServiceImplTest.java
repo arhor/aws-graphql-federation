@@ -61,7 +61,7 @@ class PostRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: findPostsRepresentationsInBatch")
+    @DisplayName("Method findPostsRepresentationsInBatch")
     class FindPostRepresentationTest {
         @Test
         void should_return_expected_post_when_it_exists_by_id() {
@@ -131,7 +131,7 @@ class PostRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: createPostRepresentation")
+    @DisplayName("Method createPostRepresentation")
     class CreatePostRepresentationTest {
         @Test
         void should_call_postRepository_save_only_once_with_the_same_idempotencyKey() {
@@ -162,7 +162,7 @@ class PostRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: deletePostRepresentation")
+    @DisplayName("Method deletePostRepresentation")
     class DeletePostRepresentationTest {
         @Test
         void should_call_postRepository_deleteById_only_once_with_the_same_idempotencyKey() {
@@ -185,7 +185,7 @@ class PostRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("PostService :: togglePostComments")
+    @DisplayName("Method togglePostComments")
     class SwitchPostCommentsTest {
         @Test
         void should_disable_comments_for_a_given_post_when_they_were_enabled() {

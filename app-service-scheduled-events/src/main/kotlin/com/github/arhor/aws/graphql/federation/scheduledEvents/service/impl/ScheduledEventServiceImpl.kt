@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.retry.RetryOperations
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
@@ -47,9 +46,8 @@ class ScheduledEventServiceImpl(
 
     override fun publishMatureEvents() {
         val scheduledEvents = scheduledEventRepository.findEventsByReleaseDateTimeBefore(
-            limit = 50,
             before = OffsetDateTime.now(ZoneOffset.UTC),
-            withLock = true,
+            limit = 50,
         )
         val sentEvents = ArrayList<ScheduledEventEntity>(scheduledEvents.size)
 
@@ -70,7 +68,7 @@ class ScheduledEventServiceImpl(
         scheduledEventRepository.deleteAll(sentEvents)
     }
 
-    private fun tryPublishToSns(event: ScheduledEvent.Published, traceId: UUID, idempotencyKey: UUID): Boolean {
+    private fun tryPublishToSns(event: ScheduledEvent, traceId: UUID, idempotencyKey: UUID): Boolean {
         val notification = SnsNotification(
             event,
             event.attributes(
@@ -84,7 +82,7 @@ class ScheduledEventServiceImpl(
             }
             true
         } catch (e: Exception) {
-            logger.error("Scheduled event publication failed, ID: '{}'", event.id, e)
+            logger.error("Event {} publication failed: {}", event.type(), event, e)
             false
         }
     }

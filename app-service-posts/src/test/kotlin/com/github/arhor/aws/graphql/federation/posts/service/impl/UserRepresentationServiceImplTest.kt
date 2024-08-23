@@ -49,7 +49,7 @@ class UserRepresentationServiceImplTest {
 
 
     @Nested
-    @DisplayName("UserService :: findUsersRepresentationsInBatch")
+    @DisplayName("Method findUsersRepresentationsInBatch")
     inner class FindUserRepresentationTest {
         @Test
         fun `should return expected user when it exists by id`() {
@@ -93,7 +93,7 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: createUserRepresentation")
+    @DisplayName("Method createUserRepresentation")
     inner class CreateUserRepresentationTest {
         @Test
         fun `should call userRepository save only once with the same idempotencyKey`() {
@@ -116,7 +116,7 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: deleteUserRepresentation")
+    @DisplayName("Method deleteUserRepresentation")
     inner class DeleteUserRepresentationTest {
         @Test
         fun `should call userRepository deleteById only once with the same idempotencyKey`() {
@@ -134,7 +134,7 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: toggleUserPosts")
+    @DisplayName("Method toggleUserPosts")
     inner class SwitchUserPostsTest {
         @Test
         fun `should call userRepository#save when there is update applied to the user`() {

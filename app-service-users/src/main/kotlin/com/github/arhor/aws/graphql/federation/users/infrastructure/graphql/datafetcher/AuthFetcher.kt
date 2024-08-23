@@ -18,8 +18,8 @@ class AuthFetcher {
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Authorities)
     fun userAuthorities(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
+        val source = dfe.getSource<User>() ?: return CompletableFuture.completedFuture(null)
         val loader = dfe.getDataLoader<UUID, List<String>>(AuthBatchLoader::class.java)
-        val source = dfe.getSource<User>()
 
         return loader.load(source.id)
     }

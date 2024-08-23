@@ -67,7 +67,7 @@ class CommentServiceImplTest {
     }
 
     @Nested
-    @DisplayName("CommentService :: getCommentsReplies")
+    @DisplayName("Method getCommentsReplies")
     class GetCommentsRepliesTest {
         @Test
         void should_return_comments_grouped_by_prnt_id() {
@@ -131,7 +131,7 @@ class CommentServiceImplTest {
     }
 
     @Nested
-    @DisplayName("CommentService :: getCommentsByUserIds")
+    @DisplayName("Method getCommentsByUserIds")
     class GetCommentsByUserIdsMethodTest {
         @Test
         void should_return_comments_grouped_by_user_id() {
@@ -195,7 +195,7 @@ class CommentServiceImplTest {
     }
 
     @Nested
-    @DisplayName("CommentService :: getCommentsByPostIds")
+    @DisplayName("Method getCommentsByPostIds")
     class GetCommentsByPostIdsMethodTest {
         @Test
         void should_return_comments_grouped_by_post_id() {
@@ -259,7 +259,7 @@ class CommentServiceImplTest {
     }
 
     @Nested
-    @DisplayName("CommentService :: createComment")
+    @DisplayName("Method createComment")
     class CreateCommentMethodTest {
         @Test
         void should_create_comment_and_return_it_in_the_result() {
@@ -312,7 +312,7 @@ class CommentServiceImplTest {
     }
 
     @Nested
-    @DisplayName("CommentService :: updateComment")
+    @DisplayName("Method updateComment")
     class UpdateCommentMethodTest {
         @Test
         void should_throw_EntityNotFoundException_when_comment_does_not_exist_by_id() {
@@ -393,7 +393,7 @@ class CommentServiceImplTest {
     }
 
     @Nested
-    @DisplayName("CommentService :: deleteComment")
+    @DisplayName("Method deleteComment")
     class DeleteCommentMethodTest {
         @Test
         void should_return_result_with_success_true_when_comment_is_deleted() {

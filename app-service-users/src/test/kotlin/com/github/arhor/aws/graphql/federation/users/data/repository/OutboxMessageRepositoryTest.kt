@@ -1,42 +1,68 @@
 package com.github.arhor.aws.graphql.federation.users.data.repository
 
-import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.github.arhor.aws.graphql.federation.users.data.model.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.users.data.model.callback.OutboxMessageEntityCallback
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.support.TransactionTemplate
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 @ContextConfiguration(classes = [OutboxMessageEntityCallback::class])
 class OutboxMessageRepositoryTest : RepositoryTestBase() {
 
+    @Autowired
+    private lateinit var outboxMessageRepository: OutboxMessageRepository
+
+    @Autowired
+    private lateinit var transactionManager: PlatformTransactionManager
+
+    @AfterEach
+    fun cleanUpDatabase() {
+        outboxMessageRepository.deleteAll()
+    }
+
     @Test
-    fun `should deque existing outbox events removing them from the DB`() {
+    fun `should read outbox events with lock preventing them to be red by other transactions`() {
         // Given
         val expectedEventType = "test-event"
         val expectedSizeOfBatch = 5
         val expectedEventsAtAll = expectedSizeOfBatch * 2
+        val transactionTemplate = TransactionTemplate(transactionManager, TestConcurrentTransactionDefinition)
 
-        val outboxEvents = outboxMessageRepository.saveAll(
-            (1..expectedEventsAtAll).map {
-                OutboxMessageEntity(
-                    type = "test-event",
-                    data = emptyMap(),
-                    traceId = TEST_1_UUID_VAL,
-                )
+        transactionTemplate.executeWithoutResult {
+            outboxMessageRepository.saveAll(
+                (1..expectedEventsAtAll).map {
+                    OutboxMessageEntity(
+                        type = "test-event",
+                        data = emptyMap(),
+                        traceId = ZERO_UUID_VAL,
+                    )
+                }
+            )
+        }
+
+        // When
+        val (outboxEvents1, outboxEvents2) = transactionTemplate.executeConcurrently(
+            task(runThenWait = 2.0.seconds) {
+                outboxMessageRepository.findOldestMessagesWithLock(expectedEventType, expectedSizeOfBatch)
+            },
+            task(waitThenRun = 0.5.seconds) {
+                outboxMessageRepository.findOldestMessagesWithLock(expectedEventType, expectedSizeOfBatch)
             }
         )
 
-        // When
-        val allOutboxEventsBefore = outboxMessageRepository.findAll()
-        val outboxEvents1 = outboxMessageRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
-        val outboxEvents2 = outboxMessageRepository.dequeueOldest(expectedEventType, expectedSizeOfBatch)
-        val allOutboxEventsAfter = outboxMessageRepository.findAll()
-
         // Then
-        assertThat(allOutboxEventsBefore)
-            .containsExactlyElementsOf(outboxEvents)
-
         assertThat(outboxEvents1)
             .hasSize(expectedSizeOfBatch)
 
@@ -45,8 +71,24 @@ class OutboxMessageRepositoryTest : RepositoryTestBase() {
 
         assertThat(outboxEvents1)
             .doesNotContainAnyElementsOf(outboxEvents2)
+    }
 
-        assertThat(allOutboxEventsAfter)
-            .isEmpty()
+    private fun <T> task(waitThenRun: Duration? = null, runThenWait: Duration? = null, job: () -> T): () -> T = {
+        waitThenRun?.toJavaDuration()?.run(Thread::sleep)
+        val result = job.invoke()
+        runThenWait?.toJavaDuration()?.run(Thread::sleep)
+        result
+    }
+
+    private fun <T> TransactionTemplate.executeConcurrently(vararg jobs: () -> T): List<T> =
+        Executors.newVirtualThreadPerTaskExecutor().use { executor ->
+            jobs.map { job -> Callable { execute { job() } } }
+                .let { executor.invokeAll(it, 10, TimeUnit.SECONDS) }
+                .map { it.get() }
+        }
+
+    private object TestConcurrentTransactionDefinition : TransactionDefinition {
+        override fun getIsolationLevel() = TransactionDefinition.ISOLATION_READ_COMMITTED
+        override fun getPropagationBehavior() = TransactionDefinition.PROPAGATION_REQUIRES_NEW
     }
 }

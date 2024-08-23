@@ -59,7 +59,7 @@ class UserRepresentationServiceImplTest {
 
 
     @Nested
-    @DisplayName("UserService :: findUsersRepresentationsInBatch")
+    @DisplayName("Method findUsersRepresentationsInBatch")
     class FindUserRepresentationTest {
         @Test
         void should_return_expected_user_when_it_exists_by_id() {
@@ -129,7 +129,7 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: createUserRepresentation")
+    @DisplayName("Method createUserRepresentation")
     class CreateUserRepresentationTest {
         @Test
         void should_call_userRepository_save_only_once_with_the_same_idempotencyKey() {
@@ -156,7 +156,7 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: deleteUserRepresentation")
+    @DisplayName("Method deleteUserRepresentation")
     class DeleteUserRepresentationTest {
         @Test
         void should_call_userRepository_deleteById_only_once_with_the_same_idempotencyKey() {
@@ -179,7 +179,7 @@ class UserRepresentationServiceImplTest {
     }
 
     @Nested
-    @DisplayName("UserService :: toggleUserComments")
+    @DisplayName("Method toggleUserComments")
     class SwitchUserCommentsTest {
         @Test
         void should_disable_comments_for_a_given_post_when_they_were_enabled() {

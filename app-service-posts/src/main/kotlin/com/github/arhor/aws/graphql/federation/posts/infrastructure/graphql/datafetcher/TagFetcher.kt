@@ -18,8 +18,8 @@ class TagFetcher {
 
     @DgsData(parentType = POST.TYPE_NAME, field = POST.Tags)
     fun postTags(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<String>> {
+        val source = dfe.getSource<Post>() ?: return CompletableFuture.completedFuture(null)
         val loader = dfe.getDataLoader<UUID, List<String>>(TagBatchLoader::class.java)
-        val source = dfe.getSource<Post>()
 
         return loader.load(source.id)
     }

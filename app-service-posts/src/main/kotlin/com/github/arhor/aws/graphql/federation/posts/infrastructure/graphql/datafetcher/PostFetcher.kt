@@ -40,8 +40,8 @@ class PostFetcher(
 
     @DgsData(parentType = USER.TYPE_NAME, field = USER.Posts)
     fun userPosts(dfe: DgsDataFetchingEnvironment): CompletableFuture<List<Post>> {
+        val source = dfe.getSource<User>() ?: return CompletableFuture.completedFuture(null)
         val loader = dfe.getDataLoader<UUID, List<Post>>(PostBatchLoader::class.java)
-        val source = dfe.getSource<User>()
 
         return loader.load(source.id)
     }

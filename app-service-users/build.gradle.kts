@@ -68,6 +68,7 @@ dependencies {
     implementation("com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
     implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.postgresql:postgresql")

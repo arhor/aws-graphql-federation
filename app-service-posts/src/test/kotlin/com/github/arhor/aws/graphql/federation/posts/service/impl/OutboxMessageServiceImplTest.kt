@@ -17,7 +17,9 @@ import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.useContextAttribute
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
+import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.junit5.MockKExtension
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -26,8 +28,10 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -35,6 +39,7 @@ import org.springframework.retry.RetryCallback
 import org.springframework.retry.RetryOperations
 import java.util.stream.Stream
 
+@ExtendWith(MockKExtension::class)
 class OutboxMessageServiceImplTest {
 
     private val appProps = AppProps(
@@ -63,8 +68,18 @@ class OutboxMessageServiceImplTest {
         sns,
     )
 
+    @AfterEach
+    fun `confirm that all mocked dependencies interactions were verified`() {
+        confirmVerified(
+            objectMapper,
+            outboxMessageRepository,
+            snsRetryOperations,
+            sns,
+        )
+    }
+
     @Nested
-    @DisplayName("OutboxMessageService :: storeAsOutboxMessage")
+    @DisplayName("Method storeAsOutboxMessage")
     inner class StoreAsOutboxMessageTest {
         @MethodSource(POST_EVENTS_METHOD_SOURCE)
         @ParameterizedTest
@@ -97,7 +112,7 @@ class OutboxMessageServiceImplTest {
     }
 
     @Nested
-    @DisplayName("OutboxMessageService :: releaseOutboxMessagesOfType")
+    @DisplayName("Method releaseOutboxMessagesOfType")
     inner class ReleaseOutboxMessagesOfTypeTest {
         @MethodSource(POST_EVENTS_METHOD_SOURCE)
         @ParameterizedTest
@@ -124,24 +139,23 @@ class OutboxMessageServiceImplTest {
             val actualSnsTopicName = slot<String>()
             val actualNotification = slot<SnsNotification<*>>()
 
-            every { outboxMessageRepository.dequeueOldest(any(), any()) } returns messages
+            every { outboxMessageRepository.findOldestMessagesWithLock(any(), any()) } returns messages
             every { objectMapper.convertValue(any(), any<Class<PostEvent>>()) } returns event
             every { snsRetryOperations.execute<Unit, Throwable>(any()) } answers {
-                arg<RetryCallback<*, *>>(0).doWithRetry(
-                    null
-                )
+                arg<RetryCallback<*, *>>(0).doWithRetry(null)
             }
             every { sns.sendNotification(any(), any()) } just runs
+            every { outboxMessageRepository.deleteAll(any()) } just runs
 
             // When
             outboxMessageService.releaseOutboxMessagesOfType(eventType)
 
             // Then
-            verify(exactly = 1) { outboxMessageRepository.dequeueOldest(eventType.code, 50) }
+            verify(exactly = 1) { outboxMessageRepository.findOldestMessagesWithLock(eventType.code, 50) }
             verify(exactly = 1) { objectMapper.convertValue(eventData, eventType.type.java) }
             verify(exactly = 1) { snsRetryOperations.execute<Unit, Throwable>(any()) }
             verify(exactly = 1) { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) }
-
+            verify(exactly = 1) { outboxMessageRepository.deleteAll(messages) }
 
             assertThat(actualSnsTopicName.captured)
                 .isEqualTo(TEST_APPLICATION_EVENT_BUS)

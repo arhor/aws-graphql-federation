@@ -113,8 +113,12 @@ public class CommentFetcher {
         @NotNull final DgsDataFetchingEnvironment dfe,
         @NotNull final Function<T, K> extractKey
     ) {
-        var loader = dfe.<K, V>getDataLoader(loaderType);
-        var entity = dfe.<T>getSource();
+        final var entity = dfe.<T>getSource();
+
+        if (entity == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        final var loader = dfe.<K, V>getDataLoader(loaderType);
 
         return loader.load(extractKey.apply(entity));
     }

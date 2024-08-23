@@ -70,6 +70,7 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
     implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.postgresql:postgresql")

@@ -14,6 +14,7 @@ import com.github.arhor.aws.graphql.federation.users.data.repository.OutboxMessa
 import com.github.arhor.aws.graphql.federation.users.service.OutboxMessageService
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
+import org.slf4j.LoggerFactory
 import org.springframework.retry.RetryOperations
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
@@ -22,7 +23,7 @@ import java.util.UUID
 
 @Service
 class OutboxMessageServiceImpl(
-    private val appProps: AppProps,
+    appProps: AppProps,
     private val objectMapper: ObjectMapper,
     private val outboxMessageRepository: OutboxMessageRepository,
     private val snsRetryOperations: RetryOperations,
@@ -45,24 +46,27 @@ class OutboxMessageServiceImpl(
 
     @Transactional
     override fun releaseOutboxMessagesOfType(eventType: UserEvent.Type) {
-        val outboxMessages =
-            outboxMessageRepository.dequeueOldest(
-                messageType = eventType.code,
-                messagesNum = DEFAULT_EVENTS_BATCH_SIZE,
-            )
+        val outboxMessages = outboxMessageRepository.findOldestMessagesWithLock(
+            type = eventType.code,
+            limit = DEFAULT_EVENTS_BATCH_SIZE,
+        )
+        val sentMessages = ArrayList<OutboxMessageEntity>(outboxMessages.size)
 
         for (message in outboxMessages) {
             val event = objectMapper.convertValue(message.data, eventType.type.java)
-
-            publishToSns(
+            val isSuccess = tryPublishToSns(
                 event = event,
                 traceId = message.traceId,
                 idempotencyKey = message.id!!,
             )
+            if (isSuccess) {
+                sentMessages.add(message)
+            }
         }
+        outboxMessageRepository.deleteAll(sentMessages)
     }
 
-    private fun publishToSns(event: UserEvent, traceId: UUID, idempotencyKey: UUID) {
+    private fun tryPublishToSns(event: UserEvent, traceId: UUID, idempotencyKey: UUID): Boolean {
         val notification = SnsNotification(
             event,
             event.attributes(
@@ -70,12 +74,19 @@ class OutboxMessageServiceImpl(
                 IDEMPOTENT_KEY to idempotencyKey.toString(),
             )
         )
-        snsRetryOperations.execute<Unit, Throwable> {
-            sns.sendNotification(appEventsTopicName, notification)
+        return try {
+            snsRetryOperations.execute<Unit, Throwable> {
+                sns.sendNotification(appEventsTopicName, notification)
+            }
+            true
+        } catch (e: Exception) {
+            logger.error("Event {} publication failed: {}", event.type(), event, e)
+            false
         }
     }
 
     companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
         private const val DEFAULT_EVENTS_BATCH_SIZE = 50
 
         private object OutboxMessageDataTypeRef : TypeReference<Map<String, Any?>>()
