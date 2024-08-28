@@ -28,8 +28,8 @@ class UserEventListenerTest extends EventListenerTestBase {
 
     @DynamicPropertySource
     static void registerDynamicProperties(final DynamicPropertyRegistry registry) {
-        registry.add("app-props.aws.sqs.sync-comments-on-user-created-event", () -> USER_CREATED_TEST_QUEUE);
-        registry.add("app-props.aws.sqs.sync-comments-on-user-deleted-event", () -> USER_DELETED_TEST_QUEUE);
+        registry.add("app-props.events.source.sync-comments-on-user-created-event", () -> USER_CREATED_TEST_QUEUE);
+        registry.add("app-props.events.source.sync-comments-on-user-deleted-event", () -> USER_DELETED_TEST_QUEUE);
     }
 
     @BeforeAll
