@@ -47,8 +47,8 @@ dgs:
       enabled: true
 
 app-props:
-  aws:
-    sqs:
+  events:
+    source:
       sync-comments-on-user-created-event: \${APP_PROPS_AWS_SQS_SYNC_COMMENTS_ON_USER_CREATED_EVENT}
       sync-comments-on-user-deleted-event: \${APP_PROPS_AWS_SQS_SYNC_COMMENTS_ON_USER_DELETED_EVENT}
       sync-comments-on-post-created-event: \${APP_PROPS_AWS_SQS_SYNC_COMMENTS_ON_POST_CREATED_EVENT}

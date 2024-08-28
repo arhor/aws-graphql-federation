@@ -40,8 +40,8 @@ private typealias OutboxEventData = TypeReference<Map<String, Any?>>
 class OutboxMessageServiceImplTest {
 
     private val appProps = AppProps(
-        aws = AppProps.Aws(
-            sns = AppProps.Aws.Sns(
+        events = AppProps.Events(
+            target = AppProps.Events.Target(
                 appEvents = TEST_USER_EVENTS
             )
         ),

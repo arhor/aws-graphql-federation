@@ -1,7 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
@@ -84,8 +83,8 @@ class UserEventListenerTest : SqsListenerTestBase() {
         @JvmStatic
         @DynamicPropertySource
         fun registerDynamicProperties(registry: DynamicPropertyRegistry) = with(registry) {
-            add(AppProps.Aws.Sqs.SYNC_POSTS_ON_USER_CREATED_EVENT) { USER_CREATED_TEST_QUEUE }
-            add(AppProps.Aws.Sqs.SYNC_POSTS_ON_USER_DELETED_EVENT) { USER_DELETED_TEST_QUEUE }
+            add("app-props.events.source.sync-posts-on-user-created-event") { USER_CREATED_TEST_QUEUE }
+            add("app-props.events.source.sync-posts-on-user-deleted-event") { USER_DELETED_TEST_QUEUE }
         }
 
         @JvmStatic

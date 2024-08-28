@@ -28,7 +28,7 @@ class ScheduledEventServiceImpl(
 
     private val appEventsTopicName = appProps.events!!.target!!.appEvents!!
 
-    override fun storeCreatedScheduledEvent(event: ScheduledEvent.Created) {
+    override fun storeScheduledEvent(event: ScheduledEvent.Created) {
         scheduledEventRepository.save(
             ScheduledEventEntity(
                 event.id,
@@ -40,7 +40,7 @@ class ScheduledEventServiceImpl(
         )
     }
 
-    override fun clearCreatedScheduledEvent(event: ScheduledEvent.Deleted) {
+    override fun clearScheduledEvent(event: ScheduledEvent.Deleted) {
         scheduledEventRepository.deleteById(event.id)
     }
 

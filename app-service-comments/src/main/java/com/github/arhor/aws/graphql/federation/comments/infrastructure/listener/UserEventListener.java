@@ -22,7 +22,7 @@ public class UserEventListener {
 
     private final UserRepresentationService userRepresentationService;
 
-    @SqsListener("${app-props.aws.sqs.sync-comments-on-user-created-event}")
+    @SqsListener("${app-props.events.source.sync-comments-on-user-created-event}")
     public void syncCommentsOnUserCreatedEvent(
         @Payload final UserEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId,
@@ -37,7 +37,7 @@ public class UserEventListener {
         );
     }
 
-    @SqsListener("${app-props.aws.sqs.sync-comments-on-user-deleted-event}")
+    @SqsListener("${app-props.events.source.sync-comments-on-user-deleted-event}")
     public void syncCommentsOnUserDeletedEvent(
         @Payload final UserEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId,

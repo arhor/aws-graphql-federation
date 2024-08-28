@@ -30,7 +30,7 @@ class OutboxMessageServiceImpl(
     private val sns: SnsOperations,
 ) : OutboxMessageService {
 
-    private val appEventsTopicName = appProps.aws!!.sns!!.appEvents!!
+    private val appEventsTopicName = appProps.events!!.target!!.appEvents!!
 
     @Trace
     @Transactional(propagation = Propagation.MANDATORY)

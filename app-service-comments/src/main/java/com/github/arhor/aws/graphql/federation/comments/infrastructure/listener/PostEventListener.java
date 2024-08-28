@@ -22,7 +22,7 @@ public class PostEventListener {
 
     private final PostRepresentationService postRepresentationService;
 
-    @SqsListener("${app-props.aws.sqs.sync-comments-on-post-created-event}")
+    @SqsListener("${app-props.events.source.sync-comments-on-post-created-event}")
     public void syncCommentsOnPostCreatedEvent(
         @Payload final PostEvent.Created event,
         @Header(TRACING_ID_KEY) final UUID traceId,
@@ -38,7 +38,7 @@ public class PostEventListener {
         );
     }
 
-    @SqsListener("${app-props.aws.sqs.sync-comments-on-post-deleted-event}")
+    @SqsListener("${app-props.events.source.sync-comments-on-post-deleted-event}")
     public void syncCommentsOnPostDeletedEvent(
         @Payload final PostEvent.Deleted event,
         @Header(TRACING_ID_KEY) final UUID traceId,

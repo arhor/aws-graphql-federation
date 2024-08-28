@@ -1,7 +1,6 @@
 package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
@@ -19,7 +18,7 @@ class UserEventListener(
     private val userRepresentationService: UserRepresentationService,
 ) {
 
-    @SqsListener("\${${AppProps.Aws.Sqs.SYNC_POSTS_ON_USER_CREATED_EVENT}}")
+    @SqsListener("\${app-props.events.source.sync-posts-on-user-created-event}")
     fun syncPostsOnUserCreatedEvent(
         @Payload event: UserEvent.Created,
         @Header(TRACING_ID_KEY) traceId: UUID,
@@ -33,7 +32,7 @@ class UserEventListener(
         }
     }
 
-    @SqsListener("\${${AppProps.Aws.Sqs.SYNC_POSTS_ON_USER_DELETED_EVENT}}")
+    @SqsListener("\${app-props.events.source.sync-posts-on-user-deleted-event}")
     fun syncPostsOnUserDeletedEvent(
         @Payload event: UserEvent.Deleted,
         @Header(TRACING_ID_KEY) traceId: UUID,

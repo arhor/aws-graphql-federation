@@ -16,18 +16,18 @@ import java.math.BigDecimal
 data class AppProps(
     @field:Valid
     @field:NotNull
-    val aws: Aws?,
+    val events: Events?,
 
     @field:Valid
     @field:NotNull
     val retry: Retry?,
 ) {
-    data class Aws(
+    data class Events(
         @field:Valid
         @field:NotNull
-        val sns: Sns?,
+        val target: Target?,
     ) {
-        data class Sns(
+        data class Target(
             @field:NotBlank
             val appEvents: String?,
         )

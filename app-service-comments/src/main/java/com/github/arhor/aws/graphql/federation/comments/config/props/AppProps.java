@@ -12,18 +12,18 @@ import org.springframework.validation.annotation.Validated;
 public record AppProps(
     @Valid
     @NotNull
-    Aws aws,
+    Events events,
 
     @NotNull
     @Min(0)
     Integer retryAttempts
 ) {
-    public record Aws(
+    public record Events(
         @Valid
         @NotNull
-        Sqs sqs
+        Source source
     ) {
-        public record Sqs(
+        public record Source(
             @NotBlank
             String syncCommentsOnPostCreatedEvent,
 

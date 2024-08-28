@@ -43,11 +43,11 @@ import java.util.stream.Stream
 class OutboxMessageServiceImplTest {
 
     private val appProps = AppProps(
-        aws = AppProps.Aws(
-            sns = AppProps.Aws.Sns(
+        events = AppProps.Events(
+            target = AppProps.Events.Target(
                 appEvents = TEST_APPLICATION_EVENT_BUS
             ),
-            sqs = AppProps.Aws.Sqs(
+            source = AppProps.Events.Source(
                 syncPostsOnUserCreatedEvent = "test-user-created-events",
                 syncPostsOnUserDeletedEvent = "test-user-deleted-events",
             )

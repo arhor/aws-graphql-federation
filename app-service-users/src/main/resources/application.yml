@@ -47,11 +47,9 @@ dgs:
       enabled: true
 
 app-props:
-  aws:
-    sns:
+  events:
+    target:
       app-events: \${APP_PROPS_AWS_SNS_APP_EVENTS}
-  jwt:
-    expire: \${JWT_EXPIRE}
   retry:
     min-interval: \${RETRY_MIN_INTERVAL:1000}
     max-interval: \${RETRY_MAX_INTERVAL:10000}

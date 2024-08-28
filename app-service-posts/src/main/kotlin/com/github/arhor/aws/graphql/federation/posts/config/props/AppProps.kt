@@ -14,52 +14,37 @@ import org.springframework.validation.annotation.Validated
 import java.math.BigDecimal
 
 @Validated
-@ConfigurationProperties(prefix = AppProps.PATH)
+@ConfigurationProperties(prefix = "app-props")
 data class AppProps(
     @field:Valid
     @field:NotNull
-    val aws: Aws?,
+    val events: Events?,
 
     @field:Valid
     @field:NotNull
     val retry: Retry?,
 ) {
-    data class Aws(
+    data class Events(
         @field:Valid
         @field:NotNull
-        val sns: Sns?,
+        val target: Target?,
 
         @field:Valid
         @field:NotNull
-        val sqs: Sqs?,
+        val source: Source?,
     ) {
-        data class Sns(
+        data class Target(
             @field:NotBlank
             val appEvents: String?,
-        ) {
-            companion object {
-                const val PATH = "${AppProps.Aws.PATH}.sns"
-                const val APP_EVENTS = "$PATH.app-events"
-            }
-        }
+        )
 
-        data class Sqs(
+        data class Source(
             @field:NotBlank
             val syncPostsOnUserCreatedEvent: String?,
 
             @field:NotBlank
             val syncPostsOnUserDeletedEvent: String?,
-        ) {
-            companion object {
-                const val PATH = "${AppProps.Aws.PATH}.sqs"
-                const val SYNC_POSTS_ON_USER_CREATED_EVENT = "$PATH.sync-posts-on-user-created-event"
-                const val SYNC_POSTS_ON_USER_DELETED_EVENT = "$PATH.sync-posts-on-user-deleted-event"
-            }
-        }
-
-        companion object {
-            const val PATH = "${AppProps.PATH}.aws"
-        }
+        )
     }
 
     data class Retry(
@@ -78,17 +63,5 @@ data class AppProps(
         @field:DecimalMin((1.2).toString())
         @field:DecimalMax((3.0).toString())
         val multiplier: BigDecimal = (1.5).toBigDecimal(),
-    ) {
-        companion object {
-            const val PATH = "${AppProps.PATH}.retry"
-            const val MIN_INTERVAL = "$PATH.min-interval"
-            const val MAX_INTERVAL = "$PATH.max-interval"
-            const val MAX_ATTEMPTS = "$PATH.max-attempts"
-            const val MULTIPLIER = "$PATH.multiplier"
-        }
-    }
-
-    companion object {
-        const val PATH = "app-props"
-    }
+    )
 }

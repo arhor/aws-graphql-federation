@@ -47,10 +47,10 @@ dgs:
       enabled: true
 
 app-props:
-  aws:
-    sns:
+  events:
+    target:
       app-events: \${APP_PROPS_AWS_SNS_APP_EVENTS}
-    sqs:
+    source:
       sync-posts-on-user-created-event: \${APP_PROPS_AWS_SQS_SYNC_POSTS_ON_USER_CREATED_EVENT}
       sync-posts-on-user-deleted-event: \${APP_PROPS_AWS_SQS_SYNC_POSTS_ON_USER_DELETED_EVENT}
   retry:

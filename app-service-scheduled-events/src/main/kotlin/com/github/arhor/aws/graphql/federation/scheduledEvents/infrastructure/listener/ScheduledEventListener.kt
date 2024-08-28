@@ -25,7 +25,7 @@ class ScheduledEventListener(
         @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
-            scheduledEventService.storeCreatedScheduledEvent(event)
+            scheduledEventService.storeScheduledEvent(event)
         }
     }
 
@@ -36,7 +36,7 @@ class ScheduledEventListener(
         @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
-            scheduledEventService.clearCreatedScheduledEvent(event)
+            scheduledEventService.clearScheduledEvent(event)
         }
     }
 }
