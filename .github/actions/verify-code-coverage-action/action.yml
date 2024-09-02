@@ -58,4 +58,4 @@ runs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         allow-empty: true
-        base-path: ./${{ inputs.application-name }}
+        base-path: ${{ github.workspace }}/${{ inputs.application-name }}
