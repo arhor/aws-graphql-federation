@@ -56,5 +56,6 @@ runs:
     - name: Coveralls
       uses: coverallsapp/github-action@v2
       with:
+        github-token: ${{ inputs.github-token }}
         allow-empty: true
         base-path: ${{ github.workspace }}/${{ inputs.application-name }}
