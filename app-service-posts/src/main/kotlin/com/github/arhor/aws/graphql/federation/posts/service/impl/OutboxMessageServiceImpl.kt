@@ -50,7 +50,12 @@ class OutboxMessageServiceImpl(
             type = eventType.code,
             limit = 50,
         )
-        val sentMessages = ArrayList<OutboxMessageEntity>(outboxMessages.size)
+        val numberOfMessages = outboxMessages.size.also {
+            if (it == 0) {
+                return
+            }
+        }
+        val sentMessages = ArrayList<OutboxMessageEntity>(numberOfMessages)
 
         for (message in outboxMessages) {
             val event = objectMapper.convertValue(message.data, eventType.type.java)
