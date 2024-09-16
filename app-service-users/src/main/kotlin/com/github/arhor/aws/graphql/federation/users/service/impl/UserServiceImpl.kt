@@ -98,10 +98,8 @@ class UserServiceImpl(
                 operation = Operation.CREATE,
             )
         }
-        val auth = authRepository.findByName(PredefinedAuthority.ROLE_USER)
-
         return input.copy(password = passwordEncoder.encode(input.password))
-            .let { userMapper.mapToEntity(it, auth) }
+            .let { userMapper.mapToEntity(it, auth = authRepository.findByName(PredefinedAuthority.ROLE_USER)) }
             .let { userRepository.save(it) }
             .also { eventPublisher.publishEvent(UserEvent.Created(id = it.id!!)) }
             .let { userMapper.mapToResult(it) }

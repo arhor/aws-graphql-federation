@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component
 @Component
 class UserMapperImpl : UserMapper {
 
-    override fun mapToEntity(input: CreateUserInput, defaultAuth: AuthEntity) = UserEntity(
+    override fun mapToEntity(input: CreateUserInput, auth: AuthEntity) = UserEntity(
         username = input.username,
         password = input.password,
-        authorities = setOf(AuthRef.from(defaultAuth)),
+        authorities = setOf(AuthRef.from(auth)),
     )
 
     override fun mapToResult(entity: UserEntity): User = User(

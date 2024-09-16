@@ -7,7 +7,7 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.Cre
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 
 interface UserMapper {
-    fun mapToEntity(input: CreateUserInput, defaultAuth: AuthEntity): UserEntity
+    fun mapToEntity(input: CreateUserInput, auth: AuthEntity): UserEntity
     fun mapToResult(entity: UserEntity): User
     fun mapToCurrentUser(user: UserEntity, authorities: Iterable<AuthEntity>): CurrentUser
 }

@@ -49,7 +49,12 @@ class ScheduledEventServiceImpl(
             before = OffsetDateTime.now(ZoneOffset.UTC),
             limit = 50,
         )
-        val sentEvents = ArrayList<ScheduledEventEntity>(scheduledEvents.size)
+        val numberOfEvents = scheduledEvents.size.also {
+            if (it == 0) {
+                return
+            }
+        }
+        val sentEvents = ArrayList<ScheduledEventEntity>(numberOfEvents)
 
         for (event in scheduledEvents) {
             val isSuccess = tryPublishToSns(
