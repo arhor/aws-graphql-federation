@@ -3,8 +3,9 @@ package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.service.OutboxMessageService
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
-import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import org.springframework.transaction.event.TransactionPhase
+import org.springframework.transaction.event.TransactionalEventListener
 
 @Trace
 @Component
@@ -12,7 +13,7 @@ class PostEventListener(
     private val outboxMessageService: OutboxMessageService,
 ) {
 
-    @EventListener(PostEvent::class)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     fun onPostEvent(event: PostEvent) {
         outboxMessageService.storeAsOutboxMessage(event)
     }
