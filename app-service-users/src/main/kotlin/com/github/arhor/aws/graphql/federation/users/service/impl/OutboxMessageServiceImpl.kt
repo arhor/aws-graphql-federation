@@ -67,17 +67,6 @@ class OutboxMessageServiceImpl(
         outboxMessageRepository.deleteAllById(sentMessageIds)
     }
 
-    /**
-     * Creates a Callable instance,
-     * Prepares the data to be published:
-     * - converts an outbox message data to a proper event object
-     * - creates a SnsNotification instance with necessary headers
-     * - associates the notification with corresponding message ID
-     * Tries to publish an SNS notification.
-     *
-     * @return corresponding outbox message ID on success, `null` otherwise
-     * @return a pair of outbox message ID and SNS notification to be published
-     */
     private fun createSnsPublicationTask(message: OutboxMessageEntity, type: Class<out UserEvent>): Callable<UUID?> {
         val messageId = message.id
         val messageData = message.data
