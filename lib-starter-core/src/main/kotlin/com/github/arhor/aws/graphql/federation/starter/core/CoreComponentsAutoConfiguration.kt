@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.boot.ApplicationRunner
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 import org.springframework.boot.web.context.WebServerApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -19,7 +20,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Optional
 
 @ComponentScan
-@AutoConfiguration
+@AutoConfiguration(before = [TaskExecutionAutoConfiguration::class])
 class CoreComponentsAutoConfiguration {
 
     @Bean
