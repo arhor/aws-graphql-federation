@@ -134,11 +134,11 @@ class OutboxMessageServiceImplTest {
 
             every { outboxMessageRepository.findOldestMessagesWithLock(any(), any()) } returns messages
             every { objectMapper.convertValue(any(), any<Class<UserEvent>>()) } returns event
-            every { snsRetryOperations.execute<Unit, Throwable>(any()) } answers {
+            every { snsRetryOperations.execute<Any, Throwable>(any()) } answers {
                 arg<RetryCallback<*, *>>(0).doWithRetry(null)
             }
             every { sns.sendNotification(any(), any()) } just runs
-            every { outboxMessageRepository.deleteAll(any()) } just runs
+            every { outboxMessageRepository.deleteAllById(any()) } just runs
 
             // When
             outboxMessageService.releaseOutboxMessagesOfType(eventType)
@@ -148,7 +148,7 @@ class OutboxMessageServiceImplTest {
             verify(exactly = 1) { objectMapper.convertValue(eventData, eventType.type.java) }
             verify(exactly = 1) { snsRetryOperations.execute<Unit, Throwable>(any()) }
             verify(exactly = 1) { sns.sendNotification(capture(actualSnsTopicName), capture(actualNotification)) }
-            verify(exactly = 1) { outboxMessageRepository.deleteAll(messages) }
+            verify(exactly = 1) { outboxMessageRepository.deleteAllById(messages.map { it.id }) }
 
             assertThat(actualSnsTopicName.captured)
                 .isEqualTo(TEST_USER_EVENTS)
