@@ -139,6 +139,8 @@ all of which are subgraphs in the overall GraphQL federation supergraph.
     ```sh
     ./start-supergraph
     ```
+   - add `--build` argument if you want to rebuild services (and Docker images as well)
+   - add `--test` argument if you want to
 
 ## Contributing
 

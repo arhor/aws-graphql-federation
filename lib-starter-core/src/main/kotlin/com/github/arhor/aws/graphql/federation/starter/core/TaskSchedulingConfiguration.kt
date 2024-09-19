@@ -2,6 +2,7 @@ package com.github.arhor.aws.graphql.federation.starter.core
 
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.task.TaskSchedulingProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerCustomizer
 import org.springframework.context.annotation.Bean
@@ -10,6 +11,7 @@ import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler
 import java.util.stream.Stream
 
 @Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(TaskSchedulingProperties::class)
 class TaskSchedulingConfiguration(
     private val properties: TaskSchedulingProperties,
     private val customizer: ObjectProvider<SimpleAsyncTaskSchedulerCustomizer>,
