@@ -2,6 +2,8 @@ package com.github.arhor.aws.graphql.federation.users.service.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.arhor.aws.graphql.federation.common.async
+import com.github.arhor.aws.graphql.federation.common.await
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.common.use
 import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
@@ -23,9 +25,8 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
-import java.util.concurrent.Future
 import java.util.concurrent.Semaphore
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.seconds
 
 private typealias PublishingData = Pair<UUID, SnsNotification<UserEvent>>
 
@@ -56,18 +57,19 @@ class OutboxMessageServiceImpl(
 
     @Transactional
     override fun releaseOutboxMessagesOfType(eventType: UserEvent.Type) {
-        val sentMessageIds =
-            outboxMessageRepository
-                .findOldestMessagesWithLock(type = eventType.code, limit = MESSAGES_BATCH_SIZE)
-                .also { if (it.isEmpty()) return }
-                .map { createSnsPublicationTask(message = it, type = eventType.type.java) }
-                .let { vExecutor.invokeAll(it, MESSAGE_PUB_TIMEOUT, TimeUnit.SECONDS) }
-                .mapNotNull { if (it.state() == Future.State.SUCCESS) it.resultNow() else null }
-
-        outboxMessageRepository.deleteAllById(sentMessageIds)
+        outboxMessageRepository
+            .findOldestMessagesWithLock(type = eventType.code, limit = MESSAGES_BATCH_SIZE)
+            .also { if (it.isEmpty()) return }
+            .map { createSnsNotification(message = it, type = eventType.type.java) }
+            .async(parallelism = CONCURRENT_MESSAGES, timeout = 10.seconds, action = ::tryPublishSnsNotification)
+            .await(ignoreExceptions = true)
+            .let { sentMessageIds -> outboxMessageRepository.deleteAllById(sentMessageIds) }
     }
 
-    private fun createSnsPublicationTask(message: OutboxMessageEntity, type: Class<out UserEvent>): Callable<UUID?> {
+    private fun createSnsNotification(
+        message: OutboxMessageEntity,
+        type: Class<out UserEvent>,
+    ): Pair<UUID, SnsNotification<UserEvent>> {
         val messageId = message.id
         val messageData = message.data
 
@@ -83,6 +85,25 @@ class OutboxMessageServiceImpl(
                 )
             )
         }
+        return messageId to notification
+    }
+
+    private fun tryPublishSnsNotification(data: Pair<UUID, SnsNotification<UserEvent>>): UUID? {
+        val (messageId, notification) = data
+        return try {
+            snsRetryOperations.execute<Unit, Throwable> {
+                sns.sendNotification(appEventsTopicName, notification)
+            }
+            messageId
+        } catch (e: Exception) {
+            logger.error("SNS notification '{}' publication failed: {}", notification, messageId, e)
+            null
+        }
+    }
+
+    private fun createSnsPublicationTask(message: OutboxMessageEntity, type: Class<out UserEvent>): Callable<UUID?> {
+        val (messageId, notification) = createSnsNotification(message, type)
+
         return Callable {
             try {
                 semaphore.use {
