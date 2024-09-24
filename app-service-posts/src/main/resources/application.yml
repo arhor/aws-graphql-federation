@@ -38,12 +38,17 @@ spring:
         secret-key: \${AWS_SECRET_KEY}
       region:
         static: \${AWS_REGION}
+  threads:
+    virtual:
+      enabled: true
 
 dgs:
   graphql:
     graphiql:
       enabled: false
     preparsedDocumentProvider:
+      enabled: true
+    virtualthreads:
       enabled: true
 
 app-props:

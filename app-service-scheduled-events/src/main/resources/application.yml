@@ -35,6 +35,9 @@ spring:
         secret-key: \${AWS_SECRET_KEY}
       region:
         static: \${AWS_REGION}
+  threads:
+    virtual:
+      enabled: true
 
 app-props:
   events:

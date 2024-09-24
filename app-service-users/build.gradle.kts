@@ -81,6 +81,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.retry:spring-retry")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-slf4j")
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation(platform(":lib-platform"))
