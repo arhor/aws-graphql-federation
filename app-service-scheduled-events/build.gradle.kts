@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.test.logger)
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.deps)
@@ -50,10 +49,6 @@ configurations {
 }
 
 dependencies {
-    kapt(platform(":lib-platform"))
-    kapt("org.springframework:spring-context-indexer")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
-
     implementation(platform(":lib-platform"))
     implementation(":lib-common")
     implementation(":lib-starter-core")

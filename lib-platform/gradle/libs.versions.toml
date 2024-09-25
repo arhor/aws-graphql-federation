@@ -1,7 +1,7 @@
 [versions]
 java = "21"
-kotlin = "1.9.25"
-spring-boot = "3.3.3"
+kotlin = "2.0.20"
+spring-boot = "3.3.4"
 spring-cloud-aws = "3.1.0"
 spring-dependency-management = "1.1.6"
 spring-mockk = "4.0.2"
@@ -22,10 +22,15 @@ archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref
 bom-graphql-dgs = { module = "com.netflix.graphql.dgs:graphql-dgs-platform-dependencies", version.ref = "graphql-dgs-bom" }
 bom-spring-cloud-aws = { module = "io.awspring.cloud:spring-cloud-aws-dependencies", version.ref = "spring-cloud-aws" }
 
+
+jetbrains-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+jetbrains-kotlin-stdlib-core = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+jetbrains-kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+jetbrains-kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+
 [plugins]
 test-logger = { id = "com.adarshr.test-logger", version.ref = "gradle-test-logger" }
 dgs-codegen = { id = "com.netflix.dgs.codegen", version.ref = "graphql-dgs-codegen" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }

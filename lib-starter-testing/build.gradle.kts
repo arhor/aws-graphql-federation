@@ -5,7 +5,6 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
     alias(libs.plugins.test.logger)
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.spring.boot) apply false
     alias(libs.plugins.spring.deps)

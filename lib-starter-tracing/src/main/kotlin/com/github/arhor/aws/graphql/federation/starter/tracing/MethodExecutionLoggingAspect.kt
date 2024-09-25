@@ -10,6 +10,7 @@ import org.slf4j.event.Level
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletionStage
+import kotlin.time.Duration
 
 @Aspect
 @Component
@@ -42,20 +43,20 @@ class MethodExecutionLoggingAspect(
                         is CompletionStage<*> -> {
                             result.whenComplete { success, failure ->
                                 if (failure != null) {
-                                    logger.failure(methodName, failure)
+                                    logger.failure(methodName, failure, elapsedTime)
                                 } else {
-                                    logger.success(methodName, success)
+                                    logger.success(methodName, success, elapsedTime)
                                 }
                             }
                         }
 
                         else -> {
-                            logger.success(methodName, result)
+                            logger.success(methodName, result, elapsedTime)
                             result
                         }
                     }
                 } catch (error: Throwable) {
-                    logger.failure(methodName, error)
+                    logger.failure(methodName, error, elapsedTime)
                     throw error
                 }
             }
@@ -64,13 +65,11 @@ class MethodExecutionLoggingAspect(
         }
     }
 
-    context(Timer)
-    private fun Logger.success(methodName: String, value: Any?) {
+    private fun Logger.success(methodName: String, value: Any?, elapsedTime: Duration) {
         atLevel(logLevel).log(EXECUTION_CLOSE, methodName, value, elapsedTime)
     }
 
-    context(Timer)
-    private fun Logger.failure(methodName: String, error: Throwable) {
+    private fun Logger.failure(methodName: String, error: Throwable, elapsedTime: Duration) {
         atLevel(logLevel).log(EXECUTION_ERROR, methodName, error, elapsedTime)
     }
 
