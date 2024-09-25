@@ -48,7 +48,7 @@ class CoreComponentsAutoConfiguration {
         logger.info("Local access URL: http://localhost:{}{}", port, path)
     }
 
-
+    // TODO: consider [org.springframework.core.task.support.CompositeTaskDecorator]
     @Bean
     fun parentContextTaskDecorator(): TaskDecorator = TaskDecorator {
         val attributes = RequestContextHolder.getRequestAttributes()
