@@ -47,13 +47,7 @@ abstract class Features<F : Features<F, E>, E : Enum<E>>(
         return items.hashCode()
     }
 
-//    companion object {
-//        @JvmStatic
-//        fun <F : Enum<F>> of(item: F, vararg items: F): Features<F> =
-//            Features(items = EnumSet.of(item, *items))
-//
-//        @JvmStatic
-//        fun <F : Enum<F>> emptyOf(type: Class<F>): Features<F> =
-//            Features(items = EnumSet.noneOf(type))
-//    }
+    override fun toString(): String {
+        return items.toString()
+    }
 }
