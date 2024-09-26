@@ -8,6 +8,7 @@ import com.netflix.graphql.dgs.exceptions.DgsException
 import com.netflix.graphql.types.errors.TypedGraphQLError
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionException
 import graphql.execution.DataFetcherExceptionHandler as DfeHandler
@@ -36,15 +37,28 @@ class GlobalDataFetchingExceptionHandler(private val delegate: DfeHandler) : Dfe
             }
 
             else -> {
-                delegate.handleException(params)
+                delegate.handleException(
+                    if (throwable == params.exception) {
+                        params
+                    } else {
+                        DfeHandlerParams.newExceptionParameters()
+                            .exception(throwable)
+                            .dataFetchingEnvironment(params.dataFetchingEnvironment)
+                            .build()
+                    }
+                )
             }
         }
 
-    private fun Throwable.unwrap(): Throwable =
-        when {
-            this is CompletionException && cause != null -> cause!!
-            else -> this
+    private fun Throwable.unwrap(): Throwable {
+        val nested = when (this) {
+            is CompletionException -> cause
+            is InvocationTargetException -> targetException
+            else -> null
         }
+        return nested ?: this
+
+    }
 
     private fun onEntityNotFoundException(e: EntityNotFoundException, params: DfeHandlerParams) =
         TypedGraphQLError.newNotFoundBuilder()

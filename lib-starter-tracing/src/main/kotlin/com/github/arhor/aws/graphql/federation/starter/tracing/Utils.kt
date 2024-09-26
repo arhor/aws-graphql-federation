@@ -1,15 +1,11 @@
 package com.github.arhor.aws.graphql.federation.starter.tracing
 
 import org.slf4j.MDC
-import org.springframework.web.context.request.RequestAttributes
-import org.springframework.web.context.request.RequestContextHolder
 import java.util.UUID
 
 fun useContextAttribute(attribute: Attributes): UUID {
     val attributeValue =
-        RequestContextHolder
-            .currentRequestAttributes()
-            .getAttribute(attribute.key, RequestAttributes.SCOPE_REQUEST)
+        MDC.get(attribute.key)
             ?: throw IllegalStateException("Attribute '${attribute.key}' has not been initialized.")
 
     return UUID.fromString(attributeValue.toString())

@@ -48,6 +48,7 @@ configurations {
 dependencies {
     implementation(platform(":lib-platform"))
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.micrometer:context-propagation")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.postgresql:postgresql")
