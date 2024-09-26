@@ -2,10 +2,7 @@ package com.github.arhor.aws.graphql.federation.users.service.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.arhor.aws.graphql.federation.common.async
-import com.github.arhor.aws.graphql.federation.common.await
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
-import com.github.arhor.aws.graphql.federation.common.use
 import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
@@ -25,7 +22,11 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
+import java.util.concurrent.Future.State
 import java.util.concurrent.Semaphore
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 private typealias PublishingData = Pair<UUID, SnsNotification<UserEvent>>
@@ -57,19 +58,18 @@ class OutboxMessageServiceImpl(
 
     @Transactional
     override fun releaseOutboxMessagesOfType(eventType: UserEvent.Type) {
-        outboxMessageRepository
+        val tasks = outboxMessageRepository
             .findOldestMessagesWithLock(type = eventType.code, limit = MESSAGES_BATCH_SIZE)
             .also { if (it.isEmpty()) return }
-            .map { createSnsNotification(message = it, type = eventType.type.java) }
-            .async(parallelism = CONCURRENT_MESSAGES, timeout = 10.seconds, action = ::tryPublishSnsNotification)
-            .await(ignoreExceptions = true)
-            .let { sentMessageIds -> outboxMessageRepository.deleteAllById(sentMessageIds) }
+            .map { createSnsPublicationTask(message = it, type = eventType.type.java) }
+
+        val futures = vExecutor.invokeAll(tasks, MESSAGE_PUB_TIMEOUT, TimeUnit.SECONDS)
+        val results = futures.filter { it.state() == State.SUCCESS }.map { it.get() }
+
+        outboxMessageRepository.deleteAllById(results)
     }
 
-    private fun createSnsNotification(
-        message: OutboxMessageEntity,
-        type: Class<out UserEvent>,
-    ): Pair<UUID, SnsNotification<UserEvent>> {
+    private fun createSnsPublicationTask(message: OutboxMessageEntity, type: Class<out UserEvent>): Callable<UUID> {
         val messageId = message.id
         val messageData = message.data
 
@@ -85,37 +85,30 @@ class OutboxMessageServiceImpl(
                 )
             )
         }
-        return messageId to notification
-    }
-
-    private fun tryPublishSnsNotification(data: Pair<UUID, SnsNotification<UserEvent>>): UUID? {
-        val (messageId, notification) = data
-        return try {
-            snsRetryOperations.execute<Unit, Throwable> {
-                sns.sendNotification(appEventsTopicName, notification)
+        return Callable {
+            semaphore.withPermit(timeout = 30.seconds) {
+                snsRetryOperations.execute<Unit, Throwable> {
+                    sns.sendNotification(appEventsTopicName, notification)
+                }
+                messageId
             }
-            messageId
-        } catch (e: Exception) {
-            logger.error("SNS notification '{}' publication failed: {}", notification, messageId, e)
-            null
         }
     }
 
-    private fun createSnsPublicationTask(message: OutboxMessageEntity, type: Class<out UserEvent>): Callable<UUID?> {
-        val (messageId, notification) = createSnsNotification(message, type)
-
-        return Callable {
-            try {
-                semaphore.use {
-                    snsRetryOperations.execute<Unit, Throwable> {
-                        sns.sendNotification(appEventsTopicName, notification)
-                    }
+    private inline fun <T> Semaphore.withPermit(timeout: Duration? = null, action: () -> T): T {
+        if (timeout != null) {
+            tryAcquire(timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS).also { acquired ->
+                if (!acquired) {
+                    throw TimeoutException("Timeout of $timeout exceeded trying to acquire semaphore")
                 }
-                messageId
-            } catch (e: Exception) {
-                logger.error("SNS notification '{}' publication failed: {}", notification, messageId, e)
-                null
             }
+        } else {
+            acquire()
+        }
+        try {
+            return action()
+        } finally {
+            release()
         }
     }
 
