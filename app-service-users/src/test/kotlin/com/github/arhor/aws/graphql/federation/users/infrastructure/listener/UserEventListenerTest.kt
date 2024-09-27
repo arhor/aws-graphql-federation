@@ -26,13 +26,13 @@ class UserEventListenerTest {
         // Given
         event: UserEvent,
     ) {
-        every { outboxMessageService.storeAsOutboxMessage(any()) } just runs
+        every { outboxMessageService.storeToOutboxMessages(any()) } just runs
 
         // When
         userEventListener.onUserEvent(event)
 
         // Then
-        verify(exactly = 1) { outboxMessageService.storeAsOutboxMessage(event) }
+        verify(exactly = 1) { outboxMessageService.storeToOutboxMessages(event) }
 
         confirmVerified(outboxMessageService)
     }

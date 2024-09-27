@@ -5,8 +5,6 @@ import com.github.arhor.aws.graphql.federation.scheduledEvents.config.props.AppP
 import com.github.arhor.aws.graphql.federation.scheduledEvents.data.model.ScheduledEventEntity
 import com.github.arhor.aws.graphql.federation.scheduledEvents.data.repository.ScheduledEventRepository
 import com.github.arhor.aws.graphql.federation.scheduledEvents.service.ScheduledEventService
-import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import io.awspring.cloud.sns.core.SnsNotification
 import io.awspring.cloud.sns.core.SnsOperations
 import org.slf4j.LoggerFactory
@@ -77,8 +75,8 @@ class ScheduledEventServiceImpl(
         val notification = SnsNotification(
             event,
             event.attributes(
-                TRACING_ID_KEY to traceId.toString(),
-                IDEMPOTENT_KEY to idempotencyKey.toString(),
+                traceId = traceId.toString(),
+                idempotencyKey = idempotencyKey.toString(),
             )
         )
         return try {

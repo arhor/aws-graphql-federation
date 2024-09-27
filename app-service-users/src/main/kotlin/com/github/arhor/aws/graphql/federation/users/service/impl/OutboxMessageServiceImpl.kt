@@ -2,12 +2,11 @@ package com.github.arhor.aws.graphql.federation.users.service.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.arhor.aws.graphql.federation.common.constants.Attributes
+import com.github.arhor.aws.graphql.federation.common.event.AppEvent
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.common.invokeAll
 import com.github.arhor.aws.graphql.federation.common.withPermit
-import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
-import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.starter.tracing.useContextAttribute
 import com.github.arhor.aws.graphql.federation.users.config.props.AppProps
@@ -28,8 +27,6 @@ import java.util.concurrent.Future.State
 import java.util.concurrent.Semaphore
 import kotlin.time.Duration.Companion.seconds
 
-private typealias PublishingData = Pair<UUID, SnsNotification<UserEvent>>
-
 @Service
 class OutboxMessageServiceImpl(
     appProps: AppProps,
@@ -41,26 +38,26 @@ class OutboxMessageServiceImpl(
 
     private val appEventsTopicName = appProps.events!!.target!!.appEvents!!
     private val vExecutor = Executors.newVirtualThreadPerTaskExecutor()
-    private val semaphore = Semaphore(CONCURRENT_MESSAGES)
+    private val semaphore = Semaphore(CONCURRENT_MESSAGES, true)
 
     @Trace
     @Transactional(propagation = Propagation.MANDATORY)
-    override fun storeAsOutboxMessage(event: UserEvent) {
+    override fun storeToOutboxMessages(event: UserEvent) {
         outboxMessageRepository.save(
             OutboxMessageEntity(
                 type = event.type(),
                 data = objectMapper.convertValue(event, outboxMessageDataTypeRef),
-                traceId = useContextAttribute(Attributes.TRACING_ID),
+                traceId = useContextAttribute(Attributes.TRACE_ID),
             )
         )
     }
 
     @Transactional
-    override fun releaseOutboxMessagesOfType(eventType: UserEvent.Type) {
+    override fun releaseOutboxMessages(limit: Int) {
         val sentMessageIds =
-            outboxMessageRepository.findOldestMessagesWithLock(type = eventType.code, limit = MESSAGES_BATCH_SIZE)
+            outboxMessageRepository.findOldestMessagesWithLock(limit)
                 .also { if (it.isEmpty()) return }
-                .map { createSnsPublicationTask(message = it, type = eventType.type.java) }
+                .map { createSnsPublicationTask(message = it) }
                 .let { vExecutor.invokeAll(tasks = it, timeout = snsPublicationTimeout) }
                 .filter { it.state() == State.SUCCESS }
                 .map { it.get() }
@@ -68,22 +65,21 @@ class OutboxMessageServiceImpl(
         outboxMessageRepository.deleteAllById(sentMessageIds)
     }
 
-    private fun createSnsPublicationTask(message: OutboxMessageEntity, type: Class<out UserEvent>): Callable<UUID> {
+    private fun createSnsPublicationTask(message: OutboxMessageEntity): Callable<UUID> {
         val messageId = message.id
         val messageData = message.data
 
         require(messageId != null)
         require(messageData.isNotEmpty())
 
-        val notification = objectMapper.convertValue(messageData, type).let {
-            SnsNotification(
-                it,
-                it.attributes(
-                    TRACING_ID_KEY to message.traceId.toString(),
-                    IDEMPOTENT_KEY to messageId.toString(),
-                )
+        val notification = SnsNotification(
+            messageData,
+            AppEvent.attributes(
+                type = message.type,
+                traceId = message.traceId.toString(),
+                idempotencyKey = messageId.toString(),
             )
-        }
+        )
         return Callable {
             semaphore.withPermit(timeout = 30.seconds) {
                 snsRetryOperations.execute<Unit, Throwable> {
@@ -99,7 +95,6 @@ class OutboxMessageServiceImpl(
         private val outboxMessageDataTypeRef = object : TypeReference<Map<String, Any?>>() {}
         private val snsPublicationTimeout = 10.seconds
 
-        private const val MESSAGES_BATCH_SIZE = 50
         private const val CONCURRENT_MESSAGES = 10
     }
 }

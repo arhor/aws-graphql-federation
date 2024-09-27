@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.IDEMPOTENT_KEY;
-import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.TRACING_ID_KEY;
+import static com.github.arhor.aws.graphql.federation.common.constants.AttributesKt.ATTR_IDEMPOTENCY_KEY;
+import static com.github.arhor.aws.graphql.federation.common.constants.AttributesKt.ATTR_TRACE_ID;
 import static com.github.arhor.aws.graphql.federation.starter.tracing.Utils.withExtendedMDC;
 
 @Trace
@@ -25,8 +25,8 @@ public class UserEventListener {
     @SqsListener("${app-props.events.source.sync-comments-on-user-created-event}")
     public void syncCommentsOnUserCreatedEvent(
         @Payload final UserEvent.Created event,
-        @Header(TRACING_ID_KEY) final UUID traceId,
-        @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
+        @Header(ATTR_TRACE_ID) final UUID traceId,
+        @Header(ATTR_IDEMPOTENCY_KEY) final UUID idempotencyKey
     ) {
         withExtendedMDC(
             traceId,
@@ -40,8 +40,8 @@ public class UserEventListener {
     @SqsListener("${app-props.events.source.sync-comments-on-user-deleted-event}")
     public void syncCommentsOnUserDeletedEvent(
         @Payload final UserEvent.Deleted event,
-        @Header(TRACING_ID_KEY) final UUID traceId,
-        @Header(IDEMPOTENT_KEY) final UUID idempotencyKey
+        @Header(ATTR_TRACE_ID) final UUID traceId,
+        @Header(ATTR_IDEMPOTENCY_KEY) final UUID idempotencyKey
     ) {
         withExtendedMDC(
             traceId,

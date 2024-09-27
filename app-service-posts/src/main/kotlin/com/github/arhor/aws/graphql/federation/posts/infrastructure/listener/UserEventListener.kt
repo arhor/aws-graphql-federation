@@ -1,9 +1,9 @@
 package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
+import com.github.arhor.aws.graphql.federation.common.constants.ATTR_IDEMPOTENCY_KEY
+import com.github.arhor.aws.graphql.federation.common.constants.ATTR_TRACE_ID
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
-import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.starter.tracing.withExtendedMDC
 import io.awspring.cloud.sqs.annotation.SqsListener
@@ -21,8 +21,8 @@ class UserEventListener(
     @SqsListener("\${app-props.events.source.sync-posts-on-user-created-event}")
     fun syncPostsOnUserCreatedEvent(
         @Payload event: UserEvent.Created,
-        @Header(TRACING_ID_KEY) traceId: UUID,
-        @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
+        @Header(ATTR_TRACE_ID) traceId: UUID,
+        @Header(ATTR_IDEMPOTENCY_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             userRepresentationService.createUserRepresentation(
@@ -35,8 +35,8 @@ class UserEventListener(
     @SqsListener("\${app-props.events.source.sync-posts-on-user-deleted-event}")
     fun syncPostsOnUserDeletedEvent(
         @Payload event: UserEvent.Deleted,
-        @Header(TRACING_ID_KEY) traceId: UUID,
-        @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
+        @Header(ATTR_TRACE_ID) traceId: UUID,
+        @Header(ATTR_IDEMPOTENCY_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             userRepresentationService.deleteUserRepresentation(

@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.IDEMPOTENT_KEY;
-import static com.github.arhor.aws.graphql.federation.starter.tracing.AttributesKt.TRACING_ID_KEY;
+import static com.github.arhor.aws.graphql.federation.common.constants.AttributesKt.ATTR_IDEMPOTENCY_KEY;
+import static com.github.arhor.aws.graphql.federation.common.constants.AttributesKt.ATTR_TRACE_ID;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS;
 
 @Tag("integration")
@@ -33,8 +33,8 @@ abstract class EventListenerTestBase {
     static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
     static final Map<String, Object> MESSAGE_HEADERS = Map.of(
-        TRACING_ID_KEY, TRACE_ID,
-        IDEMPOTENT_KEY, IDEMPOTENCY_KEY
+        ATTR_TRACE_ID, TRACE_ID,
+        ATTR_IDEMPOTENCY_KEY, IDEMPOTENCY_KEY
     );
 
     @Container

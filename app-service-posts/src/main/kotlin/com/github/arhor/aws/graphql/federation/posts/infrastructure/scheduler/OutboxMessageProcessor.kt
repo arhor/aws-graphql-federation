@@ -1,22 +1,19 @@
 package com.github.arhor.aws.graphql.federation.posts.infrastructure.scheduler
 
-import com.github.arhor.aws.graphql.federation.common.event.PostEvent
 import com.github.arhor.aws.graphql.federation.posts.service.OutboxMessageService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
 @Component
-class PostEventProcessor(
+class OutboxMessageProcessor(
     private val outboxMessageService: OutboxMessageService,
 ) {
-
     @Scheduled(cron = "\${app-props.outbox-messages-processing-cron}")
-    fun processPostCreatedEvents() {
-        outboxMessageService.releaseOutboxMessagesOfType(PostEvent.Type.POST_EVENT_CREATED)
+    fun processOutboxMessages() {
+        outboxMessageService.releaseOutboxMessages(MESSAGES_BATCH_SIZE)
     }
 
-    @Scheduled(cron = "\${app-props.outbox-messages-processing-cron}")
-    fun processPostDeletedEvents() {
-        outboxMessageService.releaseOutboxMessagesOfType(PostEvent.Type.POST_EVENT_DELETED)
+    companion object {
+        private const val MESSAGES_BATCH_SIZE = 50
     }
 }

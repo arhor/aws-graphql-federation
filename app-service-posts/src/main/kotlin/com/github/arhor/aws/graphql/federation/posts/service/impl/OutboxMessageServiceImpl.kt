@@ -2,14 +2,15 @@ package com.github.arhor.aws.graphql.federation.posts.service.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.arhor.aws.graphql.federation.common.constants.Attributes
+import com.github.arhor.aws.graphql.federation.common.event.AppEvent
 import com.github.arhor.aws.graphql.federation.common.event.PostEvent
+import com.github.arhor.aws.graphql.federation.common.invokeAll
+import com.github.arhor.aws.graphql.federation.common.withPermit
 import com.github.arhor.aws.graphql.federation.posts.config.props.AppProps
 import com.github.arhor.aws.graphql.federation.posts.data.model.OutboxMessageEntity
 import com.github.arhor.aws.graphql.federation.posts.data.repository.OutboxMessageRepository
 import com.github.arhor.aws.graphql.federation.posts.service.OutboxMessageService
-import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
-import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.starter.tracing.useContextAttribute
 import io.awspring.cloud.sns.core.SnsNotification
@@ -20,6 +21,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.Future.State
+import java.util.concurrent.Semaphore
+import kotlin.time.Duration.Companion.seconds
 
 @Service
 class OutboxMessageServiceImpl(
@@ -31,68 +37,64 @@ class OutboxMessageServiceImpl(
 ) : OutboxMessageService {
 
     private val appEventsTopicName = appProps.events!!.target!!.appEvents!!
+    private val vExecutor = Executors.newVirtualThreadPerTaskExecutor()
+    private val semaphore = Semaphore(CONCURRENT_MESSAGES, true)
 
     @Trace
     @Transactional(propagation = Propagation.MANDATORY)
-    override fun storeAsOutboxMessage(event: PostEvent) {
+    override fun storeToOutboxMessages(event: PostEvent) {
         outboxMessageRepository.save(
             OutboxMessageEntity(
                 type = event.type(),
-                data = objectMapper.convertValue(event, OutboxMessageDataTypeRef),
-                traceId = useContextAttribute(Attributes.TRACING_ID),
+                data = objectMapper.convertValue(event, outboxMessageDataTypeRef),
+                traceId = useContextAttribute(Attributes.TRACE_ID),
             )
         )
     }
 
     @Transactional
-    override fun releaseOutboxMessagesOfType(eventType: PostEvent.Type) {
-        val outboxMessages = outboxMessageRepository.findOldestMessagesWithLock(
-            type = eventType.code,
-            limit = 50,
-        )
-        val numberOfMessages = outboxMessages.size.also {
-            if (it == 0) {
-                return
-            }
-        }
-        val sentMessages = ArrayList<OutboxMessageEntity>(numberOfMessages)
+    override fun releaseOutboxMessages(limit: Int) {
+        val sentMessageIds =
+            outboxMessageRepository.findOldestMessagesWithLock(limit)
+                .also { if (it.isEmpty()) return }
+                .map { createSnsPublicationTask(message = it) }
+                .let { vExecutor.invokeAll(tasks = it, timeout = snsPublicationTimeout) }
+                .filter { it.state() == State.SUCCESS }
+                .map { it.get() }
 
-        for (message in outboxMessages) {
-            val event = objectMapper.convertValue(message.data, eventType.type.java)
-            val isSuccess = tryPublishToSns(
-                event = event,
-                traceId = message.traceId,
-                idempotencyKey = message.id!!,
-            )
-            if (isSuccess) {
-                sentMessages.add(message)
-            }
-        }
-        outboxMessageRepository.deleteAll(sentMessages)
+        outboxMessageRepository.deleteAllById(sentMessageIds)
     }
 
-    private fun tryPublishToSns(event: PostEvent, traceId: UUID, idempotencyKey: UUID): Boolean {
+    private fun createSnsPublicationTask(message: OutboxMessageEntity): Callable<UUID> {
+        val messageId = message.id
+        val messageData = message.data
+
+        require(messageId != null)
+        require(messageData.isNotEmpty())
+
         val notification = SnsNotification(
-            event,
-            event.attributes(
-                TRACING_ID_KEY to traceId.toString(),
-                IDEMPOTENT_KEY to idempotencyKey.toString(),
+            messageData,
+            AppEvent.attributes(
+                type = message.type,
+                traceId = message.traceId.toString(),
+                idempotencyKey = messageId.toString(),
             )
         )
-        return try {
-            snsRetryOperations.execute<Unit, Throwable> {
-                sns.sendNotification(appEventsTopicName, notification)
+        return Callable {
+            semaphore.withPermit(timeout = 30.seconds) {
+                snsRetryOperations.execute<Unit, Throwable> {
+                    sns.sendNotification(appEventsTopicName, notification)
+                }
+                messageId
             }
-            true
-        } catch (e: Exception) {
-            logger.error("Event {} publication failed: {}", event.type(), event, e)
-            false
         }
     }
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
+        private val outboxMessageDataTypeRef = object : TypeReference<Map<String, Any?>>() {}
+        private val snsPublicationTimeout = 10.seconds
 
-        internal object OutboxMessageDataTypeRef : TypeReference<Map<String, Any?>>()
+        private const val CONCURRENT_MESSAGES = 10
     }
 }

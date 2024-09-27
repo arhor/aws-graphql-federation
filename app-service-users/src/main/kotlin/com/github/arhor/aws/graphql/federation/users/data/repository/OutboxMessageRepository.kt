@@ -8,5 +8,5 @@ import java.util.UUID
 interface OutboxMessageRepository : CrudRepository<OutboxMessageEntity, UUID> {
 
     @Query(name = "OutboxMessageEntity.findOldestMessagesWithLock")
-    fun findOldestMessagesWithLock(type: String, limit: Int): List<OutboxMessageEntity>
+    fun findOldestMessagesWithLock(limit: Int): List<OutboxMessageEntity>
 }

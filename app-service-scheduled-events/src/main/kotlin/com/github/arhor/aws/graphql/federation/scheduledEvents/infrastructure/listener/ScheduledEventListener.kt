@@ -1,9 +1,9 @@
 package com.github.arhor.aws.graphql.federation.scheduledEvents.infrastructure.listener
 
+import com.github.arhor.aws.graphql.federation.common.constants.ATTR_IDEMPOTENCY_KEY
+import com.github.arhor.aws.graphql.federation.common.constants.ATTR_TRACE_ID
 import com.github.arhor.aws.graphql.federation.common.event.ScheduledEvent
 import com.github.arhor.aws.graphql.federation.scheduledEvents.service.ScheduledEventService
-import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.starter.tracing.withExtendedMDC
 import io.awspring.cloud.sqs.annotation.SqsListener
@@ -21,8 +21,8 @@ class ScheduledEventListener(
     @SqsListener("\${app-props.events.source.create-scheduled-event}")
     fun createScheduledEvent(
         @Payload event: ScheduledEvent.Created,
-        @Header(TRACING_ID_KEY) traceId: UUID,
-        @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
+        @Header(ATTR_TRACE_ID) traceId: UUID,
+        @Header(ATTR_IDEMPOTENCY_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             scheduledEventService.storeScheduledEvent(event)
@@ -32,8 +32,8 @@ class ScheduledEventListener(
     @SqsListener("\${app-props.events.source.delete-scheduled-event}")
     fun deleteScheduledEvent(
         @Payload event: ScheduledEvent.Deleted,
-        @Header(TRACING_ID_KEY) traceId: UUID,
-        @Header(IDEMPOTENT_KEY) idempotencyKey: UUID,
+        @Header(ATTR_TRACE_ID) traceId: UUID,
+        @Header(ATTR_IDEMPOTENCY_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             scheduledEventService.clearScheduledEvent(event)

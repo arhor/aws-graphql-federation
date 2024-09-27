@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.starter.tracing
 
+import com.github.arhor.aws.graphql.federation.common.constants.Attributes
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.web.client.RestTemplateRequestCustomizer
 import org.springframework.http.client.ClientHttpRequest
@@ -11,7 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder
 class TracingPropagationRequestCustomizer : RestTemplateRequestCustomizer<ClientHttpRequest> {
 
     override fun customize(clientRequest: ClientHttpRequest) {
-        val attributeKey = TRACING_ID_KEY
+        val attributeKey = Attributes.TRACE_ID.key
         val attributes = RequestContextHolder.currentRequestAttributes()
         val serverRequest = attributes.resolveReference(REFERENCE_REQUEST) as HttpServletRequest
 

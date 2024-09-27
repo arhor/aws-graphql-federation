@@ -35,7 +35,6 @@ class OutboxMessageRepositoryTest : RepositoryTestBase() {
     @Test
     fun `should read outbox events with lock preventing them to be red by other transactions`() {
         // Given
-        val expectedEventType = "test-event"
         val expectedSizeOfBatch = 5
         val expectedEventsAtAll = expectedSizeOfBatch * 2
         val transactionTemplate = TransactionTemplate(transactionManager, TestConcurrentTransactionDefinition)
@@ -55,10 +54,10 @@ class OutboxMessageRepositoryTest : RepositoryTestBase() {
         // When
         val (outboxEvents1, outboxEvents2) = transactionTemplate.executeConcurrently(
             task(runThenWait = 2.0.seconds) {
-                outboxMessageRepository.findOldestMessagesWithLock(expectedEventType, expectedSizeOfBatch)
+                outboxMessageRepository.findOldestMessagesWithLock(expectedSizeOfBatch)
             },
             task(waitThenRun = 0.5.seconds) {
-                outboxMessageRepository.findOldestMessagesWithLock(expectedEventType, expectedSizeOfBatch)
+                outboxMessageRepository.findOldestMessagesWithLock(expectedSizeOfBatch)
             }
         )
 

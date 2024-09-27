@@ -1,7 +1,8 @@
 package com.github.arhor.aws.graphql.federation.starter.tracing
 
+import com.github.arhor.aws.graphql.federation.common.constants.Attributes
 import org.slf4j.MDC
-import java.util.UUID
+import java.util.*
 
 fun useContextAttribute(attribute: Attributes): UUID {
     val attributeValue =
@@ -12,10 +13,11 @@ fun useContextAttribute(attribute: Attributes): UUID {
 }
 
 inline fun <T> withExtendedMDC(traceId: UUID, block: () -> T): T {
-    MDC.put(TRACING_ID_KEY, traceId.toString())
+    val attributeKey = Attributes.TRACE_ID.key
+    MDC.put(attributeKey, traceId.toString())
     try {
         return block()
     } finally {
-        MDC.remove(TRACING_ID_KEY)
+        MDC.remove(attributeKey)
     }
 }

@@ -15,6 +15,6 @@ class PostEventListener(
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     fun onPostEvent(event: PostEvent) {
-        outboxMessageService.storeAsOutboxMessage(event)
+        outboxMessageService.storeToOutboxMessages(event)
     }
 }

@@ -1,12 +1,12 @@
 package com.github.arhor.aws.graphql.federation.posts.infrastructure.listener
 
+import com.github.arhor.aws.graphql.federation.common.constants.ATTR_IDEMPOTENCY_KEY
+import com.github.arhor.aws.graphql.federation.common.constants.ATTR_TRACE_ID
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
-import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
-import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -76,8 +76,8 @@ class UserEventListenerTest : SqsListenerTestBase() {
         private val IDEMPOTENCY_KEY = TEST_2_UUID_VAL
 
         private val MESSAGE_HEADERS = mapOf(
-            TRACING_ID_KEY to TRACE_ID,
-            IDEMPOTENT_KEY to IDEMPOTENCY_KEY,
+            ATTR_TRACE_ID to TRACE_ID,
+            ATTR_IDEMPOTENCY_KEY to IDEMPOTENCY_KEY,
         )
 
         @JvmStatic
@@ -90,11 +90,8 @@ class UserEventListenerTest : SqsListenerTestBase() {
         @JvmStatic
         @BeforeAll
         fun createdTestQueues() {
-            val result1 = createdQueue(USER_CREATED_TEST_QUEUE)
-            val result2 = createdQueue(USER_DELETED_TEST_QUEUE)
-
-            println(result1)
-            println(result2)
+            createdQueue(USER_CREATED_TEST_QUEUE)
+            createdQueue(USER_DELETED_TEST_QUEUE)
         }
     }
 }
