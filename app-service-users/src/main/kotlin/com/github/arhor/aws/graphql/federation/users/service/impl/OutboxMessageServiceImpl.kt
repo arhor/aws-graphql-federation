@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.users.service.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.common.invokeAll
 import com.github.arhor.aws.graphql.federation.common.withPermit
 import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
@@ -25,7 +26,6 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future.State
 import java.util.concurrent.Semaphore
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 private typealias PublishingData = Pair<UUID, SnsNotification<UserEvent>>
@@ -61,7 +61,7 @@ class OutboxMessageServiceImpl(
             outboxMessageRepository.findOldestMessagesWithLock(type = eventType.code, limit = MESSAGES_BATCH_SIZE)
                 .also { if (it.isEmpty()) return }
                 .map { createSnsPublicationTask(message = it, type = eventType.type.java) }
-                .let { vExecutor.invokeAll(it, MESSAGE_PUB_TIMEOUT, TimeUnit.SECONDS) }
+                .let { vExecutor.invokeAll(tasks = it, timeout = SNS_PUBLICATION_TIMEOUT) }
                 .filter { it.state() == State.SUCCESS }
                 .map { it.get() }
 
@@ -96,8 +96,9 @@ class OutboxMessageServiceImpl(
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
+        private val SNS_PUBLICATION_TIMEOUT = 10.seconds
+
         private const val MESSAGES_BATCH_SIZE = 50
-        private const val MESSAGE_PUB_TIMEOUT = 10L
         private const val CONCURRENT_MESSAGES = 10
 
         private object OutboxMessageDataTypeRef : TypeReference<Map<String, Any?>>()
