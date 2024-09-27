@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.users.service.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
+import com.github.arhor.aws.graphql.federation.common.withPermit
 import com.github.arhor.aws.graphql.federation.starter.tracing.Attributes
 import com.github.arhor.aws.graphql.federation.starter.tracing.IDEMPOTENT_KEY
 import com.github.arhor.aws.graphql.federation.starter.tracing.TRACING_ID_KEY
@@ -25,8 +26,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.Future.State
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 private typealias PublishingData = Pair<UUID, SnsNotification<UserEvent>>
@@ -58,15 +57,15 @@ class OutboxMessageServiceImpl(
 
     @Transactional
     override fun releaseOutboxMessagesOfType(eventType: UserEvent.Type) {
-        val tasks = outboxMessageRepository
-            .findOldestMessagesWithLock(type = eventType.code, limit = MESSAGES_BATCH_SIZE)
-            .also { if (it.isEmpty()) return }
-            .map { createSnsPublicationTask(message = it, type = eventType.type.java) }
+        val sentMessageIds =
+            outboxMessageRepository.findOldestMessagesWithLock(type = eventType.code, limit = MESSAGES_BATCH_SIZE)
+                .also { if (it.isEmpty()) return }
+                .map { createSnsPublicationTask(message = it, type = eventType.type.java) }
+                .let { vExecutor.invokeAll(it, MESSAGE_PUB_TIMEOUT, TimeUnit.SECONDS) }
+                .filter { it.state() == State.SUCCESS }
+                .map { it.get() }
 
-        val futures = vExecutor.invokeAll(tasks, MESSAGE_PUB_TIMEOUT, TimeUnit.SECONDS)
-        val results = futures.filter { it.state() == State.SUCCESS }.map { it.get() }
-
-        outboxMessageRepository.deleteAllById(results)
+        outboxMessageRepository.deleteAllById(sentMessageIds)
     }
 
     private fun createSnsPublicationTask(message: OutboxMessageEntity, type: Class<out UserEvent>): Callable<UUID> {
@@ -92,23 +91,6 @@ class OutboxMessageServiceImpl(
                 }
                 messageId
             }
-        }
-    }
-
-    private inline fun <T> Semaphore.withPermit(timeout: Duration? = null, action: () -> T): T {
-        if (timeout != null) {
-            tryAcquire(timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS).also { acquired ->
-                if (!acquired) {
-                    throw TimeoutException("Timeout of $timeout exceeded trying to acquire semaphore")
-                }
-            }
-        } else {
-            acquire()
-        }
-        try {
-            return action()
-        } finally {
-            release()
         }
     }
 
