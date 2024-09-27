@@ -49,7 +49,7 @@ class OutboxMessageServiceImpl(
         outboxMessageRepository.save(
             OutboxMessageEntity(
                 type = event.type(),
-                data = objectMapper.convertValue(event, OutboxMessageDataTypeRef),
+                data = objectMapper.convertValue(event, outboxMessageDataTypeRef),
                 traceId = useContextAttribute(Attributes.TRACING_ID),
             )
         )
@@ -61,7 +61,7 @@ class OutboxMessageServiceImpl(
             outboxMessageRepository.findOldestMessagesWithLock(type = eventType.code, limit = MESSAGES_BATCH_SIZE)
                 .also { if (it.isEmpty()) return }
                 .map { createSnsPublicationTask(message = it, type = eventType.type.java) }
-                .let { vExecutor.invokeAll(tasks = it, timeout = SNS_PUBLICATION_TIMEOUT) }
+                .let { vExecutor.invokeAll(tasks = it, timeout = snsPublicationTimeout) }
                 .filter { it.state() == State.SUCCESS }
                 .map { it.get() }
 
@@ -96,11 +96,10 @@ class OutboxMessageServiceImpl(
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
-        private val SNS_PUBLICATION_TIMEOUT = 10.seconds
+        private val outboxMessageDataTypeRef = object : TypeReference<Map<String, Any?>>() {}
+        private val snsPublicationTimeout = 10.seconds
 
         private const val MESSAGES_BATCH_SIZE = 50
         private const val CONCURRENT_MESSAGES = 10
-
-        private object OutboxMessageDataTypeRef : TypeReference<Map<String, Any?>>()
     }
 }
