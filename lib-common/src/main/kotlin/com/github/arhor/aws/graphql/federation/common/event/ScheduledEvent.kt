@@ -6,11 +6,11 @@ import kotlin.reflect.KClass
 
 sealed interface ScheduledEvent : AppEvent {
 
-    data class Published(val id: UUID, val type: String, val data: String) : ScheduledEvent {
-        override fun type(): String = Type.SCHEDULED_EVENT_PUBLISHED.code
+    data class Publish(val id: UUID, val type: String, val data: Map<String, Any?>) : ScheduledEvent {
+        override fun type(): String = Type.SCHEDULED_EVENT_PUBLISH.code
     }
 
-    data class Created(val id: UUID, val type: String, val data: String, val timestamp: Instant) : ScheduledEvent {
+    data class Created(val id: UUID, val type: String, val data: Map<String, Any?>, val whenToPublish: Instant) : ScheduledEvent {
         override fun type(): String = Type.SCHEDULED_EVENT_CREATED.code
     }
 
@@ -19,7 +19,7 @@ sealed interface ScheduledEvent : AppEvent {
     }
 
     enum class Type(val code: String, val type: KClass<out ScheduledEvent>) {
-        SCHEDULED_EVENT_PUBLISHED("ScheduledEvent::Published", Created::class),
+        SCHEDULED_EVENT_PUBLISH("ScheduledEvent::Publish", Publish::class),
         SCHEDULED_EVENT_CREATED("ScheduledEvent::Created", Created::class),
         SCHEDULED_EVENT_DELETED("ScheduledEvent::Deleted", Deleted::class),
     }

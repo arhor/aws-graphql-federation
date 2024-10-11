@@ -7,14 +7,14 @@ import java.util.concurrent.TimeoutException
 import kotlin.time.Duration
 
 inline fun <T> Semaphore.withPermit(timeout: Duration? = null, action: () -> T): T {
-    if (timeout != null) {
+    if (timeout == null) {
+        acquire()
+    } else {
         tryAcquire(timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS).also { acquired ->
             if (was not acquired) {
                 throw TimeoutException("Timeout of $timeout exceeded trying to acquire semaphore")
             }
         }
-    } else {
-        acquire()
     }
     try {
         return action()

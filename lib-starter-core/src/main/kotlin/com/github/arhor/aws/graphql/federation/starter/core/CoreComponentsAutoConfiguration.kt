@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.starter.core
 
+import com.github.arhor.aws.graphql.federation.starter.core.time.TimeOperations
 import io.micrometer.context.ContextRegistry
 import io.micrometer.context.ContextSnapshotFactory
 import io.micrometer.context.integration.Slf4jThreadLocalAccessor
@@ -18,27 +19,12 @@ import org.springframework.core.task.support.ContextPropagatingTaskDecorator
 import org.springframework.data.auditing.DateTimeProvider
 import org.springframework.web.context.WebApplicationContext
 import java.time.Clock
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.Optional
 import java.util.function.Supplier
 
 @ComponentScan
 @AutoConfiguration(before = [TaskExecutionAutoConfiguration::class])
 class CoreComponentsAutoConfiguration {
-
-    @Bean
-    fun clockProvider(): ClockProvider = ClockProvider {
-        Clock.systemUTC()
-    }
-
-    @Bean
-    fun currentDateTimeProvider(clockProvider: ClockProvider): DateTimeProvider = DateTimeProvider {
-        val currClock = clockProvider.clock
-        val timestamp = LocalDateTime.now(currClock)
-
-        Optional.of(timestamp.truncatedTo(ChronoUnit.MILLIS))
-    }
 
     @Bean
     @Profile("dev", "!test")
@@ -49,8 +35,20 @@ class CoreComponentsAutoConfiguration {
         val port = context.webServer.port
         val path = context.servletContext?.contextPath ?: ""
 
-        logger.info("Local access URL: http://localhost:{}{}", port, path)
+        LOGGER.info("Local access URL: http://localhost:{}{}", port, path)
     }
+
+    @Bean
+    fun clockProvider(): ClockProvider =
+        ClockProvider {
+            Clock.systemUTC()
+        }
+
+    @Bean
+    fun currentDateTimeProvider(operations: TimeOperations): DateTimeProvider =
+        DateTimeProvider {
+            Optional.of(operations.currentLocalDateTime())
+        }
 
     @Bean
     fun compositeTaskDecorator(decorators: List<Supplier<TaskDecorator>>): TaskDecorator =
@@ -76,6 +74,6 @@ class CoreComponentsAutoConfiguration {
         }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
+        private val LOGGER = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 }
