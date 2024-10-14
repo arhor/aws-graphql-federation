@@ -4,9 +4,11 @@ import com.github.arhor.aws.graphql.federation.comments.data.model.CommentEntity
 import com.github.arhor.aws.graphql.federation.comments.data.model.callback.CommentEntityCallback;
 import com.github.arhor.aws.graphql.federation.comments.data.repository.mapping.CommentsNumberByPostIdResultSetExtractor;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
+import lombok.experimental.ExtensionMethod;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -22,7 +24,17 @@ import static org.assertj.core.api.Assertions.assertThat;
         CommentsNumberByPostIdResultSetExtractor.class,
     }
 )
+@ExtensionMethod(RepositoryTestExtensions.class)
 public class CommentRepositoryTest extends RepositoryTestBase {
+
+    @Autowired
+    private CommentRepository commentRepository;
+
+    @Autowired
+    private UserRepresentationRepository userRepository;
+
+    @Autowired
+    private PostRepresentationRepository postRepository;
 
     @Nested
     @DisplayName("Method findAllByUserIdIn")
@@ -30,23 +42,23 @@ public class CommentRepositoryTest extends RepositoryTestBase {
         @Test
         void should_return_expected_list_of_comments_by_user_ids() {
             // Given
-            final var user1 = createUser(ConstantsKt.getTEST_1_UUID_VAL());
-            final var user2 = createUser(ConstantsKt.getTEST_2_UUID_VAL());
-            final var user3 = createUser(ConstantsKt.getTEST_3_UUID_VAL());
+            final var user1 = userRepository.createTestUser(ConstantsKt.getTEST_1_UUID_VAL());
+            final var user2 = userRepository.createTestUser(ConstantsKt.getTEST_2_UUID_VAL());
+            final var user3 = userRepository.createTestUser(ConstantsKt.getTEST_3_UUID_VAL());
 
-            final var post1 = createPost(ConstantsKt.getOMNI_UUID_VAL());
+            final var post1 = postRepository.createTestPost(ConstantsKt.getOMNI_UUID_VAL());
 
             final var user1Comments = List.of(
-                createComment(user1, post1),
-                createComment(user1, post1)
+                commentRepository.createCommentComment(user1, post1),
+                commentRepository.createCommentComment(user1, post1)
             );
             final var user2Comments = List.of(
-                createComment(user2, post1),
-                createComment(user2, post1)
+                commentRepository.createCommentComment(user2, post1),
+                commentRepository.createCommentComment(user2, post1)
             );
             final var user3Comments = List.of(
-                createComment(user3, post1),
-                createComment(user3, post1)
+                commentRepository.createCommentComment(user3, post1),
+                commentRepository.createCommentComment(user3, post1)
             );
 
             final var expectedComments = Stream.concat(user1Comments.stream(), user2Comments.stream()).toList();
@@ -87,21 +99,21 @@ public class CommentRepositoryTest extends RepositoryTestBase {
         @Test
         void should_return_expected_list_of_top_level_comments_by_post_ids() {
             // Given
-            final var user1 = createUser(ConstantsKt.getZERO_UUID_VAL());
-            final var user2 = createUser(ConstantsKt.getOMNI_UUID_VAL());
+            final var user1 = userRepository.createTestUser(ConstantsKt.getZERO_UUID_VAL());
+            final var user2 = userRepository.createTestUser(ConstantsKt.getOMNI_UUID_VAL());
 
-            final var post1 = createPost(ConstantsKt.getTEST_1_UUID_VAL());
-            final var post2 = createPost(ConstantsKt.getTEST_2_UUID_VAL());
-            final var post3 = createPost(ConstantsKt.getTEST_3_UUID_VAL());
+            final var post1 = postRepository.createTestPost(ConstantsKt.getTEST_1_UUID_VAL());
+            final var post2 = postRepository.createTestPost(ConstantsKt.getTEST_2_UUID_VAL());
+            final var post3 = postRepository.createTestPost(ConstantsKt.getTEST_3_UUID_VAL());
 
-            final var post1Comment1 = createComment(user1, post1);
-            final var post1Comment2 = createComment(user2, post1);
+            final var post1Comment1 = commentRepository.createCommentComment(user1, post1);
+            final var post1Comment2 = commentRepository.createCommentComment(user2, post1);
 
-            final var post2Comment1 = createComment(user1, post2);
-            final var post2Comment2 = createComment(user2, post2, post2Comment1);
+            final var post2Comment1 = commentRepository.createCommentComment(user1, post2);
+            final var post2Comment2 = commentRepository.createCommentComment(user2, post2, post2Comment1);
 
-            final var post3Comment1 = createComment(user1, post3);
-            final var post3Comment2 = createComment(user2, post3, post3Comment1);
+            final var post3Comment1 = commentRepository.createCommentComment(user1, post3);
+            final var post3Comment2 = commentRepository.createCommentComment(user2, post3, post3Comment1);
 
             // When
             final var result =
@@ -140,25 +152,25 @@ public class CommentRepositoryTest extends RepositoryTestBase {
         @Test
         void should_return_expected_number_of_comments_for_a_given_post_ids() {
             // Given
-            final var user = createUser(ConstantsKt.getZERO_UUID_VAL());
+            final var user = userRepository.createTestUser(ConstantsKt.getZERO_UUID_VAL());
 
-            final var post1 = createPost(ConstantsKt.getTEST_1_UUID_VAL());
-            final var post2 = createPost(ConstantsKt.getTEST_2_UUID_VAL());
-            final var post3 = createPost(ConstantsKt.getTEST_3_UUID_VAL());
+            final var post1 = postRepository.createTestPost(ConstantsKt.getTEST_1_UUID_VAL());
+            final var post2 = postRepository.createTestPost(ConstantsKt.getTEST_2_UUID_VAL());
+            final var post3 = postRepository.createTestPost(ConstantsKt.getTEST_3_UUID_VAL());
 
             final var postIds = List.of(post1.id(), post2.id(), post3.id());
 
             final var post1Comments = List.of(
-                createComment(user, post1)
+                commentRepository.createCommentComment(user, post1)
             );
             final var post2Comments = List.of(
-                createComment(user, post2),
-                createComment(user, post2)
+                commentRepository.createCommentComment(user, post2),
+                commentRepository.createCommentComment(user, post2)
             );
             final var post3Comments = List.of(
-                createComment(user, post3),
-                createComment(user, post3),
-                createComment(user, post3)
+                commentRepository.createCommentComment(user, post3),
+                commentRepository.createCommentComment(user, post3),
+                commentRepository.createCommentComment(user, post3)
             );
 
             // When

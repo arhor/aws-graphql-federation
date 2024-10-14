@@ -19,10 +19,6 @@ java {
     }
 }
 
-testlogger {
-    showStandardStreams = true
-}
-
 repositories {
     mavenCentral()
 }
@@ -43,8 +39,6 @@ configurations {
 dependencies {
     annotationProcessor(platform(":lib-platform"))
     annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.springframework:spring-context-indexer")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     implementation(platform(":lib-platform"))
     implementation(":lib-common")
@@ -75,6 +69,8 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+    testAnnotationProcessor("org.projectlombok:lombok")
+
     testImplementation(platform(":lib-platform"))
     testImplementation(":lib-starter-testing")
     testImplementation("com.tngtech.archunit:archunit-junit5")
@@ -86,6 +82,8 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:localstack")
     testImplementation("org.testcontainers:postgresql")
+
+    testCompileOnly("org.projectlombok:lombok")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

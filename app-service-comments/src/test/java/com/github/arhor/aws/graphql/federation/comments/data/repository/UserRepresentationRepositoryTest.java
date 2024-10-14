@@ -4,16 +4,22 @@ import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresent
 import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresentation.UserFeature;
 import com.github.arhor.aws.graphql.federation.starter.core.data.Features;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
+import lombok.experimental.ExtensionMethod;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtensionMethod(RepositoryTestExtensions.class)
 public class UserRepresentationRepositoryTest extends RepositoryTestBase {
+
+    @Autowired
+    private UserRepresentationRepository userRepository;
 
     @Test
     void should_create_user_with_default_features_set_to_not_null() {
         // Given
-        final var userId = createUser(ConstantsKt.getZERO_UUID_VAL()).id();
+        final var userId = userRepository.createTestUser(ConstantsKt.getZERO_UUID_VAL()).id();
 
         // When
         final var user = userRepository.findById(userId);
@@ -31,7 +37,7 @@ public class UserRepresentationRepositoryTest extends RepositoryTestBase {
     @Test
     void should_create_user_with_defined_features_set_to_not_null() {
         // Given
-        final var userId = createUser(ConstantsKt.getZERO_UUID_VAL(), UserFeature.COMMENTS_DISABLED).id();
+        final var userId = userRepository.createTestUser(ConstantsKt.getZERO_UUID_VAL(), UserFeature.COMMENTS_DISABLED).id();
 
         // When
         final var user = userRepository.findById(userId);
