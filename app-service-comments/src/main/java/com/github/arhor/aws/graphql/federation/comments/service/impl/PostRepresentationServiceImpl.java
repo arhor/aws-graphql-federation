@@ -5,19 +5,16 @@ import com.github.arhor.aws.graphql.federation.comments.data.repository.PostRepr
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.POST;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.Post;
 import com.github.arhor.aws.graphql.federation.comments.service.PostRepresentationService;
-import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -28,25 +25,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.comments.util.CacheManagerUtils.getCache;
-
 @Trace
 @Service
 @RequiredArgsConstructor
 public class PostRepresentationServiceImpl implements PostRepresentationService {
 
-    private static final SimpleGrantedAuthority ROLE_ADMIN_AUTH = new SimpleGrantedAuthority(PredefinedAuthority.ROLE_ADMIN.name());
+    private static final SimpleGrantedAuthority ROLE_ADMIN_AUTH = new SimpleGrantedAuthority(
+        PredefinedAuthority.ROLE_ADMIN.name()
+    );
 
-    private final CacheManager cacheManager;
     private final PostRepresentationRepository postRepository;
     private final StateGuard stateGuard;
-
-    private Cache cache;
-
-    @PostConstruct
-    public void initialize() {
-        cache = getCache(cacheManager, Caches.IDEMPOTENT_ID_SET);
-    }
 
     @NotNull
     @Override
@@ -75,31 +64,29 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     }
 
     @Override
+    @Cacheable(cacheNames = "create-post-ops-cache", key = "{#postId, #userId, #idempotencyKey}")
     public void createPostRepresentation(
         @NotNull final UUID postId,
         @NotNull final UUID userId,
         @NotNull final UUID idempotencyKey
     ) {
-        cache.get(idempotencyKey, () ->
-            postRepository.save(
-                PostRepresentation.builder()
-                    .id(postId)
-                    .userId(userId)
-                    .shouldBePersisted(true)
-                    .build()
-            )
-        );
+        final var postRepresentation = PostRepresentation.builder()
+            .id(postId)
+            .userId(userId)
+            .shouldBePersisted(true)
+            .build();
+
+        postRepository.save(postRepresentation);
+
     }
 
     @Override
+    @Cacheable(cacheNames = "delete-post-ops-cache", key = "{#postId, #idempotencyKey}")
     public void deletePostRepresentation(
         @NotNull final UUID postId,
         @NotNull final UUID idempotencyKey
     ) {
-        cache.get(idempotencyKey, () -> {
-            postRepository.deleteById(postId);
-            return null;
-        });
+        postRepository.deleteById(postId);
     }
 
     @Override
@@ -107,14 +94,13 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
         @NotNull final UUID postId,
         @NotNull final CurrentUserDetails actor
     ) {
-        final var post =
-            postRepository.findById(postId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        POST.TYPE_NAME,
-                        POST.Id + " = " + postId,
-                        Operation.UPDATE
-                    )
-                );
+        final var post = postRepository.findById(postId)
+            .orElseThrow(() -> new EntityNotFoundException(
+                    POST.TYPE_NAME,
+                    POST.Id + " = " + postId,
+                    Operation.UPDATE
+                )
+            );
 
         ensureOperationAllowed(
             post.userId(),

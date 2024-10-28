@@ -11,13 +11,9 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.comments.util.Caches.IDEMPOTENT_ID_SET;
 import static com.github.arhor.aws.graphql.federation.starter.testing.MockitoExtKt.withFirstArg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
@@ -44,21 +39,13 @@ class PostRepresentationServiceImplTest {
     private static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
     private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
-    private final Cache cache = new ConcurrentMapCache(IDEMPOTENT_ID_SET.name());
-    private final CacheManager cacheManager = mock();
     private final PostRepresentationRepository postRepository = mock();
     private final StateGuard stateGuard = mock();
 
-    private PostRepresentationServiceImpl postService;
-
-    @BeforeEach
-    void setUp() {
-        when(cacheManager.getCache(IDEMPOTENT_ID_SET.name()))
-            .thenReturn(cache);
-
-        postService = new PostRepresentationServiceImpl(cacheManager, postRepository, stateGuard);
-        postService.initialize();
-    }
+    private final PostRepresentationServiceImpl postService = new PostRepresentationServiceImpl(
+        postRepository,
+        stateGuard
+    );
 
     @Nested
     @DisplayName("Method findPostsRepresentationsInBatch")

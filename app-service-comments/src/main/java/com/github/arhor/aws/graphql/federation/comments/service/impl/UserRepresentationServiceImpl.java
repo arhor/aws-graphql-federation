@@ -5,15 +5,12 @@ import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepr
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.DgsConstants.USER;
 import com.github.arhor.aws.graphql.federation.comments.generated.graphql.types.User;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
-import com.github.arhor.aws.graphql.federation.comments.util.Caches;
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,22 +18,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.comments.util.CacheManagerUtils.getCache;
-
 @Trace
 @Service
 @RequiredArgsConstructor
 public class UserRepresentationServiceImpl implements UserRepresentationService {
 
-    private final CacheManager cacheManager;
     private final UserRepresentationRepository userRepository;
-
-    private Cache cache;
-
-    @PostConstruct
-    public void initialize() {
-        cache = getCache(cacheManager, Caches.IDEMPOTENT_ID_SET);
-    }
 
     @NotNull
     @Override
@@ -65,43 +52,37 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     }
 
     @Override
+    @Cacheable(cacheNames = "create-user-ops-cache", key = "{#userId, #idempotencyKey}")
     public void createUserRepresentation(
         @NotNull final UUID userId,
         @NotNull final UUID idempotencyKey
     ) {
-        cache.get(idempotencyKey, () ->
-            userRepository.save(
-                UserRepresentation.builder()
-                    .id(userId)
-                    .shouldBePersisted(true)
-                    .build()
-            )
-        );
+        final var userRepresentation = UserRepresentation.builder()
+            .id(userId)
+            .shouldBePersisted(true)
+            .build();
+
+        userRepository.save(userRepresentation);
     }
 
     @Override
+    @Cacheable(cacheNames = "delete-user-ops-cache", key = "{#userId, #idempotencyKey}")
     public void deleteUserRepresentation(
         @NotNull final UUID userId,
         @NotNull final UUID idempotencyKey
     ) {
-        cache.get(idempotencyKey, () -> {
-            userRepository.deleteById(userId);
-            return null;
-        });
+        userRepository.deleteById(userId);
     }
 
     @Override
     public boolean toggleUserComments(
         @NotNull final UUID userId
     ) {
-        return userRepository.findById(userId)
-            .map(user -> userRepository.save(user.toggleComments()))
-            .map(user -> !user.commentsDisabled())
-            .orElseThrow(() -> new EntityNotFoundException(
-                    USER.TYPE_NAME,
-                    USER.Id + " = " + userId,
-                    Operation.UPDATE
-                )
-            );
+        final var user = userRepository.findById(userId)
+            .map(UserRepresentation::toggleComments)
+            .map(userRepository::save)
+            .orElseThrow(() -> new EntityNotFoundException(USER.TYPE_NAME, USER.Id + " = " + userId, Operation.UPDATE));
+
+        return !user.commentsDisabled();
     }
 }

@@ -58,6 +58,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -73,6 +74,7 @@ dependencies {
 
     testImplementation(platform(":lib-platform"))
     testImplementation(":lib-starter-testing")
+    testImplementation("com.redis:testcontainers-redis")
     testImplementation("com.tngtech.archunit:archunit-junit5")
     testImplementation("io.awspring.cloud:spring-cloud-aws-test")
     testImplementation("org.awaitility:awaitility")

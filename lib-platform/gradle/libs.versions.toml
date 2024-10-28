@@ -1,7 +1,7 @@
 [versions]
 java = "21"
 kotlin = "2.0.20"
-spring-boot = "3.3.4"
+spring-boot = "3.3.5"
 spring-cloud-aws = "3.1.0"
 spring-dependency-management = "1.1.6"
 spring-mockk = "4.0.2"
@@ -12,6 +12,7 @@ gradle-test-logger = "3.2.0"
 mockk = "1.13.3"
 archunit = "1.2.1"
 awaitility = "4.2.1"
+testcontainers-redis = "2.2.2"
 
 [libraries]
 findbugs-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "findbugs-jsr305" }
@@ -21,7 +22,7 @@ awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" 
 archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 bom-graphql-dgs = { module = "com.netflix.graphql.dgs:graphql-dgs-platform-dependencies", version.ref = "graphql-dgs-bom" }
 bom-spring-cloud-aws = { module = "io.awspring.cloud:spring-cloud-aws-dependencies", version.ref = "spring-cloud-aws" }
-
+testcontainers-redis = { module = "com.redis:testcontainers-redis", version.ref = "testcontainers-redis" }
 
 jetbrains-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 jetbrains-kotlin-stdlib-core = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }

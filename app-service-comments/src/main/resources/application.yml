@@ -28,9 +28,14 @@ spring:
   output:
     ansi:
       enabled: always
+  data:
+    redis:
+      host: \${REDIS_HOST}
+      port: \${REDIS_PORT}
   cache:
-    caffeine:
-      spec: 'initialCapacity=100,maximumSize=500,expireAfterAccess=300s'
+    type: redis
+    redis:
+      time-to-live: 300s
   cloud:
     aws:
       credentials:

@@ -28,14 +28,13 @@ public class PostEventListener {
         @Header(ATTR_TRACE_ID) final UUID traceId,
         @Header(ATTR_IDEMPOTENCY_KEY) final UUID idempotencyKey
     ) {
-        withExtendedMDC(
-            traceId,
-            () -> postRepresentationService.createPostRepresentation(
+        withExtendedMDC(traceId, () -> {
+            postRepresentationService.createPostRepresentation(
                 event.getId(),
                 event.getUserId(),
                 idempotencyKey
-            )
-        );
+            );
+        });
     }
 
     @SqsListener("${app-props.events.source.sync-comments-on-post-deleted-event}")
@@ -44,12 +43,11 @@ public class PostEventListener {
         @Header(ATTR_TRACE_ID) final UUID traceId,
         @Header(ATTR_IDEMPOTENCY_KEY) final UUID idempotencyKey
     ) {
-        withExtendedMDC(
-            traceId,
-            () -> postRepresentationService.deletePostRepresentation(
+        withExtendedMDC(traceId, () -> {
+            postRepresentationService.deletePostRepresentation(
                 event.getId(),
                 idempotencyKey
-            )
-        );
+            );
+        });
     }
 }
