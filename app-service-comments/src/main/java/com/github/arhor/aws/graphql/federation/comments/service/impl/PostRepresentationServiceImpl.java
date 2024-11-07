@@ -12,6 +12,7 @@ import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetai
 import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @Trace
 @Service
 @RequiredArgsConstructor
@@ -42,23 +44,23 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     public Map<UUID, Post> findPostsRepresentationsInBatch(
         @NotNull final Set<UUID> postIds
     ) {
+        if (postIds.isEmpty()) {
+            return Map.of();
+        }
         final var result = new HashMap<UUID, Post>(postIds.size());
         final var posts = postRepository.findAllById(postIds);
 
         for (final var post : posts) {
             result.put(
                 post.id(),
-                Post.newBuilder()
-                    .id(post.id())
-                    .commentsDisabled(post.commentsDisabled())
-                    .build()
+                mapRepresentatioToDto(post)
             );
         }
         for (final var postId : postIds) {
             if (result.containsKey(postId)) {
                 continue;
             }
-            result.put(postId, Post.newBuilder().id(postId).build());
+            result.put(postId, createDummyDto(postId));
         }
         return result;
     }
@@ -70,14 +72,12 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
         @NotNull final UUID userId,
         @NotNull final UUID idempotencyKey
     ) {
-        final var postRepresentation = PostRepresentation.builder()
-            .id(postId)
-            .userId(userId)
-            .shouldBePersisted(true)
-            .build();
-
-        postRepository.save(postRepresentation);
-
+        postRepository.save(
+            createNewPostRepresentation(
+                postId,
+                userId
+            )
+        );
     }
 
     @Override
@@ -94,13 +94,14 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
         @NotNull final UUID postId,
         @NotNull final CurrentUserDetails actor
     ) {
-        final var post = postRepository.findById(postId)
-            .orElseThrow(() -> new EntityNotFoundException(
-                    POST.TYPE_NAME,
-                    POST.Id + " = " + postId,
-                    Operation.UPDATE
-                )
-            );
+        final var post =
+            postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        POST.TYPE_NAME,
+                        POST.Id + " = " + postId,
+                        Operation.UPDATE
+                    )
+                );
 
         ensureOperationAllowed(
             post.userId(),
@@ -111,6 +112,37 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
         final var updatedPost = postRepository.save(post.toggleComments());
 
         return !updatedPost.commentsDisabled();
+    }
+
+    @NotNull
+    private Post mapRepresentatioToDto(
+        @NotNull final PostRepresentation post
+    ) {
+        return Post.newBuilder()
+            .id(post.id())
+            .commentsDisabled(post.commentsDisabled())
+            .build();
+    }
+
+    @NotNull
+    private Post createDummyDto(
+        @NotNull final UUID postId
+    ) {
+        return Post.newBuilder()
+            .id(postId)
+            .build();
+    }
+
+    @NotNull
+    private PostRepresentation createNewPostRepresentation(
+        @NotNull final UUID postId,
+        @NotNull final UUID userId
+    ) {
+        return PostRepresentation.builder()
+            .id(postId)
+            .userId(userId)
+            .shouldBePersisted(true)
+            .build();
     }
 
     private void ensureOperationAllowed(
