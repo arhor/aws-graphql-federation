@@ -44,6 +44,9 @@ class PostRepresentationServiceImplIntegrationTest {
     @MockBean
     private PostRepresentationRepository postRepresentationRepository;
 
+    @MockBean
+    private StateGuard stateGuard;
+
     @Autowired
     private PostRepresentationService postRepresentationService;
 
