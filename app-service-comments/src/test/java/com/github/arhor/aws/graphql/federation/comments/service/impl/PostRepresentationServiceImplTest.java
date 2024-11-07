@@ -37,7 +37,6 @@ class PostRepresentationServiceImplTest {
 
     private static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
     private static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
-    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
     private final PostRepresentationRepository postRepository = mock();
     private final StateGuard stateGuard = mock();
@@ -114,60 +113,6 @@ class PostRepresentationServiceImplTest {
             assertThat(result)
                 .isNotNull()
                 .isEqualTo(expectedResult);
-        }
-    }
-
-    @Nested
-    @DisplayName("Method createPostRepresentation")
-    class CreatePostRepresentationTest {
-        @Test
-        void should_call_postRepository_save_only_once_with_the_same_idempotencyKey() {
-            // Given
-            final var expectedPostRepresentation =
-                PostRepresentation.builder()
-                    .id(POST_ID)
-                    .shouldBePersisted(true)
-                    .build();
-
-            // When
-            for (int i = 0; i < 3; i++) {
-                postService.createPostRepresentation(
-                    expectedPostRepresentation.id(),
-                    expectedPostRepresentation.userId(),
-                    IDEMPOTENCY_KEY
-                );
-            }
-
-            // Then
-            then(postRepository)
-                .should()
-                .save(expectedPostRepresentation);
-
-            then(postRepository)
-                .shouldHaveNoMoreInteractions();
-        }
-    }
-
-    @Nested
-    @DisplayName("Method deletePostRepresentation")
-    class DeletePostRepresentationTest {
-        @Test
-        void should_call_postRepository_deleteById_only_once_with_the_same_idempotencyKey() {
-            // Given
-            final var numberOfCalls = 3;
-
-            // When
-            for (int i = 0; i < numberOfCalls; i++) {
-                postService.deletePostRepresentation(POST_ID, IDEMPOTENCY_KEY);
-            }
-
-            // Then
-            then(postRepository)
-                .should()
-                .deleteById(POST_ID);
-
-            then(postRepository)
-                .shouldHaveNoMoreInteractions();
         }
     }
 

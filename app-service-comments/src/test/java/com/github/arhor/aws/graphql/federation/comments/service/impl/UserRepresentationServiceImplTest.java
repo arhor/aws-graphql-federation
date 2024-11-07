@@ -35,7 +35,6 @@ import static org.mockito.Mockito.mock;
 class UserRepresentationServiceImplTest {
 
     private static final UUID USER_ID = ConstantsKt.getTEST_1_UUID_VAL();
-    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
     private final UserRepresentationRepository userRepository = mock();
 
