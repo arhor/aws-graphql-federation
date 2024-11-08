@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
 abstract class ObjectValueFormatter<T : Any>(
-    private val accessorOverrides: Map<KProperty1<T, Any?>, (T) -> String>,
+    private val overrides: Map<KProperty1<T, Any?>, (T) -> String>,
 ) : ValueFormatter<T> {
 
     @Lazy
@@ -42,7 +42,7 @@ abstract class ObjectValueFormatter<T : Any>(
 
     @Suppress("UNCHECKED_CAST")
     private fun format(value: T, property: KProperty1<T, Any?>): String? {
-        return accessorOverrides[property]?.invoke(value)
+        return overrides[property]?.invoke(value)
             ?: property.invoke(value)?.let { registry.findFormatter(it::class as KClass<Any>).format(it) }
     }
 

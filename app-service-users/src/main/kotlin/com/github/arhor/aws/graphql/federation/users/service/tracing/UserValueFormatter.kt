@@ -7,9 +7,9 @@ import kotlin.reflect.KClass
 
 @Component
 class UserValueFormatter : ObjectValueFormatter<User>(
-    accessorOverrides = mapOf(
+    overrides = mapOf(
         User::username to { PROTECTED },
-    )
+    ),
 ) {
     override val valueType: KClass<User>
         get() = User::class

@@ -7,7 +7,7 @@ import kotlin.reflect.KClass
 
 @Component
 class UserEntityValueFormatter : ObjectValueFormatter<UserEntity>(
-    accessorOverrides = mapOf(
+    overrides = mapOf(
         UserEntity::username to { PROTECTED },
         UserEntity::password to { PROTECTED },
     ),
