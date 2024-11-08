@@ -1,5 +1,6 @@
 package com.github.arhor.aws.graphql.federation.starter.tracing
 
+import com.github.arhor.aws.graphql.federation.starter.tracing.formatting.ValueFormatter
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -16,10 +17,10 @@ import kotlin.reflect.KClass
 @ConditionalOnProperty(prefix = "tracing.method-execution-logging", name = ["enabled"], havingValue = "true")
 class MethodExecutionLoggingAspect(
     tracingProperties: TracingProperties,
-    argFormattersList: List<ArgumentFormatter<Any>>,
+    valFormattersList: List<ValueFormatter<Any>>,
 ) {
     private val loggingLvl = tracingProperties.methodExecutionLogging.level
-    private val formatters = argFormattersList.associateBy { it.argumentType }.withDefault { ArgumentFormatter }
+    private val formatters = valFormattersList.associateBy { it.valueType }.withDefault { ValueFormatter }
 
     @Around("@annotation(Trace) || @within(Trace)")
     fun logMethodExecution(jPoint: ProceedingJoinPoint): Any? {
@@ -28,7 +29,7 @@ class MethodExecutionLoggingAspect(
 
         if (logger.isEnabledForLevel(loggingLvl)) {
             val methodName = method.name
-            val methodArgs = formatArgs(jPoint.args)
+            val methodArgs = jPoint.args
 
             logger.write(EXECUTION_START, methodName, methodArgs)
 
@@ -62,28 +63,17 @@ class MethodExecutionLoggingAspect(
         }
     }
 
-    private fun formatArgs(args: Array<Any?>?): String =
-        if (args.isNullOrEmpty()) {
-            "[]"
-        } else {
-            args.joinToString(prefix = "[", postfix = "]", transform = ::formatArg)
-        }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun formatArg(arg: Any?): String =
-        if (arg == null) {
-            "null"
-        } else {
-            formatters.getValue(arg::class as KClass<Any>).format(arg)
-        }
-
     @Suppress("NOTHING_TO_INLINE")
     private inline fun Logger.write(message: String, arg0: Any?, arg1: Any?): Unit =
-        atLevel(loggingLvl).log(message, arg0, arg1)
+        atLevel(loggingLvl).log(message, format(arg0), format(arg1))
 
     @Suppress("NOTHING_TO_INLINE")
     private inline fun Logger.write(message: String, vararg args: Any?): Unit =
-        atLevel(loggingLvl).log(message, *args)
+        atLevel(loggingLvl).log(message, *Array(args.size) { format(args[it]) })
+
+    @Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
+    private inline fun format(arg: Any?): String =
+        if (arg != null) formatters.getValue(arg::class as KClass<Any>).format(arg) else "null"
 
     companion object {
         private val aspectLogger = LoggerFactory.getLogger(this::class.java.enclosingClass)
