@@ -9,16 +9,17 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletionStage
+import kotlin.reflect.KClass
 
 @Aspect
 @Component
 @ConditionalOnProperty(prefix = "tracing.method-execution-logging", name = ["enabled"], havingValue = "true")
 class MethodExecutionLoggingAspect(
     tracingProperties: TracingProperties,
-    argFormattersList: List<ArgumentFormatter>,
+    argFormattersList: List<ArgumentFormatter<Any>>,
 ) {
     private val loggingLvl = tracingProperties.methodExecutionLogging.level
-    private val formatters = argFormattersList.associateBy { it.argumentType }.withDefault { ArgumentFormatter.SIMPLE }
+    private val formatters = argFormattersList.associateBy { it.argumentType }.withDefault { ArgumentFormatter }
 
     @Around("@annotation(Trace) || @within(Trace)")
     fun logMethodExecution(jPoint: ProceedingJoinPoint): Any? {
@@ -68,11 +69,12 @@ class MethodExecutionLoggingAspect(
             args.joinToString(prefix = "[", postfix = "]", transform = ::formatArg)
         }
 
+    @Suppress("UNCHECKED_CAST")
     private fun formatArg(arg: Any?): String =
         if (arg == null) {
             "null"
         } else {
-            formatters.getValue(arg.javaClass).format(arg)
+            formatters.getValue(arg::class as KClass<Any>).format(arg)
         }
 
     @Suppress("NOTHING_TO_INLINE")
