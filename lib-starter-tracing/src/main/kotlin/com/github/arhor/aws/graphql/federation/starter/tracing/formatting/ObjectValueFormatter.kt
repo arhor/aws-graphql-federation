@@ -2,7 +2,6 @@ package com.github.arhor.aws.graphql.federation.starter.tracing.formatting
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Lazy
-import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 
@@ -12,7 +11,7 @@ abstract class ObjectValueFormatter<T : Any>(
 
     @Lazy
     @Autowired
-    private lateinit var registry: ValueFormatterRegistry
+    private lateinit var rootFormatter: RootFormatter
 
     private val cachedMetadata by lazy {
         CachedMetadata(
@@ -40,10 +39,9 @@ abstract class ObjectValueFormatter<T : Any>(
         append(")")
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun format(value: T, property: KProperty1<T, Any?>): String? {
         return overrides[property]?.invoke(value)
-            ?: property.invoke(value)?.let { registry.findFormatter(it::class as KClass<Any>).format(it) }
+            ?: property.get(value)?.let(rootFormatter::format)
     }
 
     private data class CachedMetadata<T>(
@@ -57,5 +55,10 @@ abstract class ObjectValueFormatter<T : Any>(
 
         @JvmStatic
         protected val PROTECTED = "[PROTECTED]"
+
+        @JvmStatic
+        protected fun <T : Any> protect(property: KProperty1<T, Any?>): Pair<KProperty1<T, Any?>, (T) -> String> {
+            return property to { PROTECTED }
+        }
     }
 }
