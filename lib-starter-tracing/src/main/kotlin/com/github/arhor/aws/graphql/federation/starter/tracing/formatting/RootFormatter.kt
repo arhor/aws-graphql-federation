@@ -3,6 +3,7 @@ package com.github.arhor.aws.graphql.federation.starter.tracing.formatting
 import org.springframework.stereotype.Component
 import kotlin.reflect.KClass
 
+/* TODO: replace Spring DI with Java SPI */
 @Component
 class RootFormatter(valueFormatters: List<ValueFormatter<Any>>) {
 

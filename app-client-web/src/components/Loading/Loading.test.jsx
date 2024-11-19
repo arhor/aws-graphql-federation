@@ -5,9 +5,13 @@ import Loading from '@/components/Loading';
 
 vi.mock('react-i18next', () => ({
     useTranslation: () => ({
-        t: (str: string) => str,
+        /**
+         * @param {string} str 
+         * @returns {string}
+         */
+        t: (str) => str,
         i18n: {
-            changeLanguage: () => new Promise(() => { /* eslint-disable-line @typescript-eslint/no-empty-function */ }),
+            changeLanguage: () => new Promise(() => { /* eslint-disable-line */ }),
         },
     }),
 }));

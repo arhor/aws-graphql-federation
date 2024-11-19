@@ -1,41 +1,36 @@
 import { useEffect } from 'react';
 
-import { useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
-import { graphql } from '@/gql';
-
-const CREATE_POST = graphql(`
-    mutation CreatePost($input: CreatePostInput!) {
-        createPost(input: $input) {
+const CREATE_USER = gql`
+    mutation CreateUser($input: CreateUserInput!) {
+        createUser(input: $input) {
             id
-            userId
-            title
-            content
-            tags
+            username
         }
     }
-`);
+`;
 
-const POST_FRAGMENT = graphql(`
-    fragment postFields on Post {
+const USER_FRAGMENT = gql`
+    fragment NewUser on User {
         id
+        username
     }
-`);
+`;
 
-export default function useCreatePostMutation() {
+export default function useCreateUserMutation() {
     const { enqueueSnackbar } = useSnackbar();
-
-    const [createPost, { error }] = useMutation(CREATE_POST, {
+    const [createUser, { error }] = useMutation(CREATE_USER, {
         update(cache, result) {
             cache.modify({
                 fields: {
-                    posts(existingPosts = []) {
+                    users(existingUsers = []) {
                         return [
-                            ...existingPosts,
+                            ...existingUsers,
                             cache.writeFragment({
-                                data: result.data?.createPost,
-                                fragment: POST_FRAGMENT,
+                                data: result.data?.createUser,
+                                fragment: USER_FRAGMENT,
                             }),
                         ];
                     },
@@ -53,5 +48,5 @@ export default function useCreatePostMutation() {
         }
     }, [error, enqueueSnackbar]);
 
-    return { createPost };
+    return { createUser };
 }

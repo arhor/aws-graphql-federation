@@ -4,10 +4,16 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { AppThemeControlContext, type AppThemeMode } from '@/providers/theme';
+import { AppThemeControlContext } from '@/providers/theme';
 
-export default function AppThemeProvider(props: { children: ReactNode }) {
-    const [colorMode, setColorMode] = useState<AppThemeMode>();
+
+
+/**
+ * @param {Object} props
+ * @param {ReactNode} props.children
+ */
+export default function AppThemeProvider(props) {
+    const [colorMode, setColorMode] = useState();
     const darkThemePreferred = useMediaQuery('(prefers-color-scheme: dark)');
 
     const theme = useMemo(() => createTheme({
@@ -30,6 +36,10 @@ export default function AppThemeProvider(props: { children: ReactNode }) {
     );
 }
 
-function determineColorMode(shouldUseDarkTheme: boolean): AppThemeMode {
+/**
+ * @param {boolean} shouldUseDarkTheme
+ * @returns {import('@/providers/theme').AppThemeMode}
+ */
+function determineColorMode(shouldUseDarkTheme) {
     return shouldUseDarkTheme ? 'dark' : 'light';
 }

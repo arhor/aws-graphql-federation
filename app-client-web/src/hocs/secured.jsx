@@ -8,10 +8,17 @@ import { Optional } from '@/utils/core-utils';
 
 const REACT_LAZY_TYPE = Symbol.for('react.lazy');
 
-export default function secured<T extends JSX.IntrinsicAttributes>(
-    WrappedComponent: ComponentType<T> & { $$typeof: Optional<symbol | number> },
-): ComponentType<T> {
-    const SecuredComponent = (props: T) => {
+/**
+ * @template T
+ * @param {React.ComponentType<T> & { $$typeof?: symbol | number | null }} WrappedComponent
+ * @returns {React.ComponentType<T>}
+ */
+export default function secured(WrappedComponent) {
+    /**
+     * @param {T} props
+     * @returns {React.ReactNode}
+     */
+    const SecuredComponent = (props) => {
         const { loading, data } = useCurrentUser();
 
         if (loading) {

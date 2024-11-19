@@ -10,7 +10,11 @@ const client = new ApolloClient({
     credentials: 'include',
 });
 
-export default function AppGqlClientProvider(props: { children: ReactNode }) {
+/**
+ * @param {Object} props
+ * @param {ReactNode} props.children
+ */
+export default function AppGqlClientProvider(props) {
     return (
         <ApolloProvider client={client}>
             {props.children}

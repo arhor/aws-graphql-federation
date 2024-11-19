@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import usePostsPage from '@/hooks/usePostsPage.ts';
+import usePostsPage from '@/hooks/usePostsPage';
 
 export default function Feed() {
     const { t } = useTranslation();
@@ -24,10 +24,10 @@ export default function Feed() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data?.posts?.data?.map((it: any) => (
-                        <TableRow key={it.id}>
-                            <TableCell>{it.id}</TableCell>
-                            <TableCell>{it.title}</TableCell>
+                    {data?.posts?.data?.map(({id, title}) => (
+                        <TableRow key={id}>
+                            <TableCell>{id}</TableCell>
+                            <TableCell>{title}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

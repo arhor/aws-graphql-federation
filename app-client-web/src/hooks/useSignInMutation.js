@@ -1,19 +1,17 @@
 import { useEffect } from 'react';
 
-import { useMutation } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
-import { graphql } from '@/gql';
-
-const SIGN_OUT = graphql(`
-    mutation SignOut {
-        signOut
+const SIGN_IN = gql`
+    mutation SignIn($input: SignInInput!) {
+        signIn(input: $input)
     }
-`);
+`;
 
-export default function useSignOutMutation() {
+export default function useSignInMutation() {
     const { enqueueSnackbar } = useSnackbar();
-    const [signOut, { error }] = useMutation(SIGN_OUT);
+    const [signIn, { error }] = useMutation(SIGN_IN);
 
     useEffect(() => {
         if (error) {
@@ -24,5 +22,5 @@ export default function useSignOutMutation() {
         }
     }, [error, enqueueSnackbar]);
 
-    return { signOut };
+    return { signIn };
 }

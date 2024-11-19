@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import React from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -12,24 +12,28 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import useCreateUserMutation from '@/hooks/useCreateUserMutation';
-import { Optional } from '@/utils/core-utils';
+import useSignInMutation from '@/hooks/useSignInMutation';
 
-export default function SignUpForm() {
+export default function SignInForm() {
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { createUser } = useCreateUserMutation();
+    const { signIn } = useSignInMutation();
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    /**
+     * @param {React.FormEvent<HTMLFormElement>} e 
+     */
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const formData = new FormData(e.currentTarget);
 
-        const username = formData.get('username') as Optional<string>;
-        const password = formData.get('password') as Optional<string>;
+        /** @type {string | null | undefined} */
+        const username = formData.get('username');
+        /** @type {string | null | undefined} */
+        const password = formData.get('password');
 
         if (username && password) {
-            await createUser({
+            await signIn({
                 variables: {
                     input: {
                         username,
@@ -37,7 +41,7 @@ export default function SignUpForm() {
                     }
                 }
             });
-            navigate('/sign-in');
+            navigate('/');
         }
     };
 
@@ -55,7 +59,7 @@ export default function SignUpForm() {
                 <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-                {t('Sign up')}
+                {t('Sign in')}
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <Grid container justifyContent="center">
@@ -67,6 +71,7 @@ export default function SignUpForm() {
                             margin="normal"
                             required
                             fullWidth
+                            autoComplete="username"
                             sx={{ mb: 5 }}
                         />
                     </Grid>
@@ -79,6 +84,7 @@ export default function SignUpForm() {
                             margin="normal"
                             required
                             fullWidth
+                            autoComplete="current-password"
                             sx={{ mb: 5 }}
                         />
                     </Grid>
@@ -89,12 +95,12 @@ export default function SignUpForm() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            {t('Sign Up')}
+                            {t('Sign In')}
                         </Button>
                     </Grid>
                     <Grid item>
-                        <Link to="/sign-in" component={RouterLink} variant="body2">
-                            {t('Already have an account? Sign in')}
+                        <Link to="/sign-up" component={RouterLink} variant="body2">
+                            {t('Don\'t have an account? Sign Up')}
                         </Link>
                     </Grid>
                 </Grid>

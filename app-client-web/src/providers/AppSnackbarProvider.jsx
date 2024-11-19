@@ -2,7 +2,11 @@ import { ReactNode } from 'react';
 
 import { SnackbarProvider } from 'notistack';
 
-export default function AppSnackbarProvider(props: { children: ReactNode }) {
+/**
+ * @param {Object} props
+ * @param {ReactNode} props.children
+ */
+export default function AppSnackbarProvider(props) {
     return (
         <SnackbarProvider preventDuplicate>
             {props.children}

@@ -1,11 +1,9 @@
 import { useEffect } from 'react';
 
-import { useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
-import { graphql } from '@/gql';
-
-const GET_CURRENT_USER_INFO = graphql(`
+const GET_CURRENT_USER_INFO = gql`
     query GetCurrentUserInfo {
         currentUser: me {
             id
@@ -13,7 +11,7 @@ const GET_CURRENT_USER_INFO = graphql(`
             authenticated
         }
     }
-`);
+`;
 
 export default function useCurrentUser() {
     const { enqueueSnackbar } = useSnackbar();
