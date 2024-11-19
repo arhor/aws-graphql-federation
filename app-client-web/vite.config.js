@@ -1,7 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { fileURLToPath, URL } from 'url';
 import dns from 'dns';
+import { fileURLToPath, URL } from 'url';
 
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';

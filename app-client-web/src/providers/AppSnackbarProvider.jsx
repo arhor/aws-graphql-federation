@@ -1,11 +1,10 @@
-import { ReactNode } from 'react';
-
 import { SnackbarProvider } from 'notistack';
+import PropTypes from 'prop-types';
 
-/**
- * @param {Object} props
- * @param {ReactNode} props.children
- */
+AppSnackbarProvider.propTypes = {
+    children: PropTypes.element.isRequired,
+};
+
 export default function AppSnackbarProvider(props) {
     return (
         <SnackbarProvider preventDuplicate>

@@ -1,38 +1,18 @@
-import React from 'react';
+import PropTypes from 'prop-types'
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-/**
- * @typedef {'page' | 'card'} Type
- * @typedef {'small' | 'medium' | 'large'} Size
- * @typedef {'h4' | 'h5' | 'h6'} Variant
- */
+StatelessWidget.propTypes = {
+    type: PropTypes.oneOf('page', 'card'),
+    size: PropTypes.oneOf('small', 'medium', 'large'),
+    padding: PropTypes.number,
+    image: PropTypes.element,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    button: PropTypes.element,
+};
 
-/**
- * @typedef {Object} WidgetParams
- * @property {number} imageWidth
- * @property {number} imageHeight
- * @property {Variant} variant
- */
-
-/**
- * Props for StatelessWidget.
- * @typedef {Object} Props
- * @property {Type} [type='page'] - Type of widget, either 'page' or 'card'.
- * @property {Size} [size='large'] - Size of widget, either 'small', 'medium', or 'large'.
- * @property {number} [padding=2] - Padding around the widget.
- * @property {React.ReactElement} [image] - Image to display in the widget.
- * @property {string} [title] - Title of the widget.
- * @property {string} [description] - Description text for the widget.
- * @property {React.ReactElement} [button] - Button to include in the widget.
- */
-
-/**
- * Stateless widget component.
- * @param {Props} props - The props for the widget.
- * @returns {React.ReactElement} The rendered stateless widget.
- */
 export default function StatelessWidget({
     type = 'page',
     size = 'large',
@@ -67,10 +47,6 @@ export default function StatelessWidget({
     );
 }
 
-/**
- * @param {Size} size
- * @returns {WidgetParams}
- */
 function determineWidgetParams(size) {
     switch (size) {
         case 'small':
@@ -95,12 +71,6 @@ function determineWidgetParams(size) {
     }
 }
 
-/**
- * Determines the box style based on type and padding.
- * @param {Type} type - The type of the widget ('page' or 'card').
- * @param {number} padding - The padding for the box.
- * @returns {import('@mui/system').SxProps} The style object for the box.
- */
 function determineBoxStyle(type, padding) {
     switch (type) {
         case 'card':

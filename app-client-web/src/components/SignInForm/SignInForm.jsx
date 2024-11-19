@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
@@ -20,7 +18,7 @@ export default function SignInForm() {
     const { signIn } = useSignInMutation();
 
     /**
-     * @param {React.FormEvent<HTMLFormElement>} e 
+     * @param {import('react').FormEvent<HTMLFormElement>} e 
      */
     const handleSubmit = async (e) => {
         e.preventDefault();

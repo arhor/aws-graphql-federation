@@ -1,10 +1,9 @@
-import { ComponentType, Suspense } from 'react';
+import { Suspense } from 'react';
 
 import { Navigate } from 'react-router';
 
 import Loading from '@/components/Loading';
 import useCurrentUser from '@/hooks/useCurrentUser';
-import { Optional } from '@/utils/core-utils';
 
 const REACT_LAZY_TYPE = Symbol.for('react.lazy');
 

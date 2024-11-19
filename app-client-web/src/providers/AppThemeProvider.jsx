@@ -1,4 +1,6 @@
-import { ReactNode, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+
+import PropTypes from 'prop-types';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -6,12 +8,10 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { AppThemeControlContext } from '@/providers/theme';
 
+AppThemeProvider.propTypes = {
+    children: PropTypes.element.isRequired,
+};
 
-
-/**
- * @param {Object} props
- * @param {ReactNode} props.children
- */
 export default function AppThemeProvider(props) {
     const [colorMode, setColorMode] = useState();
     const darkThemePreferred = useMediaQuery('(prefers-color-scheme: dark)');

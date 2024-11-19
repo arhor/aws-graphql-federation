@@ -1,5 +1,6 @@
-import React from 'react';
+import { Component } from 'react';
 
+import PropTypes from 'prop-types';
 import { Translation } from 'react-i18next';
 
 import StatelessWidget from '@/components/StatelessWidget';
@@ -7,44 +8,20 @@ import StatelessWidget from '@/components/StatelessWidget';
 const DEFAULT_TITLE = 'Ups, something went wrong...';
 const DEFAULT_DESCRIPTION = 'Please, contact system administrator if you have nothing else to do';
 
-/**
- * @typedef {Object} Props
- * @property {(text: string) => string} t
- * @property {React.ReactNode} children - Children nodes to render.
- */
+ErrorBoundaryWithTranslation.propTypes = {
+    t: PropTypes.func,
+    children: PropTypes.element.isRequired,
+};
+class ErrorBoundaryWithTranslation extends Component {
+    state = {
+        error: null,
+        errorInfo: null,
+    };
 
-/**
- * @typedef {Object} State
- * @property {Error | null} error
- * @property {React.ErrorInfo | null} errorInfo
- */
-
-class ErrorBoundaryWithTranslation extends React.Component {
-    /**
-     * @param {Props} props
-     */
-    constructor(props) {
-        super(props);
-
-        /** @type {State} */
-        this.state = {
-            error: null,
-            errorInfo: null,
-        };
-    }
-    
-    /**
-     * @param {Error} error
-     * @returns {Partial<State>}
-     */
     static getDerivedStateFromError(error) {
         return { error };
     }
 
-    /**
-     * @param {Error} error
-     * @param {React.ErrorInfo} errorInfo
-     */
     componentDidCatch(error, errorInfo) {
         this.setState({ error, errorInfo });
     }
@@ -64,10 +41,10 @@ class ErrorBoundaryWithTranslation extends React.Component {
     }
 }
 
-/**
- * @param {{ children: React.ReactNode }} props
- * @returns {JSX.Element}
- */
+ErrorBoundary.propTypes = {
+    children: PropTypes.element.isRequired,
+};
+
 export default function ErrorBoundary(props) {
     return (
         <Translation>

@@ -1,6 +1,5 @@
-import { ReactNode } from 'react';
-
 import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
+import PropTypes from 'prop-types';
 
 const client = new ApolloClient({
     link: createHttpLink({
@@ -10,10 +9,10 @@ const client = new ApolloClient({
     credentials: 'include',
 });
 
-/**
- * @param {Object} props
- * @param {ReactNode} props.children
- */
+AppGqlClientProvider.propTypes = {
+    children: PropTypes.element.isRequired,
+}
+
 export default function AppGqlClientProvider(props) {
     return (
         <ApolloProvider client={client}>

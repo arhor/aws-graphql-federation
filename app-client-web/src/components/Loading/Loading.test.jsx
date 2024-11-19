@@ -11,7 +11,7 @@ vi.mock('react-i18next', () => ({
          */
         t: (str) => str,
         i18n: {
-            changeLanguage: () => new Promise(() => { /* eslint-disable-line */ }),
+            changeLanguage: () => new Promise(() => {}),
         },
     }),
 }));
