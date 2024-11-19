@@ -29,7 +29,6 @@ export default function usePostsPage() {
         if (error) {
             enqueueSnackbar(error.message, {
                 variant: 'error',
-                autoHideDuration: 10_000,
             });
         }
     }, [error, enqueueSnackbar]);
