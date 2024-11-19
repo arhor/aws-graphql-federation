@@ -32,7 +32,23 @@ export default defineConfig(({ mode }) => {
             },
         },
         build: {
-            outDir: 'build/dist',
+            rollupOptions: {
+                output: {
+                    manualChunks: {
+                        react: [
+                            'react',
+                            'react-dom',
+                            'react-i18next',
+                            'react-router',
+                            'react-router-dom',
+                        ],
+                        material: [
+                            '@mui/icons-material',
+		                    '@mui/material',
+                        ],
+                    },
+                },
+            },
         },
         test: {
             globals: true,
