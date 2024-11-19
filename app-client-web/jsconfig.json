@@ -8,7 +8,6 @@
             "DOM.Iterable"
         ],
         "forceConsistentCasingInFileNames": true,
-        "incremental": true,
         "esModuleInterop": false,
         "noImplicitReturns": true,
         "types": [
@@ -19,10 +18,8 @@
         "moduleResolution": "bundler",
         "allowJs": true,
         "allowSyntheticDefaultImports": true,
-        "allowImportingTsExtensions": true,
         "resolveJsonModule": true,
         "isolatedModules": true,
-        "noEmit": true,
         "jsx": "react-jsx",
         "strict": true,
         "noUnusedLocals": true,
@@ -37,10 +34,5 @@
     },
     "include": [
         "src"
-    ],
-    "references": [
-        {
-            "path": "./tsconfig.node.json"
-        }
     ]
 }
