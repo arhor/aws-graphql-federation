@@ -1,9 +1,10 @@
 import js from '@eslint/js';
-import eslintPluginImport from 'eslint-plugin-import'
 import eslintPluginReact from 'eslint-plugin-react';
 import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
 import eslintPluginReactRefresh from 'eslint-plugin-react-refresh';
+import eslintPluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
+
 
 export default [
     {
@@ -47,10 +48,10 @@ export default [
             ]
         },
         plugins: {
-            'import': eslintPluginImport,
             'react': eslintPluginReact,
             'react-hooks': eslintPluginReactHooks,
             'react-refresh': eslintPluginReactRefresh,
+            'simple-import-sort': eslintPluginSimpleImportSort,
         },
         rules: {
             ...js.configs.recommended.rules,
@@ -58,47 +59,22 @@ export default [
             ...eslintPluginReact.configs['jsx-runtime'].rules,
             ...eslintPluginReactHooks.configs.recommended.rules,
             'react/jsx-no-target-blank': 'off',
-            'react-refresh/only-export-components': [
-                'warn',
-                { allowConstantExport: true },
-            ],
+            'react-refresh/only-export-components': ['warn', {
+                allowConstantExport: true,
+            }],
             'no-console': 'warn',
             'no-debugger': 'error',
             'no-param-reassign': 'error',
             'react/react-in-jsx-scope': 'off',
-            'import/no-unresolved': 'error',
-            'import/named': 'error',
-            'import/no-duplicates': 'warn',
-            'import/order': [
-                'error',
-                {
-                    'groups': [
-                        'builtin',
-                        'external',
-                        'internal'
-                    ],
-                    'pathGroups': [
-                        {
-                            'pattern': 'react',
-                            'group': 'external',
-                            'position': 'before'
-                        },
-                        {
-                            'pattern': '@mui/**',
-                            'group': 'external',
-                            'position': 'after'
-                        }
-                    ],
-                    'pathGroupsExcludedImportTypes': [
-                        'react'
-                    ],
-                    'newlines-between': 'always',
-                    'alphabetize': {
-                        'order': 'asc',
-                        'caseInsensitive': true
-                    }
-                }
-            ]
+            'simple-import-sort/exports': 'error',
+            'simple-import-sort/imports': ['error', {
+                'groups': [
+                    ['^react'],
+                    ['^'],
+                    ['^@mui'],
+                    ['^@/', '^\\u0000@/'],
+                ]
+            }],
         },
     },
     {
