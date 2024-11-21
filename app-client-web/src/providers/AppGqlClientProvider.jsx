@@ -9,14 +9,14 @@ const client = new ApolloClient({
     credentials: 'include',
 });
 
-AppGqlClientProvider.propTypes = {
-    children: PropTypes.element.isRequired,
-}
-
 export default function AppGqlClientProvider(props) {
     return (
         <ApolloProvider client={client}>
             {props.children}
         </ApolloProvider>
     );
+}
+
+AppGqlClientProvider.propTypes = {
+    children: PropTypes.element.isRequired,
 }

@@ -8,10 +8,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { AppThemeControlContext } from '@/providers/theme';
 
-AppThemeProvider.propTypes = {
-    children: PropTypes.element.isRequired,
-};
-
 export default function AppThemeProvider(props) {
     const [colorMode, setColorMode] = useState();
     const darkThemePreferred = useMediaQuery('(prefers-color-scheme: dark)');
@@ -36,10 +32,10 @@ export default function AppThemeProvider(props) {
     );
 }
 
-/**
- * @param {boolean} shouldUseDarkTheme
- * @returns {import('@/providers/theme').AppThemeMode}
- */
+AppThemeProvider.propTypes = {
+    children: PropTypes.element.isRequired,
+};
+
 function determineColorMode(shouldUseDarkTheme) {
     return shouldUseDarkTheme ? 'dark' : 'light';
 }

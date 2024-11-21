@@ -8,10 +8,6 @@ import StatelessWidget from '@/components/StatelessWidget';
 const DEFAULT_TITLE = 'Ups, something went wrong...';
 const DEFAULT_DESCRIPTION = 'Please, contact system administrator if you have nothing else to do';
 
-ErrorBoundaryWithTranslation.propTypes = {
-    t: PropTypes.func,
-    children: PropTypes.element.isRequired,
-};
 class ErrorBoundaryWithTranslation extends Component {
     state = {
         error: null,
@@ -41,7 +37,8 @@ class ErrorBoundaryWithTranslation extends Component {
     }
 }
 
-ErrorBoundary.propTypes = {
+ErrorBoundaryWithTranslation.propTypes = {
+    t: PropTypes.func,
     children: PropTypes.element.isRequired,
 };
 
@@ -58,3 +55,7 @@ export default function ErrorBoundary(props) {
         </Translation>
     );
 }
+
+ErrorBoundary.propTypes = {
+    children: PropTypes.element.isRequired,
+};

@@ -1,7 +1,3 @@
-/**
- * @param {BufferSource} data 
- * @param {(arg: string) => void} urlConsumer 
- */
 export function withObjectURL(data, urlConsumer) {
     const blob = new Blob([data]);
     const href = URL.createObjectURL(blob);
@@ -13,19 +9,10 @@ export function withObjectURL(data, urlConsumer) {
     }
 }
 
-/**
- * @param {number} ms 
- * @returns 
- */
 export function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * @template T
- * @param {() => T} factory 
- * @returns {{ value: T }}
- */
 export function createLazy(factory) {
     return {
         get value() {

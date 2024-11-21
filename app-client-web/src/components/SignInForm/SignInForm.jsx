@@ -17,17 +17,12 @@ export default function SignInForm() {
     const { t } = useTranslation();
     const { signIn } = useSignInMutation();
 
-    /**
-     * @param {import('react').FormEvent<HTMLFormElement>} e 
-     */
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const formData = new FormData(e.currentTarget);
 
-        /** @type {string | null | undefined} */
         const username = formData.get('username');
-        /** @type {string | null | undefined} */
         const password = formData.get('password');
 
         if (username && password) {

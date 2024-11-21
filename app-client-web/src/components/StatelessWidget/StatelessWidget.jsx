@@ -3,16 +3,6 @@ import PropTypes from 'prop-types'
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-StatelessWidget.propTypes = {
-    type: PropTypes.oneOf('page', 'card'),
-    size: PropTypes.oneOf('small', 'medium', 'large'),
-    padding: PropTypes.number,
-    image: PropTypes.element,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    button: PropTypes.element,
-};
-
 export default function StatelessWidget({
     type = 'page',
     size = 'large',
@@ -46,6 +36,21 @@ export default function StatelessWidget({
         </Box>
     );
 }
+
+StatelessWidget.propTypes = {
+    type: PropTypes.oneOf('page', 'card'),
+    size: PropTypes.oneOf('small', 'medium', 'large'),
+    padding: PropTypes.number,
+    image: PropTypes.element,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    button: PropTypes.element,
+};
+StatelessWidget.defaultProps = {
+    type: 'page',
+    size: 'large',
+    padding: 2,
+};
 
 function determineWidgetParams(size) {
     switch (size) {
