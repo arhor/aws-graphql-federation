@@ -37,6 +37,12 @@ export default function StatelessWidget({
     );
 }
 
+StatelessWidget.defaultProps = {
+    type: 'page',
+    size: 'large',
+    padding: 2,
+};
+
 StatelessWidget.propTypes = {
     type: PropTypes.oneOf('page', 'card'),
     size: PropTypes.oneOf('small', 'medium', 'large'),
@@ -45,11 +51,6 @@ StatelessWidget.propTypes = {
     title: PropTypes.string,
     description: PropTypes.string,
     button: PropTypes.element,
-};
-StatelessWidget.defaultProps = {
-    type: 'page',
-    size: 'large',
-    padding: 2,
 };
 
 function determineWidgetParams(size) {
