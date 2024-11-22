@@ -7,7 +7,7 @@ import Switch from '@mui/material/Switch';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-import { useAppThemeControl } from '@/providers/theme';
+import { useAppThemeControl } from '@/theme';
 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
