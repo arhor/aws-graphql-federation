@@ -1,5 +1,5 @@
-import { Suspense } from 'react';
-import { isLazy } from 'react-is';
+import { createElement, Suspense } from 'react';
+import { isElement, isLazy } from 'react-is';
 import { Navigate } from 'react-router';
 
 import Loading from '@/components/Loading';
@@ -11,7 +11,7 @@ function determineNameOf(Component) {
         || 'Component';
 }
 
-export function withProtection(Component) {
+export function withProtection(Component, authorities = []) {
     const ProtectedComponent = (props) => {
         const { loading, data } = useCurrentUser();
 
@@ -19,13 +19,14 @@ export function withProtection(Component) {
             return <Loading />;
         }
         if (data?.currentUser) {
-            return isLazy(Component) ? (
-                <Suspense fallback={<Loading />}>
-                    <Component {...props} />
-                </Suspense>
-            ) : (
-                <Component {...props} />
-            );
+            if (authorities.length > 0) {
+                data.currentUser.authorities.forEach((authority) => {
+                    if (!authorities.includes(authority)) {
+                        return <Navigate to="/sign-in" />;
+                    }
+                });
+            }
+            return <Component {...props} />;
         }
         return <Navigate to="/sign-in" />;
     };

@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
+import { MILLIS_IN_5_SECONDS } from '@/utils/time-utils';
+
 const GET_CURRENT_USER_INFO = gql`
     query GetCurrentUserInfo {
         currentUser: me {
@@ -25,7 +27,7 @@ export default function useCurrentUser() {
         if (error) {
             enqueueSnackbar(error.message, {
                 variant: 'error',
-                autoHideDuration: 10_000,
+                autoHideDuration: MILLIS_IN_5_SECONDS,
             });
         }
     }, [error, enqueueSnackbar]);
@@ -34,7 +36,7 @@ export default function useCurrentUser() {
         if (data?.currentUser?.authenticated === false) {
             enqueueSnackbar('Current user is not authenticated', {
                 variant: 'error',
-                autoHideDuration: 10_000,
+                autoHideDuration: MILLIS_IN_5_SECONDS,
             });
         }
     }, [data, enqueueSnackbar]);

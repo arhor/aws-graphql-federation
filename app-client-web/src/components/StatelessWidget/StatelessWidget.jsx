@@ -37,15 +37,9 @@ export default function StatelessWidget({
     );
 }
 
-StatelessWidget.defaultProps = {
-    type: 'page',
-    size: 'large',
-    padding: 2,
-};
-
 StatelessWidget.propTypes = {
-    type: PropTypes.oneOf('page', 'card'),
-    size: PropTypes.oneOf('small', 'medium', 'large'),
+    type: PropTypes.oneOf(['page', 'card']),
+    size: PropTypes.oneOf(['small', 'medium', 'large']),
     padding: PropTypes.number,
     image: PropTypes.element,
     title: PropTypes.string,

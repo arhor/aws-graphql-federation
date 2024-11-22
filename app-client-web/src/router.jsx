@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
+import Protected from '@/components/Protected';
 import Feed from '@/views/Feed';
 import NotFound from '@/views/NotFound';
 import SignIn from '@/views/SignIn';
@@ -9,7 +10,7 @@ import SignUp from '@/views/SignUp';
 export const router = createBrowserRouter([
     {
         path: '',
-        element: <Layout />,
+        element: <Protected component={Layout} />,
         children: [
             {
                 index: true,
