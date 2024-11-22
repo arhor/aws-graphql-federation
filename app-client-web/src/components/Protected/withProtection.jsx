@@ -1,5 +1,3 @@
-import { createElement, Suspense } from 'react';
-import { isElement, isLazy } from 'react-is';
 import { Navigate } from 'react-router';
 
 import Loading from '@/components/Loading';
@@ -10,25 +8,22 @@ function determineNameOf(Component) {
         || Component.name
         || 'Component';
 }
+function authorized(currentUser, authorities) {
+    return currentUser
+        && currentUser.authenticated
+        && authorities.every(auth => currentUser.authorities.includes(auth));
+}
 
-export function withProtection(Component, authorities = []) {
+export function withProtection(Component, authorities) {
     const ProtectedComponent = (props) => {
         const { loading, data } = useCurrentUser();
 
         if (loading) {
             return <Loading />;
         }
-        if (data?.currentUser) {
-            if (authorities.length > 0) {
-                data.currentUser.authorities.forEach((authority) => {
-                    if (!authorities.includes(authority)) {
-                        return <Navigate to="/sign-in" />;
-                    }
-                });
-            }
-            return <Component {...props} />;
-        }
-        return <Navigate to="/sign-in" />;
+        return authorized(data?.currentUser, authorities)
+            ? <Component {...props} />
+            : <Navigate to="/sign-in" />;
     };
     ProtectedComponent.displayName = `withProtection(${determineNameOf(Component)})`;
     return ProtectedComponent;
