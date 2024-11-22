@@ -1,20 +1,16 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import Layout from '@/components/Layout';
-import Protected from '@/components/Protected';
-import Home from '@/views/Home';
-import NotFound from '@/views/NotFound';
-import SignIn from '@/views/SignIn';
-import SignUp from '@/views/SignUp';
+import { Layout, Protected } from '@/components';
+import { NotFound, SignIn, SignUp } from '@/views';
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
     {
         path: '',
         element: <Protected component={Layout} />,
         children: [
             {
                 index: true,
-                element: <Home />,
+                lazy: () => import('@/views/Home'),
             }
         ],
     },
@@ -31,6 +27,10 @@ export const router = createBrowserRouter([
         element: <NotFound />,
     },
 ]);
+
+export default function AppRouter() {
+    return <RouterProvider router={router} />;
+}
 
 if (import.meta.hot) {
     import.meta.hot.dispose(() => router.dispose());

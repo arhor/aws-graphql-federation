@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 
 import Button from '@mui/material/Button';
 
-import StatelessWidget from '@/components/StatelessWidget';
+import { StatelessWidget } from '@/components';
 
 export default function NotFound() {
     const navigate = useNavigate();

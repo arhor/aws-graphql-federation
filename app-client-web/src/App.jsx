@@ -1,10 +1,8 @@
-import { RouterProvider } from 'react-router-dom';
-
 import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
 import { SnackbarProvider } from 'notistack';
 
-import ErrorBoundary from '@/components/ErrorBoundary';
-import { router } from '@/router';
+import { ErrorBoundary } from '@/components';
+import { AppRouter } from '@/router';
 import { AppThemeProvider } from '@/theme';
 
 const client = new ApolloClient({
@@ -21,7 +19,7 @@ export default function App() {
             <ErrorBoundary>
                 <ApolloProvider client={client}>
                     <SnackbarProvider preventDuplicate>
-                        <RouterProvider router={router} />
+                        <AppRouter />
                     </SnackbarProvider>
                 </ApolloProvider>
             </ErrorBoundary>

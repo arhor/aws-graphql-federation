@@ -3,7 +3,7 @@ import { Translation } from 'react-i18next';
 
 import PropTypes from 'prop-types';
 
-import StatelessWidget from '@/components/StatelessWidget';
+import { StatelessWidget } from '@/components';
 
 const DEFAULT_TITLE = 'Ups, something went wrong...';
 const DEFAULT_DESCRIPTION = 'Please, contact system administrator if you have nothing else to do';

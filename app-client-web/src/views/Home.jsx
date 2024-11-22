@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-import usePostsPage from '@/hooks/usePostsPage';
+import { usePostsPage } from '@/hooks';
 
 export default function Home() {
     const { t } = useTranslation();
