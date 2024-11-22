@@ -10,7 +10,7 @@ import TableRow from '@mui/material/TableRow';
 
 import usePostsPage from '@/hooks/usePostsPage';
 
-export default function Feed() {
+export default function Home() {
     const { t } = useTranslation();
     const { data } = usePostsPage();
 

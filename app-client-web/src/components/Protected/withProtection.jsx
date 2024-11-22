@@ -6,7 +6,7 @@ import useCurrentUser from '@/hooks/useCurrentUser';
 function determineNameOf(Component) {
     return Component.displayName
         || Component.name
-        || 'Component';
+        || 'AnonymousComponent';
 }
 function authorized(currentUser, authorities) {
     return currentUser
