@@ -32,7 +32,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostRepresentationServiceImpl implements PostRepresentationService {
 
-    private static final SimpleGrantedAuthority ROLE_ADMIN_AUTH = new SimpleGrantedAuthority(
+    static final SimpleGrantedAuthority ROLE_ADMIN_AUTH = new SimpleGrantedAuthority(
         PredefinedAuthority.ROLE_ADMIN.name()
     );
 

@@ -1,5 +1,7 @@
 package com.github.arhor.aws.graphql.federation.common.exception
 
+import com.github.arhor.aws.graphql.federation.common.toSet
+
 /**
  * Any Exception related to the operation with domain entity.
  *
@@ -22,5 +24,17 @@ abstract class EntityConditionException(
      * also having in mind that domain entity exception is not an exceptional case,
      * but indication to return error response.
      */
-    override fun fillInStackTrace(): Throwable = this
+    override fun fillInStackTrace(): Throwable {
+        val activeProfiles = System.getProperties()
+            ?.getProperty("spring.profiles.active")
+            ?.takeIf { it.isNotBlank() }
+            ?.lowercase()
+            ?.split(",")
+            ?.toSet { it.trim() }
+
+        if (activeProfiles != null && ("test" in activeProfiles || "dev" in activeProfiles)) {
+            return super.fillInStackTrace()
+        }
+        return this
+    }
 }

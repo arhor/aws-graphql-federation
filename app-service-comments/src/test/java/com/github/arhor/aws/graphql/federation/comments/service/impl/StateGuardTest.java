@@ -15,6 +15,8 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
@@ -32,13 +34,25 @@ import static org.mockito.Mockito.mock;
 
 class StateGuardTest {
 
-    private static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
-    private static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
+    private static UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
+    private static UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
 
     private final PostRepresentationRepository postRepository = mock();
     private final UserRepresentationRepository userRepository = mock();
 
     private final StateGuard stateGuard = new StateGuard(postRepository, userRepository);
+
+    @BeforeAll
+    static void setupClass() {
+        USER_ID = ConstantsKt.getZERO_UUID_VAL();
+        POST_ID = ConstantsKt.getOMNI_UUID_VAL();
+    }
+
+    @AfterAll
+    static void closeClass() {
+        USER_ID = null;
+        POST_ID = null;
+    }
 
     @Test
     void should_throw_EntityNotFoundException_when_user_does_not_exist_by_id() {
@@ -183,5 +197,35 @@ class StateGuardTest {
             .returns(expectedEntity, from(EntityOperationRestrictedException::getEntity))
             .returns(expectedCondition, from(EntityOperationRestrictedException::getCondition))
             .returns(expectedOperation, from(EntityOperationRestrictedException::getOperation));
+    }
+
+    @Test
+    void should_not_throw_any_when_user_comments_enabled() {
+        // Given
+        final var user = UserRepresentation.builder().id(USER_ID).build();
+        final var expectedId = user.id();
+        final var expectedEntity = COMMENT.TYPE_NAME;
+        final var expectedOperation = Operation.UNKNOWN;
+
+        given(userRepository.findById(any()))
+            .willReturn(Optional.of(user));
+
+        // When
+        final var result = catchException(
+            () -> stateGuard.ensureCommentsEnabled(
+                expectedEntity,
+                expectedOperation,
+                StateGuard.Type.USER,
+                expectedId
+            )
+        );
+
+        // Then
+        then(userRepository)
+            .should()
+            .findById(expectedId);
+
+        assertThat(result)
+            .isNull();
     }
 }

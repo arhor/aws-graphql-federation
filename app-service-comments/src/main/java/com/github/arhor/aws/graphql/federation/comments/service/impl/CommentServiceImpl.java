@@ -267,7 +267,7 @@ public class CommentServiceImpl implements CommentService {
 
             throw new EntityOperationRestrictedException(
                 COMMENT.TYPE_NAME,
-                COMMENT.Id + " = " + entity.id() + "(updated concurrently)",
+                COMMENT.Id + " = " + entity.id() + " (updated concurrently)",
                 Operation.UPDATE,
                 e
             );

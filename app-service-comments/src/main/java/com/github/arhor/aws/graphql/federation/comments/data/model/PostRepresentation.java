@@ -43,6 +43,10 @@ public record PostRepresentation(
         this(id, userId, features, false);
     }
 
+    public PostRepresentation(final UUID id, final UUID userId) {
+        this(id, userId, null);
+    }
+
     @Override
     public UUID getId() {
         return id;
