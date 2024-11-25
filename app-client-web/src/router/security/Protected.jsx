@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { withProtection } from '@/components/Protected/withProtection';
+import { withProtection } from '@/router/security/withProtection';
 
 export default function Protected({ component, authorities, ...rest }) {
     const ProtectedComponent = withProtection(component, authorities);
