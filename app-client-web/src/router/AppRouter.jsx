@@ -1,7 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import { Layout, Protected } from '@/components';
+import { Layout } from '@/components';
 import { NotFound, SignIn, SignUp } from '@/views';
+import Protected from '@/router/security/Protected';
 
 const router = createBrowserRouter([
     {
