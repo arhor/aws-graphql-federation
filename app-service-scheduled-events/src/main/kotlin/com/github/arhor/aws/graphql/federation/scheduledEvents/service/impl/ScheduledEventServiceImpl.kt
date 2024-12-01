@@ -56,7 +56,7 @@ class ScheduledEventServiceImpl(
         val currDateTime = timeOperations.currentLocalDateTime()
         val sentEventIds =
             scheduledEventRepository.findEventsByReleaseDateTimeBefore(before = currDateTime, limit = 50)
-                .also { if (it.isEmpty()) return }
+                .ifEmpty { return }
                 .map { createSnsPublicationTask(event = it) }
                 .let { vExecutor.invokeAll(tasks = it, timeout = SNS_PUBLICATION_TIMEOUT) }
                 .filter { it.state() == State.SUCCESS }

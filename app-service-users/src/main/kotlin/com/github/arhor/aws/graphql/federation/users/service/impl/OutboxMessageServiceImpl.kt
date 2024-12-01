@@ -56,7 +56,7 @@ class OutboxMessageServiceImpl(
     override fun releaseOutboxMessages(limit: Int) {
         val sentMessageIds =
             outboxMessageRepository.findOldestMessagesWithLock(limit)
-                .also { if (it.isEmpty()) return }
+                .ifEmpty { return }
                 .map { createSnsPublicationTask(message = it) }
                 .let { vExecutor.invokeAll(tasks = it, timeout = snsPublicationTimeout) }
                 .filter { it.state() == State.SUCCESS }
