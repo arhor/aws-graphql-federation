@@ -9,32 +9,26 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
-import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority;
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import static com.github.arhor.aws.graphql.federation.starter.security.UtilsKt.isAdmin;
 
 @Slf4j
 @Trace
 @Service
 @RequiredArgsConstructor
 public class PostRepresentationServiceImpl implements PostRepresentationService {
-
-    static final SimpleGrantedAuthority ROLE_ADMIN_AUTH = new SimpleGrantedAuthority(
-        PredefinedAuthority.ROLE_ADMIN.name()
-    );
 
     private final PostRepresentationRepository postRepository;
     private final StateGuard stateGuard;
@@ -103,11 +97,7 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
                     )
                 );
 
-        ensureOperationAllowed(
-            post.userId(),
-            actor.getId(),
-            actor.getAuthorities()
-        );
+        ensureOperationAllowed(post.userId(), actor);
 
         final var updatedPost = postRepository.save(post.toggleComments());
 
@@ -147,18 +137,18 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
 
     private void ensureOperationAllowed(
         @Nullable final UUID targetUserId,
-        @NotNull final UUID actingUserId,
-        @NotNull final Collection<GrantedAuthority> authorities
+        @NotNull final CurrentUserDetails actor
     ) {
         final var operation = Operation.UPDATE;
+        final var actorId = actor.getId();
 
-        if (!actingUserId.equals(targetUserId) && !authorities.contains(ROLE_ADMIN_AUTH)) {
+        if (!actorId.equals(targetUserId) && !isAdmin(actor)) {
             throw new EntityOperationRestrictedException(
                 POST.TYPE_NAME,
                 "Not enough permissions to operate post comments",
                 operation
             );
         }
-        stateGuard.ensureCommentsEnabled(POST.TYPE_NAME, operation, StateGuard.Type.USER, actingUserId);
+        stateGuard.ensureCommentsEnabled(POST.TYPE_NAME, operation, StateGuard.Type.USER, actorId);
     }
 }

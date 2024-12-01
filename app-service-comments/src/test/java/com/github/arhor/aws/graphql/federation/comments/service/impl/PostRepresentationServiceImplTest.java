@@ -11,6 +11,7 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.EntityOperationRestrictedException;
 import com.github.arhor.aws.graphql.federation.common.exception.Operation;
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetails;
+import com.github.arhor.aws.graphql.federation.starter.security.PredefinedAuthority;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,7 +30,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static com.github.arhor.aws.graphql.federation.comments.service.impl.PostRepresentationServiceImpl.ROLE_ADMIN_AUTH;
 import static com.github.arhor.aws.graphql.federation.starter.testing.MockitoExtKt.withFirstArg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
@@ -59,7 +59,7 @@ class PostRepresentationServiceImplTest {
 
     @BeforeAll
     static void setupClass() {
-        TEST_ADMIN = new CurrentUserDetails(ConstantsKt.getOMNI_UUID_VAL(), List.of(ROLE_ADMIN_AUTH));
+        TEST_ADMIN = new CurrentUserDetails(ConstantsKt.getOMNI_UUID_VAL(), List.of(PredefinedAuthority.ROLE_ADMIN));
         TEST_USER_1 = new CurrentUserDetails(ConstantsKt.getTEST_1_UUID_VAL(), List.of());
         TEST_USER_2 = new CurrentUserDetails(ConstantsKt.getTEST_2_UUID_VAL(), List.of());
         TEST_POST = new PostRepresentation(ConstantsKt.getZERO_UUID_VAL(), TEST_USER_1.getId());

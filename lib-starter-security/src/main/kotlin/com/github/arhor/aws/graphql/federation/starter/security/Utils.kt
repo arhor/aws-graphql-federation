@@ -1,7 +1,9 @@
 package com.github.arhor.aws.graphql.federation.starter.security
 
+import com.github.arhor.aws.graphql.federation.common.toSet
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import java.util.UUID
 
 /**
@@ -37,6 +39,12 @@ fun ensureAccessAllowed(
     }
     throw AccessDeniedException("Access Denied")
 }
+
+val UserDetails.isUser: Boolean
+    get() = PredefinedAuthority.ROLE_USER.name in authorities.toSet { it.authority }
+
+val UserDetails.isAdmin: Boolean
+    get() = PredefinedAuthority.ROLE_ADMIN.name in authorities.toSet { it.authority }
 
 private fun CurrentUserDetails.hasId(targetUserId: UUID?): Boolean {
     return id == targetUserId
