@@ -68,8 +68,8 @@ interface PostService {
      * Creates/Deletes like on the post for a specified user.
      *
      * @param postId the id of a post
-     * @param actor  the actor trying to create/delete like
+     * @param userId the of a user trying to create/delete like
      * @return `true` if the posts enabled, `false` otherwise
      */
-    fun togglePostLike(postId: UUID, actor: CurrentUserDetails): Boolean
+    fun togglePostLike(postId: UUID, userId: UUID): Boolean
 }

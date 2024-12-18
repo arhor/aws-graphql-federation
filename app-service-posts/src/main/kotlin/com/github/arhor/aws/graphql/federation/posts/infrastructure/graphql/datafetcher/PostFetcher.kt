@@ -50,33 +50,21 @@ class PostFetcher(
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun createPost(
-        @InputArgument input: CreatePostInput,
-        @AuthenticationPrincipal actor: CurrentUserDetails,
-    ): Post =
+    fun createPost(@InputArgument input: CreatePostInput, @AuthenticationPrincipal actor: CurrentUserDetails): Post =
         postService.createPost(input, actor)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun updatePost(
-        @InputArgument input: UpdatePostInput,
-        @AuthenticationPrincipal actor: CurrentUserDetails,
-    ): Post =
+    fun updatePost(@InputArgument input: UpdatePostInput, @AuthenticationPrincipal actor: CurrentUserDetails): Post =
         postService.updatePost(input, actor)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun deletePost(
-        @InputArgument id: UUID,
-        @AuthenticationPrincipal actor: CurrentUserDetails,
-    ): Boolean =
+    fun deletePost(@InputArgument id: UUID, @AuthenticationPrincipal actor: CurrentUserDetails): Boolean =
         postService.deletePost(id, actor)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun togglePostLike(
-        @InputArgument postId: UUID,
-        @AuthenticationPrincipal actor: CurrentUserDetails,
-    ): Boolean =
-        postService.togglePostLike(postId, actor)
+    fun togglePostLike(@InputArgument postId: UUID, @AuthenticationPrincipal actor: CurrentUserDetails): Boolean =
+        postService.togglePostLike(postId, actor.id)
 }

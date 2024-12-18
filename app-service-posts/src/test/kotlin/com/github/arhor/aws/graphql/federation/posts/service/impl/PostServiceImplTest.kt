@@ -607,9 +607,7 @@ class PostServiceImplTest {
             every { postRepository.save(any()) } answers { firstArg() }
 
             // When
-            val result = postService.togglePostLike(POST_1_ID, mockk {
-                every { id } returns USER_ID
-            })
+            val result = postService.togglePostLike(POST_1_ID, USER_ID)
 
             // Then
             verify(exactly = 1) { postRepository.findById(POST_1_ID) }
@@ -632,9 +630,7 @@ class PostServiceImplTest {
             every { postRepository.save(any()) } answers { firstArg() }
 
             // When
-            val result = postService.togglePostLike(POST_1_ID, mockk {
-                every { id } returns USER_ID
-            })
+            val result = postService.togglePostLike(POST_1_ID, USER_ID)
 
             // Then
             verify(exactly = 1) { postRepository.findById(POST_1_ID) }

@@ -9,6 +9,7 @@ import com.github.arhor.aws.graphql.federation.posts.data.model.LikeRef
 import com.github.arhor.aws.graphql.federation.posts.data.model.PostEntity
 import com.github.arhor.aws.graphql.federation.posts.data.model.TagEntity
 import com.github.arhor.aws.graphql.federation.posts.data.model.TagRef
+import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentation
 import com.github.arhor.aws.graphql.federation.posts.data.repository.PostRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.TagRepository
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
@@ -35,6 +36,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
+import java.util.concurrent.StructuredTaskScope
 import java.util.stream.Collectors.groupingBy
 
 @Trace
@@ -48,34 +50,27 @@ class PostServiceImpl(
 ) : PostService {
 
     @Transactional(readOnly = true)
-    override fun getPostById(id: UUID): Post {
-        return postRepository.findByIdOrNull(id)?.let(postMapper::mapToPost)
-            ?: throw EntityNotFoundException(
-                entity = POST.TYPE_NAME,
-                condition = "${POST.Id} = $id",
-                operation = Operation.LOOKUP,
-            )
-    }
+    override fun getPostById(id: UUID): Post =
+        findPostOrThrow(id, Operation.LOOKUP)
+            .let(postMapper::mapToPost)
 
     @Transactional(readOnly = true)
-    override fun getPostPage(input: PostsLookupInput): PostPage {
-        return if (input.tags == null) {
+    override fun getPostPage(input: PostsLookupInput) =
+        if (input.tags == null) {
             findPostsPageWithoutFilters(input)
         } else {
             findPostsPageByTags(input)
         }
-    }
 
     @Transactional(readOnly = true)
-    override fun getPostsByUserIds(userIds: Set<UUID>): Map<UUID, List<Post>> = when {
-        userIds.isNotEmpty() -> {
-            postRepository.findAllByUserIdIn(userIds).use { data ->
-                data.map(postMapper::mapToPost)
-                    .collect(groupingBy { it.userId })
-            }
+    override fun getPostsByUserIds(userIds: Set<UUID>): Map<UUID, List<Post>> {
+        if (userIds.isEmpty()) {
+            return emptyMap()
         }
-
-        else -> emptyMap()
+        return postRepository.findAllByUserIdIn(userIds).use { data ->
+            data.map(postMapper::mapToPost)
+                .collect(groupingBy { it.userId })
+        }
     }
 
     @Transactional
@@ -94,12 +89,7 @@ class PostServiceImpl(
     @Transactional
     override fun updatePost(input: UpdatePostInput, actor: CurrentUserDetails): Post {
         val currentOperation = Operation.UPDATE
-        val initialState = postRepository.findByIdOrNull(input.id)
-            ?: throw EntityNotFoundException(
-                entity = POST.TYPE_NAME,
-                condition = "${POST.Id} = ${input.id}",
-                operation = currentOperation,
-            )
+        val initialState = findPostOrThrow(input.id, currentOperation)
 
         ensureOperationAllowed(initialState.userId!!, currentOperation, actor)
 
@@ -108,12 +98,11 @@ class PostServiceImpl(
             content = input.content ?: initialState.content,
             tags = convertToRefs(input.tags) ?: initialState.tags
         )
-        return postMapper.mapToPost(
-            entity = when (currentState != initialState) {
-                true -> trySaveHandlingConcurrentUpdates(currentState)
-                else -> initialState
-            }
-        )
+        val updatedState = when (currentState != initialState) {
+            true -> trySaveHandlingConcurrentUpdates(currentState)
+            else -> initialState
+        }
+        return postMapper.mapToPost(updatedState)
     }
 
     @Transactional
@@ -131,19 +120,16 @@ class PostServiceImpl(
     }
 
     @Transactional
-    override fun togglePostLike(postId: UUID, actor: CurrentUserDetails): Boolean {
-        val post = postRepository.findByIdOrNull(postId)
-            ?: throw EntityNotFoundException(
-                entity = POST.TYPE_NAME,
-                condition = "${POST.Id} = $postId",
-                operation = Operation.UPDATE,
-            )
-        val user = userRepository.findByIdOrNull(actor.id)
-            ?: throw EntityNotFoundException(
-                entity = USER.TYPE_NAME,
-                condition = "${USER.Id} = ${actor.id}",
-                operation = Operation.UPDATE,
-            )
+    override fun togglePostLike(postId: UUID, userId: UUID): Boolean {
+        val (post, user) = StructuredTaskScope.ShutdownOnFailure().use {
+            val findPostTask = it.fork { findPostOrThrow(postId, Operation.UPDATE) }
+            val findUserTask = it.fork { findUserOrThrow(userId, Operation.UPDATE) }
+
+            it.join()
+            it.throwIfFailed()
+
+            findPostTask.get() to findUserTask.get()
+        }
         val like = LikeRef.from(user)
 
         val updatedPost = postRepository.save(
@@ -158,11 +144,26 @@ class PostServiceImpl(
         return like in updatedPost.likes
     }
 
-    private fun findPostsPageWithoutFilters(input: PostsLookupInput): PostPage {
-        return postRepository
-            .findAll(PageRequest.of(input.page, input.size, Posts.sortedByCreatedDateTimeDesc))
-            .let { postMapper.mapToPostPageFromEntity(it) }
-    }
+    private fun findPostOrThrow(id: UUID, operation: Operation): PostEntity =
+        postRepository.findByIdOrNull(id)
+            ?: throw EntityNotFoundException(
+                entity = POST.TYPE_NAME,
+                condition = "${POST.Id} = $id",
+                operation = operation
+            )
+
+    private fun findUserOrThrow(id: UUID, operation: Operation): UserRepresentation =
+        userRepository.findByIdOrNull(id)
+            ?: throw EntityNotFoundException(
+                entity = USER.TYPE_NAME,
+                condition = "${USER.Id} = $id",
+                operation = operation,
+            )
+
+    private fun findPostsPageWithoutFilters(input: PostsLookupInput): PostPage =
+        PageRequest.of(input.page, input.size, Posts.sortedByCreatedDateTimeDesc)
+            .let(postRepository::findAll)
+            .let(postMapper::mapToPostPageFromEntity)
 
     private fun findPostsPageByTags(input: PostsLookupInput): PostPage {
         val tagNames = input.tags!!.toSet { it.name }
@@ -177,14 +178,14 @@ class PostServiceImpl(
         }
     }
 
-    private fun convertToRefs(tags: List<TagInput>?): Set<TagRef>? =
+    private fun convertToRefs(tags: List<TagInput>?): Set<TagRef>? {
         when {
             tags == null -> {
-                null
+                return null
             }
 
             tags.isEmpty() -> {
-                emptySet()
+                return emptySet()
             }
 
             else -> {
@@ -194,12 +195,13 @@ class PostServiceImpl(
                 val missingTags = (tagNames - presentTags.toSet { it.name }).map { TagEntity(name = it) }
                 val createdTags = tagRepository.saveAll(missingTags)
 
-                HashSet<TagRef>(presentTags.size + createdTags.size).apply {
+                return HashSet<TagRef>(presentTags.size + createdTags.size).apply {
                     presentTags.forEach { add(TagRef.from(it)) }
                     createdTags.forEach { add(TagRef.from(it)) }
                 }
             }
         }
+    }
 
     private fun ensureOperationAllowed(
         userId: UUID,
