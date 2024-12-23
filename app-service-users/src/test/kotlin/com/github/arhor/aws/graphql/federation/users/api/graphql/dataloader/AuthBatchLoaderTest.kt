@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.dataloader
+package com.github.arhor.aws.graphql.federation.users.api.graphql.dataloader
 
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL

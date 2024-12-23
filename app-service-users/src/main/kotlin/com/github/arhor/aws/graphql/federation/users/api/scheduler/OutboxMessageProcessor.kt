@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.infrastructure.scheduler
+package com.github.arhor.aws.graphql.federation.users.api.scheduler
 
 import com.github.arhor.aws.graphql.federation.users.service.OutboxMessageService
 import org.springframework.scheduling.annotation.Scheduled

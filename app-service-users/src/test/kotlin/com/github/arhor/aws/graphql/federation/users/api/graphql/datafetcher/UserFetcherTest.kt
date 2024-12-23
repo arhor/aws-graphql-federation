@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.infrastructure.graphql.datafetcher
+package com.github.arhor.aws.graphql.federation.users.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation

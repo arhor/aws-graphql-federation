@@ -22,18 +22,18 @@ class ApplicationArchitectureTest {
         // Given
         appClasses: JavaClasses,
     ) {
-        val applicationPackage = UsersServiceRunner::class.java.getPackage().name
+        val appRootPackage = UsersServiceRunner::class.java.getPackage().name
 
         // When
         val architecture =
             layeredArchitecture()
                 .consideringOnlyDependenciesInLayers()
-                .layer(INFRASTRUCTURE).definedBy("${applicationPackage}.infrastructure..")
-                .layer(SERVICE).definedBy("${applicationPackage}.service..")
-                .layer(DATA_ACCESS).definedBy("${applicationPackage}.data..")
-                .layer(CONFIGURATION).definedBy("${applicationPackage}.config..")
-                .whereLayer(INFRASTRUCTURE).mayNotBeAccessedByAnyLayer()
-                .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(INFRASTRUCTURE, CONFIGURATION)
+                .layer(API).definedBy("${appRootPackage}.api..")
+                .layer(SERVICE).definedBy("${appRootPackage}.service..")
+                .layer(DATA_ACCESS).definedBy("${appRootPackage}.data..")
+                .layer(CONFIGURATION).definedBy("${appRootPackage}.config..")
+                .whereLayer(API).mayNotBeAccessedByAnyLayer()
+                .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(API, CONFIGURATION)
                 .whereLayer(DATA_ACCESS).mayOnlyBeAccessedByLayers(SERVICE, CONFIGURATION)
 
         // Then
@@ -56,7 +56,7 @@ class ApplicationArchitectureTest {
 
     companion object {
         // @formatter:off
-        private const val INFRASTRUCTURE = "Infrastructure"
+        private const val API = "Infrastructure"
         private const val SERVICE        = "Service"
         private const val DATA_ACCESS    = "Data Access"
         private const val CONFIGURATION  = "Configuration"

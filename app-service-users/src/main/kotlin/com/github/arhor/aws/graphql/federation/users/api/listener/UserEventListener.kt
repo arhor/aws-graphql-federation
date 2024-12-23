@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.infrastructure.listener
+package com.github.arhor.aws.graphql.federation.users.api.listener
 
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace

@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users.infrastructure.router
+package com.github.arhor.aws.graphql.federation.users.api.router
 
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
