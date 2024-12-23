@@ -20,10 +20,10 @@ import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 class ApplicationArchitectureTest {
 
     // @formatter:off
-    private static final String INFRASTRUCTURE = "Infrastructure";
-    private static final String SERVICE        = "Service";
-    private static final String DATA_ACCESS    = "Data Access";
-    private static final String CONFIGURATION  = "Configuration";
+    private static final String API           = "API";
+    private static final String SERVICE       = "Service";
+    private static final String DATA_ACCESS   = "Data Access";
+    private static final String CONFIGURATION = "Configuration";
     // @formatter:on
 
     @ArchTest
@@ -37,12 +37,12 @@ class ApplicationArchitectureTest {
         final var architecture =
             layeredArchitecture()
                 .consideringOnlyDependenciesInLayers()
-                .layer(INFRASTRUCTURE).definedBy(applicationPackage + ".infrastructure..")
+                .layer(API).definedBy(applicationPackage + ".api..")
                 .layer(SERVICE).definedBy(applicationPackage + ".service..")
                 .layer(DATA_ACCESS).definedBy(applicationPackage + ".data..")
                 .layer(CONFIGURATION).definedBy(applicationPackage + ".config..")
-                .whereLayer(INFRASTRUCTURE).mayNotBeAccessedByAnyLayer()
-                .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(INFRASTRUCTURE, CONFIGURATION)
+                .whereLayer(API).mayNotBeAccessedByAnyLayer()
+                .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(API, CONFIGURATION)
                 .whereLayer(DATA_ACCESS).mayOnlyBeAccessedByLayers(SERVICE, CONFIGURATION);
 
         // Then
