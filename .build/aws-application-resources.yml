@@ -68,7 +68,7 @@ Resources:
   CreateScheduledEventQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: app-events--events-scheduled--create--scheduled-events
+      QueueName: app-events--events-scheduled--create--scheduler
       RedrivePolicy:
         deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
         maxReceiveCount: 15
@@ -76,7 +76,7 @@ Resources:
   DeleteScheduledEventQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: app-events--events-scheduled--delete--scheduled-events
+      QueueName: app-events--events-scheduled--delete--scheduler
       RedrivePolicy:
         deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
         maxReceiveCount: 15

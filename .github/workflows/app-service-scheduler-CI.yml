@@ -1,0 +1,27 @@
+name: Scheduled Events service CI
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/app-service-scheduler-CI.yml'
+      - '.github/actions/**'
+      - 'app-service-scheduler/**'
+      - 'lib-*/**'
+  pull_request:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/app-service-scheduler-CI.yml'
+      - '.github/actions/**'
+      - 'app-service-scheduler/**'
+      - 'lib-*/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    uses: ./.github/workflows/build-and-verify-code-coverage.yml
+    with:
+      application-name: 'app-service-scheduler'

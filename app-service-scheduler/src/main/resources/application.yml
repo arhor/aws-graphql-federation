@@ -1,0 +1,80 @@
+server:
+  port: \${PORT:0}
+
+spring:
+  application:
+    name: app-service-scheduler
+  aop:
+    proxy-target-class: false
+  profiles:
+    active: \${SPRING_ACTIVE_PROFILES:dev}
+  sql:
+    init:
+      platform: postgres
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: \${JDBC_DATABASE_URL}
+    username: \${JDBC_DATABASE_USERNAME}
+    password: \${JDBC_DATABASE_PASSWORD}
+    hikari:
+      auto-commit: false
+  flyway:
+    url: \${spring.datasource.url}
+    user: \${spring.datasource.username}
+    password: \${spring.datasource.password}
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0.0
+  output:
+    ansi:
+      enabled: always
+  cloud:
+    aws:
+      credentials:
+        access-key: \${AWS_ACCESS_KEY}
+        secret-key: \${AWS_SECRET_KEY}
+      region:
+        static: \${AWS_REGION}
+  threads:
+    virtual:
+      enabled: true
+
+app-props:
+  events:
+    target:
+      app-events: \${APP_PROPS_AWS_SNS_APP_EVENTS}
+    source:
+      create-scheduled-event: \${APP_PROPS_AWS_SQS_CREATE_SCHEDULED_EVENT}
+      delete-scheduled-event: \${APP_PROPS_AWS_SQS_DELETE_SCHEDULED_EVENT}
+  scheduled:
+    processing-cron: "*/15 * * * * *"
+  retry:
+    min-interval: \${RETRY_MIN_INTERVAL:1000}
+    max-interval: \${RETRY_MAX_INTERVAL:10000}
+    max-attempts: \${RETRY_MAX_ATTEMPTS:3}
+    multiplier: \${RETRY_MULTIPLIER:1.5}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+    import:
+      - optional:file:${project.rootDir}/.env[.properties]
+      - optional:file:${project.rootDir}/../.env[.properties]
+  devtools:
+    livereload:
+      enabled: true
+      port: 35732
+  cloud:
+    aws:
+      sns:
+        endpoint: \${AWS_ENDPOINT}
+      sqs:
+        endpoint: \${AWS_ENDPOINT}
+
+tracing:
+  method-execution-logging:
+    enabled: true
+    level: debug
