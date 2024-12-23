@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.scheduledEvents.infrastructure.listener
+package com.github.arhor.aws.graphql.federation.scheduledEvents.api.listener
 
 import com.github.arhor.aws.graphql.federation.common.constants.ATTR_IDEMPOTENCY_KEY
 import com.github.arhor.aws.graphql.federation.common.constants.ATTR_TRACE_ID

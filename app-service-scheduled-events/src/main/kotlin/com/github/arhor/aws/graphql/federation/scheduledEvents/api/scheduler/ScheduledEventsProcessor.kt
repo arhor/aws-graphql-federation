@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.scheduledEvents.infrastructure.scheduler
+package com.github.arhor.aws.graphql.federation.scheduledEvents.api.scheduler
 
 import com.github.arhor.aws.graphql.federation.scheduledEvents.service.ScheduledEventService
 import org.springframework.scheduling.annotation.Scheduled
