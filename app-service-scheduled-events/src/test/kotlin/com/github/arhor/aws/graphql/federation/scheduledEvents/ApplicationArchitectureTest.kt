@@ -1,4 +1,4 @@
-package com.github.arhor.aws.graphql.federation.users
+package com.github.arhor.aws.graphql.federation.scheduledEvents
 
 import com.tngtech.archunit.core.domain.JavaCall.Predicates.target
 import com.tngtech.archunit.core.domain.JavaClass.Predicates.implement
@@ -14,7 +14,7 @@ import com.tngtech.archunit.library.Architectures.layeredArchitecture
 import java.time.temporal.Temporal
 
 @ArchTag("architecture")
-@AnalyzeClasses(packagesOf = [UsersServiceRunner::class], importOptions = [DoNotIncludeTests::class])
+@AnalyzeClasses(packagesOf = [ScheduledEventsServiceRunner::class], importOptions = [DoNotIncludeTests::class])
 class ApplicationArchitectureTest {
 
     @ArchTest
@@ -22,7 +22,7 @@ class ApplicationArchitectureTest {
         // Given
         appClasses: JavaClasses,
     ) {
-        val appRootPackage = UsersServiceRunner::class.java.getPackage().name
+        val appRootPackage = ScheduledEventsServiceRunner::class.java.getPackage().name
 
         // When
         val architecture =
