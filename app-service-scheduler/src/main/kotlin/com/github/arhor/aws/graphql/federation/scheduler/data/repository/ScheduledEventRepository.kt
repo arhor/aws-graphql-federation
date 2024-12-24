@@ -8,6 +8,6 @@ import java.util.UUID
 
 interface ScheduledEventRepository : CrudRepository<ScheduledEventEntity, UUID> {
 
-    @Query(name = "ScheduledEventEntity.findEventsByReleaseDateTimeBefore")
-    fun findEventsByReleaseDateTimeBefore(before: LocalDateTime, limit: Int): List<ScheduledEventEntity>
+    @Query(name = "ScheduledEventEntity.findEventsByPublishDateTimeBefore")
+    fun findEventsByPublishDateTimeBefore(before: LocalDateTime, limit: Int): List<ScheduledEventEntity>
 }

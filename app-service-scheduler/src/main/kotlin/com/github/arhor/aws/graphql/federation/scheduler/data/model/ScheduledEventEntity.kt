@@ -22,7 +22,7 @@ data class ScheduledEventEntity @PersistenceCreator constructor(
     val type: String,
 
     @Column("data")
-    val data: Map<String, Any?>,
+    val data: String,
 
     @Column("publish_date_time")
     val publishDateTime: LocalDateTime,

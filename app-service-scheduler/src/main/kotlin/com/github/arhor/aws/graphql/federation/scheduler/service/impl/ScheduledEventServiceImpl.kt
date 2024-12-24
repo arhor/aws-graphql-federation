@@ -23,7 +23,6 @@ import java.util.concurrent.Semaphore
 import kotlin.time.Duration.Companion.seconds
 
 @Service
-@Transactional
 class ScheduledEventServiceImpl(
     appProps: AppProps,
     private val scheduledEventRepository: ScheduledEventRepository,
@@ -36,6 +35,7 @@ class ScheduledEventServiceImpl(
     private val vExecutor = Executors.newVirtualThreadPerTaskExecutor()
     private val semaphore = Semaphore(CONCURRENT_EVENTS, true)
 
+    @Transactional
     override fun storeScheduledEvent(event: ScheduledEvent.Created) {
         scheduledEventRepository.save(
             ScheduledEventEntity(
@@ -48,14 +48,16 @@ class ScheduledEventServiceImpl(
         )
     }
 
+    @Transactional
     override fun clearScheduledEvent(event: ScheduledEvent.Deleted) {
         scheduledEventRepository.deleteById(event.id)
     }
 
+    @Transactional
     override fun publishMatureEvents() {
         val currDateTime = timeOperations.currentLocalDateTime()
         val sentEventIds =
-            scheduledEventRepository.findEventsByReleaseDateTimeBefore(before = currDateTime, limit = 50)
+            scheduledEventRepository.findEventsByPublishDateTimeBefore(before = currDateTime, limit = 50)
                 .ifEmpty { return }
                 .map { createSnsPublicationTask(event = it) }
                 .let { vExecutor.invokeAll(tasks = it, timeout = SNS_PUBLICATION_TIMEOUT) }
