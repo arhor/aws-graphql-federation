@@ -42,7 +42,7 @@ class ScheduledEventServiceImpl(
                 event.id,
                 event.type,
                 data = event.data,
-                publishDateTime = timeOperations.convertToLocalDateTime(event.whenToPublish),
+                publishDateTime = timeOperations.convertToLocalDateTime(event.time),
                 shouldBePersisted = true,
             )
         )

@@ -10,11 +10,11 @@ sealed interface ScheduledEvent : AppEvent {
         override fun type(): String = Type.SCHEDULED_EVENT_PUBLISH.code
     }
 
-    data class Created(val id: UUID, val type: String, val data: String, val whenToPublish: Instant) : ScheduledEvent {
+    data class Created(val id: UUID, val type: String, val data: String, val time: Instant) : ScheduledEvent {
         override fun type(): String = Type.SCHEDULED_EVENT_CREATED.code
     }
 
-    data class Deleted(val id: UUID) : ScheduledEvent {
+    data class Deleted(val id: UUID, val type: String) : ScheduledEvent {
         override fun type(): String = Type.SCHEDULED_EVENT_DELETED.code
     }
 
