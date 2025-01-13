@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.scheduler.api.listener
 
-import com.github.arhor.aws.graphql.federation.common.constants.ATTR_IDEMPOTENCY_KEY
 import com.github.arhor.aws.graphql.federation.common.constants.ATTR_TRACE_ID
 import com.github.arhor.aws.graphql.federation.common.event.ScheduledEvent
 import com.github.arhor.aws.graphql.federation.scheduler.service.ScheduledEventService
@@ -18,25 +17,14 @@ class ScheduledEventListener(
     private val scheduledEventService: ScheduledEventService,
 ) {
 
-    @SqsListener("\${app-props.events.source.create-scheduled-event}")
-    fun createScheduledEvent(
-        @Payload event: ScheduledEvent.Created,
-        @Header(ATTR_TRACE_ID) traceId: UUID,
-        @Header(ATTR_IDEMPOTENCY_KEY) idempotencyKey: UUID,
-    ) {
+    @SqsListener("\${app-props.events.source.handle-scheduled-event}")
+    fun handleScheduledEvent(@Payload event: ScheduledEvent, @Header(ATTR_TRACE_ID) traceId: UUID) {
         withExtendedMDC(traceId) {
-            scheduledEventService.storeScheduledEvent(event)
-        }
-    }
-
-    @SqsListener("\${app-props.events.source.delete-scheduled-event}")
-    fun deleteScheduledEvent(
-        @Payload event: ScheduledEvent.Deleted,
-        @Header(ATTR_TRACE_ID) traceId: UUID,
-        @Header(ATTR_IDEMPOTENCY_KEY) idempotencyKey: UUID,
-    ) {
-        withExtendedMDC(traceId) {
-            scheduledEventService.clearScheduledEvent(event)
+            when (event) {
+                is ScheduledEvent.Created -> scheduledEventService.storeScheduledEvent(event)
+                is ScheduledEvent.Deleted -> scheduledEventService.clearScheduledEvent(event)
+                else -> throw IllegalArgumentException("Unsupported scheduled event type: ${event.type()}")
+            }
         }
     }
 }

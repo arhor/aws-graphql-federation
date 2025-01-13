@@ -44,8 +44,7 @@ app-props:
     target:
       app-events: \${APP_PROPS_AWS_SNS_APP_EVENTS}
     source:
-      create-scheduled-event: \${APP_PROPS_AWS_SQS_CREATE_SCHEDULED_EVENT}
-      delete-scheduled-event: \${APP_PROPS_AWS_SQS_DELETE_SCHEDULED_EVENT}
+      handle-scheduled-event: \${APP_PROPS_AWS_SQS_HANDLE_SCHEDULED_EVENT}
   scheduled:
     processing-cron: "*/15 * * * * *"
   retry:
