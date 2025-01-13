@@ -56,7 +56,7 @@ class ApplicationArchitectureTest {
 
     companion object {
         // @formatter:off
-        private const val API           = "Infrastructure"
+        private const val API           = "Api"
         private const val SERVICE       = "Service"
         private const val DATA_ACCESS   = "Data Access"
         private const val CONFIGURATION = "Configuration"
