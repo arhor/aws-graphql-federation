@@ -77,7 +77,6 @@ class OutboxMessageServiceImpl(
             AppEvent.attributes(
                 type = message.type,
                 traceId = message.traceId.toString(),
-                idempotencyKey = messageId.toString(),
             )
         )
         return Callable {

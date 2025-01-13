@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.github.arhor.aws.graphql.federation.common.constants.AttributesKt.ATTR_IDEMPOTENCY_KEY;
 import static com.github.arhor.aws.graphql.federation.common.constants.AttributesKt.ATTR_TRACE_ID;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SQS;
 
@@ -30,12 +29,7 @@ abstract class EventListenerTestBase {
     static final UUID USER_ID = ConstantsKt.getZERO_UUID_VAL();
     static final UUID POST_ID = ConstantsKt.getOMNI_UUID_VAL();
     static final UUID TRACE_ID = ConstantsKt.getTEST_1_UUID_VAL();
-    static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
-
-    static final Map<String, Object> MESSAGE_HEADERS = Map.of(
-        ATTR_TRACE_ID, TRACE_ID,
-        ATTR_IDEMPOTENCY_KEY, IDEMPOTENCY_KEY
-    );
+    static final Map<String, Object> MESSAGE_HEADERS = Map.of(ATTR_TRACE_ID, TRACE_ID);
 
     @Container
     private final static LocalStackContainer localStack = new LocalStackContainer(

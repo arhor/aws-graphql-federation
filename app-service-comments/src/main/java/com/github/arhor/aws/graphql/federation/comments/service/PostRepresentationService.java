@@ -19,19 +19,17 @@ public interface PostRepresentationService {
     /**
      * Creates a new post representation.
      *
-     * @param postId         the UUID of the post for whom the representation is to be created
-     * @param userId         the UUID of the user for whom the representation is to be created
-     * @param idempotencyKey the UUID used to ensure idempotency of the creation operation
+     * @param postId the UUID of the post for whom the representation is to be created
+     * @param userId the UUID of the user for whom the representation is to be created
      */
-    void createPostRepresentation(@NotNull UUID postId, @NotNull UUID userId, @NotNull UUID idempotencyKey);
+    void createPostRepresentation(@NotNull UUID postId, @NotNull UUID userId);
 
     /**
      * Deletes an existing post representation.
      *
-     * @param postId         the UUID of the post whose representation is to be deleted
-     * @param idempotencyKey the UUID used to ensure idempotency of the deletion operation
+     * @param postId the UUID of the post whose representation is to be deleted
      */
-    void deletePostRepresentation(@NotNull UUID postId, @NotNull UUID idempotencyKey);
+    void deletePostRepresentation(@NotNull UUID postId);
 
     /**
      * Toggles an ability to create comments for the specified post.

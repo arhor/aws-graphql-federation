@@ -4,7 +4,6 @@ import com.github.arhor.aws.graphql.federation.comments.data.model.UserRepresent
 import com.github.arhor.aws.graphql.federation.comments.data.repository.UserRepresentationRepository;
 import com.github.arhor.aws.graphql.federation.comments.service.UserRepresentationService;
 import com.github.arhor.aws.graphql.federation.starter.testing.ConstantsKt;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -21,14 +20,12 @@ import static org.assertj.core.api.Assertions.from;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.then;
 
-@Tag("integration")
 @EnableCaching
 @SpringJUnitConfig(UserRepresentationServiceImpl.class)
 @AutoConfigureCache(cacheProvider = CacheType.CAFFEINE)
 class UserRepresentationServiceImplIntegrationTest {
 
     private static final UUID USER_ID = ConstantsKt.getTEST_1_UUID_VAL();
-    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
     @Captor
     private ArgumentCaptor<UserRepresentation> userRepresentationCaptor;
@@ -40,13 +37,13 @@ class UserRepresentationServiceImplIntegrationTest {
     private UserRepresentationService userRepresentationService;
 
     @Test
-    void should_call_userRepository_save_only_once_with_the_same_idempotencyKey() {
+    void should_call_userRepository_save_only_once_with_the_same_user_id() {
         // Given
         final var numberOfCalls = 3;
 
         // When
         for (int i = 1; i <= numberOfCalls; i++) {
-            userRepresentationService.createUserRepresentation(USER_ID, IDEMPOTENCY_KEY);
+            userRepresentationService.createUserRepresentation(USER_ID);
         }
 
         // Then
@@ -64,13 +61,13 @@ class UserRepresentationServiceImplIntegrationTest {
     }
 
     @Test
-    void should_call_userRepository_deleteById_only_once_with_the_same_idempotencyKey() {
+    void should_call_userRepository_deleteById_only_once_with_the_same_user_id() {
         // Given
         final var numberOfCalls = 3;
 
         // When
         for (int i = 0; i < numberOfCalls; i++) {
-            userRepresentationService.deleteUserRepresentation(USER_ID, IDEMPOTENCY_KEY);
+            userRepresentationService.deleteUserRepresentation(USER_ID);
         }
 
         // Then

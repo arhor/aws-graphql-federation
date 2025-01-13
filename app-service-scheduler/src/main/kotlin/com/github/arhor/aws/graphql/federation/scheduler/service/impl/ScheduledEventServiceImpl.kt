@@ -78,7 +78,6 @@ class ScheduledEventServiceImpl(
             AppEvent.attributes(
                 type = event.type,
                 traceId = UUID.randomUUID().toString(),
-                idempotencyKey = eventId.toString(),
             )
         )
         return Callable {

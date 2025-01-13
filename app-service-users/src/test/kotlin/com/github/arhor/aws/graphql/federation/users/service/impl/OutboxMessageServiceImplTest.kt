@@ -110,7 +110,7 @@ class OutboxMessageServiceImplTest {
         val messages = listOf(message)
 
         val expectedMessagesNumber = 50
-        val expectedHeaders = AppEvent.attributes("x-test-event", TRACE_ID.toString(), MESSAGE_ID.toString())
+        val expectedHeaders = AppEvent.attributes("x-test-event", TRACE_ID.toString())
 
         val actualSnsTopicName = slot<String>()
         val actualNotification = slot<SnsNotification<*>>()

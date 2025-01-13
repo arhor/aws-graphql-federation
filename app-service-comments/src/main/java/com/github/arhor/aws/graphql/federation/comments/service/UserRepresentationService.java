@@ -18,18 +18,16 @@ public interface UserRepresentationService {
     /**
      * Creates a new user representation.
      *
-     * @param userId         the UUID of the user for whom the representation is to be created
-     * @param idempotencyKey the UUID used to ensure idempotency of the creation operation
+     * @param userId the UUID of the user for whom the representation is to be created
      */
-    void createUserRepresentation(@NotNull UUID userId, @NotNull UUID idempotencyKey);
+    void createUserRepresentation(@NotNull UUID userId);
 
     /**
      * Deletes an existing user representation.
      *
-     * @param userId         the UUID of the user whose representation is to be deleted
-     * @param idempotencyKey the UUID used to ensure idempotency of the deletion operation
+     * @param userId the UUID of the user whose representation is to be deleted
      */
-    void deleteUserRepresentation(@NotNull UUID userId, @NotNull UUID idempotencyKey);
+    void deleteUserRepresentation(@NotNull UUID userId);
 
     /**
      * Toggles an ability to create comments for the specified user.

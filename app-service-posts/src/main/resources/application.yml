@@ -29,8 +29,9 @@ spring:
     ansi:
       enabled: always
   cache:
+    type: caffeine
     caffeine:
-      spec: "initialCapacity=100,maximumSize=500,expireAfterAccess=300s"
+      spec: "initialCapacity=100,maximumSize=500,expireAfterAccess=60s"
   cloud:
     aws:
       credentials:

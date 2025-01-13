@@ -8,45 +8,40 @@ import com.github.arhor.aws.graphql.federation.posts.data.model.UserRepresentati
 import com.github.arhor.aws.graphql.federation.posts.data.repository.UserRepresentationRepository
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
-import com.github.arhor.aws.graphql.federation.posts.util.Caches
-import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
+import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import io.mockk.junit5.MockKExtension
 import io.mockk.just
-import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchException
 import org.assertj.core.api.Assertions.from
 import org.assertj.core.api.InstanceOfAssertFactories.type
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.cache.CacheManager
-import org.springframework.cache.concurrent.ConcurrentMapCache
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.cache.CacheType
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache
+import org.springframework.cache.annotation.EnableCaching
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.util.Optional
 
+@ExtendWith(MockKExtension::class)
+@EnableCaching
+@SpringJUnitConfig(UserRepresentationServiceImpl::class)
+@AutoConfigureCache(cacheProvider = CacheType.CAFFEINE)
 class UserRepresentationServiceImplTest {
 
-    private val cache = ConcurrentMapCache(Caches.IDEMPOTENT_ID_SET.name)
-    private val cacheManager = mockk<CacheManager>()
-    private val userRepository = mockk<UserRepresentationRepository>()
+    @MockkBean
+    private lateinit var userRepository: UserRepresentationRepository
 
-    private lateinit var userService: UserRepresentationServiceImpl
-
-    @BeforeEach
-    fun setUp() {
-        every { cacheManager.getCache(Caches.IDEMPOTENT_ID_SET.name) } returns cache
-
-        userService = UserRepresentationServiceImpl(
-            cacheManager,
-            userRepository,
-        )
-        userService.initialize()
-    }
-
+    @Autowired
+    private lateinit var userService: UserRepresentationService
 
     @Nested
     @DisplayName("Method findUsersRepresentationsInBatch")
@@ -96,7 +91,7 @@ class UserRepresentationServiceImplTest {
     @DisplayName("Method createUserRepresentation")
     inner class CreateUserRepresentationTest {
         @Test
-        fun `should call userRepository save only once with the same idempotencyKey`() {
+        fun `should call userRepository save only once with the same user id`() {
             // Given
             val expectedUser = UserRepresentation(
                 id = USER_ID,
@@ -107,7 +102,7 @@ class UserRepresentationServiceImplTest {
 
             // When
             for (i in 0..2) {
-                userService.createUserRepresentation(USER_ID, IDEMPOTENCY_KEY)
+                userService.createUserRepresentation(USER_ID)
             }
 
             // Then
@@ -119,13 +114,13 @@ class UserRepresentationServiceImplTest {
     @DisplayName("Method deleteUserRepresentation")
     inner class DeleteUserRepresentationTest {
         @Test
-        fun `should call userRepository deleteById only once with the same idempotencyKey`() {
+        fun `should call userRepository deleteById only once with the same user id`() {
             // Given
             every { userRepository.deleteById(any()) } just runs
 
             // When
             for (i in 0..2) {
-                userService.deleteUserRepresentation(USER_ID, IDEMPOTENCY_KEY)
+                userService.deleteUserRepresentation(USER_ID)
             }
 
             // Then
@@ -195,6 +190,5 @@ class UserRepresentationServiceImplTest {
 
     companion object {
         private val USER_ID = ZERO_UUID_VAL
-        private val IDEMPOTENCY_KEY = TEST_1_UUID_VAL
     }
 }

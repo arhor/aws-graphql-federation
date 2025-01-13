@@ -1,6 +1,5 @@
 package com.github.arhor.aws.graphql.federation.posts.api.listener
 
-import com.github.arhor.aws.graphql.federation.common.constants.ATTR_IDEMPOTENCY_KEY
 import com.github.arhor.aws.graphql.federation.common.constants.ATTR_TRACE_ID
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
@@ -22,12 +21,10 @@ class UserEventListener(
     fun syncPostsOnUserCreatedEvent(
         @Payload event: UserEvent.Created,
         @Header(ATTR_TRACE_ID) traceId: UUID,
-        @Header(ATTR_IDEMPOTENCY_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             userRepresentationService.createUserRepresentation(
                 userId = event.id,
-                idempotencyKey = idempotencyKey,
             )
         }
     }
@@ -36,12 +33,10 @@ class UserEventListener(
     fun syncPostsOnUserDeletedEvent(
         @Payload event: UserEvent.Deleted,
         @Header(ATTR_TRACE_ID) traceId: UUID,
-        @Header(ATTR_IDEMPOTENCY_KEY) idempotencyKey: UUID,
     ) {
         withExtendedMDC(traceId) {
             userRepresentationService.deleteUserRepresentation(
                 userId = event.id,
-                idempotencyKey = idempotencyKey,
             )
         }
     }

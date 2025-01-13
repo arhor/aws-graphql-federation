@@ -7,30 +7,19 @@ import com.github.arhor.aws.graphql.federation.posts.data.repository.UserReprese
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
-import com.github.arhor.aws.graphql.federation.posts.util.Caches
-import com.github.arhor.aws.graphql.federation.posts.util.get
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
-import jakarta.annotation.PostConstruct
-import org.springframework.cache.Cache
-import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
+import kotlin.collections.set
 
 @Trace
 @Service
 class UserRepresentationServiceImpl(
-    private val cacheManager: CacheManager,
     private val userRepository: UserRepresentationRepository,
 ) : UserRepresentationService {
-
-    private lateinit var cache: Cache
-
-    @PostConstruct
-    fun initialize() {
-        cache = cacheManager[Caches.IDEMPOTENT_ID_SET]
-    }
 
     override fun findUsersRepresentationsInBatch(userIds: Set<UUID>): Map<UUID, User> {
         val result = HashMap<UUID, User>(userIds.size)
@@ -48,21 +37,19 @@ class UserRepresentationServiceImpl(
         return result
     }
 
-    override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID) {
-        cache.get(idempotencyKey) {
-            userRepository.save(
-                UserRepresentation(
-                    id = userId,
-                    shouldBePersisted = true,
-                )
+    @Cacheable
+    override fun createUserRepresentation(userId: UUID) {
+        userRepository.save(
+            UserRepresentation(
+                id = userId,
+                shouldBePersisted = true,
             )
-        }
+        )
     }
 
-    override fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID) {
-        cache.get(idempotencyKey) {
-            userRepository.deleteById(userId)
-        }
+    @Cacheable
+    override fun deleteUserRepresentation(userId: UUID) {
+        userRepository.deleteById(userId)
     }
 
     @Transactional

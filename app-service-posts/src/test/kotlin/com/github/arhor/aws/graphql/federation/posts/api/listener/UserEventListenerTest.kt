@@ -1,11 +1,9 @@
 package com.github.arhor.aws.graphql.federation.posts.api.listener
 
-import com.github.arhor.aws.graphql.federation.common.constants.ATTR_IDEMPOTENCY_KEY
 import com.github.arhor.aws.graphql.federation.common.constants.ATTR_TRACE_ID
 import com.github.arhor.aws.graphql.federation.common.event.UserEvent
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
-import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
 import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.confirmVerified
@@ -39,14 +37,14 @@ class UserEventListenerTest : SqsListenerTestBase() {
         val event = UserEvent.Created(id = USER_ID)
         val message = GenericMessage(event, MESSAGE_HEADERS)
 
-        every { userRepresentationService.createUserRepresentation(any(), any()) } just runs
+        every { userRepresentationService.createUserRepresentation(any()) } just runs
 
         // When
         sqsTemplate.send(USER_CREATED_TEST_QUEUE, message)
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userRepresentationService.createUserRepresentation(event.id, IDEMPOTENCY_KEY)
+            userRepresentationService.createUserRepresentation(event.id)
         }
     }
 
@@ -56,14 +54,14 @@ class UserEventListenerTest : SqsListenerTestBase() {
         val event = UserEvent.Deleted(id = USER_ID)
         val message = GenericMessage(event, MESSAGE_HEADERS)
 
-        every { userRepresentationService.deleteUserRepresentation(any(), any()) } just runs
+        every { userRepresentationService.deleteUserRepresentation(any()) } just runs
 
         // When
         sqsTemplate.send(USER_DELETED_TEST_QUEUE, message)
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userRepresentationService.deleteUserRepresentation(event.id, IDEMPOTENCY_KEY)
+            userRepresentationService.deleteUserRepresentation(event.id)
         }
     }
 
@@ -73,12 +71,7 @@ class UserEventListenerTest : SqsListenerTestBase() {
 
         private val USER_ID = ZERO_UUID_VAL
         private val TRACE_ID = TEST_1_UUID_VAL
-        private val IDEMPOTENCY_KEY = TEST_2_UUID_VAL
-
-        private val MESSAGE_HEADERS = mapOf(
-            ATTR_TRACE_ID to TRACE_ID,
-            ATTR_IDEMPOTENCY_KEY to IDEMPOTENCY_KEY,
-        )
+        private val MESSAGE_HEADERS = mapOf(ATTR_TRACE_ID to TRACE_ID)
 
         @JvmStatic
         @DynamicPropertySource

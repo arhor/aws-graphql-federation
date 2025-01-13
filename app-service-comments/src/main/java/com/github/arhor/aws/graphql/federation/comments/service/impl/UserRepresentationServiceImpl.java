@@ -52,11 +52,8 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     }
 
     @Override
-    @Cacheable(cacheNames = "create-user-ops-cache", key = "{#userId, #idempotencyKey}")
-    public void createUserRepresentation(
-        @NotNull final UUID userId,
-        @NotNull final UUID idempotencyKey
-    ) {
+    @Cacheable
+    public void createUserRepresentation(@NotNull final UUID userId) {
         final var userRepresentation = UserRepresentation.builder()
             .id(userId)
             .shouldBePersisted(true)
@@ -66,11 +63,8 @@ public class UserRepresentationServiceImpl implements UserRepresentationService 
     }
 
     @Override
-    @Cacheable(cacheNames = "delete-user-ops-cache", key = "{#userId, #idempotencyKey}")
-    public void deleteUserRepresentation(
-        @NotNull final UUID userId,
-        @NotNull final UUID idempotencyKey
-    ) {
+    @Cacheable
+    public void deleteUserRepresentation(@NotNull final UUID userId) {
         userRepository.deleteById(userId);
     }
 

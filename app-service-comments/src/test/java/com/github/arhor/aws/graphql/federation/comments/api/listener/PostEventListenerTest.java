@@ -54,7 +54,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postRepresentationService)
                     .should()
-                    .createPostRepresentation(event.getId(), event.getUserId(), IDEMPOTENCY_KEY);
+                    .createPostRepresentation(event.getId(), event.getUserId());
 
                 then(postRepresentationService)
                     .shouldHaveNoMoreInteractions();
@@ -77,7 +77,7 @@ class PostEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(postRepresentationService)
                     .should()
-                    .deletePostRepresentation(event.getId(), IDEMPOTENCY_KEY);
+                    .deletePostRepresentation(event.getId());
 
                 then(postRepresentationService)
                     .shouldHaveNoMoreInteractions();

@@ -29,7 +29,6 @@ class PostRepresentationServiceImplIntegrationTest {
 
     private static final UUID POST_ID = ConstantsKt.getTEST_1_UUID_VAL();
     private static final UUID USER_ID = ConstantsKt.getTEST_2_UUID_VAL();
-    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_3_UUID_VAL();
 
     @Captor
     private ArgumentCaptor<PostRepresentation> postRepresentationCaptor;
@@ -44,13 +43,13 @@ class PostRepresentationServiceImplIntegrationTest {
     private PostRepresentationService postRepresentationService;
 
     @Test
-    void should_call_postRepresentationRepository_save_only_once_with_the_same_idempotencyKey() {
+    void should_call_postRepresentationRepository_save_only_once_with_the_same_post_and_user_ids() {
         // Given
         final var numberOfCalls = 3;
 
         // When
         for (int i = 1; i <= numberOfCalls; i++) {
-            postRepresentationService.createPostRepresentation(POST_ID, USER_ID, IDEMPOTENCY_KEY);
+            postRepresentationService.createPostRepresentation(POST_ID, USER_ID);
         }
 
         // Then
@@ -69,13 +68,13 @@ class PostRepresentationServiceImplIntegrationTest {
     }
 
     @Test
-    void should_call_postRepresentationRepository_deleteById_only_once_with_the_same_idempotencyKey() {
+    void should_call_postRepresentationRepository_deleteById_only_once_with_the_same_post_id() {
         // Given
         final var numberOfCalls = 3;
 
         // When
         for (int i = 0; i < numberOfCalls; i++) {
-            postRepresentationService.deletePostRepresentation(POST_ID, IDEMPOTENCY_KEY);
+            postRepresentationService.deletePostRepresentation(POST_ID);
         }
 
         // Then
