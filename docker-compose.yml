@@ -111,15 +111,6 @@ services:
     networks:
       - default
 
-  app-service-comments-cache:
-    container_name: app-service-comments-cache
-    image: redis:7-alpine
-    ports:
-      - "5553:5553"
-    command: --port 5553
-    networks:
-      - default
-
   app-service-comments:
     container_name: app-service-comments
     build:

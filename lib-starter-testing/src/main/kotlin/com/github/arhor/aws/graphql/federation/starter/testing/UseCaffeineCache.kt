@@ -16,10 +16,10 @@ import kotlin.reflect.KClass
 @MustBeDocumented
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration
-@AutoConfigureCache(cacheProvider = CacheType.REDIS)
+@AutoConfigureCache(cacheProvider = CacheType.CAFFEINE)
 @ImportAutoConfiguration(RedisAutoConfiguration::class)
 @OverrideAutoConfiguration(enabled = false)
-annotation class RedisCacheTest(
+annotation class UseCaffeineCache(
     @get:AliasFor(annotation = ContextConfiguration::class, attribute = "classes")
     val classes: Array<KClass<*>> = [],
 )

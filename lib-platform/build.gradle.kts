@@ -13,6 +13,5 @@ dependencies {
         api(libs.jetbrains.kotlin.stdlib.core)
         api(libs.jetbrains.kotlin.stdlib.jdk7)
         api(libs.jetbrains.kotlin.stdlib.jdk8)
-        api(libs.testcontainers.redis)
     }
 }
