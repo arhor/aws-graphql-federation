@@ -2,13 +2,12 @@ package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundException
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
+import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
-import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.TagBatchLoader
-import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase
@@ -32,18 +31,14 @@ import java.util.concurrent.CompletableFuture
 
 @ContextConfiguration(
     classes = [
-        TagFetcher::class,
         PostFetcher::class,
         UserRepresentationFetcher::class,
     ]
 )
-class PostFetcherTest : GraphQLTestBase() {
+internal class PostFetcherTest : GraphQLTestBase() {
 
     @MockkBean
     private lateinit var postService: PostService
-
-    @MockkBean
-    private lateinit var tagBatchLoader: TagBatchLoader
 
     @MockkBean
     private lateinit var userRepresentationService: UserRepresentationService
@@ -58,7 +53,6 @@ class PostFetcherTest : GraphQLTestBase() {
     fun tearDown() {
         confirmVerified(
             postService,
-            tagBatchLoader,
             userRepresentationService,
             userRepresentationBatchLoader,
         )
@@ -70,7 +64,6 @@ class PostFetcherTest : GraphQLTestBase() {
         @Test
         fun `should return expected post by id without any exceptions`() {
             // Given
-
             val expectedErrors = emptyList<GraphQLError>()
             val expectedPresent = true
             val expectedData =
@@ -103,7 +96,7 @@ class PostFetcherTest : GraphQLTestBase() {
                         content
                     }
                 }
-                """,
+                """.trimIndent(),
                 mapOf(POST.Id to POST_ID)
             )
 
@@ -138,7 +131,7 @@ class PostFetcherTest : GraphQLTestBase() {
                         content
                     }
                 }
-                """,
+                """.trimIndent(),
                 mapOf(POST.Id to POST_ID)
             )
 
@@ -171,7 +164,8 @@ class PostFetcherTest : GraphQLTestBase() {
                             postsDisabled
                         }
                     }
-                }""".trimIndent(),
+                }
+                """.trimIndent(),
                 "$.data._entities[0]",
                 mapOf(
                     "representations" to listOf(

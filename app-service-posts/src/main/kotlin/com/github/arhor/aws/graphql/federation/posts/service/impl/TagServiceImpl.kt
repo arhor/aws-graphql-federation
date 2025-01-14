@@ -12,7 +12,11 @@ class TagServiceImpl(
 
     override fun getTagsByPostIds(postIds: Set<UUID>): Map<UUID, List<String>> = when {
         postIds.isNotEmpty() -> {
-            tagRepository.findAllByPostIdIn(postIds)
+            tagRepository.findAllByPostIdIn(postIds).toMutableMap().apply {
+                for (postId in postIds) {
+                    computeIfAbsent(postId) { emptyList() }
+                }
+            }
         }
 
         else -> {

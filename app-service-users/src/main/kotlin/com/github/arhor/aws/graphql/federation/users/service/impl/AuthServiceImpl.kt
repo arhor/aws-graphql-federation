@@ -14,7 +14,11 @@ class AuthServiceImpl(
 
     override fun getAuthoritiesByUserIds(userIds: Set<UUID>): Map<UUID, List<String>> = when {
         userIds.isNotEmpty() -> {
-            authRepository.findAllByUserIdIn(userIds)
+            authRepository.findAllByUserIdIn(userIds).toMutableMap().apply {
+                for (userId in userIds) {
+                    computeIfAbsent(userId) { emptyList() }
+                }
+            }
         }
 
         else -> {

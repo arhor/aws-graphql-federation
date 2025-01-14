@@ -22,6 +22,9 @@ class UserRepresentationServiceImpl(
 ) : UserRepresentationService {
 
     override fun findUsersRepresentationsInBatch(userIds: Set<UUID>): Map<UUID, User> {
+        if (userIds.isEmpty()) {
+            return emptyMap()
+        }
         val result = HashMap<UUID, User>(userIds.size)
         val users = userRepository.findAllById(userIds)
 
@@ -31,8 +34,10 @@ class UserRepresentationServiceImpl(
                 postsDisabled = user.postsDisabled(),
             )
         }
-        userIds.filter { it !in result.keys }.forEach {
-            result[it] = User(id = it)
+        for (userId in userIds) {
+            result.computeIfAbsent(userId) {
+                User(id = it)
+            }
         }
         return result
     }

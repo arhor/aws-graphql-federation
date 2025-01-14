@@ -11,7 +11,7 @@ import java.lang.annotation.Inherited
 @MustBeDocumented
 @WithSecurityContext(factory = WithMockCurrentUserSecurityContextFactory::class)
 annotation class WithMockCurrentUser(
-    val value: String = ZERO_UUID_STR,
+    val value: String = OMNI_UUID_STR,
     val id: String = "",
 
     val roles: Array<out String> = ["USER"],
