@@ -37,14 +37,14 @@ class UserEventListenerTest : SqsListenerTestBase() {
         val event = UserEvent.Created(id = USER_ID)
         val message = GenericMessage(event, MESSAGE_HEADERS)
 
-        every { userRepresentationService.createUserRepresentation(any()) } just runs
+        every { userRepresentationService.createUserRepresentation(any(), any()) } just runs
 
         // When
         sqsTemplate.send(USER_CREATED_TEST_QUEUE, message)
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userRepresentationService.createUserRepresentation(event.id)
+            userRepresentationService.createUserRepresentation(event.id, TRACE_ID)
         }
     }
 
@@ -54,14 +54,14 @@ class UserEventListenerTest : SqsListenerTestBase() {
         val event = UserEvent.Deleted(id = USER_ID)
         val message = GenericMessage(event, MESSAGE_HEADERS)
 
-        every { userRepresentationService.deleteUserRepresentation(any()) } just runs
+        every { userRepresentationService.deleteUserRepresentation(any(), any()) } just runs
 
         // When
         sqsTemplate.send(USER_DELETED_TEST_QUEUE, message)
 
         // Then
         verify(exactly = 1, timeout = 5.seconds.inWholeMilliseconds) {
-            userRepresentationService.deleteUserRepresentation(event.id)
+            userRepresentationService.deleteUserRepresentation(event.id, TRACE_ID)
         }
     }
 
@@ -71,6 +71,7 @@ class UserEventListenerTest : SqsListenerTestBase() {
 
         private val USER_ID = ZERO_UUID_VAL
         private val TRACE_ID = TEST_1_UUID_VAL
+
         private val MESSAGE_HEADERS = mapOf(ATTR_TRACE_ID to TRACE_ID)
 
         @JvmStatic
@@ -88,3 +89,4 @@ class UserEventListenerTest : SqsListenerTestBase() {
         }
     }
 }
+

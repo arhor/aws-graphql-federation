@@ -29,6 +29,7 @@ class PostRepresentationServiceImplIntegrationTest {
 
     private static final UUID POST_ID = ConstantsKt.getTEST_1_UUID_VAL();
     private static final UUID USER_ID = ConstantsKt.getTEST_2_UUID_VAL();
+    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_3_UUID_VAL();
 
     @Captor
     private ArgumentCaptor<PostRepresentation> postRepresentationCaptor;
@@ -49,7 +50,7 @@ class PostRepresentationServiceImplIntegrationTest {
 
         // When
         for (int i = 1; i <= numberOfCalls; i++) {
-            postRepresentationService.createPostRepresentation(POST_ID, USER_ID);
+            postRepresentationService.createPostRepresentation(POST_ID, USER_ID, IDEMPOTENCY_KEY);
         }
 
         // Then
@@ -74,7 +75,7 @@ class PostRepresentationServiceImplIntegrationTest {
 
         // When
         for (int i = 0; i < numberOfCalls; i++) {
-            postRepresentationService.deletePostRepresentation(POST_ID);
+            postRepresentationService.deletePostRepresentation(POST_ID, IDEMPOTENCY_KEY);
         }
 
         // Then

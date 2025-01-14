@@ -25,6 +25,7 @@ class UserEventListener(
         withExtendedMDC(traceId) {
             userRepresentationService.createUserRepresentation(
                 userId = event.id,
+                idempotencyKey = traceId,
             )
         }
     }
@@ -37,6 +38,7 @@ class UserEventListener(
         withExtendedMDC(traceId) {
             userRepresentationService.deleteUserRepresentation(
                 userId = event.id,
+                idempotencyKey = traceId,
             )
         }
     }

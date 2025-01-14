@@ -29,7 +29,8 @@ public class PostEventListener {
         withExtendedMDC(traceId, () -> {
             postRepresentationService.createPostRepresentation(
                 event.getId(),
-                event.getUserId()
+                event.getUserId(),
+                traceId
             );
         });
     }
@@ -41,7 +42,8 @@ public class PostEventListener {
     ) {
         withExtendedMDC(traceId, () -> {
             postRepresentationService.deletePostRepresentation(
-                event.getId()
+                event.getId(),
+                traceId
             );
         });
     }

@@ -54,7 +54,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userRepresentationService)
                     .should()
-                    .createUserRepresentation(event.getId());
+                    .createUserRepresentation(event.getId(), TRACE_ID);
 
                 then(userRepresentationService)
                     .shouldHaveNoMoreInteractions();
@@ -77,7 +77,7 @@ class UserEventListenerTest extends EventListenerTestBase {
             .untilAsserted(() -> {
                 then(userRepresentationService)
                     .should()
-                    .deleteUserRepresentation(event.getId());
+                    .deleteUserRepresentation(event.getId(), TRACE_ID);
 
                 then(userRepresentationService)
                     .shouldHaveNoMoreInteractions();

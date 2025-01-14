@@ -60,10 +60,11 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     }
 
     @Override
-    @Cacheable
+    @Cacheable(cacheNames = {"create-post-representation-requests-cache"})
     public void createPostRepresentation(
         @NotNull final UUID postId,
-        @NotNull final UUID userId
+        @NotNull final UUID userId,
+        @NotNull final UUID idempotencyKey
     ) {
         postRepository.save(
             createNewPostRepresentation(
@@ -74,9 +75,10 @@ public class PostRepresentationServiceImpl implements PostRepresentationService 
     }
 
     @Override
-    @Cacheable
+    @Cacheable(cacheNames = {"delete-post-representation-requests-cache"})
     public void deletePostRepresentation(
-        @NotNull final UUID postId
+        @NotNull final UUID postId,
+        @NotNull final UUID idempotencyKey
     ) {
         postRepository.deleteById(postId);
     }

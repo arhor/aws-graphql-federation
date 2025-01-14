@@ -37,8 +37,8 @@ class UserRepresentationServiceImpl(
         return result
     }
 
-    @Cacheable
-    override fun createUserRepresentation(userId: UUID) {
+    @Cacheable(cacheNames = ["create-user-representation-requests-cache"])
+    override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID) {
         userRepository.save(
             UserRepresentation(
                 id = userId,
@@ -47,8 +47,8 @@ class UserRepresentationServiceImpl(
         )
     }
 
-    @Cacheable
-    override fun deleteUserRepresentation(userId: UUID) {
+    @Cacheable(cacheNames = ["delete-user-representation-requests-cache"])
+    override fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID) {
         userRepository.deleteById(userId)
     }
 

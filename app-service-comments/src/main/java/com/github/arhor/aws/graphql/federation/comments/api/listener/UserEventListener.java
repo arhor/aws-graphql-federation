@@ -28,7 +28,8 @@ public class UserEventListener {
     ) {
         withExtendedMDC(traceId, () -> {
             userRepresentationService.createUserRepresentation(
-                event.getId()
+                event.getId(),
+                traceId
             );
         });
     }
@@ -40,7 +41,8 @@ public class UserEventListener {
     ) {
         withExtendedMDC(traceId, () -> {
             userRepresentationService.deleteUserRepresentation(
-                event.getId()
+                event.getId(),
+                traceId
             );
         });
     }

@@ -26,6 +26,7 @@ import static org.mockito.BDDMockito.then;
 class UserRepresentationServiceImplIntegrationTest {
 
     private static final UUID USER_ID = ConstantsKt.getTEST_1_UUID_VAL();
+    private static final UUID IDEMPOTENCY_KEY = ConstantsKt.getTEST_2_UUID_VAL();
 
     @Captor
     private ArgumentCaptor<UserRepresentation> userRepresentationCaptor;
@@ -43,7 +44,7 @@ class UserRepresentationServiceImplIntegrationTest {
 
         // When
         for (int i = 1; i <= numberOfCalls; i++) {
-            userRepresentationService.createUserRepresentation(USER_ID);
+            userRepresentationService.createUserRepresentation(USER_ID, IDEMPOTENCY_KEY);
         }
 
         // Then
@@ -67,7 +68,7 @@ class UserRepresentationServiceImplIntegrationTest {
 
         // When
         for (int i = 0; i < numberOfCalls; i++) {
-            userRepresentationService.deleteUserRepresentation(USER_ID);
+            userRepresentationService.deleteUserRepresentation(USER_ID, IDEMPOTENCY_KEY);
         }
 
         // Then
