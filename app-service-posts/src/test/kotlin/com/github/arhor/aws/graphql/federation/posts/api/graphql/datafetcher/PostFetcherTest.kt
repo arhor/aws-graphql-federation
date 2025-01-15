@@ -5,9 +5,8 @@ import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
-import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase
@@ -21,13 +20,13 @@ import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
+import org.assertj.core.api.InstanceOfAssertFactories.MAP
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
-import java.util.concurrent.CompletableFuture
 
 @ContextConfiguration(
     classes = [
@@ -50,7 +49,7 @@ internal class PostFetcherTest : GraphQLTestBase() {
     private lateinit var dgsQueryExecutor: DgsQueryExecutor
 
     @AfterEach
-    fun tearDown() {
+    fun `confirm that all interactions with mocked dependencies were verified`() {
         confirmVerified(
             postService,
             userRepresentationService,
@@ -145,45 +144,42 @@ internal class PostFetcherTest : GraphQLTestBase() {
     }
 
     @Nested
-    @DisplayName("query { user { posts } }")
-    inner class UserPostsQueryTest {
+    @DisplayName("query { posts }")
+    inner class PostsQueryTest {
         @Test
-        fun `should return user representation with a list of expected posts`() {
+        fun `should return expected post by id without any exceptions`() {
             // Given
-            val expectedUser = User(id = USER_ID)
-
-            every { userRepresentationBatchLoader.load(any()) } returns CompletableFuture.completedFuture(mapOf(USER_ID to expectedUser))
+            every { postService.getPostPage(any()) } returns PostPage()
 
             // When
-            val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+            val result = dgsQueryExecutor.execute(
                 """
-                query (${'$'}representations: [_Any!]!) {
-                    _entities(representations: ${'$'}representations) {
-                        ... on User {
+                query {
+                    posts {
+                        data {
                             id
-                            postsDisabled
+                            userId
+                            title
+                            content                        
                         }
+                        page
+                        size
+                        hasPrev
+                        hasNext
                     }
                 }
-                """.trimIndent(),
-                "$.data._entities[0]",
-                mapOf(
-                    "representations" to listOf(
-                        mapOf(
-                            "__typename" to USER.TYPE_NAME,
-                            USER.Id to USER_ID
-                        )
-                    )
-                ),
-                User::class.java
+                """.trimIndent()
             )
 
             // Then
-            verify(exactly = 1) { userRepresentationBatchLoader.load(setOf(USER_ID)) }
+            verify(exactly = 1) { postService.getPostPage(any()) }
 
             assertThat(result)
-                .isNotNull()
-                .isEqualTo(expectedUser)
+                .returns(emptyList(), from { it.errors })
+                .returns(true, from { it.isDataPresent })
+                .extracting { it.getData<Any>() }
+                .asInstanceOf(MAP)
+                .extractingByKey(QUERY.Posts, MAP)
         }
     }
 

@@ -67,7 +67,7 @@ class PostServiceImplTest {
     )
 
     @AfterEach
-    fun tearDown() {
+    fun `confirm that all interactions with mocked dependencies were verified`() {
         confirmVerified(
             postMapper,
             postRepository,

@@ -58,7 +58,7 @@ class OutboxMessageServiceImplTest {
     )
 
     @AfterEach
-    fun `confirm that all mocked dependencies interactions were verified`() {
+    fun `confirm that all interactions with mocked dependencies were verified`() {
         confirmVerified(
             objectMapper,
             outboxMessageRepository,

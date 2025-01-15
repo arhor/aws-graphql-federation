@@ -2,6 +2,8 @@ package com.github.arhor.aws.graphql.federation.posts.api.graphql.datafetcher
 
 import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.MUTATION
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.USER
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase
@@ -16,10 +18,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ContextConfiguration
+import java.util.concurrent.CompletableFuture.completedFuture
 
 @ContextConfiguration(
     classes = [
@@ -42,7 +46,7 @@ internal class UserRepresentationFetcherTest : GraphQLTestBase() {
     private lateinit var dgsQueryExecutor: DgsQueryExecutor
 
     @AfterEach
-    fun tearDown() {
+    fun `confirm that all interactions with mocked dependencies were verified`() {
         confirmVerified(
             postService,
             userRepresentationService,
@@ -52,7 +56,7 @@ internal class UserRepresentationFetcherTest : GraphQLTestBase() {
 
     @Nested
     @DisplayName("mutation { toggleUserPosts }")
-    inner class UserPostsQueryTest {
+    inner class ToggleUserPostsMutationTest {
         @ValueSource(booleans = [true, false])
         @ParameterizedTest
         @WithMockCurrentUser(roles = ["ADMIN"])
@@ -83,6 +87,49 @@ internal class UserRepresentationFetcherTest : GraphQLTestBase() {
                     { assertThat(it.isDataPresent).isTrue() },
                     { assertThat(it.getData<Any>()).isEqualTo(expectedData) },
                 )
+        }
+    }
+
+    @Nested
+    @DisplayName("federated User resolver")
+    inner class UserPostsQueryTest {
+        @Test
+        fun `should return user representation with a list of expected posts`() {
+            // Given
+            val expectedUser = User(id = USER_ID)
+
+            every { userRepresentationBatchLoader.load(any()) } returns completedFuture(mapOf(USER_ID to expectedUser))
+
+            // When
+            val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
+                """
+                query (${'$'}representations: [_Any!]!) {
+                    _entities(representations: ${'$'}representations) {
+                        ... on User {
+                            id
+                            postsDisabled
+                        }
+                    }
+                }
+                """.trimIndent(),
+                "$.data._entities[0]",
+                mapOf(
+                    "representations" to listOf(
+                        mapOf(
+                            "__typename" to USER.TYPE_NAME,
+                            USER.Id to USER_ID
+                        )
+                    )
+                ),
+                User::class.java
+            )
+
+            // Then
+            verify(exactly = 1) { userRepresentationBatchLoader.load(setOf(USER_ID)) }
+
+            assertThat(result)
+                .isNotNull()
+                .isEqualTo(expectedUser)
         }
     }
 
