@@ -51,7 +51,7 @@ internal class UserRepresentationFetcherTest : GraphQLTestBase() {
     }
 
     @Nested
-    @DisplayName("mutation { toggleUserPosts    }")
+    @DisplayName("mutation { toggleUserPosts }")
     inner class UserPostsQueryTest {
         @ValueSource(booleans = [true, false])
         @ParameterizedTest
