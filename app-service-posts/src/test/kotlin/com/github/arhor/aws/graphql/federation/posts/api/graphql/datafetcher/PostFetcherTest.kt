@@ -4,14 +4,15 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST_PAGE
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase
-import com.github.arhor.aws.graphql.federation.starter.testing.OMNI_UUID_VAL
-import com.github.arhor.aws.graphql.federation.starter.testing.ZERO_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_1_UUID_VAL
+import com.github.arhor.aws.graphql.federation.starter.testing.TEST_2_UUID_VAL
 import com.netflix.graphql.dgs.DgsQueryExecutor
 import com.ninjasquad.springmockk.MockkBean
 import graphql.GraphQLError
@@ -20,6 +21,7 @@ import io.mockk.every
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.from
+import org.assertj.core.api.InstanceOfAssertFactories.LIST
 import org.assertj.core.api.InstanceOfAssertFactories.MAP
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
@@ -149,7 +151,21 @@ internal class PostFetcherTest : GraphQLTestBase() {
         @Test
         fun `should return expected post by id without any exceptions`() {
             // Given
-            every { postService.getPostPage(any()) } returns PostPage()
+            val post = Post(
+                id = POST_ID,
+                userId = USER_ID,
+                title = "test-title",
+                content = "test-content",
+            )
+            val page = PostPage(
+                data = listOf(post),
+                page = 1,
+                size = 20,
+                hasPrev = false,
+                hasNext = false,
+            )
+
+            every { postService.getPostPage(any()) } returns page
 
             // When
             val result = dgsQueryExecutor.execute(
@@ -177,14 +193,27 @@ internal class PostFetcherTest : GraphQLTestBase() {
             assertThat(result)
                 .returns(emptyList(), from { it.errors })
                 .returns(true, from { it.isDataPresent })
-                .extracting { it.getData<Any>() }
-                .asInstanceOf(MAP)
+                .extracting({ it.getData<Any>() }, MAP)
                 .extractingByKey(QUERY.Posts, MAP)
+                .satisfies(
+                    { assertThat(it[POST_PAGE.Page]).isEqualTo(page.page) },
+                    { assertThat(it[POST_PAGE.Size]).isEqualTo(page.size) },
+                    { assertThat(it[POST_PAGE.HasPrev]).isEqualTo(page.hasPrev) },
+                    { assertThat(it[POST_PAGE.HasNext]).isEqualTo(page.hasNext) },
+                )
+                .extractingByKey(POST_PAGE.Data, LIST)
+                .singleElement(MAP)
+                .satisfies(
+                    { assertThat(it[POST.Id]).isEqualTo("${post.id}") },
+                    { assertThat(it[POST.UserId]).isEqualTo("${post.userId}") },
+                    { assertThat(it[POST.Title]).isEqualTo(post.title) },
+                    { assertThat(it[POST.Content]).isEqualTo(post.content) },
+                )
         }
     }
 
     companion object {
-        private val USER_ID = ZERO_UUID_VAL
-        private val POST_ID = OMNI_UUID_VAL
+        private val USER_ID = TEST_1_UUID_VAL
+        private val POST_ID = TEST_2_UUID_VAL
     }
 }
