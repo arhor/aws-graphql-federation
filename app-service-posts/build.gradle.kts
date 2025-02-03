@@ -50,12 +50,12 @@ configurations {
 }
 
 dependencies {
-    implementation(platform(":lib-platform"))
-    implementation(":lib-common")
-    implementation(":lib-starter-core")
-    implementation(":lib-starter-graphql")
-    implementation(":lib-starter-security")
-    implementation(":lib-starter-tracing")
+    implementation(platform(":app-library-platform"))
+    implementation(":app-library-common")
+    implementation(":app-library-starter-core")
+    implementation(":app-library-starter-graphql")
+    implementation(":app-library-starter-security")
+    implementation(":app-library-starter-tracing")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("com.netflix.graphql.dgs:graphql-dgs-extended-validation")
@@ -80,8 +80,8 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    testImplementation(platform(":lib-platform"))
-    testImplementation(":lib-starter-testing")
+    testImplementation(platform(":app-library-platform"))
+    testImplementation(":app-library-starter-testing")
     testImplementation("com.ninja-squad:springmockk")
     testImplementation("com.tngtech.archunit:archunit-junit5")
     testImplementation("io.awspring.cloud:spring-cloud-aws-test")

@@ -8,7 +8,7 @@ on:
       - '.github/workflows/app-service-posts-CI.yml'
       - '.github/actions/**'
       - 'app-service-posts/**'
-      - 'lib-*/**'
+      - 'app-library-*/**'
   pull_request:
     branches:
       - 'master'
@@ -16,7 +16,7 @@ on:
       - '.github/workflows/app-service-posts-CI.yml'
       - '.github/actions/**'
       - 'app-service-posts/**'
-      - 'lib-*/**'
+      - 'app-library-*/**'
   workflow_dispatch:
 
 jobs:

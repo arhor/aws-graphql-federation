@@ -49,10 +49,10 @@ configurations {
 }
 
 dependencies {
-    implementation(platform(":lib-platform"))
-    implementation(":lib-common")
-    implementation(":lib-starter-core")
-    implementation(":lib-starter-tracing")
+    implementation(platform(":app-library-platform"))
+    implementation(":app-library-common")
+    implementation(":app-library-starter-core")
+    implementation(":app-library-starter-tracing")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
@@ -72,7 +72,7 @@ dependencies {
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    testImplementation(platform(":lib-platform"))
+    testImplementation(platform(":app-library-platform"))
     testImplementation("com.ninja-squad:springmockk")
     testImplementation("com.tngtech.archunit:archunit-junit5")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

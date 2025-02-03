@@ -8,6 +8,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConsta
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase
@@ -149,7 +150,7 @@ internal class PostFetcherTest : GraphQLTestBase() {
     @DisplayName("query { posts }")
     inner class PostsQueryTest {
         @Test
-        fun `should return expected post by id without any exceptions`() {
+        fun `should return expected posts page when processing query without explicit input`() {
             // Given
             val post = Post(
                 id = POST_ID,
@@ -188,7 +189,71 @@ internal class PostFetcherTest : GraphQLTestBase() {
             )
 
             // Then
-            verify(exactly = 1) { postService.getPostPage(any()) }
+            verify(exactly = 1) { postService.getPostPage(PostsLookupInput()) }
+
+            assertThat(result)
+                .returns(emptyList(), from { it.errors })
+                .returns(true, from { it.isDataPresent })
+                .extracting({ it.getData<Any>() }, MAP)
+                .extractingByKey(QUERY.Posts, MAP)
+                .satisfies(
+                    { assertThat(it[POST_PAGE.Page]).isEqualTo(page.page) },
+                    { assertThat(it[POST_PAGE.Size]).isEqualTo(page.size) },
+                    { assertThat(it[POST_PAGE.HasPrev]).isEqualTo(page.hasPrev) },
+                    { assertThat(it[POST_PAGE.HasNext]).isEqualTo(page.hasNext) },
+                )
+                .extractingByKey(POST_PAGE.Data, LIST)
+                .singleElement(MAP)
+                .satisfies(
+                    { assertThat(it[POST.Id]).isEqualTo("${post.id}") },
+                    { assertThat(it[POST.UserId]).isEqualTo("${post.userId}") },
+                    { assertThat(it[POST.Title]).isEqualTo(post.title) },
+                    { assertThat(it[POST.Content]).isEqualTo(post.content) },
+                )
+        }
+
+        @Test
+        fun `should return expected posts page when processing query with explicit input`() {
+            // Given
+            val post = Post(
+                id = POST_ID,
+                userId = USER_ID,
+                title = "test-title",
+                content = "test-content",
+            )
+            val page = PostPage(
+                data = listOf(post),
+                page = 1,
+                size = 20,
+                hasPrev = false,
+                hasNext = false,
+            )
+
+            every { postService.getPostPage(any()) } returns page
+
+            // When
+            val result = dgsQueryExecutor.execute(
+                """
+                query(${'$'}input: PostsLookupInput!) {
+                    posts(input: ${'$'}input) {
+                        data {
+                            id
+                            userId
+                            title
+                            content                        
+                        }
+                        page
+                        size
+                        hasPrev
+                        hasNext
+                    }
+                },
+                """.trimIndent(),
+                mapOf("input" to PostsLookupInput())
+            )
+
+            // Then
+            verify(exactly = 1) { postService.getPostPage(PostsLookupInput()) }
 
             assertThat(result)
                 .returns(emptyList(), from { it.errors })
@@ -211,6 +276,18 @@ internal class PostFetcherTest : GraphQLTestBase() {
                 )
         }
     }
+
+    @Nested
+    @DisplayName("mutation { createPost }")
+    inner class CreatePostMutationTest {
+
+    }
+
+    @DisplayName("mutation { updatePost }")
+    inner class UpdatePostMutationTest {}
+
+    @DisplayName("mutation { deletePost }")
+    inner class DeletePostMutationTest {}
 
     companion object {
         private val USER_ID = TEST_1_UUID_VAL

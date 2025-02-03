@@ -8,7 +8,7 @@ on:
       - '.github/workflows/app-service-comments-CI.yml'
       - '.github/actions/**'
       - 'app-service-comments/**'
-      - 'lib-*/**'
+      - 'app-library-*/**'
   pull_request:
     branches:
       - 'master'
@@ -16,7 +16,7 @@ on:
       - '.github/workflows/app-service-comments-CI.yml'
       - '.github/actions/**'
       - 'app-service-comments/**'
-      - 'lib-*/**'
+      - 'app-library-*/**'
   workflow_dispatch:
 
 jobs:
