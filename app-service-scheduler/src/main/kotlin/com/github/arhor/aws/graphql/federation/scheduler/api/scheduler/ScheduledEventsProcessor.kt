@@ -9,7 +9,7 @@ class ScheduledEventsProcessor(
     private val scheduledEventService: ScheduledEventService,
 ) {
 
-    @Scheduled(cron = "\${app-props.events.scheduled.processing-cron}")
+    @Scheduled(cron = "*/15 * * * * *")
     fun processScheduledEvent() {
         scheduledEventService.publishMatureEvents()
     }

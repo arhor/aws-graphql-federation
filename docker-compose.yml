@@ -120,8 +120,6 @@ services:
     depends_on:
       app-service-comments-db:
         condition: service_started
-      app-service-comments-cache:
-        condition: service_started
       localstack:
         condition: service_healthy
     env_file:

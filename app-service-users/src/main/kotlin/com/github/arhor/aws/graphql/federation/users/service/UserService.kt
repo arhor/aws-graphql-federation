@@ -3,7 +3,6 @@ package com.github.arhor.aws.graphql.federation.users.service
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUser
 import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserRequest
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
@@ -56,10 +55,10 @@ interface UserService {
     fun updateUser(input: UpdateUserInput): User
 
     /**
-     * Deletes an existing user based on the provided input.
+     * Deletes an existing user by the provided id.
      *
-     * @param input the input containing details for deleting an existing user
+     * @param id the ID of the user to delete
      * @return `true` if the user was successfully deleted, `false` otherwise
      */
-    fun deleteUser(input: DeleteUserInput): Boolean
+    fun deleteUser(id: UUID): Boolean
 }

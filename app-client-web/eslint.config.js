@@ -9,6 +9,7 @@ import globals from 'globals';
 export default [
     {
         ignores: [
+            'build',
             'dist',
         ],
     },
@@ -43,8 +44,6 @@ export default [
             'import/extensions': [
                 '.js',
                 '.jsx',
-                '.ts',
-                '.tsx'
             ]
         },
         plugins: {
@@ -81,12 +80,6 @@ export default [
         files: ['vite.config.js'],
         languageOptions: {
             globals: globals.node,
-        },
-    },
-    {
-        files: ['**/*.test.{js,jsx}'],
-        languageOptions: {
-            globals: globals.jest,
         },
     },
 ]

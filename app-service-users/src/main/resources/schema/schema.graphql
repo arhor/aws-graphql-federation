@@ -12,7 +12,7 @@ type Query {
 type Mutation {
     createUser(input: CreateUserInput!): User!
     updateUser(input: UpdateUserInput!): User!
-    deleteUser(input: DeleteUserInput!): Boolean!
+    deleteUser(id: UUID!): Boolean!
 }
 
 # ---------- Input Types ----------
@@ -30,10 +30,6 @@ input CreateUserInput {
 input UpdateUserInput {
     id: UUID!
     password: String @NotBlank @Pattern(regexp: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]{8,20}$")
-}
-
-input DeleteUserInput {
-    id: UUID!
 }
 
 # ---------- Domain Types ----------

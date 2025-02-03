@@ -1,8 +1,11 @@
+import { Provider } from 'react-redux'
+
 import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
 import { SnackbarProvider } from 'notistack';
 
 import { ErrorBoundary } from '@/components';
 import { AppRouter } from '@/router';
+import { store } from '@/store';
 import { AppThemeProvider } from '@/theme';
 
 const client = new ApolloClient({
@@ -17,11 +20,13 @@ export default function App() {
     return (
         <AppThemeProvider>
             <ErrorBoundary>
-                <ApolloProvider client={client}>
-                    <SnackbarProvider preventDuplicate>
-                        <AppRouter />
-                    </SnackbarProvider>
-                </ApolloProvider>
+                <Provider store={store}>
+                    <ApolloProvider client={client}>
+                        <SnackbarProvider preventDuplicate>
+                            <AppRouter />
+                        </SnackbarProvider>
+                    </ApolloProvider>
+                </Provider>
             </ErrorBoundary>
         </AppThemeProvider>
     );

@@ -24,7 +24,7 @@ export default function Home() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data?.posts?.data?.map(({id, title}) => (
+                    {data?.posts?.data?.map(({ id, title }) => (
                         <TableRow key={id}>
                             <TableCell>{id}</TableCell>
                             <TableCell>{title}</TableCell>

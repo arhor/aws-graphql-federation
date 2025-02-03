@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { StatelessWidget } from '@/components';
 
-export default function Loading() {
+export default function Loader() {
     const { t } = useTranslation();
     return (
         <StatelessWidget

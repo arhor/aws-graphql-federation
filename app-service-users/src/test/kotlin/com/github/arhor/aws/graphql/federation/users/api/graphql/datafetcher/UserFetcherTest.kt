@@ -12,7 +12,6 @@ import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConsta
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.UPDATE_USER_INPUT
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
@@ -307,11 +306,7 @@ class UserFetcherTest : GraphQLTestBase() {
             val result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(
                 """
                 mutation {
-                    deleteUser(
-                        input: {
-                            id: "$id"
-                        }
-                    )
+                    deleteUser(id: "$id")
                 }
                 """.trimIndent(),
                 "$.data.deleteUser",
@@ -322,7 +317,7 @@ class UserFetcherTest : GraphQLTestBase() {
             assertThat(result)
                 .isTrue()
 
-            verify(exactly = 1) { userService.deleteUser(DeleteUserInput(id)) }
+            verify(exactly = 1) { userService.deleteUser(id) }
         }
     }
 

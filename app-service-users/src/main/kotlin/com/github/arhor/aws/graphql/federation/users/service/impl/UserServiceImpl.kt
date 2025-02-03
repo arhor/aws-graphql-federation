@@ -14,7 +14,6 @@ import com.github.arhor.aws.graphql.federation.users.data.repository.AuthReposit
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
@@ -124,8 +123,8 @@ class UserServiceImpl(
     }
 
     @Transactional
-    override fun deleteUser(input: DeleteUserInput): Boolean {
-        return when (val user = userRepository.findByIdOrNull(input.id)) {
+    override fun deleteUser(id: UUID): Boolean {
+        return when (val user = userRepository.findByIdOrNull(id)) {
             null -> false
             else -> {
                 userRepository.delete(user)

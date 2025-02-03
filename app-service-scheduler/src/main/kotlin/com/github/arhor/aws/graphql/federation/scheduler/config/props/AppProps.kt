@@ -38,10 +38,7 @@ data class AppProps(
 
         data class Source(
             @field:NotBlank
-            val createScheduledEvent: String?,
-
-            @field:NotBlank
-            val deleteScheduledEvent: String?,
+            val handleScheduledEvent: String?,
         )
     }
 

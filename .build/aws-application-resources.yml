@@ -68,7 +68,7 @@ Resources:
   HandleScheduledEventsQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: app-events--events-scheduled--create--scheduler
+      QueueName: app-events--events-scheduled--handle--scheduler
       RedrivePolicy:
         deadLetterTargetArn: !Sub ${DeadLetterQueue.Arn}
         maxReceiveCount: 15
@@ -85,7 +85,6 @@ Resources:
         - !Ref SynchronizeCommentsOnUserDeletedEventQueue
         - !Ref SynchronizeCommentsOnPostCreatedEventQueue
         - !Ref SynchronizeCommentsOnPostDeletedEventQueue
-        - !Ref HandleScheduledEventsQueue
         - !Ref HandleScheduledEventsQueue
       PolicyDocument:
         Statement:

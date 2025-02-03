@@ -40,6 +40,9 @@ export default defineConfig(({ mode }) => {
                             'react-router-dom',
                         ],
                         material: [
+                            '@emotion/cache',
+                            '@emotion/react',
+                            '@emotion/styled',
                             '@mui/icons-material',
 		                    '@mui/material',
                         ],

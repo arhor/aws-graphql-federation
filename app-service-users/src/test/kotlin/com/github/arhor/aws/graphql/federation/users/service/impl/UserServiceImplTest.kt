@@ -12,7 +12,6 @@ import com.github.arhor.aws.graphql.federation.users.data.repository.AuthReposit
 import com.github.arhor.aws.graphql.federation.users.data.repository.UserRepository
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.DgsConstants.USER
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UsersLookupInput
@@ -385,7 +384,7 @@ class UserServiceImplTest {
             every { eventPublisher.publishEvent(any<Any>()) } just runs
 
             // When
-            userService.deleteUser(DeleteUserInput(USER_ID))
+            userService.deleteUser(USER_ID)
 
             // Then
             verify(exactly = 1) { userRepository.findByIdOrNull(any()) }

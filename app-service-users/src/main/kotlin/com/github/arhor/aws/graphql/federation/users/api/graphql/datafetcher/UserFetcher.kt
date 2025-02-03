@@ -4,7 +4,6 @@ import com.github.arhor.aws.graphql.federation.starter.security.CurrentUserDetai
 import com.github.arhor.aws.graphql.federation.starter.security.ensureAccessAllowed
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.CreateUserInput
-import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.DeleteUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UpdateUserInput
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.users.generated.graphql.types.UserPage
@@ -53,10 +52,10 @@ class UserFetcher(
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
     fun deleteUser(
-        @InputArgument input: DeleteUserInput,
+        @InputArgument id: UUID,
         @AuthenticationPrincipal actor: CurrentUserDetails,
     ): Boolean {
-        ensureAccessAllowed(input.id, actor)
-        return userService.deleteUser(input)
+        ensureAccessAllowed(id, actor)
+        return userService.deleteUser(id)
     }
 }
