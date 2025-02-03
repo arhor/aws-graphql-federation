@@ -5,6 +5,20 @@ import graphqlBaseApi from '@/api/graphql-base-api';
 
 const usersApi = graphqlBaseApi.injectEndpoints({
     endpoints: (builder) => ({
+        GetMe: builder.query({
+            query: () => ({
+                document: gql`
+                    query GetMe {
+                        me {
+                            id
+                            authorities
+                            authenticated
+                        }
+                    }
+                `,
+            })
+        }),
+
         GetUserById: builder.query({
             query: ({ id }) => ({
                 document: gql`
@@ -96,6 +110,7 @@ const usersApi = graphqlBaseApi.injectEndpoints({
 export default usersApi;
 
 export const {
+    useGetMeQuery,
     useGetUserByIdQuery,
     useGetUsersPageQuery,
     useCreateUserMutation,

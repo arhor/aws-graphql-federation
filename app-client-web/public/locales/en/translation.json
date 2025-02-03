@@ -1,2 +1,20 @@
 {
+    "forms": {
+        "common": {
+            "fields": {
+                "username": "Username",
+                "password": "Password"
+            }
+        },
+        "sign-in": {
+            "title": "Sign In",
+            "submit": "Sign in",
+            "sign-up-link": "Don't have an account? Sign Up"
+        },
+        "sign-up": {
+            "title": "Sign Up",
+            "submit": "Sign up",
+            "sign-in-link": "Already have an account? Sign in"
+        }
+    }
 }

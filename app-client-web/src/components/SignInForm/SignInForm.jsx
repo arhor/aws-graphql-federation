@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom';
 
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
@@ -16,6 +16,8 @@ export default function SignInForm() {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { signIn } = useSignInMutation();
+    const [ searchParams ] = useSearchParams();
+    const hasError = searchParams.has('auth') && searchParams.get('auth') === 'failure';
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,7 +54,7 @@ export default function SignInForm() {
                 <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-                {t('Sign in')}
+                {t('forms:sign-in:title')}
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <Grid container justifyContent="center">
@@ -60,7 +62,7 @@ export default function SignInForm() {
                         <TextField
                             id="username"
                             name="username"
-                            label={t('Username')}
+                            label={t('forms:common:fields:username')}
                             margin="normal"
                             required
                             fullWidth
@@ -73,10 +75,12 @@ export default function SignInForm() {
                             id="password"
                             name="password"
                             type="password"
-                            label={t('Password')}
+                            label={t('forms:common:fields:password')}
                             margin="normal"
                             required
                             fullWidth
+                            error={hasError}
+                            helperText={hasError ? 'Incorrect Username or Password' : undefined}
                             autoComplete="current-password"
                             sx={{ mb: 5 }}
                         />
@@ -88,12 +92,12 @@ export default function SignInForm() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            {t('Sign In')}
+                            {t('forms:sign-in:submit')}
                         </Button>
                     </Grid>
                     <Grid item>
-                        <Link to="/sign-up" component={RouterLink} variant="body2">
-                            {t('Don\'t have an account? Sign Up')}
+                        <Link to="/sign-up" state={{ doNotCallAuth: true }} component={RouterLink} variant="body2">
+                            {t('forms:sign-in:sign-up-link')}
                         </Link>
                     </Grid>
                 </Grid>
