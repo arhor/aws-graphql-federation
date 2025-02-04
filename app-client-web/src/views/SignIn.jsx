@@ -1,18 +1,12 @@
-import { useEffect } from 'react';
-import { Navigate, useSearchParams } from 'react-router';
+import { Navigate } from 'react-router';
 
-import { SignInForm } from '@/components';
-import { useStore } from '@/store';
+import { useGetCurrentUserQuery } from '@/api/users-api';
+import SignInForm from '@/components/SignInForm';
 
 export default function SignIn() {
-    const [searchParams] = useSearchParams();
-    const { user } = useStore();
+    const { data } = useGetCurrentUserQuery();
 
-    useEffect(() => {
-        user.fetchData();
-    }, [user]);
-
-    return (searchParams.get('auth') == 'success' || user.authenticated)
-        ? <Navigate to="/" />
+    return data?.currentUser?.authenticated
+        ? <Navigate to='/' />
         : <SignInForm />;
 }

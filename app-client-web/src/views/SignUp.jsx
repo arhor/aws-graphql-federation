@@ -1,20 +1,12 @@
-import { useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router';
+import { Navigate } from 'react-router';
 
-import { SignUpForm } from '@/components';
-import { useStore } from '@/store';
+import { useGetCurrentUserQuery } from '@/api/users-api';
+import SignUpForm from '@/components/SignUpForm';
 
 export default function SignUp() {
-    const { state } = useLocation();
-    const { user } = useStore();
+    const { data } = useGetCurrentUserQuery();
 
-    useEffect(() => {
-        if (!state?.doNotCallAuth) {
-            user.fetchData();
-        }
-    }, [state, user]);
-
-    return (!state?.doNotCallAuth || user.authenticated)
-        ? <Navigate to="/" />
+    return data?.currentUser?.authenticated
+        ? <Navigate to='/' />
         : <SignUpForm />;
 }
