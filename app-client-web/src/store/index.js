@@ -3,7 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import postsApi from '@/api/posts-api';
 import usersApi from '@/api/users-api';
 
-export const store = configureStore({
+const store = configureStore({
     reducer: {
         [postsApi.reducerPath]: postsApi.reducer,
         [usersApi.reducerPath]: usersApi.reducer,
@@ -12,3 +12,5 @@ export const store = configureStore({
         .concat(postsApi.middleware)
         .concat(usersApi.middleware)
 });
+
+export default store;

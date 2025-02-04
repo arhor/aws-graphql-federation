@@ -6,7 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { AppThemeControlContext } from '@/theme/AppThemeControlContext';
+import AppThemeControlContext from '@/theme/AppThemeControlContext';
 
 export default function AppThemeProvider(props) {
     const [colorMode, setColorMode] = useState();

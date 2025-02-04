@@ -1,12 +1,13 @@
+import { ErrorBoundary } from 'react-error-boundary';
 import { Provider } from 'react-redux'
 
 import { ApolloClient, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
 import { SnackbarProvider } from 'notistack';
 
-import { ErrorBoundary } from '@/components';
-import { AppRouter } from '@/router';
-import { store } from '@/store';
-import { AppThemeProvider } from '@/theme';
+import ErrorWidget from '@/components/ErrorWidget';
+import AppRouter from '@/router/AppRouter';
+import store from '@/store';
+import AppThemeProvider from '@/theme/AppThemeProvider';
 
 const client = new ApolloClient({
     link: createHttpLink({
@@ -19,7 +20,7 @@ const client = new ApolloClient({
 export default function App() {
     return (
         <AppThemeProvider>
-            <ErrorBoundary>
+            <ErrorBoundary FallbackComponent={ErrorWidget}>
                 <Provider store={store}>
                     <ApolloProvider client={client}>
                         <SnackbarProvider preventDuplicate>

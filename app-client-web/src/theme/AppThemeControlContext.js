@@ -1,8 +1,10 @@
 import { createContext, useContext } from 'react';
 
-export const AppThemeControlContext = createContext({ 
+const AppThemeControlContext = createContext({ 
     switchColorMode: () => {} 
 });
+
+export default AppThemeControlContext;
 
 export function useAppThemeControl() {
     return useContext(AppThemeControlContext);
