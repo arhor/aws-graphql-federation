@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router';
 
 import ForumIcon from '@mui/icons-material/Forum';
 import UserAddIcon from '@mui/icons-material/PersonAdd';

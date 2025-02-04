@@ -1,8 +1,10 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 
-import { Layout } from '@/components';
+import Layout from '@/components/Layout';
 import Protected from '@/router/security/Protected';
-import { NotFound, SignIn, SignUp } from '@/views';
+import NotFound from '@/views/NotFound';
+import SignIn from '@/views/SignIn';
+import SignUp from '@/views/SignUp';
 
 const router = createBrowserRouter([
     {

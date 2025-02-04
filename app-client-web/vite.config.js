@@ -76,8 +76,8 @@ export default defineConfig(({ mode }) => {
                             'react',
                             'react-dom',
                             'react-i18next',
+                            'react-redux',
                             'react-router',
-                            'react-router-dom',
                         ],
                         material: [
                             '@emotion/cache',
