@@ -52,7 +52,7 @@ export default function SignUpForm() {
                 <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-                {t('forms:sign-up:title')}
+                {t('forms.sign-up.title')}
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <Grid container justifyContent="center">
@@ -60,7 +60,7 @@ export default function SignUpForm() {
                         <TextField
                             id="username"
                             name="username"
-                            label={t('forms:common:fields:username')}
+                            label={t('forms.common.fields.username')}
                             margin="normal"
                             required
                             fullWidth
@@ -72,7 +72,7 @@ export default function SignUpForm() {
                             id="password"
                             name="password"
                             type="password"
-                            label={t('forms:common:fields:password')}
+                            label={t('forms.common.fields.password')}
                             margin="normal"
                             required
                             fullWidth
@@ -86,12 +86,12 @@ export default function SignUpForm() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            {t('forms:sign-up:submit')}
+                            {t('forms.sign-up.submit')}
                         </Button>
                     </Grid>
                     <Grid item>
                         <Link to="/sign-in" state={{ doNotCallAuth: true }} component={RouterLink} variant="body2">
-                            {t('forms:sign-up:sign-in-link')}
+                            {t('forms.sign-up.sign-in-link')}
                         </Link>
                     </Grid>
                 </Grid>

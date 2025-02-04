@@ -19,7 +19,7 @@ export default function usePostsPage() {
     const { enqueueSnackbar } = useSnackbar();
     const { loading, error, data, previousData } = useQuery(GET_POSTS_PAGE, {
         variables: {
-            page: 0,
+            page: 1,
             size: 20,
         },
         pollInterval: 60_000,

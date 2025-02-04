@@ -1,3 +1,4 @@
+import { lazy } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 
 import Layout from '@/components/Layout';
@@ -12,8 +13,12 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                lazy: () => import('@/views/Home').then(it => ({ Component: it.default })),
-            }
+                Component: lazy(() => import('@/views/Home')),
+            },
+            {
+                path: '*',
+                Component: NotFound,
+            },
         ],
     },
     {

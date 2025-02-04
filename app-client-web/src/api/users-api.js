@@ -2,7 +2,6 @@ import { gql } from 'graphql-request';
 
 import graphqlBaseApi from '@/api/graphql-base-api';
 
-
 const usersApi = graphqlBaseApi.injectEndpoints({
     endpoints: (builder) => ({
         GetCurrentUser: builder.query({

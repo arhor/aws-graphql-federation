@@ -16,7 +16,7 @@ export default function SignInForm() {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { signIn } = useSignInMutation();
-    const [ searchParams ] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const hasError = searchParams.has('auth') && searchParams.get('auth') === 'failure';
 
     const handleSubmit = async (e) => {
@@ -28,7 +28,7 @@ export default function SignInForm() {
         const password = formData.get('password');
 
         if (username && password) {
-            await signIn({
+            const success = await signIn({
                 variables: {
                     input: {
                         username,
@@ -36,7 +36,9 @@ export default function SignInForm() {
                     }
                 }
             });
-            navigate('/');
+            if (success) {
+                navigate('/');
+            }
         }
     };
 
@@ -54,7 +56,7 @@ export default function SignInForm() {
                 <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-                {t('forms:sign-in:title')}
+                {t('forms.sign-in.title')}
             </Typography>
             <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <Grid container justifyContent="center">
@@ -62,7 +64,7 @@ export default function SignInForm() {
                         <TextField
                             id="username"
                             name="username"
-                            label={t('forms:common:fields:username')}
+                            label={t('forms.common.fields.username')}
                             margin="normal"
                             required
                             fullWidth
@@ -75,7 +77,7 @@ export default function SignInForm() {
                             id="password"
                             name="password"
                             type="password"
-                            label={t('forms:common:fields:password')}
+                            label={t('forms.common.fields.password')}
                             margin="normal"
                             required
                             fullWidth
@@ -92,12 +94,12 @@ export default function SignInForm() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            {t('forms:sign-in:submit')}
+                            {t('forms.sign-in.submit')}
                         </Button>
                     </Grid>
                     <Grid item>
                         <Link to="/sign-up" state={{ doNotCallAuth: true }} component={RouterLink} variant="body2">
-                            {t('forms:sign-in:sign-up-link')}
+                            {t('forms.sign-in.sign-up-link')}
                         </Link>
                     </Grid>
                 </Grid>

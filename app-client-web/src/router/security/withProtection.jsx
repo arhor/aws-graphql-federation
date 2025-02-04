@@ -8,15 +8,17 @@ function determineNameOf(Component) {
         || Component.name
         || 'AnonymousComponent';
 }
+
 function authorized(currentUser, authorities) {
-    return currentUser
-        && currentUser.authenticated
-        && authorities.every(auth => currentUser.authorities.includes(auth));
+    return !!currentUser?.authenticated
+        && (!authorities?.length || authorities.every(auth => currentUser.authorities?.includes(auth)));
 }
 
 export function withProtection(Component, authorities) {
     const ProtectedComponent = (props) => {
-        const { isLoading, data } = useGetCurrentUserQuery();
+        const { isLoading, data } = useGetCurrentUserQuery(undefined, {
+            refetchOnMountOrArgChange: true,
+        });
 
         if (isLoading) {
             return <Loader />;

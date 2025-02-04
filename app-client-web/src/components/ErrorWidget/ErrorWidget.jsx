@@ -12,8 +12,8 @@ export default function ErrorWidget({ error }) {
     
     return (
         <StatelessWidget
-            title={t('error-widget:title')}
-            description={t('error-widget:description')}
+            title={t('error-widget.title')}
+            description={t('error-widget.description')}
         />
     );
 }
