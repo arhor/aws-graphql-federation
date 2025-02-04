@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router';
 
-import { Loader } from '@/components';
-import useCurrentUser from '@/hooks/useCurrentUser';
+import { useGetCurrentUserQuery } from '@/api/users-api';
+import Loader from '@/components/Loader';
 
 function determineNameOf(Component) {
     return Component.displayName
@@ -16,9 +16,9 @@ function authorized(currentUser, authorities) {
 
 export function withProtection(Component, authorities) {
     const ProtectedComponent = (props) => {
-        const { loading, data } = useCurrentUser();
+        const { isLoading, data } = useGetCurrentUserQuery();
 
-        if (loading) {
+        if (isLoading) {
             return <Loader />;
         }
         return authorized(data?.currentUser, authorities)

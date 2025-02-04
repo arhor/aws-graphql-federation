@@ -3,7 +3,9 @@ import { Outlet } from 'react-router';
 
 import Container from '@mui/material/Container';
 
-import { Footer, Header, Loader } from '@/components';
+import Header from '@/components/Footer';
+import Footer from '@/components/Header';
+import Loader from '@/components/Loader';
 
 export default function Layout() {
     return (
