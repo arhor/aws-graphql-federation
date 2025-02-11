@@ -1,6 +1,7 @@
 import { gql } from 'graphql-request';
 
 import graphqlBaseApi from '@/api/graphql-base-api';
+import { CURRENT_USER } from '@/api/tags';
 
 const authApi = graphqlBaseApi.injectEndpoints({
     endpoints: (builder) => ({
@@ -28,6 +29,7 @@ const authApi = graphqlBaseApi.injectEndpoints({
                     }
                 `,
             }),
+            invalidatesTags: [CURRENT_USER]
         }),
     }),
 });

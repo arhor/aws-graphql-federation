@@ -17,8 +17,13 @@
             "sign-in-link": "Already have an account? Sign in"
         }
     },
-    "error-widget": {
-        "title": "Ups, something went wrong...",
-        "description": "Please, contact system administrator if you have nothing else to do."
+    "errors": {
+        "widget": {
+            "title": "Ups, something went wrong...",
+            "description": "Please, contact system administrator if you have nothing else to do."
+        },
+        "snackbar": {
+            "default": "Unexpected error occured"
+        }
     }
 }

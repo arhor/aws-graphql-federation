@@ -1,8 +1,13 @@
 import { gql } from 'graphql-request';
 
 import graphqlBaseApi from '@/api/graphql-base-api';
+import { CURRENT_USER } from '@/api/tags';
 
-const usersApi = graphqlBaseApi.injectEndpoints({
+const usersApi = graphqlBaseApi.enhanceEndpoints({
+    addTagTypes: [
+        CURRENT_USER,
+    ]
+}).injectEndpoints({
     endpoints: (builder) => ({
         GetCurrentUser: builder.query({
             query: () => ({
@@ -15,7 +20,8 @@ const usersApi = graphqlBaseApi.injectEndpoints({
                         }
                     }
                 `,
-            })
+            }),
+            providesTags: [CURRENT_USER]
         }),
 
         GetUserById: builder.query({
@@ -92,7 +98,7 @@ const usersApi = graphqlBaseApi.injectEndpoints({
         }),
 
         DeleteUser: builder.mutation({
-            mutation: ({id}) => ({
+            mutation: ({ id }) => ({
                 document: gql`
                     mutation DeleteUser(id: UUID!) {
                         deleteUser(id: $id)
