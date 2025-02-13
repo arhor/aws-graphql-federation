@@ -10,7 +10,7 @@ import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import useCreateUserMutation from '@/hooks/useCreateUserMutation';
+import useCreateUserMutation from '@/hooks/useCreateUser';
 
 export default function SignUpForm() {
     const navigate = useNavigate();

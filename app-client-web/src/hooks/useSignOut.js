@@ -8,7 +8,7 @@ import { useSignOutMutation } from '@/api/auth-api';
 export default function useSignOut() {
     const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
-    const [signOut, { isError, error }] = useSignOutMutation();
+    const [signOut, { isLoading, isError, error }] = useSignOutMutation();
 
     useEffect(() => {
         if (isError) {
@@ -19,5 +19,5 @@ export default function useSignOut() {
         }
     }, [isError, error, enqueueSnackbar, t]);
 
-    return { signOut };
+    return { signOut, isLoading };
 }

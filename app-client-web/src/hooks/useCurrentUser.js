@@ -1,45 +1,39 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { gql, useQuery } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 
+import { useGetCurrentUserQuery } from '@/api/users-api';
 import { MILLIS_IN_5_SECONDS } from '@/utils/time-utils';
 
-const GET_CURRENT_USER_INFO = gql`
-    query GetCurrentUserInfo {
-        currentUser: me {
-            id
-            authorities
-            authenticated
-        }
-    }
-`;
+const GET_CURRENT_USER_OPTIONS = {
+    refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
+    refetchOnFocus: true,
+};
 
 export default function useCurrentUser() {
+    const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
-    const { loading, error, data } = useQuery(GET_CURRENT_USER_INFO, {
-        defaultOptions: {
-            fetchPolicy: 'network-only',
-        },
-    });
+    const { isLoading, isError, error, data } = useGetCurrentUserQuery(null, GET_CURRENT_USER_OPTIONS);
 
     useEffect(() => {
-        if (error) {
-            enqueueSnackbar(error.message, {
+        if (isError) {
+            enqueueSnackbar(error.message || t('errors.snackbar.default'), {
                 variant: 'error',
                 autoHideDuration: MILLIS_IN_5_SECONDS,
             });
         }
-    }, [error, enqueueSnackbar]);
+    }, [isError, error, enqueueSnackbar, t]);
 
     useEffect(() => {
         if (data?.currentUser?.authenticated === false) {
-            enqueueSnackbar('Current user is not authenticated', {
+            enqueueSnackbar(t('Current user is not authenticated'), {
                 variant: 'error',
                 autoHideDuration: MILLIS_IN_5_SECONDS,
             });
         }
-    }, [data, enqueueSnackbar]);
+    }, [data, enqueueSnackbar, t]);
 
-    return { loading, data };
+    return { isLoading, data };
 }

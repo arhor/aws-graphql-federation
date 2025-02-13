@@ -1,5 +1,6 @@
-export { default as useCreatePostMutation } from '@/hooks/useCreatePostMutation';
-export { default as useCreateUserMutation } from '@/hooks/useCreateUserMutation';
+export { default as useCreatePost } from '@/hooks/useCreatePost';
+export { default as useCreateUser } from '@/hooks/useCreateUser';
 export { default as useCurrentUser } from '@/hooks/useCurrentUser';
 export { default as usePostsPage } from '@/hooks/usePostsPage';
-export { default as useSignInMutation } from '@/hooks/useSignInMutation';
+export { default as useSignIn } from '@/hooks/useSignIn';
+export { default as useSignOut } from '@/hooks/useSignOut';

@@ -103,4 +103,10 @@ const postsApi = graphqlBaseApi.injectEndpoints({
 
 export default postsApi;
 
-export const { useGetPostsPageQuery } = postsApi;
+export const {
+    useGetPostByIdQuery,
+    useGetPostsPageQuery,
+    useCreatePostMutation,
+    useUpdatePostMutation,
+    useDeletePostMutation,
+} = postsApi;

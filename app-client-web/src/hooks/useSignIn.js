@@ -3,16 +3,12 @@ import { useTranslation } from 'react-i18next';
 
 import { useSnackbar } from 'notistack';
 
-import { useGetPostsPageQuery } from '@/api/posts-api';
+import { useSignInMutation } from '@/api/auth-api';
 
-const GET_POSTS_OPTIONS = {
-    pollingInterval: 60_000,
-};
-
-export default function usePostsPage() {
+export default function useSignIn() {
     const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
-    const { isLoading, isError, error, data } = useGetPostsPageQuery({ page: 1, size: 20 }, GET_POSTS_OPTIONS);
+    const [signIn, { isLoading, isError, error }] = useSignInMutation();
 
     useEffect(() => {
         if (isError) {
@@ -21,7 +17,7 @@ export default function usePostsPage() {
                 autoHideDuration: 5000,
             });
         }
-    }, [isError, error, enqueueSnackbar, t]);
+    }, [isError, error, enqueueSnackbar,t ]);
 
-    return { isLoading, data };
+    return { signIn, isLoading };
 }

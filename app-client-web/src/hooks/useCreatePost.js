@@ -3,16 +3,12 @@ import { useTranslation } from 'react-i18next';
 
 import { useSnackbar } from 'notistack';
 
-import { useGetPostsPageQuery } from '@/api/posts-api';
+import { useCreatePostMutation } from '@/api/posts-api';
 
-const GET_POSTS_OPTIONS = {
-    pollingInterval: 60_000,
-};
-
-export default function usePostsPage() {
+export default function useCreatePost() {
     const { t } = useTranslation();
     const { enqueueSnackbar } = useSnackbar();
-    const { isLoading, isError, error, data } = useGetPostsPageQuery({ page: 1, size: 20 }, GET_POSTS_OPTIONS);
+    const [createPost, { isLoading, isError, error, data }] = useCreatePostMutation();
 
     useEffect(() => {
         if (isError) {
@@ -23,5 +19,5 @@ export default function usePostsPage() {
         }
     }, [isError, error, enqueueSnackbar, t]);
 
-    return { isLoading, data };
+    return { createPost, isLoading, data };
 }

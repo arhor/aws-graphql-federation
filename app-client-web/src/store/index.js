@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { setupListeners } from '@reduxjs/toolkit/query';
 
 import authApi from '@/api/auth-api';
 import postsApi from '@/api/posts-api';
@@ -15,5 +16,7 @@ const store = configureStore({
         .concat(postsApi.middleware)
         .concat(usersApi.middleware)
 });
+
+setupListeners(store.dispatch);
 
 export default store;
