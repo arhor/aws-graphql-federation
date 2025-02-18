@@ -1,4 +1,3 @@
-import { lazy } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 
 import Layout from '@/components/Layout';
@@ -7,18 +6,18 @@ import NotFound from '@/views/NotFound';
 import SignIn from '@/views/SignIn';
 import SignUp from '@/views/SignUp';
 
+function unwrap(module) {
+    return { Component: module.default };
+}
+
 const router = createBrowserRouter([
     {
         element: <Protected component={Layout} />,
         children: [
             {
                 index: true,
-                Component: lazy(() => import('@/views/Home')),
-            },
-            {
-                path: '*',
-                Component: NotFound,
-            },
+                lazy: () => import('@/views/Home').then(unwrap),
+            }
         ],
     },
     {
