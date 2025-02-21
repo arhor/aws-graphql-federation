@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
 
 import Layout from '@/components/Layout';
+import UserSettings from '@/components/UserSettings';
 import Protected from '@/router/security/Protected';
 import NotFound from '@/views/NotFound';
 import SignIn from '@/views/SignIn';
@@ -12,25 +13,29 @@ function unwrap(module) {
 
 const router = createBrowserRouter([
     {
-        element: <Protected component={Layout} />,
+        element: <Layout/>,
         children: [
             {
                 index: true,
                 lazy: () => import('@/views/Home').then(unwrap),
-            }
+            },
+            {
+                path: '/settings',
+                element: <Protected component={UserSettings} />,
+            },
+            {
+                path: '/sign-in',
+                element: <SignIn />,
+            },
+            {
+                path: '/sign-up',
+                element: <SignUp />,
+            },
+            {
+                path: '*',
+                element: <NotFound />,
+            },
         ],
-    },
-    {
-        path: '/sign-in',
-        Component: SignIn,
-    },
-    {
-        path: '/sign-up',
-        Component: SignUp,
-    },
-    {
-        path: '*',
-        Component: NotFound,
     },
 ]);
 
