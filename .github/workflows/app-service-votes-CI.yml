@@ -1,0 +1,27 @@
+name: Votes service CI
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/app-service-votes-CI.yml'
+      - '.github/actions/**'
+      - 'app-service-votes/**'
+      - 'app-library-*/**'
+  pull_request:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/app-service-votes-CI.yml'
+      - '.github/actions/**'
+      - 'app-service-votes/**'
+      - 'app-library-*/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    uses: ./.github/workflows/build-and-verify-code-coverage.yml
+    with:
+      application-name: 'app-service-votes'

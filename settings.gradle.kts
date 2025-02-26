@@ -6,6 +6,7 @@ includeBuild("app-library-starter-security")
 includeBuild("app-library-starter-testing")
 includeBuild("app-library-starter-tracing")
 
+includeBuild("app-service-votes")
 includeBuild("app-service-users")
 includeBuild("app-service-posts")
 includeBuild("app-service-comments")
