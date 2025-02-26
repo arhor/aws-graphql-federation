@@ -11,7 +11,6 @@ services:
 | **Users Service**     | Manages user information and authentication            | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-users-CI.yml/badge.svg)     |
 | **Posts Service**     | Handles the creation, updating, and retrieval of posts | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-posts-CI.yml/badge.svg)     |
 | **Comments Service**  | Manages comments on posts                              | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-comments-CI.yml/badge.svg)  |
-| **Scheduler Service** | Manages scheduled events                               | ![GitHub Actions](https://github.com/arhor/aws-graphql-federation/actions/workflows/app-service-scheduler-CI.yml/badge.svg) |
 
 all of which are subgraphs in the overall GraphQL federation supergraph.
 
@@ -90,10 +89,7 @@ all of which are subgraphs in the overall GraphQL federation supergraph.
     ```shell
     ./gradlew :app-comments-service:bootRun
     ```
-    - Scheduled Events service:
-    ```shell
-    ./gradlew :app-scheduler-service:bootRun
-    ```
+
 ### Gateway Setup
 
 1. **Change current directory**:
