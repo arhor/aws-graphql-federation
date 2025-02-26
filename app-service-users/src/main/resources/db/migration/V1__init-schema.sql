@@ -1,22 +1,19 @@
-CREATE TABLE IF NOT EXISTS "users"
-(
+CREATE TABLE IF NOT EXISTS "users" (
     "id"                UUID          NOT NULL PRIMARY KEY,
     "username"          VARCHAR(128)  NOT NULL UNIQUE,
     "password"          VARCHAR(1024) NULL,
     "version"           BIGINT        NOT NULL,
     "created_date_time" TIMESTAMP     NOT NULL,
     "updated_date_time" TIMESTAMP     NULL
-) WITH (OIDS = FALSE);
+);
 
-CREATE TABLE IF NOT EXISTS "authorities"
-(
+CREATE TABLE IF NOT EXISTS "authorities" (
     "id"   SERIAL       NOT NULL PRIMARY KEY,
     "name" VARCHAR(128) NOT NULL UNIQUE
 
-) WITH (OIDS = FALSE);
+);
 
-CREATE TABLE IF NOT EXISTS "users_have_authorities"
-(
+CREATE TABLE IF NOT EXISTS "users_have_authorities" (
     "user_id" UUID NOT NULL,
     "auth_id" INT  NOT NULL,
 
@@ -34,7 +31,7 @@ CREATE TABLE IF NOT EXISTS "users_have_authorities"
             REFERENCES "authorities" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
-) WITH (OIDS = FALSE);
+);
 
 INSERT INTO "authorities" ("name")
 VALUES ('ROLE_USER')

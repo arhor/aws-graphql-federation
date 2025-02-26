@@ -1,0 +1,17 @@
+scalar UUID
+
+# ---------- Root Types (Query/Mutation/Subscription) ----------
+
+type Query {
+
+}
+
+type Mutation {
+
+}
+
+# ---------- Input Types ----------
+
+# ---------- Domain Types ----------
+
+# ---------- Directives ----------

@@ -1,11 +1,9 @@
-CREATE TABLE IF NOT EXISTS "user_representations"
-(
+CREATE TABLE IF NOT EXISTS "user_representations" (
     "id"       UUID NOT NULL PRIMARY KEY,
     "features" INT  NOT NULL
-) WITH (OIDS = FALSE);
+);
 
-CREATE TABLE IF NOT EXISTS "posts"
-(
+CREATE TABLE IF NOT EXISTS "posts" (
     "id"                UUID         NOT NULL PRIMARY KEY,
     "user_id"           UUID         NULL,
     "title"             VARCHAR(512) NOT NULL,
@@ -19,16 +17,14 @@ CREATE TABLE IF NOT EXISTS "posts"
             REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE SET NULL
-) WITH (OIDS = FALSE);
+);
 
-CREATE TABLE IF NOT EXISTS "tags"
-(
+CREATE TABLE IF NOT EXISTS "tags" (
     "id"   UUID        NOT NULL PRIMARY KEY,
     "name" VARCHAR(50) NOT NULL UNIQUE
-) WITH (OIDS = FALSE);
+);
 
-CREATE TABLE IF NOT EXISTS "posts_have_tags"
-(
+CREATE TABLE IF NOT EXISTS "posts_have_tags" (
     "post_id" UUID NOT NULL,
     "tag_id"  UUID NOT NULL,
 
@@ -46,10 +42,9 @@ CREATE TABLE IF NOT EXISTS "posts_have_tags"
             REFERENCES "tags" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
-) WITH (OIDS = FALSE);
+);
 
-CREATE TABLE IF NOT EXISTS "posts_have_user_likes"
-(
+CREATE TABLE IF NOT EXISTS "posts_have_user_likes" (
     "post_id"           UUID      NOT NULL,
     "user_id"           UUID      NOT NULL,
     "created_date_time" TIMESTAMP NOT NULL,
@@ -68,4 +63,4 @@ CREATE TABLE IF NOT EXISTS "posts_have_user_likes"
             REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
-) WITH (OIDS = FALSE);
+);
