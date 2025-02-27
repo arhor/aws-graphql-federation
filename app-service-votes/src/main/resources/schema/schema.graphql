@@ -14,4 +14,18 @@ type Mutation {
 
 # ---------- Domain Types ----------
 
+# ---------- Federated Types ----------
+
+type User @key(fields: "id") @extends {
+    id: UUID! @external
+}
+
+type Post @key(fields: "id") @extends {
+    id: UUID! @external
+}
+
+type Comment @key(fields: "id") @extends {
+    id: UUID! @external
+}
+
 # ---------- Directives ----------

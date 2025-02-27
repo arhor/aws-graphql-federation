@@ -9,7 +9,7 @@ fun useContextAttribute(attribute: Attributes): UUID {
         MDC.get(attribute.key)
             ?: throw IllegalStateException("Attribute '${attribute.key}' has not been initialized.")
 
-    return UUID.fromString(attributeValue.toString())
+    return UUID.fromString(attributeValue)
 }
 
 inline fun <T> withExtendedMDC(traceId: UUID, block: () -> T): T {
