@@ -21,14 +21,12 @@ CREATE TABLE IF NOT EXISTS "users_have_authorities" (
         PRIMARY KEY ("user_id", "auth_id"),
 
     CONSTRAINT "FK__users_have_authorities__user_id"
-        FOREIGN KEY ("user_id")
-            REFERENCES "users" ("id")
+        FOREIGN KEY ("user_id") REFERENCES "users" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE,
 
     CONSTRAINT "FK__users_have_authorities__auth_id"
-        FOREIGN KEY ("auth_id")
-            REFERENCES "authorities" ("id")
+        FOREIGN KEY ("auth_id") REFERENCES "authorities" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
 );

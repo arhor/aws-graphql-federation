@@ -9,8 +9,7 @@ CREATE TABLE IF NOT EXISTS "post_representations" (
     "features" INT  NOT NULL,
 
     CONSTRAINT "FK__post_representations__user_id"
-        FOREIGN KEY ("user_id")
-            REFERENCES "user_representations" ("id")
+        FOREIGN KEY ("user_id") REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE SET NULL
 );
@@ -26,20 +25,17 @@ CREATE TABLE IF NOT EXISTS "comments" (
     "updated_date_time" TIMESTAMP     NULL,
 
     CONSTRAINT "FK__comments__prnt_id"
-        FOREIGN KEY ("prnt_id")
-            REFERENCES "comments" ("id")
+        FOREIGN KEY ("prnt_id") REFERENCES "comments" ("id")
             ON UPDATE CASCADE
             ON DELETE SET NULL,
 
     CONSTRAINT "FK__comments__user_id"
-        FOREIGN KEY ("user_id")
-            REFERENCES "user_representations" ("id")
+        FOREIGN KEY ("user_id") REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE SET NULL,
 
     CONSTRAINT "FK__comments__post_id"
-        FOREIGN KEY ("post_id")
-            REFERENCES "post_representations" ("id")
+        FOREIGN KEY ("post_id") REFERENCES "post_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
 );

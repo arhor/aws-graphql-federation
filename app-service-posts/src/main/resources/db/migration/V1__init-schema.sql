@@ -13,8 +13,7 @@ CREATE TABLE IF NOT EXISTS "posts" (
     "updated_date_time" TIMESTAMP    NULL,
 
     CONSTRAINT "FK__posts__user_id"
-        FOREIGN KEY ("user_id")
-            REFERENCES "user_representations" ("id")
+        FOREIGN KEY ("user_id") REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE SET NULL
 );
@@ -32,14 +31,12 @@ CREATE TABLE IF NOT EXISTS "posts_have_tags" (
         PRIMARY KEY ("post_id", "tag_id"),
 
     CONSTRAINT "FK__posts_have_tags__post_id"
-        FOREIGN KEY ("post_id")
-            REFERENCES "posts" ("id")
+        FOREIGN KEY ("post_id") REFERENCES "posts" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE,
 
     CONSTRAINT "FK__posts_have_tags__tag_id"
-        FOREIGN KEY ("tag_id")
-            REFERENCES "tags" ("id")
+        FOREIGN KEY ("tag_id") REFERENCES "tags" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
 );
@@ -53,14 +50,12 @@ CREATE TABLE IF NOT EXISTS "posts_have_user_likes" (
         PRIMARY KEY ("post_id", "user_id"),
 
     CONSTRAINT "FK__posts_have_user_likes__post_id"
-        FOREIGN KEY ("post_id")
-            REFERENCES "posts" ("id")
+        FOREIGN KEY ("post_id") REFERENCES "posts" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE,
 
     CONSTRAINT "FK__posts_have_user_likes__user_id"
-        FOREIGN KEY ("user_id")
-            REFERENCES "user_representations" ("id")
+        FOREIGN KEY ("user_id") REFERENCES "user_representations" ("id")
             ON UPDATE CASCADE
             ON DELETE CASCADE
 );
