@@ -1,11 +1,20 @@
 package com.github.arhor.aws.graphql.federation.votes.service
 
+import com.github.arhor.aws.graphql.federation.votes.generated.graphql.types.Post
 import java.util.UUID
 
 /**
  * Service interface for handling post representations.
  */
 interface PostRepresentationService {
+
+    /**
+     * Retrieves post representations for the specified set of post IDs.
+     *
+     * @param postIds the set of post IDs for which to find representations
+     * @return a map where each key is a post ID and the corresponding value is the post representation
+     */
+    fun findPostsRepresentationsInBatch(postIds: Set<UUID>): Map<UUID, Post>
 
     /**
      * Creates a new post representation.

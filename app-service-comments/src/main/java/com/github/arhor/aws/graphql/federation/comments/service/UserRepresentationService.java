@@ -12,6 +12,12 @@ import java.util.UUID;
  */
 public interface UserRepresentationService {
 
+    /**
+     * Retrieves user representations for the specified set of user IDs.
+     *
+     * @param userIds the set of user IDs for which to find representations
+     * @return a map where each key is a user ID and the corresponding value is the user representation
+     */
     @NotNull
     Map<UUID, User> findUsersRepresentationsInBatch(@NotNull Set<UUID> userIds);
 

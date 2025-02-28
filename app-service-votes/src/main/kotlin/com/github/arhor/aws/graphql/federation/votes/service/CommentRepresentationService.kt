@@ -1,11 +1,20 @@
 package com.github.arhor.aws.graphql.federation.votes.service
 
+import com.github.arhor.aws.graphql.federation.votes.generated.graphql.types.Comment
 import java.util.UUID
 
 /**
  * Service interface for handling comment representations.
  */
 interface CommentRepresentationService {
+
+    /**
+     * Retrieves comment representations for the specified set of comment IDs.
+     *
+     * @param commentIds the set of comment IDs for which to find representations
+     * @return a map where each key is a comment ID and the corresponding value is the comment representation
+     */
+    fun findCommentsRepresentationsInBatch(commentIds: Set<UUID>): Map<UUID, Comment>
 
     /**
      * Creates a new comment representation.

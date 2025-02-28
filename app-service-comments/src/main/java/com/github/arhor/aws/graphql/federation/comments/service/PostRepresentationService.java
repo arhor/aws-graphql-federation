@@ -13,6 +13,12 @@ import java.util.UUID;
  */
 public interface PostRepresentationService {
 
+    /**
+     * Retrieves post representations for the specified set of post IDs.
+     *
+     * @param postIds the set of post IDs for which to find representations
+     * @return a map where each key is a post ID and the corresponding value is the post representation
+     */
     @NotNull
     Map<UUID, Post> findPostsRepresentationsInBatch(@NotNull Set<UUID> postIds);
 

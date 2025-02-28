@@ -8,6 +8,7 @@ import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConsta
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.User
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
+import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -25,19 +26,20 @@ class UserRepresentationServiceImpl(
         if (userIds.isEmpty()) {
             return emptyMap()
         }
-        val result = HashMap<UUID, User>(userIds.size)
-        val users = userRepository.findAllById(userIds)
+        val result =
+            userRepository
+                .findAllById(userIds)
+                .associateByTo(
+                    destination = HashMap(userIds.size),
+                    keySelector = { it.id },
+                    valueTransform = { User(id = it.id) },
+                )
 
-        for (user in users) {
-            result[user.id] = User(
-                id = user.id,
-                postsDisabled = user.postsDisabled(),
-            )
-        }
-        for (userId in userIds) {
-            result.computeIfAbsent(userId) {
-                User(id = it)
+        (userIds - result.keys).takeIf(Set<UUID>::isNotEmpty)?.let {
+            for (userId in it) {
+                result[userId] = User(id = userId)
             }
+            logger.warn("Stubbed users without representation in the DB: {}", it)
         }
         return result
     }
@@ -70,5 +72,9 @@ class UserRepresentationServiceImpl(
         val updatedUser = userRepository.save(presentUser.togglePosts())
 
         return !updatedUser.postsDisabled()
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 }
