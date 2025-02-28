@@ -23,13 +23,12 @@ class BaseRepresentationOperations {
             return emptyMap()
         }
         val result = findAllById(keys).associateByTo(HashMap(keys.size), { it.id!! }, onPresent)
-
         val idsMissingInDB = keys - result.keys
+
         if (idsMissingInDB.isNotEmpty()) {
-            for (id in idsMissingInDB) {
-                result[id] = onMissing(id)
+            result += idsMissingInDB.associateWith(onMissing).also {
+                logger.warn("Stubbed representations missing in the DB: {}", it)
             }
-            logger.warn("Stubbed representations missing in the DB: {}", idsMissingInDB)
         }
         return result
     }
