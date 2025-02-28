@@ -51,6 +51,18 @@ dgs:
     virtualthreads:
       enabled: true
 
+app-props:
+  events:
+    target:
+      app-events: \${APP_PROPS_AWS_SNS_APP_EVENTS}
+    source:
+      sync-votes-on-user-created-event: \${APP_PROPS_AWS_SQS_SYNC_VOTES_ON_USER_CREATED_EVENT}
+      sync-votes-on-user-deleted-event: \${APP_PROPS_AWS_SQS_SYNC_VOTES_ON_USER_DELETED_EVENT}
+      sync-votes-on-post-created-event: \${APP_PROPS_AWS_SQS_SYNC_VOTES_ON_POST_CREATED_EVENT}
+      sync-votes-on-post-deleted-event: \${APP_PROPS_AWS_SQS_SYNC_VOTES_ON_POST_DELETED_EVENT}
+      sync-votes-on-comment-created-event: \${APP_PROPS_AWS_SQS_SYNC_VOTES_ON_COMMENT_CREATED_EVENT}
+      sync-votes-on-comment-deleted-event: \${APP_PROPS_AWS_SQS_SYNC_VOTES_ON_COMMENT_DELETED_EVENT}
+
 ---
 
 spring:

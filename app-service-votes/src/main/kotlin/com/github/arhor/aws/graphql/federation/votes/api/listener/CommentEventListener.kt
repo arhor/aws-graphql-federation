@@ -1,6 +1,7 @@
 package com.github.arhor.aws.graphql.federation.votes.api.listener
 
 import com.github.arhor.aws.graphql.federation.common.constants.ATTR_TRACE_ID
+import com.github.arhor.aws.graphql.federation.common.event.CommentEvent
 import com.github.arhor.aws.graphql.federation.starter.tracing.Trace
 import com.github.arhor.aws.graphql.federation.starter.tracing.Utils.withExtendedMDC
 import com.github.arhor.aws.graphql.federation.votes.service.CommentRepresentationService
@@ -23,7 +24,8 @@ class CommentEventListener(
     ) {
         withExtendedMDC(traceId) {
             commentService.createCommentRepresentation(
-                postId = event.id,
+                commentId = event.id,
+                postId = event.postId,
                 userId = event.userId,
                 idempotencyKey = traceId,
             )
@@ -37,7 +39,7 @@ class CommentEventListener(
     ) {
         withExtendedMDC(traceId) {
             commentService.deleteCommentRepresentation(
-                postId = event.id,
+                commentId = event.id,
                 idempotencyKey = traceId,
             )
         }
