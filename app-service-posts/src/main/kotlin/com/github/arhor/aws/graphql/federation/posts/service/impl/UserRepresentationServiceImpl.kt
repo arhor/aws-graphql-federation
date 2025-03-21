@@ -32,7 +32,7 @@ class UserRepresentationServiceImpl(
                 .associateByTo(
                     destination = HashMap(userIds.size),
                     keySelector = { it.id },
-                    valueTransform = { User(id = it.id) },
+                    valueTransform = { User(id = it.id, postsDisabled = it.postsDisabled()) },
                 )
 
         (userIds - result.keys).takeIf(Set<UUID>::isNotEmpty)?.let {
