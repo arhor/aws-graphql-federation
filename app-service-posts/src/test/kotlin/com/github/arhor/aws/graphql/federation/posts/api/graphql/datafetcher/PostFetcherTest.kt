@@ -4,11 +4,14 @@ import com.github.arhor.aws.graphql.federation.common.exception.EntityNotFoundEx
 import com.github.arhor.aws.graphql.federation.common.exception.Operation
 import com.github.arhor.aws.graphql.federation.posts.api.graphql.dataloader.UserRepresentationBatchLoader
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POSTS_LOOKUP_INPUT
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.POST_PAGE
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.QUERY
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.DgsConstants.TAG_INPUT
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.Post
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostPage
 import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.PostsLookupInput
+import com.github.arhor.aws.graphql.federation.posts.generated.graphql.types.TagInput
 import com.github.arhor.aws.graphql.federation.posts.service.PostService
 import com.github.arhor.aws.graphql.federation.posts.service.UserRepresentationService
 import com.github.arhor.aws.graphql.federation.starter.testing.GraphQLTestBase
@@ -215,19 +218,9 @@ internal class PostFetcherTest : GraphQLTestBase() {
         @Test
         fun `should return expected posts page when processing query with explicit input`() {
             // Given
-            val post = Post(
-                id = POST_ID,
-                userId = USER_ID,
-                title = "test-title",
-                content = "test-content",
-            )
-            val page = PostPage(
-                data = listOf(post),
-                page = 1,
-                size = 20,
-                hasPrev = false,
-                hasNext = false,
-            )
+            val post = Post(id = POST_ID, userId = USER_ID, title = "test-title", content = "test-content")
+            val page = PostPage(data = listOf(post), page = 1, size = 20, hasPrev = false, hasNext = false)
+            val expectedInput = PostsLookupInput(page = 3, size = 15, tags = listOf(TagInput(name = "test")))
 
             every { postService.getPostPage(any()) } returns page
 
@@ -249,11 +242,22 @@ internal class PostFetcherTest : GraphQLTestBase() {
                     }
                 },
                 """.trimIndent(),
-                mapOf("input" to PostsLookupInput())
+                mapOf(
+                    "input" to mapOf(
+                        POSTS_LOOKUP_INPUT.Page to expectedInput.page,
+                        POSTS_LOOKUP_INPUT.Size to expectedInput.size,
+                        POSTS_LOOKUP_INPUT.Tags to expectedInput.tags?.map {
+                            mapOf(TAG_INPUT.Name to it.name)
+                        },
+                    )
+                )
             )
 
             // Then
-            verify(exactly = 1) { postService.getPostPage(PostsLookupInput()) }
+            assertThat(result.errors)
+                .isNullOrEmpty()
+
+            verify(exactly = 1) { postService.getPostPage(expectedInput) }
 
             assertThat(result)
                 .returns(emptyList(), from { it.errors })
