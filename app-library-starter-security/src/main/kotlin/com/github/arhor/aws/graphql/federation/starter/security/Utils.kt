@@ -32,8 +32,8 @@ fun ensureAccessAllowed(
     vararg authorities: GrantedAuthority,
 ) {
     if (
-        actingUser.hasId(targetUserId) ||
-        actingUser.hasAuthorities(authorities)
+        actingUser hasId targetUserId ||
+        actingUser hasAuthorities authorities
     ) {
         return
     }
@@ -46,11 +46,11 @@ val UserDetails.isUser: Boolean
 val UserDetails.isAdmin: Boolean
     get() = PredefinedAuthority.ROLE_ADMIN.name in authorities.toSet { it.authority }
 
-private fun CurrentUserDetails.hasId(targetUserId: UUID?): Boolean {
+private infix fun CurrentUserDetails.hasId(targetUserId: UUID?): Boolean {
     return id == targetUserId
 }
 
-private fun CurrentUserDetails.hasAuthorities(requiredAuthorities: Array<out GrantedAuthority>): Boolean {
+private infix fun CurrentUserDetails.hasAuthorities(requiredAuthorities: Array<out GrantedAuthority>): Boolean {
     return requiredAuthorities.isNotEmpty()
         && authorities.containsAll(requiredAuthorities.asList())
 }

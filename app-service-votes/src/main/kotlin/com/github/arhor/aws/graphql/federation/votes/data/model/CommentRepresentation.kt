@@ -14,13 +14,13 @@ import java.util.UUID
 data class CommentRepresentation @PersistenceCreator constructor(
     @Id
     @Column("id")
-    private val id: UUID,
+    val id: UUID,
 
     @Column("user_id")
-    private val userId: UUID,
+    val userId: UUID,
 
     @Column("post_id")
-    private val postId: UUID,
+    val postId: UUID,
 
     @Transient
     val shouldBePersisted: Boolean = false,

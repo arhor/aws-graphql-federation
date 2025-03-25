@@ -14,10 +14,10 @@ import java.util.UUID
 data class PostRepresentation @PersistenceCreator constructor(
     @Id
     @Column("id")
-    private val id: UUID,
+    val id: UUID,
 
     @Column("user_id")
-    private val userId: UUID,
+    val userId: UUID,
 
     @Transient
     val shouldBePersisted: Boolean = false,

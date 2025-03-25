@@ -14,16 +14,19 @@ import java.util.UUID
 @Immutable
 data class VoteEntity(
     @Id
-    var id: UUID? = null,
+    val id: UUID? = null,
+
+    @Column("user_id")
+    val userId: UUID,
 
     @Column("entity_id")
-    var entityId: UUID,
+    val entityId: UUID,
 
     @Column("entity_type")
-    var entityType: EntityType,
+    val entityType: EntityType,
 
     @Column("value")
-    var value: Int,
+    val value: Int,
 
     @Version
     @Column("version")
