@@ -30,10 +30,12 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 import static org.assertj.core.api.Assertions.from;
+import static org.assertj.core.api.InstanceOfAssertFactories.throwable;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -404,6 +406,33 @@ class CommentServiceImplTest {
                 .isNotNull()
                 .isEqualTo(expectedComment);
         }
+
+        @Test
+        void should_throw_EntityOperationRestrictedException_when_operation_not_allowed() {
+            // Given
+            final var input = CreateCommentInput.newBuilder()
+                .postId(POST_ID)
+                .prntId(null)
+                .build();
+            final var actor = actor(USER_ID);
+
+            doThrow(new EntityOperationRestrictedException("test", "test", Operation.UNKNOWN))
+                .when(stateGuard)
+                .ensureCommentsEnabled(any(), any(), any(), any());
+
+            // When
+            final var result = catchException(() -> commentService.createComment(input, actor));
+
+            // Then
+            then(stateGuard)
+                .should()
+                .ensureCommentsEnabled(COMMENT.TYPE_NAME, Operation.CREATE, StateGuard.Type.USER, USER_ID);
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(throwable(EntityOperationRestrictedException.class))
+                .hasMessageContaining("test");
+        }
     }
 
     @Nested
@@ -599,6 +628,43 @@ class CommentServiceImplTest {
                 .returns(expectedEntity, from(EntityOperationRestrictedException::getEntity))
                 .returns(expectedCondition, from(EntityOperationRestrictedException::getCondition))
                 .returns(expectedOperation, from(EntityOperationRestrictedException::getOperation));
+        }
+
+        @Test
+        void should_throw_EntityOperationRestrictedException_when_operation_not_allowed() {
+            // Given
+            final var input = UpdateCommentInput.newBuilder()
+                .id(COMMENT_1_ID)
+                .content("Updated content")
+                .build();
+            final var actor = actor(USER_ID);
+            final var comment = CommentEntity.builder()
+                .id(COMMENT_1_ID)
+                .userId(USER_ID)
+                .postId(POST_ID)
+                .build();
+
+            given(commentRepository.findById(COMMENT_1_ID))
+                .willReturn(Optional.of(comment));
+            doThrow(new EntityOperationRestrictedException("test", "test", Operation.UNKNOWN))
+                .when(stateGuard)
+                .ensureCommentsEnabled(any(), any(), any(), any());
+
+            // When
+            final var result = catchException(() -> commentService.updateComment(input, actor));
+
+            // Then
+            then(commentRepository)
+                .should()
+                .findById(COMMENT_1_ID);
+            then(stateGuard)
+                .should()
+                .ensureCommentsEnabled(COMMENT.TYPE_NAME, Operation.UPDATE, StateGuard.Type.USER, USER_ID);
+
+            assertThat(result)
+                .isNotNull()
+                .asInstanceOf(throwable(EntityOperationRestrictedException.class))
+                .hasMessageContaining("test");
         }
     }
 
