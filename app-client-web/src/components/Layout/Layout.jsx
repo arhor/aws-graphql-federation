@@ -1,22 +1,22 @@
 import { Suspense } from 'react';
 import { Outlet } from 'react-router';
 
-import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 
-import Header from '@/components/Footer';
-import Footer from '@/components/Header';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import Loader from '@/components/Loader';
 
 export default function Layout() {
     return (
-        <>
+        <Box sx={{ minHeight: '100vh', paddingBottom: '56px' }}>
             <Header />
-            <Container component="main" sx={{ p: 5 }}>
+            <Box component="main" sx={{ pt: 2, pb: 8 }}>
                 <Suspense fallback={<Loader />}>
                     <Outlet />
                 </Suspense>
-            </Container>
+            </Box>
             <Footer />
-        </>
+        </Box>
     );
 }

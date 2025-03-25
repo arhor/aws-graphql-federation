@@ -2,7 +2,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 
 import Layout from '@/components/Layout';
 import UserSettings from '@/components/UserSettings';
-import Protected from '@/router/security/Protected';
 import NotFound from '@/views/NotFound';
 import SignIn from '@/views/SignIn';
 import SignUp from '@/views/SignUp';
@@ -21,7 +20,7 @@ const router = createBrowserRouter([
             },
             {
                 path: '/settings',
-                element: <Protected component={UserSettings} />,
+                element: <UserSettings />,
             },
             {
                 path: '/sign-in',
