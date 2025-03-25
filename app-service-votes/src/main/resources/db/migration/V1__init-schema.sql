@@ -32,12 +32,13 @@ CREATE TABLE IF NOT EXISTS "comment_representations" (
 
 ---------- Internal entity tables ----------
 
-CREATE TABLE "votes" (
+CREATE TABLE IF NOT EXISTS "votes" (
     "id"                UUID      NOT NULL PRIMARY KEY,
     "user_id"           UUID      NOT NULL,
     "entity_id"         UUID      NOT NULL,
     "entity_type"       TEXT      NOT NULL,
     "value"             SMALLINT  NOT NULL,
+    "version"           BIGINT    NOT NULL,
     "created_date_time" TIMESTAMP NOT NULL,
     "updated_date_time" TIMESTAMP NULL,
 
@@ -53,7 +54,7 @@ CREATE TABLE "votes" (
 
 ---------- Partitions ----------
 
-CREATE TABLE "posts_votes"
+CREATE TABLE IF NOT EXISTS "posts_votes"
     PARTITION OF "votes"
     FOR VALUES IN ('POST')
     CONSTRAINT "FK__posts_votes__user_id"
@@ -65,7 +66,7 @@ CREATE TABLE "posts_votes"
             ON DELETE CASCADE
             ON UPDATE CASCADE;
 
-CREATE TABLE "comments_votes"
+CREATE TABLE IF NOT EXISTS "comments_votes"
     PARTITION OF "votes"
     FOR VALUES IN ('COMMENT')
     CONSTRAINT "FK__comments_votes__user_id"

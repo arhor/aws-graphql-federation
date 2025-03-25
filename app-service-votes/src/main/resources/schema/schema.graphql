@@ -1,31 +1,91 @@
+# noinspection GraphQLTypeRedefinition
+# noinspection GraphQLMemberRedefinition
+# noinspection DgsEntityFetcherInspector
+
 scalar UUID
 
 # ---------- Root Types (Query/Mutation/Subscription) ----------
 
-type Query {
-
-}
-
 type Mutation {
-
+    createVote(input: CreateVoteInput!): Vote!
+    updateVote(input: UpdateVoteInput!): Vote!
+    deleteVote(id: UUID!): Boolean!
 }
 
 # ---------- Input Types ----------
 
+input VotesLookupInput {
+    page: Int! = 1    @Range(min: 1, max: 2147483647)
+    size: Int! = 20   @Range(min: 1, max: 100)
+}
+
+input CreateVoteInput {
+    entityId: UUID!
+    entityType: VoteEntityType!
+    value: Int! @Range(min: -1, max: 1)
+}
+
+input UpdateVoteInput {
+    id: UUID!
+    value: Int! @Range(min: -1, max: 1)
+}
+
 # ---------- Domain Types ----------
+
+type Vote @key(fields: "id") {
+    id: UUID!
+    userId: UUID!
+    entityId: UUID!
+    entityType: VoteEntityType!
+    value: Int!
+}
+
+enum VoteEntityType {
+    POST
+    COMMENT
+}
+
+type VotePage {
+    data: [Vote!]
+    page: Int
+    size: Int
+    hasPrev: Boolean
+    hasNext: Boolean
+}
 
 # ---------- Federated Types ----------
 
 type User @key(fields: "id") @extends {
     id: UUID! @external
+    canVote: Boolean
 }
 
 type Post @key(fields: "id") @extends {
     id: UUID! @external
+    votes: [Vote!]
+    score: Float
 }
 
 type Comment @key(fields: "id") @extends {
     id: UUID! @external
+    votes: [Vote!]
+    score: Float
 }
 
 # ---------- Directives ----------
+
+directive @NotBlank(
+    message: String! = "graphql.validation.NotBlank.message"
+) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @Range(
+    min: Int! = 0
+    max: Int! = 2147483647
+    message: String! = "graphql.validation.Range.message"
+) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @Size(
+    min: Int! = 0
+    max: Int! = 2147483647
+    message: String! = "graphql.validation.Size.message"
+) on ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION
