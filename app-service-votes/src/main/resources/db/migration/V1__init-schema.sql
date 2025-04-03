@@ -5,8 +5,12 @@ CREATE TABLE IF NOT EXISTS "user_representations" (
 );
 
 CREATE TABLE IF NOT EXISTS "post_representations" (
-    "id"      UUID NOT NULL PRIMARY KEY,
-    "user_id" UUID NULL,
+    "id"                UUID             NOT NULL PRIMARY KEY,
+    "user_id"           UUID             NULL,
+    "score"             DOUBLE PRECISION NULL,
+    "version"           BIGINT           NOT NULL,
+    "created_date_time" TIMESTAMP        NOT NULL,
+    "updated_date_time" TIMESTAMP        NULL,
 
     CONSTRAINT "FK__post_representations__user_id"
         FOREIGN KEY ("user_id") REFERENCES "user_representations" ("id")
@@ -15,9 +19,13 @@ CREATE TABLE IF NOT EXISTS "post_representations" (
 );
 
 CREATE TABLE IF NOT EXISTS "comment_representations" (
-    "id"      UUID NOT NULL PRIMARY KEY,
-    "user_id" UUID NULL,
-    "post_id" UUID NULL,
+    "id"                UUID             NOT NULL PRIMARY KEY,
+    "user_id"           UUID             NULL,
+    "post_id"           UUID             NULL,
+    "score"             DOUBLE PRECISION NULL,
+    "version"           BIGINT           NOT NULL,
+    "created_date_time" TIMESTAMP        NOT NULL,
+    "updated_date_time" TIMESTAMP        NULL,
 
     CONSTRAINT "FK__comment_representations__user_id"
         FOREIGN KEY ("user_id") REFERENCES "user_representations" ("id")

@@ -26,14 +26,14 @@ class PostRepresentationServiceImpl(
                 .associateByTo(
                     destination = HashMap(postIds.size),
                     keySelector = { it.id },
-                    valueTransform = { Post(id = it.id) },
+                    valueTransform = { Post(id = it.id, score = it.score) },
                 )
 
         (postIds - result.keys).takeIf(Set<UUID>::isNotEmpty)?.let {
             for (postId in it) {
                 result[postId] = Post(id = postId)
             }
-            logger.warn("Stubbed posts without representation in the DB: {}", it)
+            logger.debug("Stubbed posts without representation in the DB: {}", it)
         }
         return result
     }
@@ -55,6 +55,6 @@ class PostRepresentationServiceImpl(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.enclosingClass)
+        private val logger = LoggerFactory.getLogger(PostRepresentationServiceImpl::class.java)
     }
 }
