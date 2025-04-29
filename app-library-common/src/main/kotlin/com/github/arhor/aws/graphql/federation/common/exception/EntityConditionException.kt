@@ -1,7 +1,5 @@
 package com.github.arhor.aws.graphql.federation.common.exception
 
-import com.github.arhor.aws.graphql.federation.common.toSet
-
 /**
  * Any Exception related to the operation with domain entity.
  *
@@ -19,22 +17,34 @@ abstract class EntityConditionException(
     /* message = */ "Operation [${operation}] for the entity [$entity] failed under the condition [$condition]",
     /* cause   = */ cause,
 ) {
+    protected constructor(
+        entity: String,
+        condition: Map<String, Any?>,
+        operation: Operation,
+        cause: Exception? = null,
+    ) : this(entity = entity, condition = condition.asIterable().joinToString(), operation = operation, cause = cause)
+
     /**
      * Filling exception stacktrace is disabled due to performance reasons,
      * also having in mind that domain entity exception is not an exceptional case,
      * but indication to return error response.
      */
-    override fun fillInStackTrace(): Throwable {
-        val activeProfiles = System.getProperties()
-            ?.getProperty("spring.profiles.active")
-            ?.takeIf { it.isNotBlank() }
-            ?.lowercase()
-            ?.split(",")
-            ?.toSet { it.trim() }
-
-        if (activeProfiles != null && ("test" in activeProfiles || "dev" in activeProfiles)) {
-            return super.fillInStackTrace()
+    override fun fillInStackTrace(): Throwable =
+        if ("test" in ACTIVE_PROFILES || "dev" in ACTIVE_PROFILES) {
+            super.fillInStackTrace()
+        } else {
+            this
         }
-        return this
+
+    companion object {
+        private val ACTIVE_PROFILES: Set<String> =
+            System.getProperties()
+                ?.getProperty("spring.profiles.active")
+                ?.takeIf { it.isNotBlank() }
+                ?.lowercase()
+                ?.split(",")
+                ?.map { it.trim() }
+                ?.filter { it.isNotBlank() }
+                ?.toSet() ?: emptySet()
     }
 }
