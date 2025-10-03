@@ -23,16 +23,22 @@ class VoteFetcher(
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun createVote(@InputArgument input: CreateVoteInput, @AuthenticationPrincipal actor: CurrentUserDetails): Vote =
-        voteService.createVote(input, actor)
+    fun createVote(
+        @InputArgument input: CreateVoteInput,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
+    ): Vote = voteService.createVote(input, actor)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun updateVote(@InputArgument input: UpdateVoteInput, @AuthenticationPrincipal actor: CurrentUserDetails): Vote =
-        voteService.updateVote(input, actor)
+    fun updateVote(
+        @InputArgument input: UpdateVoteInput,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
+    ): Vote = voteService.updateVote(input, actor)
 
     @DgsMutation
     @PreAuthorize("isAuthenticated()")
-    fun deleteVote(@InputArgument id: UUID, @AuthenticationPrincipal actor: CurrentUserDetails): Boolean =
-        voteService.deleteVote(id, actor)
+    fun deleteVote(
+        @InputArgument id: UUID,
+        @AuthenticationPrincipal actor: CurrentUserDetails,
+    ): Boolean = voteService.deleteVote(id, actor)
 } 

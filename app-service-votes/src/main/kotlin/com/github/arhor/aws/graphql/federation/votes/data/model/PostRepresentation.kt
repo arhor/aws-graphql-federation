@@ -18,7 +18,7 @@ import java.util.UUID
 data class PostRepresentation @PersistenceCreator constructor(
     @Id
     @Column("id")
-    val id: UUID,
+    private val id: UUID,
 
     @Column("user_id")
     val userId: UUID,

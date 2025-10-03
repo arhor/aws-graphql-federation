@@ -14,15 +14,18 @@ import org.springframework.stereotype.Component
 @Component
 class BaseRepresentationOperations {
 
-    context(CrudRepository<R, K>)
-    fun <D, R, K> findRepresentationsInBatch(keys: Set<K>, onPresent: (R) -> D, onMissing: (K) -> D): Map<K, D>
-        where K : Any,
-              R : Persistable<K> {
+    fun <D, R, K> findRepresentationsInBatch(
+        repo: CrudRepository<R, K>,
+        keys: Set<K>,
+        onPresent: (R) -> D,
+        onMissing: (K) -> D,
+    ): Map<K, D> where K : Any,
+                       R : Persistable<K> {
 
         if (keys.isEmpty()) {
             return emptyMap()
         }
-        val result = findAllById(keys).associateByTo(HashMap(keys.size), { it.id!! }, onPresent)
+        val result = repo.findAllById(keys).associateByTo(HashMap(keys.size), { it.id!! }, onPresent)
         val idsMissingInDB = keys - result.keys
 
         if (idsMissingInDB.isNotEmpty()) {
@@ -34,20 +37,22 @@ class BaseRepresentationOperations {
     }
 
 
-    context(CrudRepository<R, K>)
-    fun <R, K> createRepresentationInDB(representation: R)
-        where K : Any,
-              R : Persistable<K> {
+    fun <R, K> createRepresentationInDB(
+        repo: CrudRepository<R, K>,
+        representation: R,
+    ) where K : Any,
+            R : Persistable<K> {
 
-        save(representation)
+        repo.save(representation)
     }
 
-    context(CrudRepository<R, K>)
-    fun <R, K> deleteRepresentationInDB(representation: R)
-        where K : Any,
-              R : Persistable<K> {
+    fun <R, K> deleteRepresentationInDB(
+        repo: CrudRepository<R, K>,
+        representation: R,
+    ) where K : Any,
+            R : Persistable<K> {
 
-        delete(representation)
+        repo.delete(representation)
     }
 
     companion object {

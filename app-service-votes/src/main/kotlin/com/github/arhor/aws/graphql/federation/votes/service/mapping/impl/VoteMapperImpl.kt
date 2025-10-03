@@ -14,8 +14,8 @@ class VoteMapperImpl : VoteMapper {
     override fun mapToEntity(input: CreateVoteInput, userId: UUID): VoteEntity = VoteEntity(
         userId = userId,
         entityId = input.entityId,
-        entityType = VoteEntity.EntityType.valueOf(input.entityType.name),
-        value = input.value
+        entityType = VoteEntityType.valueOf(input.entityType.name),
+        value = input.value,
     )
 
     override fun mapToVote(entity: VoteEntity): Vote = Vote(
@@ -23,6 +23,6 @@ class VoteMapperImpl : VoteMapper {
         userId = entity.userId,
         entityId = entity.entityId,
         entityType = VoteEntityType.valueOf(entity.entityType.name),
-        value = entity.value
+        value = entity.value,
     )
 } 

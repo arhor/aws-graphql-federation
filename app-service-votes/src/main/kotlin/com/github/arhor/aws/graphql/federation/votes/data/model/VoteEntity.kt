@@ -1,5 +1,7 @@
 package com.github.arhor.aws.graphql.federation.votes.data.model
 
+import com.github.arhor.aws.graphql.federation.votes.generated.graphql.types.VoteEntityType
+import com.github.arhor.aws.graphql.federation.votes.generated.graphql.types.VoteValue
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.Immutable
@@ -23,10 +25,10 @@ data class VoteEntity(
     val entityId: UUID,
 
     @Column("entity_type")
-    val entityType: EntityType,
+    val entityType: VoteEntityType,
 
     @Column("value")
-    val value: Int,
+    val value: VoteValue,
 
     @Version
     @Column("version")
@@ -40,11 +42,6 @@ data class VoteEntity(
     @Column("updated_date_time")
     val updatedDateTime: LocalDateTime? = null,
 ) {
-    enum class EntityType {
-        POST,
-        COMMENT,
-    }
-
     companion object {
         const val TABLE_NAME = "votes"
     }

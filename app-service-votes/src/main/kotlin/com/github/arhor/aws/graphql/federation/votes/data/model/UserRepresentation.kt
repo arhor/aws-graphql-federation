@@ -14,7 +14,7 @@ import java.util.UUID
 data class UserRepresentation @PersistenceCreator constructor(
     @Id
     @Column("id")
-    val id: UUID,
+    private val id: UUID,
 
     @Transient
     val shouldBePersisted: Boolean = false,

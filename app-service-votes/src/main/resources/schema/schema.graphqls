@@ -22,12 +22,12 @@ input VotesLookupInput {
 input CreateVoteInput {
     entityId: UUID!
     entityType: VoteEntityType!
-    value: Int! @Range(min: -1, max: 1)
+    value: VoteValue!
 }
 
 input UpdateVoteInput {
     id: UUID!
-    value: Int! @Range(min: -1, max: 1)
+    value: VoteValue!
 }
 
 # ---------- Domain Types ----------
@@ -37,7 +37,12 @@ type Vote @key(fields: "id") {
     userId: UUID!
     entityId: UUID!
     entityType: VoteEntityType!
-    value: Int!
+    value: VoteValue!
+}
+
+enum VoteValue {
+    INC,
+    DEC,
 }
 
 enum VoteEntityType {

@@ -17,33 +17,32 @@ class UserRepresentationServiceImpl(
 ) : UserRepresentationService {
 
     override fun findUsersRepresentationsInBatch(userIds: Set<UUID>): Map<UUID, User> =
-        with(userRepresentationRepository) {
-            baseRepresentationOperations.findRepresentationsInBatch(
-                keys = userIds,
-                onPresent = { row -> User(id = row.id) },
-                onMissing = { key -> User(id = key) },
-            )
-        }
+        baseRepresentationOperations.findRepresentationsInBatch(
+            repo = userRepresentationRepository,
+            keys = userIds,
+            onPresent = { row -> User(id = row.id) },
+            onMissing = { key -> User(id = key) },
+        )
+
 
     @Cacheable(cacheNames = ["create-user-representation-requests-cache"])
     override fun createUserRepresentation(userId: UUID, idempotencyKey: UUID): Unit =
-        with(userRepresentationRepository) {
-            baseRepresentationOperations.createRepresentationInDB(
-                UserRepresentation(
-                    id = userId,
-                    shouldBePersisted = true,
-                )
+        baseRepresentationOperations.createRepresentationInDB(
+            repo = userRepresentationRepository,
+            representation = UserRepresentation(
+                id = userId,
+                shouldBePersisted = true,
             )
-        }
+        )
+
 
     @Cacheable(cacheNames = ["delete-user-representation-requests-cache"])
     override fun deleteUserRepresentation(userId: UUID, idempotencyKey: UUID): Unit =
-        with(userRepresentationRepository) {
-            baseRepresentationOperations.deleteRepresentationInDB(
-                UserRepresentation(
-                    id = userId,
-                    shouldBePersisted = false,
-                )
+        baseRepresentationOperations.deleteRepresentationInDB(
+            repo = userRepresentationRepository,
+            representation = UserRepresentation(
+                id = userId,
+                shouldBePersisted = false,
             )
-        }
+        )
 }
